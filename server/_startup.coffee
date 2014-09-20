@@ -1,8 +1,6 @@
 @ExecutedCommands = new Meteor.Collection "exectuedCommands"
 
 Meteor.startup ->
-	process.env.MAIL_URL = "smtp://lieuwerooijakkers@gmail.com:gV1afFmrhN7IUG7VS-x89w@smtp.mandrillapp.com:587" # == STAGING ==
-
 	Accounts.urls.verifyEmail = (token) -> Meteor.absoluteUrl "verify/#{token}"
 	Accounts.urls.resetPassword = (token) -> Meteor.absoluteUrl "reset/#{token}"
 
