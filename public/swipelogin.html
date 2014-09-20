@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+var pass=[0,2,1,4,7];
+function init(){
+	makeSwipelogin(document.getElementById("login"));
+}
+
+function makeSwipelogin(cvs,num,bg,fg){
+	var ctx,x,y,inter,bgImg,path=null,pathRedraw,radius=20,disabled=false;
+	if(!num)num=3;
+	if(!bg)bg="#fff";
+	if(!fg)fg="#000";
+	ctx=cvs.getContext("2d");
+	ctx.fillStyle=bg;
+	ctx.beginPath();
+	ctx.rect(0,0,cvs.width,cvs.height);
+	ctx.fill();
+	ctx.fillStyle=fg;
+	ctx.strokeStyle=fg;
+	inter=[cvs.width/(num+1),cvs.height/(num+1)];
+	for(y=0;y<num;y++){
+		for(x=0;x<num;x++){
+			ctx.beginPath();
+			ctx.arc(inter[0]*(x+1),inter[1]*(y+1),4,0,2*Math.PI,0);
+			ctx.fill();
+			ctx.beginPath();
+			ctx.arc(inter[0]*(x+1),inter[1]*(y+1),radius,0,2*Math.PI,0);
+			ctx.stroke();
+		}
+	}
+	bgImg=document.createElement("img");
+	bgImg.src=cvs.toDataURL();
+	cvs.addEventListener("touchstart",function(ev){
+		var x,y,evx,evy,min=cvs.width*cvs.height,minat=-1,d;
+		if(path)return;
+		if(disabled){disabled=false;return;}
+		evx=ev.touches[0].pageX-cvs.offsetLeft;
+		evy=ev.touches[0].pageY-cvs.offsetTop;
+		for(y=0;y<num;y++){
+			for(x=0;x<num;x++){
+				d=Math.sqrt(Math.pow(evx-inter[0]*(x+1),2)+Math.pow(evy-inter[1]*(y+1),2));
+				if(d<min){
+					min=d;
+					minat=3*y+x;
+				}
+			}
+		}
+		if(minat!=-1)path=[minat];
+		pathRedraw(evx,evy);
+		ev.preventDefault();
+	},false);
+	cvs.addEventListener("touchmove",function(ev){
+		var x,y,evx,evy;
+		if(!path)return;
+		evx=ev.touches[0].pageX-cvs.offsetLeft;
+		evy=ev.touches[0].pageY-cvs.offsetTop;
+		for(y=0;y<num;y++){
+			for(x=0;x<num;x++){
+				if(Math.sqrt(Math.pow(evx-inter[0]*(x+1),2)+Math.pow(evy-inter[1]*(y+1),2))<=radius){
+					if(path.indexOf(3*y+x)==-1)path.push(3*y+x);
+					pathRedraw(evx,evy);
+					ev.preventDefault(evx,evy);
+					return;
+				}
+			}
+		}
+		pathRedraw(evx,evy);
+		ev.preventDefault();
+	},false);
+	cvs.addEventListener("touchend",function(ev){
+		if(!path)return;
+		ctx.drawImage(bgImg,0,0);
+		document.getElementById("log").innerHTML+="path: "+path+"\n";
+		if(arraysEqual(path,pass)){
+			disabled=true;
+			alert("Success!");
+		}
+		path=null;
+		ev.preventDefault();
+	},false);
+	pathRedraw=function(evx,evy){
+		var i;
+		ctx.drawImage(bgImg,0,0);
+		if(!path||path.length==0)return;
+		ctx.strokeStyle="#aa0";
+		ctx.lineWidth=5;
+		ctx.lineCap=ctx.lineJoin="round";
+		ctx.beginPath();
+		ctx.moveTo(inter[0]*(path[0]%3+1),inter[1]*(path[0]/3+1|0));
+		for(i=1;i<path.length;i++)
+			ctx.lineTo(inter[0]*(path[i]%3+1),inter[1]*(path[i]/3+1|0));
+		if(evx!=undefined)ctx.lineTo(evx,evy);
+		ctx.stroke();
+		ctx.fillStyle="rgba(255,255,0,0.4)";
+		ctx.beginPath();
+		for(i=0;i<path.length;i++){
+			ctx.beginPath();
+			ctx.arc(inter[0]*(path[i]%3+1),inter[1]*(path[i]/3+1|0),radius,0,2*Math.PI,0);
+			ctx.fill();
+		}
+	}
+}
+function arraysEqual(a,b){return a.length&&b.length&&typeof a.length=="number"&&a.length==b.length&&a.map(function(v,i){return v==b[i];}).reduce(function(v,w){return v&&w;});}
+</script>
+<style>
+canvas{
+	border:1px #ddd solid;
+}
+</style>
+</head>
+<body onload="init()">
+<canvas id="login" width="300" height="300"></canvas><br>
+<pre id="log"></pre>
+</body>
+</html>

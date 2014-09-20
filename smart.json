@@ -1,0 +1,21 @@
+{
+  "packages": {
+    "pages": {},
+    "bootstrap-3": {},
+    "nprogress": {},
+    "kadira": {},
+    "lodash": {},
+    "authorization": {},
+    "dataset-filter": {},
+    "Bootstrap3-Typeahead": {},
+    "iron-router": {},
+    "bootboxjs": {},
+    "fast-render": {},
+    "bootstrap3-datetimepicker": {},
+    "iron-router-ga": {},
+    "animate-css": {},
+    "velocityjs": {},
+    "stylus-multi": {},
+    "user-status": {}
+  }
+}

@@ -1,0 +1,96 @@
+@import "../../main"
+
+div.head1
+	span(8/12)
+
+div.head2
+	span(4/12)
+
+div.divider
+	border: 0px lightgray solid
+	border-bottom-width: 1px
+	margin-left: -15px
+	margin-right: -15px
+
+div.overviewImportantContainer
+	margin-top: 10px
+
+	border: 1px lightgray solid
+	border-radius: 5px
+	height: 150px
+	center(95%)
+
+	div.overviewTimeIndicator
+		font-weight: 100
+		font-size: 60px
+
+div.infoVacationHeader
+	text-align: center
+	font-size: 125px
+
+	transition: 1s transform ease-out-expo
+
+div.infoVacationHeader:hover
+	transform: scale(1.25)
+
+div.infoNextDayHeader
+	width: 100%
+	text-align: center
+	font-size: 50px
+	font-weight: 100
+	margin-top: -5px
+
+div.tasks
+	font-size: 40px
+	font-weight: 300
+
+div.overviewItemContainer
+	width: 100%
+	margin-top: 10px
+	border: 1px lightgray solid
+	border-radius: 15px
+	padding-top: 50px
+
+div.itemContainerDivider
+	display: inline-table
+	width: 100%
+	border: 0px lightgray solid
+	border-top-width: 1px
+	position: absolute
+	top: 65px
+
+div.itemContainerContent
+	margin-top: 10px
+	height: 95%
+	overflow-y: auto
+	min-height: 50px
+
+.overviewItemContainerHeader
+	font-size: 40px
+	text-align: center
+	position: absolute
+	width: 100%
+	display: inline-table
+	margin-top: -50px
+
+span#addProjectIcon
+	color: gray
+	vertical-align: middle
+	font-size: 20px
+	position: absolute
+	right: 20px
+	top: 20px
+	cursor: pointer
+	opacity: .5
+	-moz-padding-end: 30px
+
+div.taskRow
+	margin-left: 5px
+	margin-top: 10px
+
++mobile()
+	.overviewHeader
+		font-size: 30px !important
+
+	div.overviewItemContainer
+		height: initial !important

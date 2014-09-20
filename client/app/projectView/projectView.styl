@@ -1,0 +1,189 @@
+@import '../../main'
+
+div.head1
+	col(8/12)
+
+div.head2
+	col(4/12)
+
+div.projectInfoContainer
+	padding-top: 5px
+	padding-bottom: 5px
+	margin-top: 15px
+	center(95%)
+
+div.projectInfoSubContainer
+	width: 65%
+	display: inline-block
+
+span.projectInfoDescription
+	width: 75%
+
+div.projectInfoChatQuoteContainer
+	margin-top: 15px
+	margin-bottom: 15px
+	float: right
+	border: 1px lightgray solid
+	padding: 10px
+	border-radius: 5px
+	cursor: pointer
+
+	transition: all .1s ease-in-out
+
+div.projectInfoChatQuoteContainer:hover
+	background-color: lightgray
+
+div.projectInfoChatQuoteContainer:active
+	background-color: #C0C0C0 !important
+
+img.lastChatSenderPicture
+	border-radius: 55px
+	border: 1px gray solid
+
+span.lastChatSenderName
+	position: absolute
+	margin-top: 5px
+	font-size: 20px
+	margin-left: 3px
+	font-weight: 300
+
+span.lastChatSenderName:after
+	color: #333
+	content: ":"
+
+span.lastChatMessage
+	margin-top: 30px
+	width: 137px
+	overflow: hidden
+	white-space: nowrap
+	text-overflow: ellipsis
+	margin-right: 10px
+
+span.lastChatHeader
+	font-size: 30px
+	margin-top: 5px
+
+span#addFileIcon
+	color: gray
+	vertical-align: middle
+	font-size: 20px
+	position: absolute
+	right: 20px
+	top: 20px
+	cursor: pointer
+	opacity: .5
+	-moz-padding-end: 30px
+
+span#addPersonIcon
+	color: gray
+	vertical-align: middle
+	font-size: 20px
+	position: absolute
+	right: 20px
+	top: 20px
+	cursor: pointer
+	opacity: .5
+	-moz-padding-end: 30px
+
+div.projectViewItemContainer
+	width: 100%
+	height: calc(100vh - 350px)
+	margin-top: 10px
+	border: 1px lightgray solid
+	border-radius: 15px
+	padding-top: 50px
+	min-height: 50px
+	
+	div.itemContainerContent
+		@extend .largeTextOptimize
+		roboto(600)
+		margin-top: 10px
+		height: 95%
+		overflow-y: auto
+		font-size: 35px
+
+div.itemContainerSmallDivider
+	center(85%)
+	border: 0px lightgray solid
+	border-bottom-width: 1px
+	margin-top: -1px
+
+div.fileRow, div.personRow
+	cursor: pointer
+	transition: all .1s ease-in-out
+	padding-left: 10px
+	overflow: hidden
+	position: relative
+
+div.personRow
+	padding-top: 5px
+	padding-bottom: 5px
+
+img.personImage
+	border-radius: 50%
+	//box-shadow: 0 0 30px 1px
+	border: 2px black solid
+
+span.personName
+	//color: #b4b4b4
+	color: #a4a4a4
+
+span.removePersonButton
+	float: right
+	margin-right: 15px
+	opacity: 0
+
+	transition: opacity .1s ease-in-out
+
+div.fileRow:hover, div.personRow:hover
+	background-color: lightgray
+	span.removePersonButton
+		opacity: .4
+
+.ripple
+	position: absolute
+	border-radius: 100%
+	background-color: gray
+	transform: scale(0)
+
+.ripple.animate
+	-webkit-animation: ripple .45s linear
+	-moz-animation: ripple .45s linear
+	-ms-animation: ripple .45s linear
+	-o-animation: ripple .45s linear
+	animation: ripple .45s linear
+
+@keyframes ripple
+	100%
+		opacity: 0
+		transform: scale(2.5)
+
+.personSuggestionName
+	margin-left: 15px
+
++mobile()
+	div.projectHeader
+		stack()
+
+	div.head2.projectHeader
+		text-align: center !important
+
+	div.projectInfoSubContainer
+		width: 100%
+
+	span.projectInfoDescription
+		width: 100%
+
+	div.projectInfoChatQuoteContainer
+		margin-right: -15px
+
+	div.projectInfoChatQuoteContainer
+		center()
+		min-width: 300px
+		margin-left: -15px
+
+	div.projectViewItemContainer
+		height: initial !important
+
+	div.itemContainerContent
+		margin-top: 20px

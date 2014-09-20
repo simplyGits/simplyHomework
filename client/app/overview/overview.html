@@ -1,0 +1,88 @@
+<template name="appOverview">
+	<div class="container-fluid">
+		<div class="row" style="margin-top: -10px">
+			{{#if isPhone}}
+				<div class="robotoHeader overviewHeader head1">{{weekNumber}}e <span class="robotoThin">week</span></div>
+			{{else}}
+				<div class="robotoHeader overviewHeader head1" id="currentDate">{{currentDay}} <span class="robotoThin">{{currentDate}}</span></div>
+			{{/if}}
+			<div class="robotoHeader overviewHeader head2" style="text-align: right">{{tasksAmount}} <span class="robotoThin" style="margin-left: 5px">{{tasksWord}}</span></div>
+		</div>
+		<div class="divider"></div>
+		{{#if currentUser.hasMagisterSix}}
+			<div class="overviewImportantContainer">
+				{{> infoNextDay}}
+	<!-- 			{{#if inLesson}}
+					{{> infoCurrentLesson}}
+				{{else}}
+					{{#if dayOver}}
+						{{> infoNextDay}}
+					{{else}}
+						{{#if isVacation}}
+							{{> infoVacation}}
+						{{else}}
+							{{> infoNextLesson}}
+						{{/if}}
+					{{/if}}
+				{{/if}} -->
+			</div>
+		{{/if}}
+		<div class="row">
+			<div class="col-sm-6">
+				<div class="overviewItemContainer" style="height: calc(100vh - {{itemContainerMargin}})">
+					<span class="robotoThin overviewItemContainerHeader">
+						Vandaag
+					</span>
+					<div class="itemContainerDivider"></div>
+					<div class="itemContainerContent">
+						{{#each tasks}}
+							{{> taskRow}}
+						{{/each}}
+					</div>
+				</div>
+			</div>
+
+			<div class="col-sm-6">
+				<div class="overviewItemContainer" style="height: calc(100vh - {{itemContainerMargin}})">
+					<span class="robotoThin overviewItemContainerHeader">
+						<span class="fa fa-plus" id="addProjectIcon" onmouseover="$(this).velocity({ opacity: 1 }, 100);" onmouseleave="$(this).velocity({ opacity: .5 }, 100);"></span>
+						Projecten
+					</span>
+					<div class="itemContainerDivider"></div>
+					<div class="itemContainerContent">
+						{{#each projects}}
+							{{> projectRow}}
+						{{/each}}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</template>
+
+<template name="taskRow">
+	<div class="taskRow">
+		<label>
+			<input taskid="{{__id}}" type="checkbox" id="checkbox">
+			<span taskid="{{__id}}" id="checkboxLabel" class="robotoThin" style="font-weight: 300; font-size: 15px">
+				<b>{{__taskDescription}}</b> voor {{__className}}
+			</span>
+		</label>
+	</div>
+</template>
+
+<template name="projectRow">
+	<div class="projectRow">
+	</div>
+</template>
+
+<template name="infoNextDay">
+	<div class="robotoHeader infoNextDayHeader">Morgen</div>
+	<div class="robotoHeader overviewTimeIndicator">
+		<span style="font-weight: 300">{{hoursLeft}}08</span>:{{minutesLeft}}25
+	</div>
+</template>
+
+<template name="infoVacation">
+	<div class="robotoHeader infoVacationHeader">VAKANTIE?!</div>
+</template>

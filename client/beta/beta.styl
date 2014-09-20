@@ -1,0 +1,128 @@
+@import "../main"
+
+mobileCut = 660px
+
+placeholder()
+	color: white
+	opacity: 1
+
+div.page2padder
+	width: 100%
+	height: 50px
+
+div#betaFullContainer
+	background-image: url("images/blu.jpg")
+	background-size: cover
+	width: 100vw
+	height: 200vh
+	pointer-events: none
+
+	.animate
+		opacity: 0
+		transition: 2s opacity ease-in-out
+
+	.animateLong
+		opacity: 0
+		transition: 1s opacity linear 1.25s
+
+	.animated
+		opacity: 1
+
+	.page2
+		background-color: transparent
+		position: absolute
+		width: 100vw
+		height: 100%
+		transition: all .25s
+		pointer-events: all
+
+		.card
+			z-index: 1000
+			-webkit-box-shadow: 0 0 30px -8px #000
+			box-shadow: 0 0 30px -8px #000
+
+	.appNameHeaderBig
+		fixed: left right top bottom
+		z-index: 999
+		text-align: center
+
+		+below(mobileCut)
+			top: initial
+			fixed: bottom
+			margin-left: auto
+			margin-right: auto
+			width: 100%
+
+div#betaContainer
+	text-align: center
+	//background-position: top center
+	width: 100vw
+	height: 100vh
+	color: white
+
+	div.centerContainer
+		fixed: top 40% left right
+		transform: translateY(-50%)
+		-webkit-transform: translateY(-50%)
+
+	div.footer
+		fixed: bottom
+		text-align: center
+		font-size: 25px
+		color: white
+		width: 100%
+		pointer-events: initial
+
+		a
+			opacity: .5
+			transition: .25s opacity ease-in-out
+			color: white
+			
+		a:hover, a:focus
+			color: white
+			opacity: 1
+			text-decoration: none
+
+	h1
+		font-size: 250px
+		font-weight: 100
+
+	input
+		underlineInput(white, 1px)
+		text-align: center
+		width: 100%
+		font-size: 70px
+		roboto(100)
+		pointer-events: initial
+	
+	button
+		margin-top: 20px
+		width: 50%
+		font-weight: 300
+		font-size: 30px
+		pointer-events: initial
+
+	*::-webkit-input-placeholder
+		placeholder()
+
+	*:-moz-placeholder
+		placeholder()
+
+	*::-moz-placeholder
+		placeholder()
+
+	*:-ms-input-placeholder
+		placeholder()
+
+	+below(mobileCut)
+		h1
+			font-size: 75px
+		div.centerContainer
+			top: 30%
+		input
+			font-size: 30px
+		button
+			font-size: 15px
+
+		div.footer
+			bottom: 50px

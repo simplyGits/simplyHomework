@@ -1,0 +1,3 @@
+div.addAppointmentCircle:before {
+	content: "\f055" !important;
+}

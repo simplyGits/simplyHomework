@@ -1,0 +1,309 @@
+<template name="app">
+	{{! begin modals}}
+		{{> settingsModal}}
+		{{> setMagisterInfoModal}}
+		{{> plannerPrefsModal}}
+		{{> addClassModal}}
+		{{> newSchoolYearModal}}
+		{{> accountInfoModal}}
+		{{> addProjectModal}}
+	{{! end modals}}
+
+	{{> sidebar}}
+
+	<div class="chatHead chatHeadLeader">
+		<i class="chatHeadBadge">5</i>
+	</div>
+	<div class="chatHead chatHeadFollower"></div>
+	<div class="chatHead chatHeadFollower"></div>
+	<div class="chatHead chatHeadFollower" style="background: #fff url('http://www.gravatar.com/avatar/b75785f8f2cd1b9bdb5bf2661cb792a4?s=75') no-repeat -3px -5px !important;"></div>
+
+	<div class="chatHeadBinBack">
+		<div class="chatHeadBin">x</div>
+	</div>
+
+	{{#unless hasPremium}}
+		<div class="content unselectable" style="left: {{contentOffsetLeft}}">
+			{{> yield}}
+			<div style="height: 100px" id="adpadding"></div>
+			<div style="z-index: 500; background-color: #222222; height: 90px; position: fixed; left: {{contentOffsetLeft}}; right: 0; bottom: 0;" id="adbar"></div>
+		</div>
+	{{else}}
+		<div class="content" style="left: {{contentOffsetLeft}}">
+			{{> yield}}
+		</div>
+	{{/unless}}
+
+	<div class="warningFlash"></div>
+	<div class="noticeFlash"></div>
+	<div class="errorFlash"></div>
+
+	<div class="persistantNotification notice">kaas is lekker. kaas kaas kaas kaas kaas kaas kaas kaas kaas kaas kaas kaas kaas kaas kaas kaas kaas kaas kaas kaas kaas kaas kaas kaas kaas kaas</div>
+</template>
+
+<template name="settingsModal">
+	<div class="modal fade" id="settingsModal">
+		<div class="modal-dialog" style="width: 300px">
+			<div class="modal-content" id="settingsModalPage1">
+				<div class="modal-header">
+					<h4 class="modal-title" style="text-align: center">Instellingen</h4>
+				</div>
+
+				<div class="modal-body">
+					<button class="btn btn-default" id="schedularPrefsButton" style="width: 100%; margin-bottom: 5px;">Planner Voorkeuren</button>
+					<button class="btn btn-default" id="accountInfoButton" style="width: 100%; margin-bottom: 5px;">Account info aanpassen</button>
+					<button class="btn btn-danger" id="logOutButton" style="width: 100%;">Uitloggen</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</template>
+
+<template name="setMagisterInfoModal">
+	<div class="modal fade" id="setMagisterInfoModal">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+					<h4 class="modal-title">Magister informatie</h4>
+				</div>
+				<div class="modal-body">
+					<form class="form-horizontal">
+						<div id="nameGroup" class="form-group">
+							<label for="schoolNameInput" class="col-sm-2 control-label" style="text-align: left">Schoolnaam</label>
+							<div class="col-sm-10">
+								<input type="text" class="form-control" id="schoolNameInput" placeholder="Adelbert College">
+							</div>
+						</div>
+						<div id="usernameGroup" class="form-group">
+							<label for="magisterUsernameInput" class="col-sm-2 control-label" style="text-align: left">Magister inlognaam</label>
+							<div class="col-sm-10">
+								<input type="text" class="form-control" id="magisterUsernameInput" placeholder="120678">
+							</div>
+						</div>
+						<div id="passGroup" class="form-group">
+							<label for="magisterPasswordInput" class="col-sm-2 control-label" style="text-align: left">Magister wachtwoord</label>
+							<div class="col-sm-10">
+								<input type="password" class="form-control" id="magisterPasswordInput" placeholder="●●●●●●●●●●">
+							</div>
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary" id="goButton">Verder</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</template>
+
+<template name="plannerPrefsModal">
+	<div class="modal fade" id="plannerPrefsModal">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+					<h4 class="modal-title">Planner voorkeuren</h4>
+				</div>
+				<div class="modal-body">
+					<h4 style="text-align: center; margin-bottom: 20px;">Hoeveel tijd heb je op elke weekdag?<small><br><i>(schooltijd niet meegerekend)</i><br>Je kan dit altijd in je instellingen aanpassen.</small></h4>
+					<form class="form-horizontal">
+						{{#each dayWeek}}
+							<div id="{{name}}}Group" class="form-group">
+								<label for="{{name}}Input" class="col-sm-2 control-label" style="text-align: left">{{friendlyName}}</label>
+								<div class="col-sm-10">
+									<select id="{{name}}Input" class="form-control">
+										{{#each weigthOptions}}
+											<option selected={{selected}}>{{name}}</option>
+										{{/each}}
+									</select>
+								</div>
+							</div>
+						{{/each}}
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary" id="goButton">Opslaan</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</template>
+
+<template name="addClassModal">
+	<div class="modal fade" id="addClassModal">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+					<h4 class="modal-title">Vak toevoegen</h4>
+				</div>
+				<div class="modal-body">
+					<form class="form-horizontal">
+						<div id="nameGroup" class="form-group">
+							<label for="classNameInput" class="col-sm-2 control-label" style="text-align: left">Vaknaam</label>
+							<div class="col-sm-10">
+								<input type="text" class="form-control" id="classNameInput" placeholder="Engels">
+							</div>
+						</div>
+						<div id="courseGroup" class="form-group">
+							<label for="courseInput" class="col-sm-2 control-label" style="text-align: left">Vakafkorting</label>
+							<div class="col-sm-10">
+								<input type="text" class="form-control" id="courseInput" placeholder="entl">
+							</div>
+						</div>
+						<div id="bookGroup" class="form-group">
+							<label for="bookInput" class="col-sm-2 control-label" style="text-align: left">Methode</label>
+							<div class="col-sm-10">
+								<input type="text" class="form-control" id="bookInput" placeholder="New Interface">
+							</div>
+						</div>
+						<div id="yearGroup" class="form-group">
+							<label for="yearInput" class="col-sm-2 control-label" style="text-align: left">Schooljaar</label>
+							<div class="col-sm-10">
+								<select id="yearInput" class="form-control">
+									<option>1</option>
+									<option>2</option>
+									<option>3</option>
+									<option>4</option>
+									<option>5</option>
+									<option>6</option>
+								</select>
+							</div>
+						</div>
+						<div id="schoolVariantGroup" class="form-group">
+							<label for="schoolVariantInput" class="col-sm-2 control-label" style="text-align: left">Schooltype</label>
+							<div class="col-sm-10">
+								<select id="schoolVariantInput" class="form-control">
+									<option>VWO</option>
+									<option>HAVO</option>
+									<option>VMBO</option>
+									<option>LWOO</option>
+									<option>Praktijk</option>
+									<option>Anders</option>
+								</select>
+							</div>
+						</div>
+						<div id="colorGroup" class="form-group">
+							<label for="colorInput" id="colorLabel" class="col-sm-2 control-label" style="text-align: left">Kleur</label>
+							<div class="col-sm-10">
+								<input type="text" class="form-control" id="colorInput" placeholder="#32A8CE">
+							</div>
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Annuleren</button>
+					<button type="button" class="btn btn-primary" id="goButton">Toevoegen</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</template>
+
+<template name="newSchoolYearModal">
+	<div class="modal fade" id="newSchoolYearModal">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+					<h4 class="modal-title">Nieuw Schooljaar</h4>
+				</div>
+				<div class="modal-body">
+					<h4 style="text-align: center; margin-bottom: 20px;">Welken vakken moeten er weg?<small><br>Vakken kan je zometeen toevoegen.</small></h4>
+					{{#each classes}}
+						<div class="classRemoveRow">
+							<label>
+								<input type="checkbox" classId="{{_id._str}}">
+								<span id="checkboxLabel">
+									{{_name}}
+								</span>
+							</label>
+						</div>
+					{{/each}}
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary" id="goButton">Okido</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</template>	
+
+<template name="accountInfoModal">
+	<div class="modal fade" id="accountInfoModal">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+					<h4 class="modal-title">Account info</h4>
+				</div>
+				<div class="modal-body">
+					<form class="form-horizontal">
+						<div id="mailGroup" class="form-group">
+							<label for="mailInput" class="col-sm-2 control-label" style="text-align: left">Email</label>
+							<div class="col-sm-10">
+								<input type="text" class="form-control" id="mailInput" placeholder="hello@simplyApps.nl" value="{{currentMail}}">
+							</div>
+						</div>
+						<div id="oldPassGroup" class="form-group">
+							<label for="oldPassInput" class="col-sm-2 control-label" style="text-align: left">Oud wachtwoord</label>
+							<div class="col-sm-10">
+								<input type="password" class="form-control" id="oldPassInput" placeholder="●●●●●●●●●●">
+							</div>
+						</div>
+						<div id="newPassGroup" class="form-group">
+							<label for="newPassInput" class="col-sm-2 control-label" style="text-align: left">Nieuw wachtwoord</label>
+							<div class="col-sm-10">
+								<input type="password" class="form-control" id="newPassInput" placeholder="●●●●●●●●●●">
+							</div>
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Annuleren</button>
+					<button type="button" class="btn btn-primary" id="goButton">Opslaan</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</template>
+
+<template name="addProjectModal">
+	<div class="modal fade" id="addProjectModal">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+					<h4 class="modal-title">Project aanmaken</h4>
+				</div>
+				<div class="modal-body">
+					<form class="form-horizontal">
+						<div id="mailGroup" class="form-group">
+							<label for="mailInput" class="col-sm-2 control-label" style="text-align: left">Naam</label>
+							<div class="col-sm-10">
+								<input type="text" class="form-control" id="mailInput" placeholder="hello@simplyApps.nl" value="Saai engels projec">
+							</div>
+						</div>
+						<div id="oldPassGroup" class="form-group">
+							<label for="oldPassInput" class="col-sm-2 control-label" style="text-align: left">Oud wachtwoord</label>
+							<div class="col-sm-10">
+								<input type="password" class="form-control" id="oldPassInput" placeholder="●●●●●●●●●●">
+							</div>
+						</div>
+						<div id="newPassGroup" class="form-group">
+							<label for="newPassInput" class="col-sm-2 control-label" style="text-align: left">Nieuw wachtwoord</label>
+							<div class="col-sm-10">
+								<input type="password" class="form-control" id="newPassInput" placeholder="●●●●●●●●●●">
+							</div>
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Annuleren</button>
+					<button type="button" class="btn btn-primary" id="goButton">Opslaan</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</template>

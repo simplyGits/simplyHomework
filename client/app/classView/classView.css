@@ -1,0 +1,19 @@
+span#classNameChangeIcon {
+	color: lightgray;
+	vertical-align: middle;
+	font-size: 20px;
+	cursor: pointer;
+}
+
+.overviewHeader#classHeader {
+	width: calc(100% - 120px);
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
+}
+
+@media only screen and (max-width: 760px) {
+	.overviewHeader {
+		font-size: 30px !important;
+	}
+}

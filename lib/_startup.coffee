@@ -1,0 +1,1 @@
+Meteor.startup -> #Accounts.config forbidClientAccountCreation: yes

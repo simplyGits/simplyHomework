@@ -1,0 +1,131 @@
+<template name="projectView">
+	{{> addParticipantModal}}
+
+	{{#with currentProject}}
+		<div class="container-fluid">
+			<div class="row">
+				<div class="robotoHeader overviewHeader head1 projectHeader">{{_name}}</div>
+				{{#if showRightHeader}}
+					{{#with _participants}}
+						<div class="robotoHeader overviewHeader head2 projectHeader" style="text-align: right">{{length}} <span class="robotoThin" style="margin-left: 5px">personen</span></div>
+					{{/with}}
+				{{/if}}
+			</div>
+			<div class="divider"></div>
+
+			<div class="projectInfoContainer">
+				<div class="projectInfoSubContainer">
+					<b>Deadline</b>: {{friendlyDeadline}}
+					<br>
+					<b>Vak</b>: {{__class._name}}
+					<br>
+					<b>Beschrijving</b>: <span class="projectInfoDescription">{{_description}}</span>
+				</div>
+
+				<div class="projectInfoChatQuoteContainer">
+					<img class="lastChatSenderPicture" src="https://www.gravatar.com/avatar/763664ead00ca1ed8e12db1d5ad703c5?s=75&d=identicon&r=PG" width="50" height="50" style="border-color: {{lastChatMessageSenderColor}}" />
+					<span class="robotoThin lastChatSenderName" style="color: {{lastChatMessageSenderColor}}">{{lastChatMessageSenderName}} Lieuwe</span>
+					<span class="robotoThin lastChatMessage">{{lastChatMessage}} Ik hou van placeholder</span>
+					<span class="robotoThin lastChatHeader">Chat</span>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-sm-6">
+					<div class="projectViewItemContainer" style="height: calc(100vh - {{heightOffset}}px)">
+						<span class="robotoThin overviewItemContainerHeader">
+							<span class="fa fa-plus" id="addFileIcon" onmouseover="$(this).velocity({ opacity: 1 }, 100);" onmouseleave="$(this).velocity({ opacity: .5 }, 100);"></span>
+							Bestanden
+						</span>
+						<div class="itemContainerDivider"></div>
+						<div class="itemContainerContent">
+							{{#each files}}
+								{{> fileRow}}
+
+								{{#unless last files}}
+									<div class="itemContainerSmallDivider"></div>
+								{{/unless}}
+							{{/each}}
+						</div>
+					</div>
+				</div>
+
+				<div class="col-sm-6">
+					<div class="projectViewItemContainer" style="height: calc(100vh - {{heightOffset}}px)">
+						<span class="robotoThin overviewItemContainerHeader">
+							<span class="fa fa-plus" id="addPersonIcon" onmouseover="$(this).velocity({ opacity: 1 }, 100);" onmouseleave="$(this).velocity({ opacity: .5 }, 100);"></span>
+							Mensen
+						</span>
+						<div class="itemContainerDivider"></div>
+						<div class="itemContainerContent">
+							{{> selfRow}}
+							<div class="itemContainerSmallDivider"></div>
+							{{#each persons}}
+								{{> personRow}}
+
+								{{#unless last persons}}
+									<div class="itemContainerSmallDivider"></div>
+								{{/unless}}
+							{{/each}}
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	{{/with}}
+</template>
+
+<template name="fileRow">
+	<div class="fileRow">
+		<div class="ripple" style="background-color: {{fileTypeColor}}"></div>
+		<span style="position: relative; pointer-events: none"> {{! otherwise the ripple will go over the content}}
+			<i class="fa fa-{{fileTypeIconClass}}"></i>
+			{{name}}
+			{{#if currentWorker}}
+				<span class="fileCurrentPeople"><b>{{currentWorker.profile.firstName}}</b> is nu hiermee bezig</span>
+			{{/if}}
+		</span>
+	</div>
+</template>
+
+<template name="personRow">
+	<div class="personRow">
+		<img src="{{gravatarUrl}}" width="50" height="50" class="personImage" style="border-color: {{__statusColor}}">
+		<span class="personName"><span style="color: black">{{profile.firstName}}</span> {{profile.lastName}}</span>
+		<span class="removePersonButton">&times;</span>
+	</div>
+</template>
+
+<template name="selfRow">
+	<div class="personRow">
+		<img src="{{currentUser.gravatarUrl}}" width="50" height="50" class="personImage" style="border-color: {{ownStatusColor}}">
+		<span class="personName" style="color: black">Jij</span>
+	</div>
+</template>
+
+<template name="addParticipantModal">
+	<div class="modal fade" id="addParticipantModal">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+					<h4 class="modal-title">Persoon Toevoegen</h4>
+				</div>
+				<div class="modal-body">
+					<form class="form-horizontal">
+						<div id="personNameGroup" class="form-group">
+							<label for="personNameInput" class="col-sm-2 control-label" style="text-align: left">Naam</label>
+							<div class="col-sm-10">
+								<input type="text" class="form-control" id="personNameInput" placeholder="Adolf">
+							</div>
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Annuleren</button>
+					<button type="button" class="btn btn-primary" id="goButton">Opslaan</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</template>
