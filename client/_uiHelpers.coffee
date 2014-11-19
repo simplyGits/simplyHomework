@@ -166,8 +166,10 @@ class @NotificationsManager
 			d.draggable
 				axis: "x"
 				start: (event, helper) ->
-					pos = $(event.target).position().left; $(event.target).css width: $(this).outerWidth()
-					$(@).addClass "noclick"
+					pos = $(@).position().left
+					$(@)
+						.css width: $(this).outerWidth()
+						.addClass "noclick"
 				stop: (event, helper) ->
 					$(@).css width: "initial"
 					if $(@).position().left - pos > MIN
