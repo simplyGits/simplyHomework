@@ -154,7 +154,9 @@ class @NotificationsManager
 		d.html "<div>#{(if html then body else escape body).replace(/\n/g, "<br>")}</div>"
 		d.append "<br>"
 		if onClick?
-			d.click onClick
+			d.click ->
+				if $(@).hasClass("noclick") then $(@).removeClass "noclick"
+				else onClick arguments...
 			d.css cursor: "pointer"
 
 		if dismissable
@@ -163,7 +165,9 @@ class @NotificationsManager
 
 			d.draggable
 				axis: "x"
-				start: (event, helper) -> pos = $(event.target).position().left; $(event.target).css width: $(this).outerWidth()
+				start: (event, helper) ->
+					pos = $(event.target).position().left; $(event.target).css width: $(this).outerWidth()
+					$(@).addClass "noclick"
 				stop: (event, helper) ->
 					$(@).css width: "initial"
 					if $(@).position().left - pos > MIN
