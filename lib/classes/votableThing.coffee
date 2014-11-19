@@ -35,7 +35,7 @@ class @VoteableThing
 				@_votes.push new root.Vote @, userId, voteType
 				@_votesDependency.changed()
 
-	voteSum: -> Helpers.getTotal @votes(), (v) => v.voteType()
+	voteSum: -> Helpers.getTotal @votes(), (v) -> v.voteType()
 
 class @Vote
 	constructor: (@_parent, @voterId, @_voteType) ->

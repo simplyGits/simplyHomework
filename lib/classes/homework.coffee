@@ -18,7 +18,6 @@ class @Homework
 	constructor: (@_parent, @_description, @_dueDate, @_classId, @_homeworkType, @_addedManually, @_isPublic) ->
 		@_className = "Homework"
 
-		@dependency = new Deps.Dependency
 		@description = root.getset "_description", String
 		@dueDate = root.getset "_dueDate", Date
 		@classId = root.getset "_classId", String
@@ -28,22 +27,6 @@ class @Homework
 		@weigth = root.getset "_weigth", (w) => _.contains [2..5], @homeworkType() and Match.test w, Number
 		@__parsedData = root.getset "_parsedData"
 		
-	_setDeps: ->
-		Deps.autorun (computation) => # Calls the dependency of the sender object, unless it's null
-			@dependency.depend()
-			@_parent.dependency.changed() if @_parent? and !computation.firstRun
-
-	@_match: (homework) ->
-		return Match.test homework, Match.ObjectIncluding
-				_description   : String
-				_dueDate       : Date
-				_classId       : String
-				_homeworkType  : Number
-				_book		   : root.Book._match
-				_addedManually : Boolean
-				_isPublic      : Boolean
-				_weigth        : Number
-
 	###*
 	# Parses the current HomeworkInstance. Or, if it's already parsed, returns the cached parsed ParsedData instance.
 	#

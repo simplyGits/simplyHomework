@@ -1,0 +1,40 @@
+<template name="sidebar">
+	{{! Height of each element should be 55px}}
+	<div class="sidebar unselectable" onselectstart="return false;" ondragstart="return false;">
+		<div class="sidebarClasses" style="overflow-y: {{sidebarOverflow}}">
+			<div class="slider"></div>
+			<div class="sidebarItem" id="item_home" pos="0">
+				Overzicht
+				<div style="border: 0px white solid; border-top-width: 1px"></div>
+			</div>
+			{{#each classes}}
+				{{> sidebarItem}}
+			{{/each}}
+			<button type="button" id="addClassButton" class="btn btn-trans sidebarAddClass">Vak Toevoegen</button>
+		</div>
+		<div class="sidebarFooter">
+			<img class="sidebarFooterUserImage" src="{{currentUser.gravatarUrl}}" width="75" height="75" />
+			<p class="robotoThin sidebarFooterUserName">
+				{{currentUser.profile.firstName}}
+			</p>
+			<div class="sidebarFooterSettingsIcon"></div>
+			<div class="appNameHeader sidebarFooterAppNameHeader" style="color: white"><span id="sidebarFooterSimply" style="cursor: pointer; opacity: .6; margin-right: -2px">simply</span></div>
+		</div>
+	</div>
+</template>
+
+<template name="sidebarItem">
+	<div class="sidebarItem" id="{{_id.toHexString}}" pos="{{__pos}}">
+		{{#with __taskAmount}}
+			{{#unless empty}}
+				<div class="classNotif"></div>
+			{{/unless}}
+		{{/with}}
+		{{#if __largeName}}
+			<span style="white-space: nowrap; font-size: 30px;">{{_name}}</span>
+		{{else}}
+			{{_name}}
+		{{/if}}
+		<div style="border: 0px {{__color}} solid; border-top-width: 1px"></div>
+	</div>
+</template>

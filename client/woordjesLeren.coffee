@@ -3,10 +3,15 @@ urls =
 	books: "http://www.corsproxy.com/www.woordjesleren.nl/api/select_books.php?category="
 	lists: "http://www.corsproxy.com/www.woordjesleren.nl/api/select_lists.php?book="
 
+categories = []
+
 class @WoordjesLeren
 	@getAllClasses: (callback) ->
-		$.get urls.categories, (result) ->
-			callback (n.data.trim() for n in $(result).find("category").contents())
+		if categories.length isnt 0
+			callback categories
+		else
+			$.get urls.categories, (result) ->
+				callback categories = n.data.trim() for n in $(result).find("category").contents()
 
 	@getAllBooks: (className, callback) ->
 		$.get urls.categories, (result) ->

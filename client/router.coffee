@@ -11,13 +11,13 @@ Router.configure
 	notFoundTemplate: "notFound"
 	loadingTemplate: "loading"
 
-Router.onBeforeAction('loading')
-
 Router.map ->
 	@route "launchPage",
 		path: "/"
 		layoutTemplate: "launchPage"
-		onBeforeAction: -> Meteor.defer => @redirect "app" if Meteor.user()? or Meteor.loggingIn()
+		onBeforeAction: ->
+			Meteor.defer => @redirect "app" if Meteor.user()? or Meteor.loggingIn()
+			@next()
 		onAfterAction: ->
 			document.title = "simplyHomework"
 		fastRender: true
@@ -27,11 +27,12 @@ Router.map ->
 
 		onBeforeAction: ->
 			Meteor.defer => @redirect "launchPage" unless Meteor.loggingIn() or Meteor.user()?
+			@next()
 		onAfterAction: ->
-			Meteor.defer -> $(".slider").velocity top: 0, 150 #lolwat
+			Meteor.defer -> slide "overview"
 			document.title = "simplyHomework | #{Meteor.user().profile.firstName} #{Meteor.user().profile.lastName}"
 
-			#App.firstTimeSetup() if !Meteor.user().completedTutorial
+			App.followSetupPath()
 
 			NProgress.done()
 
@@ -44,12 +45,14 @@ Router.map ->
 
 		waitOn: -> NProgress.start(); Meteor.subscribe("essentials")
 
-		onBeforeAction: -> Meteor.defer => @redirect "launchPage" unless Meteor.loggingIn() or Meteor.user()?
+		onBeforeAction: ->
+			Meteor.defer => @redirect "launchPage" unless Meteor.loggingIn() or Meteor.user()?
+			@next()
 		onAfterAction: ->
 			if !@data().currentClass?
 				@redirect "app"
 				Template.sidebar.rendered = -> $(".slider").velocity top: 0, 150
-				alertModal "Niet gevonden", "Jij hebt dit vak waarschijnlijk niet.", DialogButtons.Ok, main: "o."
+				swalert title: "Niet gevonden", text: "Jij hebt dit vak waarschijnlijk niet.", confirmButtonText: "o.", type: "error"
 				return
 			Meteor.defer => $(".slider").velocity top: @data().currentClass.__pos * 60, 150
 			document.title = "simplyHomework | #{@data().currentClass._name}"
@@ -69,12 +72,14 @@ Router.map ->
 
 		waitOn: -> NProgress.start(); [ Meteor.subscribe("essentials"), Meteor.subscribe("projects"), Meteor.subscribe("usersData") ]
 
-		onBeforeAction: -> Meteor.defer => @redirect "launchPage" unless Meteor.loggingIn() or Meteor.user()?
+		onBeforeAction: ->
+			Meteor.defer => @redirect "launchPage" unless Meteor.loggingIn() or Meteor.user()?
+			@next()
 		onAfterAction: ->
 			if !@data().currentProject?
 				@redirect "app"
-				Template.sidebar.rendered = -> $(".slide").velocity top: 0, 150
-				alertModal "Niet gevonden", "Dit project is niet gevonden."
+				Template.sidebar.rendered = -> $(".slider").velocity top: "75px", 150
+				swalert title: "Niet gevonden", text: "Dit project is niet gevonden.", type: "error"
 				return
 
 			Meteor.defer => $(".slider").velocity top: @data().currentProject.__class.__pos * 60, 150
@@ -95,15 +100,60 @@ Router.map ->
 
 		waitOn: -> NProgress.start(); [ Meteor.subscribe("essentials"), Meteor.subscribe("usersData") ]
 
-		onBeforeAction: -> Meteor.defer => @redirect "launchPage" unless Meteor.loggingIn() or Meteor.user()?
+		onBeforeAction: ->
+			Meteor.defer => @redirect "launchPage" unless Meteor.loggingIn() or Meteor.user()?
+			@next()
 		onAfterAction: ->
-			Meteor.defer -> $(".slider").velocity top: 0, 150
+			Meteor.defer -> slide "calendar"
 			document.title = "simplyHomework | Agenda"
 			NProgress.done()
 
+	@route "mobileCalendar",
+		layoutTemplate: "app"
+		path: "/app/mobileCalendar/:date?"
+
+		waitOn: -> NProgress.start(); [ Meteor.subscribe("essentials"), Meteor.subscribe("usersData") ]
+
+		onBeforeAction: ->
+			Meteor.defer => @redirect "launchPage" unless Meteor.loggingIn() or Meteor.user()?
+			@next()
+		onAfterAction: ->
+			Meteor.defer -> slide "calendar"
+			document.title = "simplyHomework | Agenda"
+			NProgress.done()
+
+		data: -> if params.date? then new Date(params.date).date() else Date.today()
+
+	@route "personView",
+		layoutTemplate: "app"
+		path: "/app/person/:_id"
+
+		waitOn: -> NProgress.start(); [ Meteor.subscribe("essentials"), Meteor.subscribe("usersData") ]
+
+		onBeforeAction: ->
+			Meteor.defer => @redirect "launchPage" unless Meteor.loggingIn() or Meteor.user()?
+			@next()
+		onAfterAction: ->
+			Meteor.defer -> slide "overview"
+			if !@data()?
+				@redirect "app"
+				swalert title: "Niet gevonden", text: "Dit persoon is niet gevonden.", type: "error"
+				return
+
+			document.title = "simplyHomework | #{@data().profile.firstName} #{@data().profile.lastName}"
+			NProgress.done()
+
+		data: ->
+			try
+				return Meteor.users.findOne @params._id
+			catch
+				return null
+
 	@route "beta",
 		layoutTemplate: "beta"
-		onBeforeAction: -> Meteor.subscribe("betaPeople")
+		onBeforeAction: ->
+			Meteor.subscribe("betaPeople")
+			@next()
 		onAfterAction: -> document.title = "simplyHomework | Bèta"
 
 	@route "press",

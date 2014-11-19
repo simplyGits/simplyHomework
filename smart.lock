@@ -2,14 +2,11 @@
   "meteor": {},
   "dependencies": {
     "basePackages": {
-      "pages": {},
       "bootstrap-3": {},
       "nprogress": {},
-      "kadira": {},
       "lodash": {},
       "authorization": {},
       "dataset-filter": {},
-      "Bootstrap3-Typeahead": {},
       "iron-router": {},
       "bootboxjs": {},
       "fast-render": {},
@@ -18,14 +15,10 @@
       "animate-css": {},
       "velocityjs": {},
       "stylus-multi": {},
-      "user-status": {}
+      "user-status": {},
+      "crypto-base64": {}
     },
     "packages": {
-      "pages": {
-        "git": "https://github.com/alethes/meteor-pages.git",
-        "tag": "v1.0.20",
-        "commit": "717cbac89f02d2f1bb160b24c997050ce2dee45e"
-      },
       "bootstrap-3": {
         "git": "https://github.com/mangasocial/meteor-bootstrap-3.git",
         "tag": "v3.2.0-1",
@@ -36,11 +29,6 @@
         "tag": "v0.0.5",
         "commit": "bb88a057166e0f1386ab8bc0a1e080b48aa59159"
       },
-      "kadira": {
-        "git": "https://github.com/meteorhacks/kadira.git",
-        "tag": "v2.4.13",
-        "commit": "1f3c1a427084af5a2eca2e299eb65bc01387df8a"
-      },
       "lodash": {
         "git": "https://github.com/alethes/meteor-lodash.git",
         "tag": "v0.7.1",
@@ -48,18 +36,13 @@
       },
       "authorization": {
         "git": "https://github.com/deepwell/meteor-authorization.git",
-        "tag": "v2.0.4",
-        "commit": "a1e222fc2f4caf81906bb1b57dd7f6efa4a0d071"
+        "tag": "v2.0.5",
+        "commit": "35f67390fb593ce773e964595ec6c53f33b56140"
       },
       "dataset-filter": {
         "git": "https://github.com/rosh93/meteor-dataset-filter.git",
         "tag": "v0.0.4",
         "commit": "be19a618bb39a35d5ff7043387555a3c6a1181d9"
-      },
-      "Bootstrap3-Typeahead": {
-        "git": "https://github.com/JustinSGray/meteor-Bootstrap-3-Typeahead.git",
-        "tag": "v3.0.3",
-        "commit": "1438ed827fc3ca16c9ae04062c1122002151c7d6"
       },
       "iron-router": {
         "git": "https://github.com/EventedMind/iron-router.git",
@@ -98,13 +81,18 @@
       },
       "stylus-multi": {
         "git": "https://github.com/furrio/meteor-stylus-multi.git",
-        "tag": "v0.0.2",
-        "commit": "f9a3e832f43edfda74d845fce6007725f5e05a5f"
+        "tag": "v0.0.4",
+        "commit": "428bdc138e2acfeeff15f775f0210332f5fc070f"
       },
       "user-status": {
         "git": "https://github.com/mizzao/meteor-user-status.git",
         "tag": "v0.6.0",
         "commit": "dba80d742522ac104f2155f1db852922e4249f96"
+      },
+      "crypto-base64": {
+        "git": "https://github.com/dandv/meteor-crypto-base64.git",
+        "tag": "v3.1.2.0",
+        "commit": "03e523e80faaf7b10191ea50493414bec7cd0e3d"
       },
       "iron-layout": {
         "git": "https://github.com/EventedMind/iron-layout.git",
@@ -115,6 +103,11 @@
         "git": "https://github.com/mizzao/meteor-timesync.git",
         "tag": "v0.2.1",
         "commit": "fa4abd511f4e32a3c5d22795ce2c1e8369428fac"
+      },
+      "crypto-base": {
+        "git": "https://github.com/oortcloud/meteor-crypto-base.git",
+        "tag": "v3.1.2.1",
+        "commit": "5df8d82a0595553415bbfae2930c6ecbeece5794"
       },
       "blaze-layout": {
         "git": "https://github.com/EventedMind/blaze-layout.git",

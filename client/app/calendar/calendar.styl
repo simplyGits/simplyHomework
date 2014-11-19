@@ -1,16 +1,3 @@
-div.addAppointmentCircle
-	center()
-	fixed: left 50% top 5px
-
-	border-radius: 50%
-	cursor:pointer
-
-	transition: .5s transform ease-out-expo
-	transform-origin: center top
-
-div.addAppointmentCircle:hover
-	transform: scale(1.2)
-
 div.addAppointmentForm
 	fixed: left 50% top 15px
 	width: 300px
@@ -48,7 +35,7 @@ div.addAppointmentForm.transformIn
 	transform: translateY(0px)
 
 div.backdrop
-	fixed: top bottom left right
+	absolute: top bottom left right
 	opacity: 0
 	z-index: 998
 	pointer-events: none
@@ -78,3 +65,19 @@ button.fc-corner-right:not(.fc-today-button)
 	-moz-border-radius-bottomright: 4px
 	border-top-right-radius: 4px
 	border-bottom-right-radius: 4px
+
+.fc-event
+	border-radius: 0px
+	border: none
+	padding: 1px
+
+div.eventInfo
+	background-color: cyan
+	width: 150px
+	height: 100px
+	position: absolute
+
+div.popover
+	z-index: 999 !important
+	max-width: 150px !important
+	width: auto !important

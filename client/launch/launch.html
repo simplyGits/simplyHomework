@@ -1,10 +1,10 @@
 <template name="launchPage">
 	{{> signupModal}}
-	<div id="page1" class="unselectable" onselectstart="return false;" ondragstart="return false;"> 
+	<div id="page1" class="unselectable"> 
 		{{> page1}}
 	</div>
 	<div id="page2">
-	{{> page2}}
+		{{> page2}}
 	</div>
 </template>
 
@@ -16,7 +16,20 @@
 		<span class="vCenter">
 			<button date-toggle="modal" id="signupButton" type="button" style="margin-top: 50px;" class="btn btn-trans"><span style="font-size: 150%; -webkit-font-smoothing: initial;">account maken</span></button>
 		</span>
+
+		{{#if showQuickLoginhint}}
+			<div id="quickLoginhint">
+				Of start met het typen van je email.
+			</div>
+		{{/if}}
 	</div>
+
+	<div class="signUpForm">
+		<input type="text" id="username" autocomplete="off"/>
+		<br>
+		<input type="password" id="password" autocomplete="off"/>
+	</div>
+
 	<div class="launchpageMoreInfoBottom">info<br>\/</div>
 </template>
 

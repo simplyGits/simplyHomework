@@ -1,0 +1,43 @@
+@import "../../main"
+
+div.personInfoTop
+	div.background
+		absolute: top -20px left -20px right -20px
+		height: 200px
+		background-color: #3F51B5
+		border-bottom: 1px #1A237E solid
+		
+		transition: .5s background-color, .5s border-color linear
+		
+	img.personPicture
+		border-radius: 50%
+		border: 1px lightgray solid
+		absolute: top 90px left 15px
+		
+		transition: .5s border-color linear
+		
+	div.personName
+		color: white
+		absolute: top 110px left 125px
+		white-space: nowrap
+		
+	button
+		-moz-osx-font-smoothing: auto
+		absolute: top 120px right 15px
+		font-size: 20px
+		
+	+mobile()
+		img.personPicture
+			absolute: top 30px left 15px
+			
+			size = 75px
+			width: size
+			height: size
+			
+		div.personName
+			absolute: top 49px left 100px
+			font-size: 27px
+			
+		button
+			left: 50%
+			transform: translateX(-50%)

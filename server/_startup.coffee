@@ -45,7 +45,7 @@ Meteor.startup ->
 			message = "Hey,\n\n" +
 
 			"Cool dat je interesse in simplyHomework hebt!\n" +
-			"Elke week worden willekeurig een aantal mensen uitgekozen die worden binnen gelaten.\n" +
+			"Elke week worden willekeurig een aantal mensen uitgekozen die binnen worden gelaten.\n" +
 			"Je krijgt een email van ons als je in de bèta zit."
 
 			sendMail doc.mail, "simplyHomework | Bèta", message

@@ -1,0 +1,114 @@
+/* http://codepen.io/safakotur/pen/ibHga <3333333 */
+.chatHead {
+	background: gray no-repeat -3px -5px;
+	position: fixed;
+	width: 70px;
+	height: 70px;
+	left: 0;
+	top: 0;
+	border-radius: 50px;
+	-webkit-border-radius: 50px;
+	-moz-border-radius: 50px;
+	border: solid 1px #fff;
+	z-index: 10000;
+	pointer-events: initial;
+	text-decoration: none;
+
+	visibility: hidden;
+	
+	box-shadow: 0 2px 12px 1px rgba(0,0,0,.89);
+}
+
+.chatHeadLeader { z-index: 100000; }
+
+.chatHead i {
+	width: 17px;
+	height: 24px;
+	-webkit-border-radius: 4px/3px;
+	-moz-border-radius: 4px/3px;
+	border-radius: 4px/3px;
+	background-color: #adafb5;
+	background-image: -webkit-linear-gradient(bottom, #ff1919, #ff5959);
+	background-image: -moz-linear-gradient(bottom, #ff1919, #ff5959);
+	background-image: -o-linear-gradient(bottom, #ff1919, #ff5959);
+	background-image: -ms-linear-gradient(bottom, #ff1919, #ff5959);
+	background-image: linear-gradient(to top, #ff1919, #ff5959);
+	display: block;
+	color: #fff;
+	font-style: normal;
+	font-family: 'Helvetica';
+	font-weight: bold;
+	font-size: 16px;
+	text-align: center;
+	line-height: 28px;
+	box-shadow: 0px 1px 3px #000;
+	-moz-box-shadow: 0px 1px 3px #000;
+	-webkit-box-shadow: 0px 1px 3px #000;
+	border: 1px solid rgba(255, 0, 0, .5);
+	margin: -5px 0 0 -5px;
+	text-shadow: 0 2px 0 #c51414;
+
+	cursor: default;
+
+	-webkit-transition: transform .2s ease-in-out;
+	   -moz-transition: transform .2s ease-in-out;
+	    -ms-transition: transform .2s ease-in-out;
+	     -o-transition: transform .2s ease-in-out;
+	        transition: transform .2s ease-in-out;
+}
+
+.chatHeadBinBack {
+	background: -moz-linear-gradient(top,  rgba(255,255,255,0) 1%, rgba(7,7,7,0) 76%, rgba(0,0,0,0.07) 78%, rgba(0,0,0,0.86) 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(1%,rgba(255,255,255,0)), color-stop(76%,rgba(7,7,7,0)), color-stop(78%,rgba(0,0,0,0.07)), color-stop(100%,rgba(0,0,0,0.86)));
+	background: -webkit-linear-gradient(top,  rgba(255,255,255,0) 1%,rgba(7,7,7,0) 76%,rgba(0,0,0,0.07) 78%,rgba(0,0,0,0.86) 100%);
+	background: -o-linear-gradient(top,  rgba(255,255,255,0) 1%,rgba(7,7,7,0) 76%,rgba(0,0,0,0.07) 78%,rgba(0,0,0,0.86) 100%);
+	background: -ms-linear-gradient(top,  rgba(255,255,255,0) 1%,rgba(7,7,7,0) 76%,rgba(0,0,0,0.07) 78%,rgba(0,0,0,0.86) 100%);
+	background: linear-gradient(to bottom,  rgba(255,255,255,0) 1%,rgba(7,7,7,0) 76%,rgba(0,0,0,0.07) 78%,rgba(0,0,0,0.86) 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00ffffff', endColorstr='#db000000',GradientType=0 );
+	position: fixed;
+	bottom: -500px;
+	left: 0;
+	right: 0;
+	top: 0;
+	z-index: 1050;
+	pointer-events: none;
+	visibility: hidden;
+}
+
+.chatHeadBin {
+	opacity: 0;
+	width: 70px;
+	height: 70px;
+	border: 2px white solid;
+	border-radius: 50px;
+	color: white;
+	font-size: 50px;
+	vertical-align: middle;
+	text-align: center;
+	position: fixed;
+	left: 50%;
+	bottom: 30px;
+	line-height: 55px;
+}
+
+.hovering {
+	transform: scale(1.25);
+	border-color: red;
+	color: red;
+}
+
+i.under {
+	-webkit-transform: translateY(55px);
+	   -moz-transform: translateY(55px);
+	    -ms-transform: translateY(55px);
+	     -o-transform: translateY(55px);
+	        transform: translateY(55px);
+}
+
+i.right {
+	-webkit-transform: translateX(55px);
+	   -moz-transform: translateX(55px);
+	    -ms-transform: translateX(55px);
+	     -o-transform: translateX(55px);
+	        transform: translateX(55px);
+}

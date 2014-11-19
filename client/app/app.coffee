@@ -1,11 +1,87 @@
 @snapper = null
+magisterClasses = new ReactiveVar null
 class @App
-	@firstTimeSetup: ->
-		alertModal "Hey!", Locals["nl-NL"].GreetingMessage(), DialogButtons.Ok, { main: "verder" }, { main: "btn-primary" }, main: ->
-			$("#setMagisterInfoModal").modal()
+	@_setupPathItems:
+		tutorial:
+			done: no
+			func: (current, length) ->
+				alertModal "Hey!", Locals["nl-NL"].GreetingMessage(), DialogButtons.Ok, { main: "verder" }, { main: "btn-primary" }, {main: ->
+					App.step()
+				}, no
+		magisterInfo:
+			done: no
+			func: (current, length) ->
+				$("#setMagisterInfoModal").modal backdrop: "static"
+		plannerPrefs:
+			done: no
+			func: (current, length) ->
+				$("#plannerPrefsModal").modal backdrop: "static"
+				$("#plannerPrefsModal .modal-header button").remove()
+		getMagisterClasses:
+			done: no
+			func: (current, length) ->
+				$("#getMagisterClassesModal").modal backdrop: "static"
 
-	@newSchoolYear: ->
-		alertModal "Hey!", Locals["nl-NL"].NewSchoolYear(), DialogButtons.Ok, { main: "verder" }, { main: "btn-primary" }, main: -> return
+		newSchoolYear:
+			done: no
+			func: (current, length) ->
+				alertModal "Hey!", Locals["nl-NL"].NewSchoolYear(), DialogButtons.Ok, { main: "verder" }, { main: "btn-primary" }, { main: -> return }, no
+		final:
+			done: no
+			func: (current, length) ->
+				swalert
+					type: "success"
+					title: "Klaar!"
+					text: "Wil je een complete rondleiding volgen?"
+					confirmButtonText: "Rondleiding"
+					cancelButtonText: "Afsluiten"
+					onSuccess: (->)
+					onCancel: (->)
+	
+	@_fullCount: null
+	@_currentCount: 0
+	@_running: no
+
+	###*
+	# Moves the setup path one item further.
+	#
+	# @method step
+	# @return {Object} Object that gives information about the progress of the setup path.
+	###
+	@step = ->
+		return unless App._fullCount?
+		App._currentCount++
+
+		itemName = _.find _.keys(App._setupPathItems), (k) -> not App._setupPathItems[k].done
+		
+		item = App._setupPathItems[itemName]
+		item.func App._currentCount, App._fullCount
+		item.done = yes
+
+		if App._currentCount + 1 is App._fullCount
+			App._currentCount = 0
+			App._fullCount = null
+			@_running = no
+
+		console.log { currentPosition: App._currentCount, length: App._fullCount, current: itemName }
+		return { currentPosition: App._currentCount, length: App._fullCount, current: itemName }
+
+	###*
+	# Initializes and starts the setup path.
+	#
+	# @method followSetupPath
+	###
+	@followSetupPath: ->
+		return if App._running
+		App._setupPathItems.tutorial.done = Meteor.user().completedTutorial
+		App._setupPathItems.plannerPrefs.done = App._setupPathItems.magisterInfo.done = Meteor.user().magisterCredentials?
+
+		App._setupPathItems.newSchoolYear.done = Meteor.user().classInfo?
+
+		App._fullCount = _.filter(App._setupPathItems, (x) -> not x.done).length
+		App._setupPathItems.final.done = App._fullCount is 0
+		App._running = yes
+		App.step()
 
 # == Bloodhounds ==
 
@@ -25,21 +101,62 @@ classEngine = new Bloodhound
 
 # == Modals ==
 
+Template.getMagisterClassesModal.helpers
+	magisterClasses: -> magisterClasses.get()
+
+Template.getMagisterClassesModal.rendered = ->
+	onMagisterInfoResult("classes", (e, r) -> magisterClasses.set r unless e?)
+	onMagisterInfoResult "course", (e, r) ->
+		return if e?
+
+		schoolVariant = /[^\d\s]+/.exec(r.type().description)[0].trim()
+		year = (Number) /\d+/.exec(r.type().description)[0].trim()
+
+		Meteor.users.update Meteor.userId(), $set:
+			"profile.courseInfo": {
+				profile: r.profile()
+				alternativeProfile: r.alternativeProfile()
+				schoolVariant
+				year
+			}
+
+	opts =
+		lines: 17
+		length: 7
+		width: 2
+		radius: 18
+		corners: 0
+		rotate: 0
+		direction: 1
+		color: "#000"
+		speed: .9
+		trail: 10
+		shadow: no
+		hwaccel: yes
+		className: "spinner"
+		top: "65%"
+		left: "50%"
+
+	spinner = new Spinner(opts).spin $("#spinner").get()[0]
+
+Template.getMagisterClassesModal.events {}
+
 Template.setMagisterInfoModal.events
 	"click #goButton": ->
 		schoolName = Helpers.cap $("#schoolNameInput").val()
-		schoolUrl = Session.get("currentSelectedSchoolDatum")?.Url[5..]
-		schoolUrl ?= ""
+		school = Session.get("currentSelectedSchoolDatum")
+		school ?= { url: "" }
 		username = $("#magisterUsernameInput").val()
 		password = $("#magisterPasswordInput").val()
 
-		school = Schools.findOne { _name: schoolName }
-		school ?= New.school schoolName, schoolUrl, new Location()
+		school = Schools.findOne { name: schoolName }
+		school ?= New.school schoolName, school.url, new Location()
 
-		Meteor.call "setMagisterInfo", { url: schoolUrl, schoolId: school._id, magisterCredentials: { username, password }}, (error, result) ->
-			if result
+		Meteor.call "setMagisterInfo", { school, schoolId: school._id, magisterCredentials: { username, password }}, (success) ->
+			if success
 				$("#setMagisterInfoModal").modal "hide"
-				$("#plannerPrefsModal").modal()
+				App.step()
+				loadMagisterInfo yes
 			else
 				$("#setMagisterInfoModal").addClass "animated shake"
 				$('#setMagisterInfoModal').one 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', ->
@@ -49,9 +166,9 @@ Template.setMagisterInfoModal.rendered = ->
 	$("#schoolNameInput").typeahead({
 		minLength: 3
 	}, {
-		displayKey: "Licentie"
+		displayKey: "name"
 		source: (query, callback) ->
-			Meteor.call "http", "GET", "https://schoolkiezer.magister.net/home/query?filter=#{query}", (error, result) -> unless error? then callback EJSON.parse result.content
+			MagisterSchool.getSchools query, (e, r) -> callback r unless e?
 	}).on "typeahead:selected", (obj, datum) -> Session.set "currentSelectedSchoolDatum", datum
 
 dayWeek = [{ friendlyName: "Maandag", name: "monday" }
@@ -73,6 +190,8 @@ Template.plannerPrefsModal.helpers
 
 Template.plannerPrefsModal.rendered = ->
 	# Set the data on the modal, if available
+	return unless Get.schedular()?
+
 	dayWeeks = _.sortBy _.filter(Get.schedular().schedularPrefs().dates(), (dI) -> !dI.date()? and _.isNumber dI.weekday()), (dI) -> dI.weekday()
 	return if dayWeeks.length isnt 7
 
@@ -98,6 +217,8 @@ Template.plannerPrefsModal.events
 		schedular.schedularPrefs schedularPrefs
 
 		$("#plannerPrefsModal").modal "hide"
+
+		App.step()
 
 Template.addClassModal.events
 	"click #goButton": (event) ->
@@ -137,12 +258,13 @@ Template.addClassModal.rendered = ->
 
 	WoordjesLeren.getAllClasses (result) ->
 		#classes = Classes.find(_name: $nin: (Helpers.cap c for c in result.pushMore(extraClassList) )).map((c) -> c._name).pushMore(extraClassList).pushMore(result)
-		classEngine.add ( { val: s } for s in result.pushMore(extraClassList) when !_.contains ["Overige talen",
-			"Overige vakken",
-			"Eigen methodes",
-			"Wiskunde / Rekenen",
-			"Natuur- en scheikunde",
-			"Godsdienst en levensbeschouwing"], s )
+		try
+			classEngine.add ( { val: s } for s in result.pushMore(extraClassList) when !_.contains ["Overige talen",
+				"Overige vakken",
+				"Eigen methodes",
+				"Wiskunde / Rekenen",
+				"Natuur- en scheikunde",
+				"Godsdienst en levensbeschouwing"], s )
 
 	bookEngine.initialize()
 	classEngine.initialize()
@@ -167,7 +289,7 @@ Template.settingsModal.events
 		Router.go "app"
 		Meteor.logout()
 
-Template.newSchoolYearModal.classes = -> classes()
+Template.newSchoolYearModal.helpers classes: -> classes()
 
 Template.newSchoolYearModal.events
 	"change": (event) ->
@@ -177,7 +299,7 @@ Template.newSchoolYearModal.events
 
 		target.find("span").css color: if checked then "lightred" else "white"
 
-Template.accountInfoModal.currentMail = -> Meteor.user().emails[0].address
+Template.accountInfoModal.helpers currentMail: -> Meteor.user().emails[0].address
 
 Template.accountInfoModal.events
 	"click #goButton": ->
@@ -191,7 +313,7 @@ Template.accountInfoModal.events
 			Meteor.users.update Meteor.userId(), $set: { "emails": [ { address: mail, verified: no } ] }
 			Meteor.call "verifyMail"
 			$("#accountInfoModal").modal "hide"
-			unless hasNewPass then alertModal ":D", "Je krijgt een mailtje op je nieuwe email adress voor verificatie"
+			unless hasNewPass then swalert title: "Mailadres aangepast", type: "success", text: "Je krijgt een mailtje op je nieuwe email adress voor verificatie"
 
 		if hasNewPass and oldPass isnt newPass
 			Accounts.changePassword oldPass, newPass, (error) ->
@@ -199,7 +321,9 @@ Template.accountInfoModal.events
 					$("#oldPassInput").addClass("has-error").tooltip(placement: "bottom", title: "Verkeerd wachtwoord").tooltip("show")
 				else
 					$("#accountInfoModal").modal "hide"
-					alertModal ":D", "Wachtwoord aangepast! Voortaan kan je met je nieuwe wachtwoord inloggen." + (if newMail then "Je krijgt een mailtje op je nieuwe email adress voor verificatie" else "")
+					swalert title: ":D", type: "success", text: "Wachtwoord aangepast! Voortaan kan je met je nieuwe wachtwoord inloggen." + (if newMail then "Je krijgt een mailtje op je nieuwe email adress voor verificatie" else "")
+		else if oldPass is newPass
+			$("#newPassInput").addClass("has-error").tooltip(placement: "bottom", title: "Nieuw wachtwoord is hetzelfde als je oude wachtwoord.").tooltip("show")
 
 
 # == End Modals ==
@@ -211,18 +335,19 @@ Template.sidebar.helpers
 	"sidebarOverflow": -> if Session.get "sidebarOpen" then "auto" else "hidden"
 
 Template.sidebar.events
-	"click .sidebarItem": (event) ->
-		targetPosition = (Number) event.currentTarget.attributes["pos"].value
-		classId = classes()[targetPosition - 1]._id unless targetPosition is 0
+	"click .bigSidebarButton": (event) ->
+		#targetPosition = (Number) event.currentTarget.attributes["pos"].value
+		#classId = classes()[targetPosition - 1]._id unless targetPosition is 0
 		
-		Session.set "selectedClassPosition", targetPosition
-		Session.set "selectedClassId", classId
+		#Session.set "selectedClassPosition", targetPosition
+		#Session.set "selectedClassId", classId
 
-		if targetPosition is 0 then Router.go "app" else Router.go "classView", classId: classId.toHexString()
-		$(".slider").velocity top: targetPosition * 60, 150
+		#if targetPosition is 0 then Router.go "app" else Router.go "classView", classId: classId.toHexString()
+		slide $(event.target).attr "id"
 
 	"click .sidebarFooterSettingsIcon": -> $("#settingsModal").modal()
 	"click #addClassButton": ->
+		# Reset AddClassModal inputs
 		$("#classNameInput").val("")
 		$("#courseInput").val("")
 		$("#bookInput").val("")
@@ -230,31 +355,34 @@ Template.sidebar.events
 
 		$("#addClassModal").modal()
 
-	"click .sidebarFooterUserImage": -> window.open "http://en.gravatar.com/emails/",'_blank'
-
 Template.sidebar.rendered = -> $("img.sidebarFooterUserImage").tooltip placement: "top", title: "Klik hier om je foto aan te passen"
 
 # == End Sidebar ==
 
-Template.app.contentOffsetLeft = -> if Session.get "isPhone" then "0" else "200px"
+Template.app.helpers
+	contentOffsetLeft: -> if Session.get "isPhone" then "0" else "200px"
 
 Template.app.rendered = ->
-	notify("Je hebt je account nog niet geverifiëerd!") unless Meteor.user().emails[0].verified
+	notify("Je hebt je account nog niet geverifiëerd!", "warning") unless Meteor.user().emails[0].verified
+	onMagisterInfoResult "assignments soon", (e, r) ->
+		return if e? or r.length is 0
+		s = "Deadlines van opdrachten binnenkort:\nKlik voor meer info.\n\n"
+		for assignment in _.uniq(r, "_class") then do (assignment) ->
+			d = if (d = assignment.deadline()).getHours() is 0 and d.getMinutes() is 0 then d.addDays(-1) else d
+			s += "<b>#{assignment.class().abbreviation()}</b> - #{DayToDutch(Helpers.weekDay(d))}\n"
 
-	setChatHead()
+		NotificationsManager.notify body: s, type: "warning", time: -1, html: yes, onClick: (event) -> console.log ":D"
 
-	new AppScroll(
-		scroller: $(".content")[0]
-		#toolbar: $("#adbar")[0]
-	).on()
+	ChatHeads.initialize()
 
 	Deps.autorun ->
 		if Meteor.user()? and !Meteor.user().hasPremium
-			Meteor.defer ->
+			setTimeout (-> Meteor.defer ->
 				if !Session.get "adsAllowed"
 					Router.go "launchPage"
 					Meteor.logout()
-					alertModal "Adblock :c", 'Om simplyHomework gratis beschikbaar te kunnen houden zijn we afhankelijk van reclame-inkomsten.\nOm simplyHomework te kunnen gebruiken, moet je daarom je AdBlocker uitzetten.\nWil je toch simplyHomework zonder reclame gebruiken, kan je <a href="/">premium</a> nemen.'
+					swalert title: "Adblock :c", html: 'Om simplyHomework gratis beschikbaar te kunnen houden zijn we afhankelijk van reclame-inkomsten.\nOm simplyHomework te kunnen gebruiken, moet je daarom je AdBlocker uitzetten.\nWil je toch simplyHomework zonder reclame gebruiken, dan kan je <a href="/">premium</a> nemen.', type: "error"
+			), 3000
 
 	setSwipe() if Session.get "isPhone"
 
@@ -277,201 +405,4 @@ setSwipe = ->
 	snapper.on "end", -> Session.set "sidebarOpen", snapper.state().state is "left"
 	snapper.on "animated", -> Session.set "sidebarOpen", snapper.state().state is "left"
 
-	$(".sidebarItem").click -> snapper.close()
-
-setChatHead = ->
-	el = $(".chatHead")
-
-	@springs = {}
-
-	@system = new rebound.SpringSystem()
-
-	snap = (value, side) ->
-		switch side
-			when "top" then el.css transform: "translate3d(0px, #{value}px, 0px)"
-			when "left" then el.css transform: "translate3d(#{value}px, 0px, 0px)"
-			when "right" then el.css transform: "translate3d(#{$(window).width() + value}px, 0px, 0px)"
-			when "bottom" then el.css transform: "translate3d(0px, #{$(window).height() + value}px, 0px)"
-
-	scale = (value) -> $(".chatHeadBin").css transform: "scale(#{value})"
-
-	springs.top = system.createSpring 40, 6
-	springs.left = system.createSpring 40, 6
-	springs.right = system.createSpring 40, 6
-	springs.bottom = system.createSpring 40, 6
-	springs.bin = system.createSpring 80, 3
-	springs.top.addListener
-		onSpringUpdate: (spring) ->
-			val = spring.getCurrentValue()
-			val = rebound.MathUtil.mapValueInRange val, 0, 1, 1, -20
-			snap val, "top"
-	springs.left.addListener
-		onSpringUpdate: (spring) ->
-			val = spring.getCurrentValue()
-			val = rebound.MathUtil.mapValueInRange val, 0, 1, 1, -20
-			snap val, "left"
-	springs.right.addListener
-		onSpringUpdate: (spring) ->
-			val = spring.getCurrentValue()
-			val = rebound.MathUtil.mapValueInRange val, 0, 1, 1, -40
-			snap val, "right"
-	springs.bottom.addListener
-		onSpringUpdate: (spring) ->
-			val = spring.getCurrentValue()
-			val = rebound.MathUtil.mapValueInRange val, 0, 1, 1, -40
-			snap val, "bottom"
-	springs.bin.addListener
-		onSpringUpdate: (spring) ->
-			val = spring.getCurrentValue()
-			val = rebound.MathUtil.mapValueInRange val, 0, 1, 1, 1.35
-			scale val
-
-	if !amplify.store("chatHeadInfo")? then amplify.store "chatHeadInfo", top: 253, left: 0, side: "right"
-	chatHeadInfo = amplify.store "chatHeadInfo"
-	$(".chatHead").css visibility: "hidden"
-
-	@flingChatHeadsOnScreen = ->
-		$(".chatHead").css top: 0, left: 0
-
-		if chatHeadInfo.side is "left"
-			$(".chatHead").css top: chatHeadInfo.top, visibility: "initial"
-			springs.left.setCurrentValue(100).setAtRest()
-			springs.left.setEndValue 1
-			$(".chatHeadBadge").addClass "right"
-
-			for follower, i in $(".chatHeadFollower")
-				do (follower, i) ->
-					follower.style.top = "#{chatHeadInfo.top + ( 5 * (i + 1) )}px"
-					follower.style.zIndex = 99999 - i
-
-		else if chatHeadInfo.side is "right"
-			$(".chatHead").css top: chatHeadInfo.top, visibility: "initial"
-			springs.right.setCurrentValue(-50).setAtRest()
-			springs.right.setEndValue 1
-
-			for follower, i in $(".chatHeadFollower")
-				do (follower, i) ->
-					follower.style.top = "#{chatHeadInfo.top + ( 5 * (i + 1) )}px"
-					follower.style.zIndex = 99999 - i
-
-		else if chatHeadInfo.side is "top"
-			$(".chatHead").css left: chatHeadInfo.left, visibility: "initial"
-			springs.top.setCurrentValue(100).setAtRest()
-			springs.top.setEndValue 1
-			$(".chatHeadBadge").addClass "under"
-
-			for follower, i in $(".chatHeadFollower")
-				do (follower, i) ->
-					follower.style.left = "#{chatHeadInfo.left + ( 5 * (i + 1) )}px"
-					follower.style.zIndex = 99999 - i
-
-		else if chatHeadInfo.side is "bottom"
-			$(".chatHead").css left: chatHeadInfo.left, visibility: "initial"
-			springs.bottom.setCurrentValue(-50).setAtRest()
-			springs.bottom.setEndValue 1
-
-			for follower, i in $(".chatHeadFollower")
-				do (follower, i) ->
-					follower.style.left = "#{chatHeadInfo.left + ( 5 * (i + 1) )}px"
-					follower.style.zIndex = 99999 - i
-
-	delayIds = []
-
-	$(".chatHeadLeader").draggable
-		scroll: no
-		start: ->
-			springs.top.setAtRest()
-			springs.left.setAtRest()
-			springs.right.setAtRest()
-			springs.bottom.setAtRest()
-			$(".chatHeadFollower").css opacity: 0 # fix ugly glitch
-			
-			$(".chatHeadBinBack").css visibility: "initial"
-			$(".chatHeadBinBack").velocity {bottom: 0}, 200, "easeOutExpo", ->
-				$(".chatHeadBin").velocity {opacity: 1}, 200
-		drag: ->
-			top = (Number) $(".chatHeadLeader").css("top").replace /[^\d\.\-]/ig, ""
-			left = (Number) $(".chatHeadLeader").css("left").replace /[^\d\.\-]/ig, ""
-
-			springs.top.setCurrentValue(top / -20).setAtRest()
-			springs.left.setCurrentValue(left / -20).setAtRest()
-			springs.right.setCurrentValue(($(window).width() - left) / 40).setAtRest()
-			springs.bottom.setCurrentValue(($(window).height() - top) / 40).setAtRest()
-			
-			$(".chatHeadBadge").removeClass "under"
-			$(".chatHeadBadge").removeClass "right"
-			$(".chatHead").css transform: "translate3d(0px, 0px, 0px)"
-
-			for i in [0...$(".chatHeadFollower").length]
-				do (i, top, left) ->
-					func = ->
-						follower = $(".chatHeadFollower")[i]
-						follower.style.opacity = 1
-						follower.style.left = "#{left + 4 * (i + 1)}px"
-						follower.style.top = "#{top}px"
-						follower.style.zIndex = 99999 - i
-					delayIds.push Meteor.setTimeout func, 20 * (i + 1)
-		stop: ->
-			$(".chatHeadBin").velocity {opacity: 0}, 200, ->
-				$(".chatHeadBinBack").velocity {bottom: "-500px"}, 350, ->
-					$(this).css visibility: "hidden"
-			Meteor.clearTimeout delayId for delayId in delayIds
-			delayIds = []
-
-			top = (Number) $(".chatHeadLeader").css("top").replace /[^\d\.\-]/ig, ""
-			left = (Number) $(".chatHeadLeader").css("left").replace /[^\d\.\-]/ig, ""
-
-			for i in [0...$(".chatHeadFollower").length]
-				do (i, top, left) ->
-					follower = $(".chatHeadFollower")[i]
-					follower.style.left = "#{left + ( 5 * (i + 1))}px"
-					follower.style.top = "#{top + ( 5 * (i + 1))}px"
-					follower.style.zIndex = 99999 - i
-
-			values = [{ side: "top", value: top }
-				{ side: "left", value: left }
-				{ side: "right", value: $(window).width() - left }
-				{ side: "bottom", value: $(window).height() - top }
-			]
-
-			closest = _.first(_.sortBy(values, (v) -> v.value)).side
-			value = _.first(_.sortBy(values, (v) -> v.value)).value
-
-			if closest is "top"
-				springs[closest].setCurrentValue(value / -20).setAtRest()
-				$(".chatHead").css top: 0
-				$(".chatHeadBadge").addClass "under"
-				amplify.store "chatHeadInfo", { top, left, side: closest } unless $(".chatHead").hasClass "ignoreDrag"
-
-			else if closest is "left"
-				springs[closest].setCurrentValue(value / -20).setAtRest()
-				$(".chatHead").css left: 0
-				$(".chatHeadBadge").addClass "right"
-				amplify.store "chatHeadInfo", { top, left, side: closest } unless $(".chatHead").hasClass "ignoreDrag"
-
-			else if closest is "right"
-				springs[closest].setCurrentValue(value / 40).setAtRest()
-				$(".chatHead").css left: 0
-				amplify.store "chatHeadInfo", { top, left, side: closest } unless $(".chatHead").hasClass "ignoreDrag"
-
-			else if closest is "bottom"
-				springs[closest].setCurrentValue(value / 40).setAtRest()
-				$(".chatHead").css top: 0
-				amplify.store "chatHeadInfo", { top, left, side: closest } unless $(".chatHead").hasClass "ignoreDrag"
-
-			springs[closest].setEndValue 1
-
-	$(".chatHeadBin").droppable
-		over: ->
-			springs.bin.setEndValue 1
-			$(".chatHeadBin").css color: "red", borderColor: "red"
-		out: ->
-			springs.bin.setEndValue 0
-			$(".chatHeadBin").css color: "white", borderColor: "white"
-		drop: ->
-			$(".chatHeadBin").css color: "white", borderColor: "white"
-			springs.bin.setEndValue 0
-			$(".chatHead").addClass("ignoreDrag")
-			$(".chatHead").velocity {opacity: 0}, ->
-				$(".chatHead").css(visibility: "hidden", opacity: 1)
-				$(".chatHead").removeClass("ignoreDrag")
+	@closeSidebar = -> snapper.close()

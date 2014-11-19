@@ -22,7 +22,7 @@ http://tomsmeding.nl/
 	Ok: 0
 	OkCancel: 1
 
-@alertModal = (title, body, buttonType = 0, labels = { main: "oké", second: "annuleren" }, styles  = { main: "btn-default", second: "btn-default" }, callbacks = { main: null, second: null }) ->
+@alertModal = (title, body, buttonType = 0, labels = { main: "oké", second: "annuleren" }, styles  = { main: "btn-default", second: "btn-default" }, callbacks = { main: null, second: null }, exitButton = yes) ->
 	labels = _.extend { main: "oké", second: "annuleren" }, labels
 	styles = _.extend { main: "btn-default", second: "btn-default" }, styles
 
@@ -53,6 +53,29 @@ http://tomsmeding.nl/
 							if _.isFunction(callbacks.main) then callbacks.main()
 							bootbox.hideAll()
 
+	$(".bootbox-close-button").remove() unless exitButton
+
+@swalert = (options) ->
+	throw new ArgumentException "options", "Can't be null" unless options?
+	_.defaults options, { onSuccess: (->), onCancel: (->) }
+	{ title, text, type, confirmButtonText, cancelButtonText, onSuccess, onCancel, html } = options
+
+	swal {
+		title
+		text
+		type
+		confirmButtonText: confirmButtonText ? "oké"
+		cancelButtonText
+		allowOutsideClick: cancelButtonText?
+		showCancelButton: cancelButtonText?
+	}, onSuccess
+
+	if html? then $(".sweet-alert > p").html html
+
+	if cancelButtonText? then $(".sweet-overlay, .sweet-alert > button.cancel").click onCancel
+
+	return undefined
+
 ###*
 # Checks if a given field is empty, if so returns true and displays an error message for the user.
 #
@@ -75,12 +98,6 @@ http://tomsmeding.nl/
 	audio.src = "http://www.ispeech.org/p/generic/getaudio?text=#{text}%2C&voice=eurdutchfemale&speed=0&action=convert"
 	audio.play()
 
-@isOldInternetExplorer = ->
-	if navigator.appName is "Microsoft Internet Explorer"
-		version = parseFloat RegExp.$1 if /MSIE ([0-9]{1,}[\.0-9]{0,})/.exec(navigator.userAgent)?
-		return version < 9.0
-	return false
-
 _text = null
 @strikeThrough = (node, index) ->
 	_text ?= node.text()
@@ -94,95 +111,165 @@ _text = null
 		strikeThrough node, index + 1
 	), 5
 
-@notify = (message, type = "warning", time = 4000) ->
-	elem = $ switch type
-		when "warning" then ".warningFlash"
-		when "error" then ".errorFlash"
-		else ".noticeFlash"
-
-	check time, Match.Where (t) -> _.isNumber(t) and t >= -1 and t isnt 0
-
-	elem.text message
-	elem.addClass "transformIn"
-
-	unless time is -1
-		Session.set "warningFlashDelayHandle", _.delay ( -> elem.removeClass "transformIn"), time + 500
-
-		elem.mouseover -> clearTimeout Session.get "warningFlashDelayHandle"
-		elem.mouseleave -> Session.set "warningFlashDelayHandle", _.delay ( -> elem.removeClass "transformIn"), time + 500
-	
-	return hide: ->
-		clearTimeout Session.get "warningFlashDelayHandle"
-		elem.removeClass "transformIn"
-
 class @NotificationsManager
 	@_notifications: []
 
-	@notify = (body, type = "notice", labels = [], styles = [], callbacks = []) ->
-		#debugger
+	@notify = (options) ->
+		throw new ArgumentException "options", "Can't be null" unless options?
+		_.defaults options, { type: "default", time: 4000, dismissable: yes, labels: [], styles: [], callbacks: [], html: no }
+		{ body, type, time, dismissable, labels, styles, callbacks, html, onClick } = options
+
+		check time, Match.Where (t) -> _.isNumber(t) and t >= -1 and t isnt 0
+
 		notId = NotificationsManager._notifications.length
 		notHandle =
-			_done: no
-			id: -> notId
-			done: (val) ->
-				if val?
-					_done = val
-				else
-					_done
+			_startedHiding: no
+			_delayHandle: null
+			id: notId
 			hide: ->
-				$(".persistantNotification##{notId}").removeClass "transformIn"
-				_.delay ( -> $(".persistantNotification##{notId}").remove() ), 2000
-
-			text: (text) -> $(".persistantNotification##{notId}").text text
+				clearTimeout @_delayHandle
+				$(".notification##{notId}").removeClass "transformIn"
+				@_startedHiding = yes
+				_.delay ( =>
+					$(".notification##{notId}").remove()
+					delete NotificationsManager._notifications[@id]
+				), 2000
+				NotificationsManager._updatePositions()
+			
+			height: -> @element().outerHeight(yes)
+			
+			content: (content, html = false) ->
+				if content?
+					$(".notification##{notId} div")[if html then "html" else "text"] content
+					NotificationsManager._updatePositions()
+					return content
+				else
+					return $(".notification##{notId} div")[if html then "html" else "text"]()
+					
+			element: -> $(".notification##{notId}")
 
 		d = $ document.createElement "div"
-		d.addClass "persistantNotification #{type}"
+		d.addClass "notification #{type}"
 		d.attr "id", notId
-		d.html "<div>#{body}</div>"
+		d.html "<div>#{(if html then body else escape body).replace(/\n/g, "<br>")}</div>"
 		d.append "<br>"
+		if onClick?
+			d.click onClick
+			d.css cursor: "pointer"
+
+		if dismissable
+			pos = null
+			MIN = -200
+
+			d.draggable
+				axis: "x"
+				start: (event, helper) -> pos = $(event.target).position().left; $(event.target).css width: $(this).outerWidth()
+				stop: (event, helper) ->
+					$(@).css width: "initial"
+					if $(@).position().left - pos > MIN
+						$(@).css opacity: 1
+					else
+						$(@).velocity opacity: 0
+						notHandle.hide()
+				drag: (event, helper) ->
+					$(@).css opacity: 1 - (Math.abs($(@).position().left - pos) / 250)
+				revert: -> $(@).position().left - pos > MIN
 
 		for label, i in labels
 			style = styles[i] ? "btn-default"
 			btn = $.parseHTML "<button type=\"button\" class=\"btn #{style}\" id=\"#{notId}_#{i}\">#{label}</button>"
+
+			callback = callbacks[i] ? (->)
+			do (callback) -> btn[0].onclick = (event) -> callback event, notHandle
+			
 			d.append btn
+
+		unless time is -1 # Handles that sick timeout, yo.
+			hide = -> notHandle.hide()
+			notHandle._delayHandle = _.delay hide, time + 500
+
+			d.mouseover -> clearTimeout notHandle._delayHandle
+			d.mouseleave -> notHandle._delayHandle = _.delay hide, time + 500
 
 		$("body").append d
 
-		for label, i in labels
-			callback = callbacks[i] ? (->)
-			$(".persistantNotification##{notId}").find("button").click (event) -> callback event, notHandle
+		_.delay ( -> $(".notification##{notId}").addClass "transformIn" ), 10
 
-		_.delay ( -> $(".persistantNotification##{notId}").addClass "transformIn" ), 10
+		NotificationsManager._notifications.push notHandle
+		NotificationsManager._updatePositions()
 
-colors = [ "red"
-	"cyan"
-	"pink"
-	"blue"
-	"yellow"
-	"green"
-	"#B10DC9"
-	"#85144B"
-	"#F012BE"
-	"#01FF70"
-	"#FF851B"
-	"#39CCCC"
-]
+		return notHandle
 
-@numberColor = (number) -> if number >= colors.length then colors[number % colors.length] else colors[number]
+	@notifications = -> _.filter NotificationsManager._notifications, (n) -> n? and not n._startedHiding
+
+	@hideAll = -> x.hide() for x in NotificationsManager.notifications(); return undefined
+
+	@_updatePositions = ->
+		height = 0
+
+		for notification, i in NotificationsManager.notifications()
+			notification.element().css top: height + 15
+			height += notification.height() + 10
+
+		return undefined
+
+@notify = (body, type = "default", time = 4000, dismissable = yes) -> NotificationsManager.notify { body: "<b>#{escape body}</b>", type, time, dismissable, html: yes }
+
+@gravatar = (userId = Meteor.userId(), size = 100) ->
+	if userId isnt Meteor.userId() or Session.get "hasGravatar"
+		(if _.isString(userId) then Meteor.users.findOne(userId) else userId).gravatarUrl + "&s=#{size}"
+	else
+		magister.profileInfo().profilePicture size, size, yes
+
+@slide = (id) ->
+	targetPosition = $("div.sidebarButton##{id}").offset().top
+	targetHeight = $("div.sidebarButton##{id}").outerHeight yes
+
+	$(".slider").velocity {
+		top: targetPosition
+		height: targetHeight + 5
+	}, 150
+
+	closeSidebar?()
 
 Meteor.startup ->
+	Session.set "allowNotifications", no
+
+	notification = null
+	Deps.autorun ->
+		if Meteor.user()?
+			switch htmlNotify.permissionLevel()
+				when "default"
+					notification ?= notify "Als je bureaublad meldingen toestaat kan je overal meldingen van simplyHomework zien, zelfs als je op een ander tabblad zit.", null, -1, no
+					htmlNotify.requestPermission (result) ->
+						notification?.hide()
+						Session.set "allowNotifications", result is "granted"
+				when "granted"
+					notification?.hide()
+					Session.set "allowNotifications", yes
+
 	Session.set "isPhone", window.matchMedia("only screen and (max-width: 760px)").matches
 
 	UI.registerHelper "isPhone", -> Session.get "isPhone"
-	UI.registerHelper "hasPremium", -> Meteor.user().hasPremium
 	UI.registerHelper "empty", -> return @ is 0
 	UI.registerHelper "first", (arr) -> EJSON.equals @, _.first arr
 	UI.registerHelper "last", (arr) -> EJSON.equals @, _.last arr
 	UI.registerHelper "minus", (base, substraction) -> base - substraction
+	UI.registerHelper "gravatar", gravatar
+	UI.registerHelper "has", (feature) -> has feature
+
+	Meteor.defer -> Deps.autorun ->
+		if Meteor.user()?
+			$.get "#{Meteor.user().gravatarUrl}&s=1&d=404"
+				.done -> Session.set "hasGravatar", yes
+				.fail -> Session.set "hasGravatar", no
 
 	disconnectedNotify = null
 	_.delay ->
 		Deps.autorun ->
-			if Meteor.status().connected then disconnectedNotify?.hide()
-			else disconnectedNotify = notify("Verbinding verbroken", "error", -1)
+			if Meteor.status().connected
+				disconnectedNotify?.hide()
+				disconnectedNotify = null
+			else unless disconnectedNotify?
+				disconnectedNotify = notify("Verbinding verbroken", "error", -1, no)
 	, 1200

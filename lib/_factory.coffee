@@ -8,15 +8,55 @@
 # @variable New
 ###
 @New =
+	school: (params...) =>
+		school = new School params...
+		@Schools.insert school
+		return school
+
+	schedule: (params...) =>
+		schedule = new Schedule params...
+		@Schedules.insert schedule
+		return schedule
+
+	goaledSchedule: (params...) =>
+		goaledSchedule = new GoaledSchedule params...
+		@GoaledSchedules.insert goaledSchedule
+		return goaledSchedule
+
+	class: (params...) =>
+		_class = new Class params...
+		@Classes.insert _class
+		return _class
+
+	vote: (params...) =>
+		vote = new Vote params...
+		@Votes.insert vote
+		return vote
+
+	util: (params...) =>
+		util = new Util params...
+		@Utils.insert util
+		return util
+
+	ticket: (params...) =>
+		ticket = new Ticket params...
+		@Tickets.insert ticket
+		return ticket
+
+	project: (params...) =>
+		project = new Project params...
+		@Projects.insert project
+		return project
+
 	schedular: (params...) ->
 		throw new WrongPlatformException("Schedular is only settable from the client") unless Meteor.isClient
 
-		schedular = new Schedular null, params...
+		schedular = new Schedular params...
 		Meteor.users.update Meteor.userId(), $set: { schedular }
-		return _decodeObject schedular
+		return schedular
 
-@Get = # required for serverside, also has additions for some client side shit.
-	schedular: -> if !Meteor.user().schedular? then null else _setDeps.schedular _decodeObject Meteor.user().schedular
+@Get = #needed for serverside, also has additions for some client side shit.
+	schedular: -> if !Meteor.user().schedular? then null else _decodeObject Meteor.user().schedular
 	
 	classes: (query = {}, options = {}) =>
 		if Meteor.isServer
@@ -43,8 +83,7 @@
 	if _.isObject val
 		readyVal = val
 
-		if val._className? and !val._parent?
-			readyVal._parent = sender           		 # fix sender
+		if val._className?
 			newInstance = new @[val._className]() 		 # create new instance of same class
 			readyVal = uS.defaults val, newInstance		 # copy all the other missing parts
 			readyVal.constructor = @[val._className]     # Fix the constructor for nicer debugging <3
@@ -52,8 +91,10 @@
 		for key in _.keys val
 			value = val[key]
 
-			readyVal[key] = (_decodeObject(item, readyVal) for item in value) if _.isArray(value)
-			readyVal[key] = _decodeObject(value, readyVal) if key isnt "_parent" and key isnt "dependency"
+			if _.isArray(value)
+				readyVal[key] = (_decodeObject(item, readyVal) for item in value)
+			else
+				readyVal[key] = _decodeObject(value, readyVal)
 		
 		return readyVal
 

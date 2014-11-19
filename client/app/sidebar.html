@@ -1,22 +1,33 @@
 <template name="sidebar">
-	{{! Height of each element should be 55px}}
 	<div class="sidebar unselectable" onselectstart="return false;" ondragstart="return false;">
-		<div class="sidebarClasses" style="overflow-y: {{sidebarOverflow}}">
-			<div class="slider"></div>
-			<div class="sidebarItem" id="item_home" pos="0">
-				Overzicht
-				<div style="border: 0px white solid; border-top-width: 1px"></div>
+		<div class="slider"></div>
+		{{#linkTo route="personView" data=currentUser}}
+			<div class="sidebarProfile">
+				<div class="sidebarProfileBack" style="background-image: url({{ gravatar currentUser 250}})"></div>
+				<img class="sidebarProfilePicture" src="{{gravatar currentUser 100}}" width="50" height="50"/>
+				<div class="sidebarProfileName">
+					{{#with currentUser.profile}}
+						{{firstName}}
+					{{/with}}
+				</div>
 			</div>
+		{{/linkTo}}
+		<a href="{{pathFor 'app'}}"><div class="sidebarButton bigSidebarButton" id="overview">Overzicht</div></a>
+		<a href="{{pathFor 'calendar'}}"><div class="sidebarButton bigSidebarButton" id="calendar">Agenda</div></a>
+
+		<div class="sidebarSubheading" id="classes">
+			Vakken
+			<div id="addClassButton" class="pull-right" style="margin-right: 15px">
+				<i class="fa fa-plus-circle"></i>
+			</div>
+		</div>
+
+		<div class="sidebarClasses" style="overflow-y: {{sidebarOverflow}}">
 			{{#each classes}}
 				{{> sidebarItem}}
 			{{/each}}
-			<button type="button" id="addClassButton" class="btn btn-trans sidebarAddClass">Vak Toevoegen</button>
 		</div>
 		<div class="sidebarFooter">
-			<img class="sidebarFooterUserImage" src="{{currentUser.gravatarUrl}}" width="75" height="75" />
-			<p class="robotoThin sidebarFooterUserName">
-				{{currentUser.profile.firstName}}
-			</p>
 			<div class="sidebarFooterSettingsIcon"></div>
 			<div class="appNameHeader sidebarFooterAppNameHeader" style="color: white"><span id="sidebarFooterSimply" style="cursor: pointer; opacity: .6; margin-right: -2px">simply</span></div>
 		</div>
@@ -24,17 +35,19 @@
 </template>
 
 <template name="sidebarItem">
-	<div class="sidebarItem" id="{{_id.toHexString}}" pos="{{__pos}}">
-		{{#with __taskAmount}}
-			{{#unless empty}}
-				<div class="classNotif"></div>
-			{{/unless}}
-		{{/with}}
+	<div class="sidebarButton sidebarClass" id="{{_id.toHexString}}">
+		<div class="classColorBar" style="border-color: {{__color}}"></div>
+
 		{{#if __largeName}}
 			<span style="white-space: nowrap; font-size: 30px;">{{_name}}</span>
 		{{else}}
-			{{_name}}
+			<span>{{_name}}</span>
 		{{/if}}
-		<div style="border: 0px {{__color}} solid; border-top-width: 1px"></div>
+
+		{{#with __taskAmount}}
+			{{#unless empty}}
+				<div class="badge pull-right">{{this}}</div>
+			{{/unless}}
+		{{/with}}
 	</div>
 </template>

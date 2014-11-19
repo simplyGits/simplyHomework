@@ -19,4 +19,6 @@ Template.admin.events
 
 Template.admin.rendered = ->
 	unless AuthManager.userIsInRole(Meteor.user(), "admin")
-		alertModal "D:", "Hoe ben je hier beland? Je hoort hier niet eens te kunnen komen", null, null, null, main: -> Router.go "launchPage"
+		swalert title: "D:", text: "Hoe ben je hier beland? Je hoort hier niet eens te kunnen komen", confirmButtonText: "Terug", type: "error", onSuccess: -> Router.go "launchPage"
+
+	$("input").focus()

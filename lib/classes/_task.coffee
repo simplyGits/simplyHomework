@@ -10,12 +10,11 @@ class @Task
 	# Constructor for the Task class.
 	#
 	# @method constructor
-	# @param _parent {Object} The creator of this object.
 	# @param content \\!!TODO!!//
 	# @param _paragraphId {String} The ID of the paragraph this Task is for.
 	# @param plannedDate {Date} Date object for the date this Task is planned for. Can also be a bool false flag.
 	###
-	constructor: (@_parent, @_content, @_paragraphId, @_plannedDate, @_priority, @_repeat = no, @_generator) ->
+	constructor: (@_content, @_paragraphId, @_plannedDate, @_priority, @_repeat = no, @_generator) ->
 		@creationDate = new Date
 		@_isDone = false
 

@@ -3,6 +3,8 @@ root = @
 @uS = _ 	 # We need underscore sometimes; refer uS to underscore
 @_  = lodash # Shortcut for lo-dash. Replaces underscore.
 
+@escape = Handlebars._escape
+
 ###*
 # Returns today as an Date object.
 #
@@ -140,17 +142,24 @@ class @Helpers
 
 	@cap: (string, amount = 1) -> string[0...amount].toUpperCase() + string[amount..].toLowerCase()
 
+	@try: (func) ->
+		try
+			func()
+			return yes
+		catch
+			return no
+
 ###*
 # Session.set/get with a little bit more swag ;D
 #
 # @class SwagSession
 ###
 class @SwagSession
-	@__dict = {}
+	@_dict = {}
 
 	@val: (name, value) ->
-		SwagSession.__dict[name] ?= { dep: new Deps.Dependency(), value: null }
-		ref = SwagSession.__dict[name]
+		@_dict[name] ?= { dep: new Deps.Dependency(), value: null }
+		ref = @_dict[name]
 		if value?
 			ref.value = value
 			ref.dep.changed()
@@ -169,12 +178,9 @@ class @SwagSession
 ###
 @getset = (varName, pattern = Match.Any, allowChanges = yes, transformIn, transformOut) ->
 	return (newVar) ->
-		@dependency?.depend()
 		if newVar?
 			if allowChanges
-				#check newVar, Match.Where pattern
 				@[varName] = if _.isFunction(transformIn) then transformIn newVar else newVar
-				@dependency.changed()
 			else
 				throw new root.NotAllowedException "Changes on this property aren't allowed"
 		return if _.isFunction(transformOut) then transformOut @[varName] else @[varName]
@@ -191,7 +197,6 @@ class @SwagSession
 	return (params...) ->
 		item = new root[className] @, params...
 		@[arrayName].push item
-		@dependency.changed()
 		return item
 
 ###*
@@ -209,7 +214,5 @@ class @SwagSession
 
 		item = _.find @[arrayName], (i) -> EJSON.equals removeItem._id, i._id
 
-		item._parent = null if EJSON.equals item._parent._id, @._id
 		_.remove @[arrayName], item
-		@dependency.changed()
 		return @[arrayName]

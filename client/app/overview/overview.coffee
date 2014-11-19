@@ -1,5 +1,6 @@
 homeworkDependency = new Deps.Dependency
 homeworkItems = []
+firstAppointment = new ReactiveVar null
 
 getTasks = -> # Also mix homework for tommorow and homework for days where the day before has no time. Unless today has no time.
 	homeworkDependency.depend()
@@ -16,7 +17,7 @@ getTasks = -> # Also mix homework for tommorow and homework for days where the d
 		do (homework) ->
 			tmp.push
 				__id: homework.id()
-				__taskDescription: homework.content().replace(/<br ?\/?>/g, "; ").replace(/(<[^>]*>)|(&nbsp;)/g, "")
+				__taskDescription: homework.content().replace(/\n/g, "; ")
 				__className: if (val = homework.classes()[0])[0] is val[0].toUpperCase() then val else Helpers.cap val
 
 				isDone: homework.isDone
@@ -59,10 +60,19 @@ Template.taskRow.events
 		row.css textDecoration: if checked then "line-through" else "initial"
 		row.velocity opacity: if checked then .4 else 1
 
-Template.appOverview.rendered = ->
-	$("#currentDate").tooltip placement: "bottom", html: true, title: "<h4>Week: #{new Date().getWeek()}</h4>"
+Template.infoNextDay.helpers
+	hours: -> firstAppointment.get().begin().getHours()
+	minutes: -> firstAppointment.get().begin().getMinutes()
 
-	unless Get.schedular().biasToday() is 0
+Template.appOverview.rendered = ->
+	onMagisterInfoResult "appointments tomorrow", (e, r) ->
+		return if e?
+
+		firstAppointment.set _.filter(r, (a) -> not a.fullDay() and _.contains [5..19], a)[0]
+
+	$("#currentDate > span").tooltip placement: "bottom", html: true, title: "<h4>Week: #{new Date().getWeek()}</h4>"
+
+	unless Get.schedular()?.biasToday() is 0
 		onMagisterInfoResult "appointments", (error, result) ->
 			return if error?
 

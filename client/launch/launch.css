@@ -25,15 +25,6 @@
     -ms-transform: translate(0px, -250%);
 }
 
-.Center {
-    position: fixed;
-    top: 40%;
-    left: 50%;
-    -webkit-transform: translate(-50%, -50%);
-    transform: translate(-50%, -50%);
-    -ms-transform: translate(-50%, -50%);
-}
-
 .launchpageMoreInfoBottom {
 	font-family: 'Roboto', sans-serif;
 	color: white;

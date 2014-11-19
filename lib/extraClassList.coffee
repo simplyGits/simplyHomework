@@ -1,4 +1,5 @@
-@extraClassList = ["Natuurkunde"
+@extraClassList = [
+	"Natuurkunde"
 	"Scheikunde"
 	"Wiskunde A"
 	"Wiskunde B"

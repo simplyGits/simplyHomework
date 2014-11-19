@@ -1,0 +1,119 @@
+div.mobileCalendarTopBar
+	fixed: top 0 right 0 left 200px
+	height: 50px
+	background-color: red
+	
+	div.currentDate
+		font-size: 15px
+		background-color: green
+
+div.mobileCalendar
+	background-color: cyan
+	position: fixed
+	bottom: 0
+	left: 200px
+	right: 0
+	top: 50px
+	
+#swipeview-slider 
+	height: calc(100% + 50px)
+
+#swipeview-slider > div
+	position: relative
+	display: -webkit-box
+	display: -moz-box
+	display: -ms-box
+	display: -o-box
+	display: box
+	-webkit-box-orient: vertical
+	-moz-box-orient: vertical
+	-ms-box-orient: vertical
+	-o-box-orient: vertical
+	box-orient: vertical
+	-webkit-box-pack: center
+	-moz-box-pack: center
+	-ms-box-pack: center
+	-o-box-pack: center
+	box-pack: center
+	-webkit-box-align: center
+	-mox-box-align: center
+	-ms-box-align: center
+	-o-box-align: center
+	box-align: center
+	overflow: hidden
+
+#swipeview-slider span
+	position: absolute
+	top: 0
+	left: 0
+	width: 100%
+	padding: 20px 0
+	display: block
+	font-size: 20px
+	text-align: center
+	text-shadow: 0 1px 0 #000
+	
+	transition: .5s opacity linear
+	opacity: 0
+
+#descholder
+	position: absolute
+	top: 0
+	left: 0
+	width: 100%
+	text-align: center
+	display: block
+
+#swipeview-slider .swipeview-active span
+	opacity: 1
+	trasnition: .5s opacity linear
+
+#roosterlist
+	width: 100%
+	padding-left: 10px
+	padding-right: 10px
+	padding-bottom: 20px
+	overflow: hidden
+	height: calc(100% + 50px)
+
+.uur
+	height: 75px
+	background-color: white
+	width: 100%
+	margin-bottom: 5px
+
+	.icon
+		width: 75px
+		height: 75px
+		color: white
+		font-size: 50px
+		text-align: center
+		display: inline-block
+		background-color: lightgray
+
+	.content
+		width: 100px
+		height: 75px
+		display: inline-block
+
+	.content h4
+		display: inline-block
+		vertical-align: center
+		font-size: 30px
+		position: relative
+		top: 40px
+		font-weight: 300
+
+	.content p
+		margin-left: 10px
+		vertical-align: center
+		margin-top: 0px
+
+.uur-normaal .icon
+	background-color: #05cdf8
+
+.uur-wijziging .icon
+	background-color: #f8af05
+
+.uur-uitval .icon
+	background-color: #d60000

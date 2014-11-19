@@ -1,0 +1,156 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>sound.</title>
+		<link href='http://fonts.googleapis.com/css?family=Roboto:400,100,300,700' rel='stylesheet' type='text/css'>
+		<link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+		<script src="https://code.jquery.com/jquery-2.1.1.min.js" type="application/javascript"></script>
+        <script src="http://connect.soundcloud.com/sdk.js"></script>
+        <script>
+			SC.initialize({
+				client_id: "2b291b6cd2908bdd3925c98681c0aa7c",
+				redirect_uri: "http://94.209.132.31:3000/sound/callback.html",
+			});
+
+			var url = "http://soundcloud.com/aleksander-vinter/savants-waffle-mix";
+			if(window.location.hash) {
+				url = "http://soundcloud.com/" + window.location.hash.substring(1);
+			}
+
+			SC.get('/resolve', { url: url }, function(track) {
+				if(track == null || track.kind !== "track") {
+					$("#artist").text("Song not found.");
+					return;
+				}
+				if(track.artwork_url != null) {	
+					var url = track.artwork_url.substring(0, track.artwork_url.length - 10) + "-t500x500.jpg";
+					$("body").css( { backgroundImage: "url(" + url + ")" } );
+				}
+				else if(track.user != null && track.user.avatar_url != null) {
+					var url = track.user.avatar_url.substring(0, track.user.avatar_url.length - 10) + "-t500x500.jpg";
+					$("body").css( { backgroundImage: "url(" + url + ")" } );
+				}
+
+				console.log(track);
+				$("#name").text(track.title);
+				$("#artist").text(track.user.username);
+
+				document.title = track.title;
+
+				SC.stream("/tracks/" + track.id, function(sound){
+					$(".info div:first-child").css({ position: "fixed" });
+					setInterval(function() {
+						var seconds = sound.position / 1000;
+						var minutes = Math.floor(seconds / 60);
+						seconds = Math.floor(seconds % 60);
+
+						function addZero(original) { return (original < 10) ? "0" + original : original; }
+
+						$("#time").text(addZero(minutes) + ":" + addZero(seconds));
+					}, 100);
+					console.log(sound);
+					$("body").keydown(function (event) {
+						if(event.keyCode === 32) {
+							if (sound.paused) {
+								sound.resume();
+								$(".playerState").stop().animate({ opacity: 0 }, 250);
+							}
+							else {
+								sound.pause();
+								$(".playerState").stop().animate({ opacity: 1 }, 250);
+							}
+						}
+					});
+					sound.play();
+				});
+			});
+        </script>
+
+        <style>
+        	html {
+				-webkit-text-size-adjust: 100%;
+				-ms-text-size-adjust: 100%;
+			}
+
+			* {
+				-webkit-font-smoothing: antialiased;
+				text-rendering: optimizeLegibility;
+			}
+
+        	body {
+        		background-size: cover;
+        		font-family: 'Roboto', sans-serif;
+        		overflow: hidden;
+        	}
+
+        	div.cover {
+        		position: absolute;
+        		bottom: 0;
+        		left: -40px;
+        		right: -40px;
+        		/*height: 40vh;*/
+        		height: 125px;
+
+        		background-color: white;
+        		z-index: 10;
+
+        		-webkit-box-shadow: 0 -50px 70px 5px #FFFFFF;
+				box-shadow: 0 -50px 70px 5px #FFFFFF;
+        	}
+
+        	div.info {
+        		padding-left: 20px;
+        		padding-right: 20px;
+
+        		font-size: 50px;
+
+        		color: black;
+        		position: fixed;
+        		bottom: 25px;
+        		left: 0;
+        		right: 0;
+        		z-index: 100;
+        		font-weight: 100;
+        	}
+        	span {
+        		white-space: nowrap;
+        	}
+        	#artist {
+        		font-weight: 300;
+        		text-transform: uppercase;
+        	}
+
+        	div.playerState {
+        		position: fixed;
+        		top: calc(50vh - 200px);
+        		left: 0;
+        		right: 0;
+
+        		text-align: center;
+        		font-size: 150px;
+        		color: white;
+        		opacity: 0;
+        		text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+        	}
+        </style>
+	</head>
+
+	<body>
+		<div class="playerState">
+			<i class="fa fa-pause"></i>
+		</div>
+		<div class="info">
+			<div style="float: left">
+				<span id="name"></span>
+				<br>
+				<span id="artist"></span>
+			</div>
+			<div style="float: right">
+				<br>
+				<span id="time"></span>
+			</div>
+		</div>
+		<div class="cover">
+		</div>
+	</body>
+</html>

@@ -2,6 +2,7 @@
 
 div.head1
 	span(8/12)
+	float: left
 
 div.head2
 	span(4/12)
@@ -53,7 +54,8 @@ div.overviewItemContainer
 
 div.itemContainerDivider
 	display: inline-table
-	width: 100%
+	//width: 100%
+	width: calc(100% - 31px)
 	border: 0px lightgray solid
 	border-top-width: 1px
 	position: absolute
@@ -78,7 +80,8 @@ span#addProjectIcon
 	vertical-align: middle
 	font-size: 20px
 	position: absolute
-	right: 20px
+	//right: 20px
+	right: 51px
 	top: 20px
 	cursor: pointer
 	opacity: .5

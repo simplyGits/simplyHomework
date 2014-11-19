@@ -4,29 +4,27 @@
 			{{#if isPhone}}
 				<div class="robotoHeader overviewHeader head1">{{weekNumber}}e <span class="robotoThin">week</span></div>
 			{{else}}
-				<div class="robotoHeader overviewHeader head1" id="currentDate">{{currentDay}} <span class="robotoThin">{{currentDate}}</span></div>
+				<div class="robotoHeader overviewHeader head1" id="currentDate"><span>{{currentDay}} <span class="robotoThin">{{currentDate}}</span></span></div>
 			{{/if}}
 			<div class="robotoHeader overviewHeader head2" style="text-align: right">{{tasksAmount}} <span class="robotoThin" style="margin-left: 5px">{{tasksWord}}</span></div>
 		</div>
 		<div class="divider"></div>
-		{{#if currentUser.hasMagisterSix}}
-			<div class="overviewImportantContainer">
-				{{> infoNextDay}}
-	<!-- 			{{#if inLesson}}
-					{{> infoCurrentLesson}}
+		<div class="overviewImportantContainer">
+			{{> infoNextDay}}
+<!-- 			{{#if inLesson}}
+				{{> infoCurrentLesson}}
+			{{else}}
+				{{#if dayOver}}
+					{{> infoNextDay}}
 				{{else}}
-					{{#if dayOver}}
-						{{> infoNextDay}}
+					{{#if isVacation}}
+						{{> infoVacation}}
 					{{else}}
-						{{#if isVacation}}
-							{{> infoVacation}}
-						{{else}}
-							{{> infoNextLesson}}
-						{{/if}}
+						{{> infoNextLesson}}
 					{{/if}}
-				{{/if}} -->
-			</div>
-		{{/if}}
+				{{/if}}
+			{{/if}} -->
+		</div>
 		<div class="row">
 			<div class="col-sm-6">
 				<div class="overviewItemContainer" style="height: calc(100vh - {{itemContainerMargin}})">
@@ -79,7 +77,7 @@
 <template name="infoNextDay">
 	<div class="robotoHeader infoNextDayHeader">Morgen</div>
 	<div class="robotoHeader overviewTimeIndicator">
-		<span style="font-weight: 300">{{hoursLeft}}08</span>:{{minutesLeft}}25
+		<span style="font-weight: 300">{{hours}}08</span>:{{minutes}}25
 	</div>
 </template>
 
