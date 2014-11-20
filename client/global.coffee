@@ -74,6 +74,9 @@ Meteor.startup ->
 			for key in _.keys amplify.store() when key.substring(0, 22) is "hardCachedAppointments"
 				amplify.store key, null
 
+			resetMagisterLoader()
+			NotificationsManager.hideAll()
+
 	ignoreMessages = [ "Server sent add for existing id"
 		"Expected not to find a document already present for an add"
 		"Script error."

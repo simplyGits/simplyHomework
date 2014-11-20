@@ -19,6 +19,11 @@ pushResult = (name, result) ->
 		callback result.error, result.result
 		return result
 
+@resetMagisterLoader = ->
+	results = {}
+	callbacks = {}
+	@magister = null
+
 @loadMagisterInfo = (force = no) ->
 	check force, Boolean
 	if not force and @magister? then throw new Error "loadMagisterInfo already called. To force reloading all info use loadMagisterInfo(true)."
