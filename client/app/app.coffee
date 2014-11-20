@@ -310,8 +310,7 @@ Template.accountInfoModal.events
 		hasNewPass = oldPass isnt "" and newPass isnt ""
 
 		if newMail
-			Meteor.users.update Meteor.userId(), $set: { "emails": [ { address: mail, verified: no } ] }
-			Meteor.call "verifyMail"
+			Meteor.call "changeMail", mail
 			$("#accountInfoModal").modal "hide"
 			unless hasNewPass then swalert title: "Mailadres aangepast", type: "success", text: "Je krijgt een mailtje op je nieuwe email adress voor verificatie"
 
