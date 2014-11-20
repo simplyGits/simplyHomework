@@ -120,7 +120,7 @@ class @NotificationsManager
 		{ body, type, time, dismissable, labels, styles, callbacks, html, onClick, priority } = options
 
 		check time, Match.Where (t) -> _.isNumber(t) and ( t is -1 or t > 0 )
-		check priority, Match.Where (p) -> _.isNumber(p) and p > -1
+		check priority, Number
 
 		notId = NotificationsManager._notifications.length
 		notHandle =
