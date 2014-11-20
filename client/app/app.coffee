@@ -355,8 +355,6 @@ Template.sidebar.events
 
 		$("#addClassModal").modal()
 
-Template.sidebar.rendered = -> $("img.sidebarFooterUserImage").tooltip placement: "top", title: "Klik hier om je foto aan te passen"
-
 # == End Sidebar ==
 
 Template.app.helpers

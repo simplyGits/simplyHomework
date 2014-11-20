@@ -1,3 +1,5 @@
+sameUser = -> Meteor.userId() is Router.current().data()._id
+
 status = ->
 	s = Router.current().data().status
 	if s.idle
@@ -10,3 +12,6 @@ status = ->
 Template.personView.helpers
 	backColor: -> status().backColor
 	borderColor: -> status().borderColor
+	sameUser: sameUser
+
+Template.personView.rendered = -> $(".personPicture").tooltip title: "Klik hier om je foto aan te passen", container: "body" if sameUser()
