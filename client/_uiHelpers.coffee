@@ -116,16 +116,18 @@ class @NotificationsManager
 
 	@notify = (options) ->
 		throw new ArgumentException "options", "Can't be null" unless options?
-		_.defaults options, { type: "default", time: 4000, dismissable: yes, labels: [], styles: [], callbacks: [], html: no }
-		{ body, type, time, dismissable, labels, styles, callbacks, html, onClick } = options
+		_.defaults options, { type: "default", time: 4000, dismissable: yes, labels: [], styles: [], callbacks: [], html: no, priority: 0 }
+		{ body, type, time, dismissable, labels, styles, callbacks, html, onClick, priority } = options
 
-		check time, Match.Where (t) -> _.isNumber(t) and t >= -1 and t isnt 0
+		check time, Match.Where (t) -> _.isNumber(t) and ( t is -1 or t > 0 )
+		check priority, Match.Where (p) -> _.isNumber(p) and p > -1
 
 		notId = NotificationsManager._notifications.length
 		notHandle =
 			_startedHiding: no
 			_delayHandle: null
 			id: notId
+			priority: priority
 			hide: ->
 				clearTimeout @_delayHandle
 				$(".notification##{notId}").removeClass "transformIn"
@@ -213,13 +215,13 @@ class @NotificationsManager
 	@_updatePositions = ->
 		height = 0
 
-		for notification, i in NotificationsManager.notifications()
+		for notification, i in _.sortBy(NotificationsManager.notifications().reverse(), "priority").reverse()
 			notification.element().css top: height + 15
 			height += notification.height() + 10
 
 		return undefined
 
-@notify = (body, type = "default", time = 4000, dismissable = yes) -> NotificationsManager.notify { body: "<b>#{escape body}</b>", type, time, dismissable, html: yes }
+@notify = (body, type = "default", time = 4000, dismissable = yes, priority = 0) -> NotificationsManager.notify { body: "<b>#{escape body}</b>", type, time, dismissable, priority, html: yes }
 
 @gravatar = (userId = Meteor.userId(), size = 100) ->
 	if userId isnt Meteor.userId() or Session.get "hasGravatar"
@@ -277,5 +279,5 @@ Meteor.startup ->
 				disconnectedNotify?.hide()
 				disconnectedNotify = null
 			else unless disconnectedNotify?
-				disconnectedNotify = notify("Verbinding verbroken", "error", -1, no)
+				disconnectedNotify = notify("Verbinding verbroken", "error", -1, no, 10)
 	, 1200
