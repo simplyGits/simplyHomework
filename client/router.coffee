@@ -1,5 +1,7 @@
 AccountController = RouteController.extend
-	verifyMail: -> Accounts.verifyEmail @params.token, -> Router.go "app"
+	verifyMail: -> Accounts.verifyEmail @params.token, ->
+		Router.go "app"
+		notify "Email geverifiëerd", "success"
 
 forceRemoveModal = ->
 	$("body").removeClass "modal-open"
