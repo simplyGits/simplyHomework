@@ -60,6 +60,7 @@ Template.page1.events
 	'click .launchpageMoreInfoBottom': -> $("body").stop().animate {scrollTop: $('#page2').offset().top}, 1200, "easeOutExpo"
 
 	"keyup input#password": (event) ->
+		$(".signUpForm > .robotoHeader").velocity opacity: 1
 		return unless event.which is 13
 
 		Meteor.loginWithPassword $("input#username").val().toLowerCase(), $("input#password").val(), (error) ->
