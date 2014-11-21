@@ -5,25 +5,6 @@ dblDate = null
 dblDateResetHandle = null
 keydownSet = no
 
-calendarSprings = {}
-springSystem = new rebound.SpringSystem()
-
-bounceEventInfo = (val, id) -> $("div.eventInfo##{id}").css transform: "scale(#{val})"
-
-bounce = (open, id) ->
-	$("div.eventInfo##{id}").velocity({ opacity: 1 }, 150)
-	calendarSpring(id).setCurrentValue(if open then 1 else 0).setAtRest()
-
-calendarSpring = (id) ->
-	unless _.contains _.keys(calendarSprings), id
-		calendarSprings[id] = new springSystem.createSpring 40, 6
-		calendarSprings[id].addListener
-			onSpringUpdate: (spring) ->
-				val = spring.getCurrentValue()
-				val = rebound.MathUtil.mapValueInRange val, 0, 1, 1, -20
-				bounceEventInfo val, id
-	return calendarSprings[id]
-
 cachedAppointments = {}
 
 Deps.autorun => if Meteor.user()? then @hardCachedAppointments = amplify.store("hardCachedAppointments_#{Meteor.userId()}") ? []
@@ -148,7 +129,6 @@ Template.calendar.rendered = ->
 		eventClick: (calendarEvent, event) ->
 			unless calendarEvent.open
 				calendarEvent.open = yes
-				calendarSpring(calendarEvent.id)
 			else
 				calendarEvent.open = no
 		loading: (isLoading) -> if isLoading then NProgress.start() else NProgress.done()
