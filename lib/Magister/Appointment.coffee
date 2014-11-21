@@ -87,6 +87,23 @@ class @Appointment
 		###
 		@infoType = _getset "_infoType"
 		###*
+		# infoType parsed as a string.
+		# @property infoTypeString
+		# @final
+		# @type String
+		###
+		@infoTypeString = _getset "_infoType", null, (x) ->
+			return switch x
+				when 0 then "none"
+				when 1 then "homework"
+				when 2 then "test"
+				when 3 then "exam"
+				when 4 then "quiz"
+				when 5 then "oral test"
+				when 6 then "information"
+
+				else "unknown"
+		###*
 		# @property notes
 		# @final
 		# @type String
