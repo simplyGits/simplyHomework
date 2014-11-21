@@ -75,3 +75,8 @@ Meteor.startup ->
 		"Script error."
 	]
 	window.onerror = (message, url, lineNumber) -> Meteor.call "log", "error", "Uncaught error at client: #{message} | #{url}:#{lineNumber}" unless _.some ignoreMessages, (m) -> Helpers.contains message, m
+
+	# Automagically update Magister info.
+	Meteor.setInterval ( ->
+		loadMagisterInfo yes if Meteor.status().connected
+	), 1800000
