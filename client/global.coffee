@@ -25,15 +25,6 @@
 	audio.play()
 	return "420 blaze cheese"
 
-@crash = ->
-	speak "prepareer je anus"
-
-	func = ->
-		l = "a"
-		while true
-			console.log (l = l + "a")
-	_.delay func, 1500
-
 @has = (feature) ->
 	try
 		return Meteor.user().premiumInfo[feature].deadline > new Date()
