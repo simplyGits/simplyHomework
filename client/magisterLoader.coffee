@@ -1,19 +1,24 @@
 results = {}
 callbacks = {}
+dependencies = {}
 @magister = null
 
 @pushMagisterResult = (name, result) ->
 	check name, String
 
 	results[name] = result
-	callback(result.error, result.result) for callback in callbacks[name] ? []
+	for { callback, dependency } in callbacks[name] ? []
+		callback(result.error, result.result)
+		dependency.changed()
 
-@onMagisterInfoResult = (name, callback = ->) ->
+@onMagisterInfoResult = (name, callback) ->
+	# If callback is null, it will use a tracker to rerun computations, otherwise it will just recall the given callback.
 	check name, String
-	check callback, Function
+	check callback, Match.Optional Function
 
 	callbacks[name] ?= []
-	callbacks[name].push callback
+	callbacks[name].push { callback, dependency: new Tracker.Dependency }
+	callbacks[name].dependency.depend() unless callback?
 
 	if (result = results[name])?
 		callback result.error, result.result
