@@ -68,12 +68,12 @@ Template.appOverview.rendered = ->
 	onMagisterInfoResult "appointments tomorrow", (e, r) ->
 		return if e?
 
-		firstAppointment.set _.filter(r, (a) -> not a.fullDay() and _.contains [5..19], a)[0]
+		firstAppointment.set _.find r, (a) -> not a.fullDay() and _.contains [5..19], a
 
 	$("#currentDate > span").tooltip placement: "bottom", html: true, title: "<h4>Week: #{new Date().getWeek()}</h4>"
 
 	unless Get.schedular()?.biasToday() is 0
-		onMagisterInfoResult "appointments", (error, result) ->
+		onMagisterInfoResult "appointments this week", (error, result) ->
 			return if error?
 
 			date = switch Helpers.weekDay new Date()

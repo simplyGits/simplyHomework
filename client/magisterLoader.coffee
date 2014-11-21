@@ -2,7 +2,7 @@ results = {}
 callbacks = {}
 @magister = null
 
-pushResult = (name, result) ->
+@pushMagisterResult = (name, result) ->
 	check name, String
 
 	results[name] = result
@@ -25,6 +25,7 @@ pushResult = (name, result) ->
 	@magister = null
 
 @loadMagisterInfo = (force = no) ->
+	pushResult = @pushMagisterResult
 	check force, Boolean
 	if not force and @magister? then throw new Error "loadMagisterInfo already called. To force reloading all info use loadMagisterInfo(true)."
 
@@ -33,16 +34,16 @@ pushResult = (name, result) ->
 	catch
 		console.warn "Couldn't retreive school info!"
 		return
-	credentials = Meteor.user().magisterCredentials
+	{ username, password } = Meteor.user().magisterCredentials
 
-	(@magister = new Magister({ url }, credentials.username, credentials.password)).ready (m) ->
+	(@magister = new Magister({ url }, username, password)).ready (m) ->
 		m.appointments new Date(), new Date().addDays(7), no, (error, result) -> # Currently we AREN'T downloading the persons.
-			pushResult "appointments", { error, result }
+			pushResult "appointments this week", { error, result }
 			unless error?
 				pushResult "appointments tomorrow", error: null, result: _.filter result, (a) -> a.begin() > Date.today().addDays(1) and a.begin() < Date.today().addDays(1)
 			else
 				pushResult "appointments tomorrow", { error, result: null }
-		#m.appointments new Date().
+
 		m.courses (e, r) ->
 			if e?
 				pushResult "classes", { error: e, result: null }
@@ -53,6 +54,7 @@ pushResult = (name, result) ->
 
 		m.assignments no, (error, result) ->
 			pushResult "assignments", { error, result }
-			pushResult "assignments soon", error: null, result: _.filter(result, (a) -> a.deadline().date() < Date.today().addDays(7) and not a.finished() and new Date() < a.deadline())
+			if error? then pushResult "assignments soon", { error, result: null }
+			else pushResult "assignments soon", error: null, result: _.filter(result, (a) -> a.deadline().date() < Date.today().addDays(7) and not a.finished() and new Date() < a.deadline())
 
 	return "dit geeft echt niets nuttig terug ofzo, als je dat denkt."
