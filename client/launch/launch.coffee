@@ -1,5 +1,5 @@
 login = ->
-	if !Session.get "creatingAccount"
+	if not Session.get "creatingAccount"
 		Meteor.loginWithPassword $("#emailInput").val().toLowerCase(), $("#passwordInput").val(), (error) ->
 			if error? and error.reason is "Incorrect password"
 				$("#passwordGroup").addClass("has-error").tooltip(placement: "bottom", title: "Wachtwoord is fout").tooltip("show")
@@ -8,24 +8,25 @@ login = ->
 			if result
 				Session.set "creatingAccount", no
 				login()
-		okay = true
-		if empty "emailInput", "emailGroup", "Email is leeg" then okay = false
-		if empty "passwordInput", "passwordGroup", "Wachtwoord is leeg" then okay = false
-		if empty "firstNameInput", "firstNameGroup", "Voornaam is leeg" then okay = false
-		if empty "lastNameInput", "lastNameGroup", "Achternaam is leeg" then okay = false
-		unless correctMail $("#emailInput").val()
-			$("#emailGroup").removeClass("has-error").tooltip "destroy"
-			$("#emailGroup").addClass("has-error").tooltip(placement: "bottom", title: "Ongeldig email adres").tooltip("show")
-			okay = false
-		if okay
-			Accounts.createUser
-				password: $("#passwordInput").val()
-				email: $("#emailInput").val().toLowerCase()
-				profile:
-					firstName: Helpers.cap $("#firstNameInput").val().trim()
-					lastName: Helpers.cap $("#lastNameInput").val().trim()
-			Meteor.call "verifyMail"
-			Meteor.users.update Meteor.userId(), $set: mailSignup: $("#mailSignupInput").prop("checked"), classInfos: []
+			else
+				okay = true
+				if empty "emailInput", "emailGroup", "Email is leeg" then okay = false
+				if empty "passwordInput", "passwordGroup", "Wachtwoord is leeg" then okay = false
+				if empty "firstNameInput", "firstNameGroup", "Voornaam is leeg" then okay = false
+				if empty "lastNameInput", "lastNameGroup", "Achternaam is leeg" then okay = false
+				unless correctMail $("#emailInput").val()
+					$("#emailGroup").removeClass("has-error").tooltip "destroy"
+					$("#emailGroup").addClass("has-error").tooltip(placement: "bottom", title: "Ongeldig email adres").tooltip("show")
+					okay = false
+				if okay
+					Accounts.createUser
+						password: $("#passwordInput").val()
+						email: $("#emailInput").val().toLowerCase()
+						profile:
+							firstName: Helpers.cap $("#firstNameInput").val().trim()
+							lastName: Helpers.cap $("#lastNameInput").val().trim()
+					Meteor.call "verifyMail"
+					Meteor.users.update Meteor.userId(), $set: mailSignup: $("#mailSignupInput").prop("checked"), classInfos: []
 
 Template.page1.helpers showQuickLoginhint: -> amplify.store("allowCookies")?
 Template.launchPage.rendered = -> $("#simplyLogoIntro").attr "src", "images/simplyLogo.gif"
