@@ -43,16 +43,18 @@
 isOldInternetExplorer = ->
 	if navigator.appName is "Microsoft Internet Explorer"
 		version = parseFloat RegExp.$1 if /MSIE ([0-9]{1,}[\.0-9]{0,})/.exec(navigator.userAgent)?
-		return version < 9.0
+		return [ version < 9.0, version ]
 	return false
 
 Meteor.startup ->
 	window.viewportUnitsBuggyfill.init()
 	NProgress.configure showSpinner: no
+	[oldBrowser, version] = isOldInternetExplorer()
 
-	if isOldInternetExplorer() # old Internet Explorer versions don't even support fast-render with iron-router :')
+	if oldBrowser # old Internet Explorer versions don't even support fast-render with iron-router :')
 		$("body").text ""
 		UI.insert UI.render(Template.oldBrowser), $("body").get()[0]
+		ga "send", "event", "reject",  "old-browser", "" + version
 	else if "ActiveXObject" of window # Some css fixes for IE
 		$("head").append "<style>.vCenter { position: relative !important } span#addProjectIcon { padding-right: 30px !important }</style>"
 	
