@@ -11,7 +11,7 @@ Deps.autorun => if Meteor.user()? then @hardCachedAppointments = amplify.store("
 
 getHardCacheAppointments = (begin, end) ->
 	x = _.filter (Appointment._convertStored root.magister, a for a in hardCachedAppointments), (x) -> x.begin() >= begin and x.end() <= end
-	return _.reject x, (a) -> a.id() isnt -1 and _.any(x, (z) -> z.begin() is a.begin() and z.end() is a.end() and z.description() is a.description())
+	return _.reject x, (a) -> a.id() isnt -1 and _.any(x, (z) -> z isnt a and z.begin() is a.begin() and z.end() is a.end() and z.description() is a.description())
 
 setHardCacheAppointments = (data) ->
 	for appointment in data
@@ -98,8 +98,10 @@ Template.calendar.rendered = ->
 							return appointment unless appointment.scrapped()
 							a = _.find getHardCacheAppointments(start, end), (a) -> "#{appointment.begin().getTime()}#{appointment.end().getTime()}" is "#{a.begin().getTime()}#{a.end().getTime()}"
 							if a?
-								a._scrapped is yes
-								return a
+								appointment._description = a._description
+								appointment._location = a._location
+								appointment._begin = a._begin
+								appointment._end = a._end
 							return appointment
 						result.pushMore _.reject getHardCacheAppointments(start, end), (a) -> _.any result, (x) -> "#{x.begin().getTime()}#{x.end().getTime()}" is "#{a.begin().getTime()}#{a.end().getTime()}"
 						
