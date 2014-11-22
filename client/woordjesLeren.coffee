@@ -11,7 +11,7 @@ class @WoordjesLeren
 			callback categories
 		else
 			$.get urls.categories, (result) ->
-				callback categories = n.data.trim() for n in $(result).find("category").contents()
+				callback categories = (n.data.trim() for n in $(result).find("category").contents())
 
 	@getAllBooks: (className, callback) ->
 		$.get urls.categories, (result) ->

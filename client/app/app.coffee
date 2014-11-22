@@ -63,7 +63,6 @@ class @App
 			App._fullCount = null
 			@_running = no
 
-		console.log { currentPosition: App._currentCount, length: App._fullCount, current: itemName }
 		return { currentPosition: App._currentCount, length: App._fullCount, current: itemName }
 
 	###*
@@ -249,7 +248,7 @@ Template.addClassModal.events
 
 		WoordjesLeren.getAllBooks val, (result) ->
 			bookEngine.clear()
-			bookEngine.add ( { id: s.id, val: s.name } for s in result )
+			bookEngine.add result
 
 Template.addClassModal.rendered = ->
 	$("#colorInput").colorpicker color: "#333"
@@ -270,7 +269,7 @@ Template.addClassModal.rendered = ->
 
 	$("#bookInput").typeahead(null,
 		source: bookEngine.ttAdapter()
-		displayKey: "val"
+		displayKey: "name"
 	).on "typeahead:selected", (obj, datum) -> Session.set "currentSelectedBookDatum", datum
 
 	$("#classNameInput").typeahead null,
