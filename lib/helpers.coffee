@@ -184,35 +184,3 @@ class @SwagSession
 			else
 				throw new root.NotAllowedException "Changes on this property aren't allowed"
 		return if _.isFunction(transformOut) then transformOut @[varName] else @[varName]
-
-###*
-# Generates an add method for a array
-#
-# @method add
-# @param arrayName {String} The name of the array.
-# @param className {String} The name of the class the array holds items of.
-# @return {Function} The add method for the given array.
-###
-@add = (arrayName, className) ->
-	return (params...) ->
-		item = new root[className] @, params...
-		@[arrayName].push item
-		return item
-
-###*
-# Generates a remove method for a array
-#
-# @method remove
-# @param arrayName {String} The name of the array.
-# @param pattern {Pattern} The pattern of the class the array holds items of.
-# @return {Function} The remove method for the given array.
-###
-@remove = (arrayName, className) ->
-	return (removeItem) ->
-		if removeItem?._className isnt className
-			throw new ArgumentException "removeItem", "got #{removeItem?._className}; expected #{className}"
-
-		item = _.find @[arrayName], (i) -> EJSON.equals removeItem._id, i._id
-
-		_.remove @[arrayName], item
-		return @[arrayName]
