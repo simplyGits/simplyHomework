@@ -32,7 +32,7 @@ Date::addDays = (days, newDate = false) ->
 
 Date::date = -> return new Date @getUTCFullYear(), @getMonth(), @getDate()
 
-Date::getWeek = ->
+Date::week = ->
 	begin = new Date @getUTCFullYear(), 0, 1
 	return Math.ceil (((@ - begin) / 86400000) + begin.getDay() + 1) / 7
 

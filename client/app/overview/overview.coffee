@@ -28,7 +28,7 @@ tasksAmount = -> if _.isFunction(getTasks) then getTasks().length else 0
 Template.appOverview.helpers
 	currentDate: -> DateToDutch()
 	currentDay: -> DayToDutch()
-	weekNumber: -> new Date().getWeek()
+	weekNumber: -> new Date().week()
 	tasksAmount: tasksAmount
 	tasksWord: -> if tasksAmount() is 1 then "taak" else "taken"
 
@@ -70,7 +70,7 @@ Template.appOverview.rendered = ->
 
 		firstAppointment.set _.find r, (a) -> not a.fullDay() and _.contains [5..19], a
 
-	$("#currentDate > span").tooltip placement: "bottom", html: true, title: "<h4>Week: #{new Date().getWeek()}</h4>"
+	$("#currentDate > span").tooltip placement: "bottom", html: true, title: "<h4>Week: #{new Date().week()}</h4>"
 
 	unless Get.schedular()?.biasToday() is 0
 		onMagisterInfoResult "appointments this week", (error, result) ->
