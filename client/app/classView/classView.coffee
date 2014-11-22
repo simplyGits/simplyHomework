@@ -25,8 +25,8 @@ Template.classView.events
 		$("#changeColorLabel").css color: currentClass().__color
 
 		$("#changeClassModal").modal()
-		# Because our modal is inside the content div the backdrop also blocks the modal. Force remove it.
-		$(".modal-backdrop").css zIndex: -1
+		# Because our modal is inside the content div the backdrop also blocks the modal. As a fix: move the modal outside the content container.
+		$("#changeClassModal").appendTo "body"
 
 Template.changeClassModal.rendered = ->
 	$("#changeColorInput").colorpicker color: currentClass().__color
