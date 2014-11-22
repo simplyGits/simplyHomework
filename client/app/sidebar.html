@@ -24,7 +24,9 @@
 
 		<div class="sidebarClasses" style="overflow-y: {{sidebarOverflow}}">
 			{{#each classes}}
-				{{> sidebarItem}}
+				{{#linkTo route="classView" classId=_id.toHexString}}
+					{{> sidebarItem}}
+				{{/linkTo}}
 			{{/each}}
 		</div>
 		<div class="sidebarFooter">

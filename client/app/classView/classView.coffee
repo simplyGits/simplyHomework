@@ -1,4 +1,4 @@
-currentClass = -> Router.current().data().currentClass
+currentClass = -> Router.current().data()
 tasksAmount = -> Helpers.getTotal _.reject(GoaledSchedules.find(_homework: { $exists: true }, ownerId: Meteor.userId()).fetch(), (gS) -> !EJSON.equals(gS.classId(), currentClass()._id)), (gS) -> gS.tasksForToday().length
 
 Template.classView.helpers

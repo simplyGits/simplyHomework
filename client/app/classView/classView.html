@@ -1,22 +1,20 @@
 <template name="classView">
-	{{#with currentClass}}
-		{{> changeClassModal}}
+	{{> changeClassModal}}
 
-		<div class="container-fluid">
-			<div class="row" style="margin-top: -10px">
-				<div class="robotoHeader overviewHeader" id="classHeader">
-					{{_name}}
-					{{#if isPhone}}
-						<span id="classNameChangeIcon" class="fa fa-pencil"></span>
-					{{else}}
-						<span id="classNameChangeIcon" class="fa fa-pencil" style="opacity: 0"></span>
-					{{/if}}
-				</div>
-				<div class="robotoHeader overviewHeader" style="position: absolute; top: 0; right: 10px; text-align: right">{{tasksAmount}} <span class="robotoThin" style="margin-left: 5px">{{tasksWord}}</span></div>
+	<div class="container-fluid">
+		<div class="row" style="margin-top: -10px">
+			<div class="robotoHeader overviewHeader" id="classHeader">
+				{{_name}}
+				{{#if isPhone}}
+					<span id="classNameChangeIcon" class="fa fa-pencil"></span>
+				{{else}}
+					<span id="classNameChangeIcon" class="fa fa-pencil" style="opacity: 0"></span>
+				{{/if}}
 			</div>
-			<div class="divider" style="border-color: {{classColor}}"></div>
+			<div class="robotoHeader overviewHeader" style="position: absolute; top: 0; right: 10px; text-align: right">{{tasksAmount}} <span class="robotoThin" style="margin-left: 5px">{{tasksWord}}</span></div>
 		</div>
-	{{/with}}
+		<div class="divider" style="border-color: {{classColor}}"></div>
+	</div>
 </template>
 
 <template name="changeClassModal">

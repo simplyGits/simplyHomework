@@ -51,22 +51,22 @@ Router.map ->
 			Meteor.defer => @redirect "launchPage" unless Meteor.loggingIn() or Meteor.user()?
 			@next()
 		onAfterAction: ->
-			if !@data().currentClass?
+			if !@data()?
 				@redirect "app"
 				Template.sidebar.rendered = -> $(".slider").velocity top: 0, 150
 				swalert title: "Niet gevonden", text: "Jij hebt dit vak waarschijnlijk niet.", confirmButtonText: "o.", type: "error"
 				return
-			Meteor.defer => $(".slider").velocity top: @data().currentClass.__pos * 60, 150
-			document.title = "simplyHomework | #{@data().currentClass._name}"
+			Meteor.defer => slide @data()._id.toHexString()
+			document.title = "simplyHomework | #{@data()._name}"
 			NProgress.done()
 
 		data: ->
 			try
 				id = new Meteor.Collection.ObjectID @params.classId
-				return currentClass: classes().smartFind id, (c) -> c._id
+				return classes().smartFind id, (c) -> c._id
 			catch e
 				Meteor.call "log", "log", "Error while searching for the given class. #{e.message} | stack: #{e.stack}"
-				return { currentClass: null }
+				return null
 
 	@route "projectView",
 		layoutTemplate: "app"
