@@ -24,9 +24,6 @@ class @Schedule
 		@isPublic = root.getset "_isPublic", Boolean
 		@items = root.getset "_scheduleItems", [root.ScheduleItem._match], no
 
-		@addItem = root.add "_scheduleItems", "ScheduleItem"
-		@removeItem = root.remove "_scheduleItems", "ScheduleItem"
-
 	class: -> return root.Classes.findOne @classId()
 
 	hasItemForToday: -> return _.some @_scheduleItems, (sI) -> return sI.daysAway() is 0

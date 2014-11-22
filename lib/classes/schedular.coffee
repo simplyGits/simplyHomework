@@ -49,9 +49,6 @@ class @SchedularPrefs
 
 		@dates = root.getset "_dateInfos", [Date]
 
-		@addDateInfo = root.add "_dateInfos", "DateInfo"
-		@removeDateInfo = root.remove "_dateInfos", "DateInfo"
-
 	_setDeps: ->
 		Deps.autorun (computation) => # Calls the dependency of the sender object, unless it's null
 			@dependency.depend()

@@ -29,6 +29,3 @@ class @Book
 		@release = root.getset "_release", Match.Optional Number
 		@chapters = root.getset "_chapters", [root.Chapter._match], no
 		@class = root.getset "_class", Object
-
-		@addChapter = root.add "_chapters", "Chapter"
-		@removeChapter = root.remove "_chapters", "Chapter"

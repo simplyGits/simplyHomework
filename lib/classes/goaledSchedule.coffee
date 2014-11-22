@@ -28,24 +28,9 @@ class @GoaledSchedule
 		@items = root.getset "_scheduledItems", [root.ScheduleItem._match], no
 		@homework = root.getset "_homework", root.Homework._match
 
-		@addItem = root.add "_scheduledItems", "ScheduleItem"
-		@removeItem = root.remove "_scheduledItems", "ScheduleItem"
-
 	classId: -> @homework().classId()
 	dueDate: -> @homework().dueDate()
 		
-	_setDeps: ->
-		Deps.autorun (computation) => # Calls the dependency of the sender object, unless it's null
-			@dependency.depend()
-			@_parent.dependency.changed() if @_parent? and !computation.firstRun
-
-	@_match: (goaledSchedule) ->
-		return Match.test schedule, Match.ObjectIncluding
-				ownerId: String
-				_classId: String
-				_dueDate: Date
-				_homework: root.Homework._match
-
 	###*
 	# Checks if the current Schedule is due for today
 	#
@@ -60,7 +45,7 @@ class @GoaledSchedule
 	# @method tasksForToday
 	# @return {Array} Array containing the ScheduleItems that should be done today.
 	###
-	tasksForToday: -> return @_filterItems (item) => return item.daysAway() is 0
+	tasksForToday: -> return @_filterItems (item) -> return item.daysAway() is 0
 	
 	###*
 	# Returns the tasks that has to be done on the given Date.
@@ -69,7 +54,7 @@ class @GoaledSchedule
 	# @param date {Date} The date to get the ScheduleItems for.
 	# @return {Array} Array containing the ScheduleItems that should be done on the given Date.
 	###
-	tasksForDate: (date) -> return @_filterItems (item) => return EJSON.equals item.plannedDate(), date
+	tasksForDate: (date) -> return @_filterItems (item) -> return EJSON.equals item.plannedDate(), date
 	
 	###*
 	# Returns the tasks the user is ahead of.
@@ -77,7 +62,7 @@ class @GoaledSchedule
 	# @method tasksAheadOf
 	# @return {Array} Array containing the ScheduleItems that the user is ahead of.
 	###
-	tasksAheadOf: -> return @_filterItems (item) => return item.daysAway() > 0 and item.isDone()
+	tasksAheadOf: -> return @_filterItems (item) -> return item.daysAway() > 0 and item.isDone()
 	
 	###*
 	# Returns the tasks the user is behind of.
@@ -85,7 +70,7 @@ class @GoaledSchedule
 	# @method taskBehindOf
 	# @return {Array} Array containing the ScheduleItems that the user is behind of.
 	###
-	taskBehindOf: -> return @_filterItems (item) => return item.daysAway() < 0 and !item.isDone()
+	taskBehindOf: -> return @_filterItems (item) -> return item.daysAway() < 0 and !item.isDone()
 
 	###*
 	# Shortcut for _.filter
@@ -97,4 +82,3 @@ class @GoaledSchedule
 	_filterItems: (predicate) -> return _.filter @items(), predicate
 
 	class: -> @homework().class()
-	classId: -> @homework().classId()
