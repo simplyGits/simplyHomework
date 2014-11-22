@@ -1,7 +1,7 @@
 root = @
 class @SchoolClass
 	constructor: (name, course, @_year, schoolVariant) ->
-		@_className = "Class"
+		@_className = "SchoolClass"
 		@_id = new Meteor.Collection.ObjectID()
 		
 		@_course = course?.toLowerCase()
