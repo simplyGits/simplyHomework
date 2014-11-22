@@ -150,23 +150,6 @@ class @Helpers
 			return no
 
 ###*
-# Session.set/get with a little bit more swag ;D
-#
-# @class SwagSession
-###
-class @SwagSession
-	@_dict = {}
-
-	@val: (name, value) ->
-		@_dict[name] ?= { dep: new Deps.Dependency(), value: null }
-		ref = @_dict[name]
-		if value?
-			ref.value = value
-			ref.dep.changed()
-		ref.dep.depend()
-		return ref.value
-
-###*
 # Generates a getter/setter method for a global class variable.
 #
 # @param varName {String} The name of the variable to make method for.
