@@ -17,9 +17,6 @@ class @SchoolClass
 		@schoolVariant = root.getset "_schoolVariant", String, (sV) -> sV.toLowerCase()
 		@books = root.getset "_books", [root.Book._match], no
 
-		@addBook = root.add "_books", "Book"
-		@removeBook = root.remove "_books", "Book"
-
 	###*
 	# Returns a cursor pointing to the schedules with this class' ID
 	#
