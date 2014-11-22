@@ -9,11 +9,11 @@ Template.classView.helpers
 	textAlign: -> if Session.get "isPhone" then "left" else "right"
 
 Template.classView.events
-	"mouseenter #classHeader": -> unless Session.get "isPhone" then $("#classNameChangeIcon").velocity { opacity: 1 }, 100
-	"mouseleave #classHeader": -> unless Session.get "isPhone" then $("#classNameChangeIcon").velocity { opacity: 0 }, 100
+	"mouseenter #classHeader": -> unless Session.get "isPhone" then $("#changeClassIcon").velocity { opacity: 1 }, 100
+	"mouseleave #classHeader": -> unless Session.get "isPhone" then $("#changeClassIcon").velocity { opacity: 0 }, 100
 
-	"click #classNameChangeIcon": ->
-		ga "send", "event", "button", "click", "classNameChange"
+	"click #changeClassIcon": ->
+		ga "send", "event", "button", "click", "classInfoChange"
 
 		name = if _.contains ["Natuurkunde", "Scheikunde"], (val = currentClass().name()) then "Natuur- en scheikunde" else val
 		WoordjesLeren.getAllBooks name, (result) ->
