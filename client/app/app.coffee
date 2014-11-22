@@ -86,7 +86,7 @@ class @App
 
 @bookEngine = new Bloodhound
 	name: "books"
-	datumTokenizer: (d) -> Bloodhound.tokenizers.whitespace d.val
+	datumTokenizer: (d) -> Bloodhound.tokenizers.whitespace d.name
 	queryTokenizer: Bloodhound.tokenizers.whitespace
 	local: []
 
@@ -238,7 +238,8 @@ Template.addClassModal.events
 		Meteor.users.update Meteor.userId(), $push: { classInfos: { id: _class._id, color, bookId: book._id }}
 		$("#addClassModal").modal "hide"
 
-	"keydown #classNameInput": ->
+	"keypress #classNameInput": (event) ->
+		return if event.which is 0
 		val = Helpers.cap $("#classNameInput").val()
 
 		if /(Natuurkunde)|(Scheikunde)/ig.test val

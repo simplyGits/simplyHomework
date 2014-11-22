@@ -18,7 +18,7 @@ Template.classView.events
 		name = if _.contains ["Natuurkunde", "Scheikunde"], (val = currentClass().name()) then "Natuur- en scheikunde" else val
 		WoordjesLeren.getAllBooks name, (result) ->
 			bookEngine.clear()
-			bookEngine.add ( { id: s.id, val: s.name } for s in result )
+			bookEngine.add result
 
 		$("#changeColorInput").colorpicker "destroy"
 		$("#changeColorInput").colorpicker color: currentClass().__color
@@ -35,7 +35,7 @@ Template.changeClassModal.rendered = ->
 
 	$("#changeBookInput").typeahead(null,
 		source: bookEngine.ttAdapter()
-		displayKey: "val"
+		displayKey: "name"
 	).on "typeahead:selected", (obj, datum) -> Session.set "currentSelectedBookDatum", datum
 
 Template.changeClassModal.events
