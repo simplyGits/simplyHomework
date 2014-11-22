@@ -1,7 +1,26 @@
+@import "jeet"
+
+span#changeClassIcon
+	color: lightgray
+	vertical-align: middle
+	font-size: 20px
+	cursor: pointer
+
+.overviewHeader#classHeader
+	width: calc(100% - 120px)
+	white-space: nowrap
+	text-overflow: ellipsis
+	overflow: hidden
+
++mobile()
+	.overviewHeader
+		font-size: 30px !important
+
 button#deleteClassButton
 	col(10/12)
 	shift(2/12)
 	float: initial
+	text-align: center
 
 	+mobile()
 		shift()
