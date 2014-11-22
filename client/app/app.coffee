@@ -225,9 +225,8 @@ Template.addClassModal.events
 		name = Helpers.cap $("#classNameInput").val()
 		course = $("#courseInput").val().toLowerCase()
 		bookName = $("#bookInput").val()
-		year = (Number) $("#yearInput").val()
-		schoolVariant = $("#schoolVariantInput").val().toLowerCase()
 		color = $("#colorInput").val()
+		{ year, schoolVariant } = Meteor.user().profile.courseInfo
 
 		_class = Classes.findOne { $or: [{ _name: name }, { _course: course }], _schoolVariant: schoolVariant, _year: year}
 		_class ?= New.class name, course, year, schoolVariant

@@ -8,50 +8,50 @@
 # @variable New
 ###
 @New =
-	school: (params...) =>
-		school = new School params...
+	school: =>
+		school = new School arguments...
 		@Schools.insert school
 		return school
 
-	schedule: (params...) =>
-		schedule = new Schedule params...
+	schedule: =>
+		schedule = new Schedule arguments...
 		@Schedules.insert schedule
 		return schedule
 
-	goaledSchedule: (params...) =>
-		goaledSchedule = new GoaledSchedule params...
+	goaledSchedule: =>
+		goaledSchedule = new GoaledSchedule arguments...
 		@GoaledSchedules.insert goaledSchedule
 		return goaledSchedule
 
-	class: (params...) =>
-		_class = new Class params...
+	class: =>
+		_class = new SchoolClass arguments...
 		@Classes.insert _class
 		return _class
 
-	vote: (params...) =>
-		vote = new Vote params...
+	vote: =>
+		vote = new Vote arguments...
 		@Votes.insert vote
 		return vote
 
-	util: (params...) =>
-		util = new Util params...
+	util: =>
+		util = new Util arguments...
 		@Utils.insert util
 		return util
 
-	ticket: (params...) =>
-		ticket = new Ticket params...
+	ticket: =>
+		ticket = new Ticket arguments...
 		@Tickets.insert ticket
 		return ticket
 
-	project: (params...) =>
-		project = new Project params...
+	project: =>
+		project = new Project arguments...
 		@Projects.insert project
 		return project
 
-	schedular: (params...) ->
+	schedular: ->
 		throw new WrongPlatformException("Schedular is only settable from the client") unless Meteor.isClient
 
-		schedular = new Schedular params...
+		schedular = new Schedular arguments...
 		Meteor.users.update Meteor.userId(), $set: { schedular }
 		return schedular
 
