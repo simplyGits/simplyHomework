@@ -47,32 +47,11 @@ class @Paragraph
 		@_exercises = []
 		@_understandings = []
 
-		@dependency = new Deps.Dependency
-
 		@name = root.getset "_name", String
-		@difficulty = root.getset "_difficulty", root.Paragraph.difficultyEnumMatch, yes, null, (d) => if d is 0 then 2 else d
-		@exercises = root.getset "_exercises", [root.Exercise._match], no
+		@difficulty = root.getset "_difficulty", root.Paragraph.difficultyEnumMatch, yes, null, (d) -> if d is 0 then 2 else d
 		@number = root.getset "_number", Number
 		@understandings = root.getset "_understandings", [root.Understanding._match], no
 		@isVocabulary = root.getset "_isVocabulary", Boolean
-
-		@addExercise = root.add "_exercises", "Exercise"
-		@removeExercise = root.remove "_exercises", "Exercise"
-
-		@addUnderstanding = root.add "_understandings", "Understanding"
-		@removeUnderstanding = root.add "_understandings", "Understanding"
-
-	_setDeps: ->
-		Deps.autorun (computation) => # Calls the dependency of the sender object, unless it's null
-			@dependency.depend()
-			@_parent.dependency.changed() if @_parent? and !computation.firstRun
-
-	@_match: (paragraph) ->
-		return Match.test paragraph, Match.ObjectIncluding
-				_book: Book._match
-				_name: String
-				_number: Number
-				_difficulty: root.Paragraph.difficultyEnumMatch
 
 	###*
 	# Returns the utils for this Paragraph from the parent book.
@@ -92,13 +71,13 @@ class @Paragraph
 		util.binding.unbindParagraph @
 		util.binding.unbindChapter(@_parent) if removeFromBook
 
-	getUnderstanding: (userId) -> return _.find @understandings(), (u) => EJSON.equals u.voterId(), userId
+	getUnderstanding: (userId) -> return _.find @understandings(), (u) -> EJSON.equals u.voterId(), userId
 
 	calculatePriority: (goaledSchedule) ->
 		avgOtherClasses = root.Helpers.getAverage(_.reject(root.Schools.findOne(Meteor.users.findOne(goaledSchedule.ownerId).schoolId).classes(), (c) => c._id is @classId()), (c) -> c.getGradeAverage(userId))
 		avgCompared = Math.round 100 - ((@class().getGradeAverage(goaledSchedule.ownerId) / avgOtherClasses) * 100)
 
-		someClassesInsufficient = _.some(_.reject(root.Schools.findOne(Meteor.users.findOne(goaledSchedule.ownerId).schoolId).classes(), (c) => EJSON.equals(c._id, @classId())), (c) => c.getGradeAverage(userId) < 5.5)
+		someClassesInsufficient = _.some(_.reject(root.Schools.findOne(Meteor.users.findOne(goaledSchedule.ownerId).schoolId).classes(), (c) -> EJSON.equals(c._id, @classId())), (c) -> c.getGradeAverage(userId) < 5.5)
 
 		exceptionCase = switch
 			when @class().getGradeAverage(goaledSchedule.ownerId) < 5.5 then 1
