@@ -56,7 +56,7 @@
 		return schedular
 
 @Get = #needed for serverside, also has additions for some client side shit.
-	schedular: -> if !Meteor.user().schedular? then null else _decodeObject Meteor.user().schedular
+	schedular: (userId) -> if !Meteor.user().schedular? then null else _decodeObject (if userId then Meteor.users.findOne(userId) else Meteor.user()).schedular
 	
 	classes: (query = {}, options = {}) =>
 		if Meteor.isServer
