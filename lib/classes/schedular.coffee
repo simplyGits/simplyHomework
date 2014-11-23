@@ -131,7 +131,7 @@ class @Schedular
 			name: "Vocabulary"
 			description: "Super basic vocabulary planner"
 			author: "Lieuwe Rooijakkers"
-			func: -> 
+			func: ->
 				return if !@currentPara.isVocabulary() or @leftDays < 5 or @leftDays / @leftParas.length < 2.25
 
 				console.log "currentPara is vocabulary and should be repeated!" if @debug
@@ -146,16 +146,16 @@ class @Schedular
 		}
 	]
 
-	schedule: -> 
+	schedule: ->
 		timeHolder = new TimeHolder
-		goaledSchedules = _.filter Get.goaledSchedules(_homework: { $exists: true }, ownerId: @userId).fetch(), (gS) => Helpers.daysRange(Date.today(), gS.homework().dueDate()) >= 2
+		goaledSchedules = _.filter Get.goaledSchedules(_homework: { $exists: true }, ownerId: @userId).fetch(), (gS) -> Helpers.daysRange(Date.today(), gS.homework().dueDate()) >= 2
 
 		paras = []
 		for gS in goaledSchedules
 			gS.repeatDates = []
 
-			book = _.find(Get.classes(gS.classId()).fetch()[0].books(), (b) => EJSON.equals(b._id, _.find(@user.profile.classInfos, (classInfo) => EJSON.equals classInfo.id, gS.classId()).bookId))
-			paragraphs = _.sortBy(gS.homework().getParsedParagraphs(book), (p) => p.priority).reverse()
+			book = _.find(Get.classes(gS.classId()).fetch()[0].books(), (b) => EJSON.equals(b._id, _.find(@user.profile.classInfos, (classInfo) -> EJSON.equals classInfo.id, gS.classId()).bookId))
+			paragraphs = _.sortBy(gS.homework().getParsedParagraphs(book), (p) -> p.priority).reverse()
 
 			currentDate = gS.dueDate().addDays -1 * (paragraphs.length / 2), yes
 
@@ -171,7 +171,7 @@ class @Schedular
 
 			parasForCurrentDay = []
 			shouldRepeat = Helpers.daysRange(Date.today(), gS.dueDate()) > 5 and Helpers.daysRange(Date.today(), gS.duedate()) / paragraphs.length >= 1.75
-			for p in _.sortBy(paragraphs, (p) => p.priority).reverse()
+			for p in _.sortBy(paragraphs, (p) -> p.priority).reverse()
 				# Make repeat ScheduleItems if needed.
 				if shouldRepeat
 					p.deadline = gS.dueDate().addDays -1 * (paragraphs.length / 2), yes
@@ -185,7 +185,7 @@ class @Schedular
 						gS.repeatDates.push _.clone currentDate
 						currentDate = currentDate.addDays 1, yes
 
-		leftParas = _.sortBy(paras, (p) => p.priority).reverse()
+		leftParas = _.sortBy(paras, (p) -> p.priority).reverse()
 
 		currentDate = Date.today()
 
@@ -215,7 +215,7 @@ class @Schedular
 				leftParas.remove leftParas[currentParasPosition]
 
 			# Modules! <3
-			for m in _.filter(@modules(), (m) => m.enabled)
+			for m in _.filter(@modules(), (m) -> m.enabled)
 				try
 					result = m.func.bind({
 						currentPara: leftParas[currentParasPosition]
@@ -242,7 +242,7 @@ class @Schedular
 
 			# fill in a paragraph if there's enough space
 			while biasDifferenceForCurrentDay > 0
-				possiblePara = _.find leftParas, (p) => p.priority <= biasDifferenceForCurrentDay
+				possiblePara = _.find leftParas, (p) -> p.priority <= biasDifferenceForCurrentDay
 				if possiblePara?
 					parasForCurrentDay.push possiblePara
 					biasDifferenceForCurrentDay -= possiblePara.priority
@@ -261,8 +261,8 @@ class @Schedular
 			currentDate = currentDate.addDays(1, yes)
 
 		# Fill the other paragraphs in.
-		for heaviestPara in _.sortBy(leftParas, (p) => p.priority).reverse()
-			lightestDay = _.reject(_.sortBy(dateInfos, (d) => d.biasDifference).reverse(), (d) => d.dayNotAvailable)[0]
+		for heaviestPara in _.sortBy(leftParas, (p) -> p.priority).reverse()
+			lightestDay = _.reject(_.sortBy(dateInfos, (d) -> d.biasDifference).reverse(), (d) -> d.dayNotAvailable)[0]
 
 			heaviestPara.goaledSchedule.addItem heaviestPara.name(), heaviestPara._id, lightestDay.date, heaviestPara.priority, no, "overflower"
 			lightestDay.biasDifference -= heaviestPara.priority
@@ -283,7 +283,7 @@ class @Schedular
 				name: -> _.random(1337)
 				isVocabulary: -> if _.contains [0..3], _.random(5) then true else false
 
-		paragraphs = _.sortBy(paragraphs, (p) => p.priority).reverse()
+		paragraphs = _.sortBy(paragraphs, (p) -> p.priority).reverse()
 		currentDate = debugDueDate.addDays -1 * (paragraphs.length / 2), yes
 		parasForCurrentDay = []
 		console.log "paragraphs length: #{paragraphs.length} | amount of days: #{Helpers.daysRange(Date.today(), debugDueDate)}"
@@ -293,7 +293,7 @@ class @Schedular
 			p.priority = p.calculatePriority()
 			paras.push p
 
-		for p in _.sortBy(paragraphs, (p) => p.priority).reverse()
+		for p in _.sortBy(paragraphs, (p) -> p.priority).reverse()
 			if shouldRepeat
 				p.deadline = debugDueDate.addDays -1 * (paragraphs.length / 2), yes
 				p.biasPenalty = p.priority
@@ -306,7 +306,7 @@ class @Schedular
 					parasForCurrentDay = []
 					currentDate = currentDate.addDays 1, yes
 
-		leftParas = _.sortBy(paras, (p) => p.priority).reverse()
+		leftParas = _.sortBy(paras, (p) -> p.priority).reverse()
 		console.log "priorities of leftParas: #{(p.priority for p in leftParas)}"
 
 		currentDate = Date.today()
@@ -316,7 +316,7 @@ class @Schedular
 
 		while leftParas.length isnt 0 and currentParasPosition <= leftParas.length # Fill the days where there's enough place for the paragraphs
 			biasDifferenceForCurrentDay = @schedularPrefs().bias currentDate
-			dayNotAvailable = biasDifferenceForCurrentDay is 0 
+			dayNotAvailable = biasDifferenceForCurrentDay is 0
 			
 			if p.biasPenalty? and EJSON.equals currentDate, leftParas[currentParasPosition].repeatDate
 				biasDifferenceForCurrentDay -= p.biasPenalty
@@ -340,7 +340,7 @@ class @Schedular
 				console.log "new biasDifference for #{currentDate.getDate()} is #{biasDifferenceForCurrentDay}"
 
 			# Modules! <3
-			for m in _.filter(@modules(), (m) => m.enabled)
+			for m in _.filter(@modules(), (m) -> m.enabled)
 				try
 					break if !leftParas[currentParasPosition]?
 
@@ -358,7 +358,7 @@ class @Schedular
 						moduleStorage: m.moduleStorage
 						firstRun: m.firstRun
 					})()
-					m.firstRun = no					
+					m.firstRun = no
 					if _.isArray result
 						for pData in result
 							timeHolder.getset pData.date, pData.priority
@@ -370,7 +370,7 @@ class @Schedular
 
 			# Fill in a paragraph if there's enough space.
 			while biasDifferenceForCurrentDay > 0
-				possiblePara = _.find leftParas, (p) => p.priority <= biasDifferenceForCurrentDay
+				possiblePara = _.find leftParas, (p) -> p.priority <= biasDifferenceForCurrentDay
 				if possiblePara?
 					console.log "enough space left! planning!"
 					parasForCurrentDay.push possiblePara
@@ -391,19 +391,19 @@ class @Schedular
 			currentDate = currentDate.addDays(1, yes)
 
 		# Fill the other paragraphs in.
-		for heaviestPara in _.sortBy(leftParas, (p) => p.priority).reverse()
-			lightestDay = _.reject(_.sortBy(dateInfos, (d) => d.biasDifference).reverse(), (d) => d.dayNotAvailable)[0]
+		for heaviestPara in _.sortBy(leftParas, (p) -> p.priority).reverse()
+			lightestDay = _.reject(_.sortBy(dateInfos, (d) -> d.biasDifference).reverse(), (d) -> d.dayNotAvailable)[0]
 
-			console.log "hit paras overflow (bias difference for day is #{lightestDay.biasDifference}; others are #{(d.biasDifference for d in _.reject(dateInfos, (d) => d.dayNotAvailable or d is lightestDay))} | date is #{lightestDay.date.getDate()})"
+			console.log "hit paras overflow (bias difference for day is #{lightestDay.biasDifference}; others are #{(d.biasDifference for d in _.reject(dateInfos, (d) -> d.dayNotAvailable or d is lightestDay))} | date is #{lightestDay.date.getDate()})"
 			debugFinal.push new ScheduleItem null, heaviestPara.name() + " OVERFLOWED", heaviestPara._id, lightestDay.date, heaviestPara.priority, no, "overflower"
 
 			lightestDay.biasDifference -= heaviestPara.priority
 
-		debugFinal = _.sortBy debugFinal, (s) => s.plannedDate()
-		avg = Helpers.getAverage(dateInfos, (d) => d.biasDifference)
+		debugFinal = _.sortBy debugFinal, (s) -> s.plannedDate()
+		avg = Helpers.getAverage(dateInfos, (d) -> d.biasDifference)
 
 		console.log "Bias offsets for days #{(d.biasDifference for d in dateInfos)} (average: #{avg})"
 		console.log if avg >= 0 then "yay" else if avg < -2 then "RIP" else ":c"
 
 		@dependency.depend()
-		return _.sortBy debugFinal, (s) => s.plannedDate()
+		return _.sortBy debugFinal, (s) -> s.plannedDate()
