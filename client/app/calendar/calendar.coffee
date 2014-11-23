@@ -136,7 +136,7 @@ Template.calendar.rendered = ->
 		loading: (isLoading) -> if isLoading then NProgress.start() else NProgress.done()
 		eventAfterRender: (event, element) ->
 			event.element = element
-			element.popover content: event.appointment.content(), placement: "auto top", animation: yes, delay: {show: 750}, trigger: "hover"
+			element.popover content: event.appointment.content(), placement: "auto top", animation: yes, delay: {show: 750}, trigger: "hover", container: ".content"
 			return unless event.clickable
 			
 			element = $(element)
@@ -181,8 +181,30 @@ close = ->
 	$("div.backdrop").removeClass "dimmed"
 	$("textarea#appointmentInput").val("").velocity { height: "54px" }, 500, "easeOutExpo"
 
+dates = [
+	[/eergister(en)?/i, -2, "days"]
+	[/gister(en)?/i, -1, "days"]
+	[/vandaag/i, 0, "days"]
+	[/morgen/i, 1, "days"]
+	[/overmorgen/i, 2, "days"]
+	[/maandag/i, "maandag", null]
+	[/dinsdag/i, "dinsdag", null]
+	[/woensdag/i, "woensdag", null]
+	[/vrijdag/i, "donderdag", null]
+	[/zaterdag/i, "vrijdag", null]
+	[/zondag/i, "zaterdag", null]
+	[/(volgende|aankomende) week/i, 1, "weeks"]
+	[/(vorige|afgelopen) week/i, -1, "weeks"]
+	[/(over|na) \d+ (weken|week)/i, null, "weeks"]
+	[/(over|na) \d+ (dagen|dag)/i, null, "days"]
+	[/\d+ (weken|week) geleden/i, null, "weeks"]
+	[/\d+ (dagen|dag) geleden/i, null, "days"]
+]
+
 add = ->
-	# ...
+	input = $("textarea#appointmentInput").val("").trim()
+	for date, i in dates
+		date.test input
 	close()
 
 Template.calendar.events
