@@ -41,7 +41,7 @@ dependencies = {}
 		return
 	{ username, password } = Meteor.user().magisterCredentials
 
-	(@magister = new Magister({ url }, username, password)).ready (m) ->
+	(@magister = new Magister({ url }, username, password, no)).ready (m) ->
 		m.appointments new Date(), new Date().addDays(7), no, (error, result) -> # Currently we AREN'T downloading the persons.
 			pushResult "appointments this week", { error, result }
 			unless error?
