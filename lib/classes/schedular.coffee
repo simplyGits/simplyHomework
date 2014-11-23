@@ -9,18 +9,12 @@ class @DateInfo
 
 	@aviableTimeEnumMatch: (t) -> _.contains _.values(root.DateInfo.availableTimeEnum), t
 
-	constructor: (@_parent, @_weekDay, @_availableTime) ->
+	constructor: (@_weekDay, @_availableTime) ->
 		@_className = "DateInfo"
-		@dependency = new Deps.Dependency
 
 		@date = root.getset "_date", Date
 		@weekday = root.getset "_weekDay", (w) -> _.contains [0..6], w
 		@availableTime = root.getset  "_availableTime", root.DateInfo.aviableTimeEnumMatch
-
-	_setDeps: ->
-		Deps.autorun (computation) => # Calls the dependency of the sender object, unless it's null
-			@dependency.depend()
-			@_parent.dependency.changed() if @_parent? and !computation.firstRun
 
 	@_match: (dateInfo) ->
 		return Match.test dateInfo, Match.ObjectIncluding
@@ -39,24 +33,13 @@ class @SchedularPrefs
 	# Constructor for the SchedularPrefs class.
 	#
 	# @method constructor
-	# @param _parent {Object} The creator of this object.
 	###
-	constructor: (@_parent) ->
+	constructor: ->
 		@_className = "SchedularPrefs"
-		@dependency = new Deps.Dependency
 
 		@_dateInfos = []
 
 		@dates = root.getset "_dateInfos", [Date]
-
-	_setDeps: ->
-		Deps.autorun (computation) => # Calls the dependency of the sender object, unless it's null
-			@dependency.depend()
-			@_parent.dependency.changed() if @_parent? and !computation.firstRun
-		
-	@_match: (schedulePrefs) ->
-		return Match.test schedulePrefs, Match.ObjectIncluding
-				_disallowedDates : [Date]
 
 	bias: (givenDate) ->
 		date = _.find @dates(), (d) -> EJSON.equals d.date()?.date(), givenDate.date()
@@ -85,21 +68,14 @@ class TimeHolder
 		return dateInfo ? { date, biasPenalty: 0 }
 
 class @Schedular
-	constructor: (@_parent, @userId) ->
+	constructor: (@userId) ->
 		@_id = new Meteor.Collection.ObjectID()
 		@_className = "Schedular"
-
-		@dependency = new Deps.Dependency
 
 		@_modules = Schedular.defaultModules[..]
 
 		@schedularPrefs = root.getset "_schedularPrefs", root.SchedularPrefs._match
 		@modules = root.getset "_modules", [Schedular._moduleMatch], no
-
-	_setDeps: ->
-		Deps.autorun (computation) => # Calls the dependency of the sender object, unless it's null
-			@dependency.depend()
-			@_parent.dependency.changed() if @_parent? and !computation.firstRun
 
 	@_moduleMatch: (m) ->
 		return Match.test m, Match.ObjectIncluding
@@ -114,13 +90,11 @@ class @Schedular
 	addModule: (module) ->
 		check module, Schedular._moduleMatch
 		modules.push module
-		@dependency.changed()
 
 	removeModule: (module) ->
 		check module, Schedular._moduleMatch
 		item = @modules().smartFind module.name, (m) -> m.name
 		_.remove @_modules, item
-		@dependency.changed()
 
 	setModuleEnabledState: (module, enabled) -> @modules().smartFind(module.name, (m) -> m.name).enabled = enabled
 
