@@ -20,7 +20,7 @@ class @TodoException extends @Exception
 	# @method constructor
 	# @param message {String} The message that describes the thing that has to be done.
 	###
-	constructor: (@message) -> super "TodoException: #{@message}"
+	constructor: (@message) -> super "#{@message}"
 
 ###*
 # Exception to tell that a action isn't supported in the current context.
@@ -34,7 +34,7 @@ class @NotSupportedException extends @Exception
 	# @method constructor
 	# @param message {String} The message that describes why this action doesn't work.
 	###
-	constructor: (@message) -> super "NotSupportedException: #{@message}"
+	constructor: (@message) -> super "#{@message}"
 
 class @NotFoundException extends @Exception
 	###*
@@ -43,7 +43,7 @@ class @NotFoundException extends @Exception
 	# @method constructor
 	# @param message {String} The message that describes the reason of life?
 	###
-	constructor: (@message) -> super "NotFoundException: #{@message}"
+	constructor: (@message) -> super "#{@message}"
 
 ###*
 # Exception to tell that the current action isn't supported on the current platform.
@@ -58,7 +58,7 @@ class @WrongPlatformException extends @Exception
 	# @method constructor
 	# @param message {String} The message that describes for what platform this action is made for.
 	###
-	constructor: (@message) -> super "WrongPlatformException: #{@message}"
+	constructor: (@message) -> super "#{@message}"
 
 ###*
 # Exception to tell that an argument is not correct.
@@ -73,7 +73,7 @@ class @ArgumentException extends @Exception
 	# @param argumentName {String} The name of the argument that is incorrect.
 	# @param reason {String} The reason the given argument is incorrect.
 	###
-	constructor: (@argumentName, @reason) -> super "ArgumentException: #{@argumentName} isn't valid, reason: #{@reason}"
+	constructor: (@argumentName, @reason) -> super "#{@argumentName} isn't valid, reason: #{@reason}"
 
 class @NotAllowedException extends @Exception
-	constructor: (@message) -> super "NotAllowedException: #{@message}"
+	constructor: (@message) -> super "#{@message}"
