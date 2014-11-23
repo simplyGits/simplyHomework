@@ -112,3 +112,21 @@ i.right {
 	     -o-transform: translateX(55px);
 	        transform: translateX(55px);
 }
+
+@media only screen and (max-width: 760px) {
+	.chatHead i {
+		box-shadow: none;
+		-moz-box-shadow: none;
+		-webkit-box-shadow: none;
+	}
+
+	.chatHead {
+		box-shadow: none;
+		-moz-box-shadow: none;
+		-webkit-box-shadow: none;
+	}
+
+	.chatHeadBin {
+		left: 40%;
+	}
+}

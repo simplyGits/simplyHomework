@@ -57,20 +57,4 @@
 		-moz-box-shadow: none;
 		-webkit-box-shadow: none;
 	}
-
-	.chatHead i {
-		box-shadow: none;
-		-moz-box-shadow: none;
-		-webkit-box-shadow: none;
-	}
-
-	.chatHead {
-		box-shadow: none;
-		-moz-box-shadow: none;
-		-webkit-box-shadow: none;
-	}
-
-	.chatHeadBin {
-		left: 40%;
-	}
 }
