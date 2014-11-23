@@ -79,4 +79,4 @@ Meteor.startup ->
 	# Automagically update Magister info.
 	Meteor.setInterval ( ->
 		loadMagisterInfo yes if Meteor.status().connected
-	), 1800000
+	), 1200000
