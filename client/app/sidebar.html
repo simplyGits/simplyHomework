@@ -39,12 +39,7 @@
 <template name="sidebarItem">
 	<div class="sidebarButton sidebarClass" id="{{_id.toHexString}}">
 		<div class="classColorBar" style="border-color: {{__color}}"></div>
-
-		{{#if __largeName}}
-			<span style="white-space: nowrap; font-size: 30px;">{{_name}}</span>
-		{{else}}
-			<span>{{_name}}</span>
-		{{/if}}
+		<span>{{_name}}</span>
 
 		{{#with __taskAmount}}
 			{{#unless empty}}

@@ -2,7 +2,6 @@
 	tmp = []
 	for tmpClass in _.sortBy(Classes.find(_id: { $in: (cI.id for cI in (Meteor.user().classInfos ? [])) }).fetch(), (c) -> c.name())
 		tmp.push _.extend tmpClass,
-			__largeName: tmpClass.name().length >= 8
 			__taskAmount: Helpers.getTotal _.reject(GoaledSchedules.find(_homework: { $exists: true }, ownerId: Meteor.userId()).fetch(), (gS) -> !EJSON.equals(gS.classId(), tmpClass._id)), (gS) -> gS.tasksForToday().length
 			__color: Meteor.user().classInfos.smartFind(tmpClass._id, (cI) -> cI.id).color
 			__book: tmpClass.books().smartFind Meteor.user().classInfos.smartFind(tmpClass._id, (cI) -> cI.id).bookId, (b) -> b._id
