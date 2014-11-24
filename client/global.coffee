@@ -38,6 +38,7 @@ isOldInternetExplorer = ->
 
 Meteor.startup ->
 	window.viewportUnitsBuggyfill.init()
+	PointerEventsPolyfill.initialize {}
 	NProgress.configure showSpinner: no
 	[oldBrowser, version] = isOldInternetExplorer()
 
