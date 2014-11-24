@@ -38,7 +38,6 @@ isOldInternetExplorer = ->
 
 Meteor.startup ->
 	window.viewportUnitsBuggyfill.init()
-	PointerEventsPolyfill.initialize {}
 	NProgress.configure showSpinner: no
 	[oldBrowser, version] = isOldInternetExplorer()
 
@@ -47,7 +46,7 @@ Meteor.startup ->
 		UI.insert UI.render(Template.oldBrowser), $("body").get()[0]
 		ga "send", "event", "reject",  "old-browser", "" + version
 	else if "ActiveXObject" of window # Some css fixes for IE
-		$("head").append "<style>.vCenter { position: relative !important } span#addProjectIcon { padding-right: 30px !important }</style>"
+		$("head").append "<style>.vCenter { position: relative !important } span#addProjectIcon { padding-right: 30px !important } div.backdrop { display: none; }</style>"
 	
 	# Some css fixes for Windows
 	if navigator.appVersion.indexOf("Win") isnt -1
