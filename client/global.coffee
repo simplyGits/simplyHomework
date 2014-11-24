@@ -59,14 +59,22 @@ Meteor.startup ->
 
 	Deps.autorun -> try UserStatus.startMonitor idleOnBlur: true
 
+	interval = null
 	Deps.autorun -> # User Login/Logout
 		if Meteor.user()?
 			ga "set", "&uid", Meteor.userId()
+
+			# Automagically update Magister info.
+			interval ?= Meteor.setInterval ( ->
+				loadMagisterInfo yes if Meteor.status().connected
+			), 1200000
 		else
 			for key in _.keys amplify.store() when key.substring(0, 22) is "hardCachedAppointments"
 				amplify.store key, null
 
 			resetMagisterLoader()
+			Meteor.clearInterval inerval
+
 			NotificationsManager.hideAll()
 
 	ignoreMessages = [ "Server sent add for existing id"
@@ -74,8 +82,3 @@ Meteor.startup ->
 		"Script error."
 	]
 	window.onerror = (message, url, lineNumber) -> Meteor.call "log", "error", "Uncaught error at client: #{message} | #{url}:#{lineNumber}" unless _.some ignoreMessages, (m) -> Helpers.contains message, m
-
-	# Automagically update Magister info.
-	Meteor.setInterval ( ->
-		loadMagisterInfo yes if Meteor.status().connected
-	), 1200000
