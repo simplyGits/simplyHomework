@@ -45,6 +45,7 @@ Meteor.methods
 							magisterCredentials: info.magisterCredentials
 							"profile.schoolId": info.schoolId
 							"profile.magisterPicture": base64
+							"profile.birthDate": m.profileInfo().birthDate()
 			return yes
 		catch
 			return no
