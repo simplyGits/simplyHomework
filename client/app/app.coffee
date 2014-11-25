@@ -362,6 +362,8 @@ Template.app.helpers
 	contentOffsetLeft: -> if Session.get "isPhone" then "0" else "200px"
 
 Template.app.rendered = ->
+	Deps.autorun -> if Meteor.user()? then Meteor.subscribe "essentials", -> loadMagisterInfo()
+	
 	notify("Je hebt je account nog niet geverifiëerd!", "warning") unless Meteor.user().emails[0].verified
 	onMagisterInfoResult "assignments soon", (e, r) ->
 		return if e? or r.length is 0
