@@ -372,6 +372,23 @@ Template.app.rendered = ->
 
 		NotificationsManager.notify body: s, type: "warning", time: -1, html: yes, onClick: (event) -> console.log ":D"
 
+	onMagisterInfoResult "grades", (e, r) ->
+		return if e? or r.length is 0
+
+		endGrades = _.filter r, (g) -> g.type().header().toLowerCase() is "eind"
+		if endGrades.length is 0
+			endGrades = _.filter r, (g) -> g.type().header().toLowerCase() is "e-jr"
+
+		recentGrades = _.filter r, (g) -> new Date(g.dateFilledIn()) > Date.today().addDays(-7) and _.contains ["pw", "ow"], g.type().header().toLowerCase()
+		unless recentGrades.length is 0
+			s = "Recent ontvangen cijfers:\n\n"
+
+			for c in (z.class() for z in _.uniq recentGrades, (g) -> g.class().id())
+				grades = _.filter recentGrades, (g) -> g.class() is c
+				s += "<b>#{c.abbreviation()}</b> - #{grades.map((z) -> if Number(z.grade().replace(",", ".")) < 5.5 then "<b style=\"color: red\">#{z.grade()}</b>" else z.grade()).join ', '}\n"
+
+			NotificationsManager.notify body: s, type: "warning", time: -1, html: yes, onClick: (event) -> console.log ":D"
+
 	ChatHeads.initialize()
 
 	Deps.autorun ->
