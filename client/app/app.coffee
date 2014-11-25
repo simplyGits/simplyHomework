@@ -155,7 +155,7 @@ Template.setMagisterInfoModal.events
 			if success
 				$("#setMagisterInfoModal").modal "hide"
 				App.step()
-				loadMagisterInfo yes
+				loadMagisterInfo "rerun"
 			else
 				$("#setMagisterInfoModal").addClass "animated shake"
 				$('#setMagisterInfoModal').one 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', ->
@@ -363,9 +363,9 @@ Template.app.helpers
 
 Template.app.rendered = ->
 	Deps.autorun -> if Meteor.user()? then Meteor.subscribe "essentials", -> loadMagisterInfo()
-	
+
 	notify("Je hebt je account nog niet geverifiëerd!", "warning") unless Meteor.user().emails[0].verified
-	onMagisterInfoResult "assignments soon", (e, r) ->
+	onMagisterInfoResult "assignments soon", yes, (e, r) ->
 		return if e? or r.length is 0
 		s = "Deadlines van opdrachten binnenkort:\nKlik voor meer info.\n\n"
 		for assignment in _.uniq(r, "_class") then do (assignment) ->
@@ -374,7 +374,7 @@ Template.app.rendered = ->
 
 		NotificationsManager.notify body: s, type: "warning", time: -1, html: yes, onClick: (event) -> console.log ":D"
 
-	onMagisterInfoResult "grades", (e, r) ->
+	onMagisterInfoResult "grades", yes, (e, r) ->
 		return if e? or r.length is 0
 
 		endGrades = _.filter r, (g) -> g.type().header().toLowerCase() is "eind"

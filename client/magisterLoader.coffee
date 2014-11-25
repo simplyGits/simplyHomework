@@ -3,25 +3,31 @@ callbacks = {}
 dependencies = {}
 @magister = null
 
-@pushMagisterResult = (name, result) ->
+validSensitivities = ["default", "info update", "rerun"]
+
+@pushMagisterResult = (name, sensitivity, result) ->
 	check name, String
 
 	results[name] = result
 	for callback in callbacks[name]?.callbacks ? []
 		callback(result.error, result.result)
+		_.remove callbacks[name].callbacks, callback if callbacks[name].once
 		callbacks[name].dependency.changed()
 
-@onMagisterInfoResult = (name, callback) ->
+@onMagisterInfoResult = ->
 	# If callback is null, it will use a tracker to rerun computations, otherwise it will just recall the given callback.
-	check name, String
-	check callback, Match.Optional Function
+	name = _.find arguments, (a) -> _.isString a
+	once = _.find(arguments, (a) -> _.isBoolean a) ? no
+	callback = _.find arguments, (a) -> _.isFunction a
+	throw new ArgumentException "name", "Can't be null" unless name?
 
-	callbacks[name] ?= { callbacks: [], dependency: new Tracker.Dependency }
+	callbacks[name] ?= { callbacks: [], dependency: new Tracker.Dependency, once }
 	callbacks[name].callbacks.push callback
 	callbacks[name].dependency.depend() unless callback?
 
 	if (result = results[name])?
 		callback? result.error, result.result
+		_.remove callbacks[name].callbacks, callback if once
 		return result
 
 @resetMagisterLoader = ->
@@ -29,10 +35,14 @@ dependencies = {}
 	callbacks = {}
 	@magister = null
 
-@loadMagisterInfo = (force = no) ->
+@loadMagisterInfo = (sensitivity = "default") ->
 	pushResult = @pushMagisterResult
-	check force, Boolean
-	if not force and @magister? then throw new Error "loadMagisterInfo already called. To force reloading all info use loadMagisterInfo(true)."
+	time = Session.get("loadMagsterInfoTimesCalled") ? 0
+
+	unless _.contains validSensitivities, sensitivity
+		throw new ArgumentException "sensitivity", "Option #{sensitivity} isn't valid: Valid chooses are: [#{validSensitivities.join ", "}]"
+
+	if sensitivity is "default" and @magister? then throw new Error "loadMagisterInfo already called. To force reloading all info use loadMagisterInfo(true)."
 
 	try
 		url = "https://#{Schools.findOne(Meteor.user().profile.schoolId).url}"
@@ -49,19 +59,22 @@ dependencies = {}
 			else
 				pushResult "appointments tomorrow", { error, result: null }
 
-		m.courses (e, r) ->
-			if e?
-				pushResult "classes", { error: e, result: null }
-				pushResult "course", { error: e, result: null }
-				pushResult "grades", { error: e, result: null }
-			else
-				r[0].classes (error, result) -> pushResult "classes", { error, result }
-				r[0].grades no, (error, result) -> pushResult "grades", { error, result }
-				pushResult "course", { error: null, result: r[0] }
+		if time % 6 is 0 or sensitivity is "info update"
+			m.courses (e, r) ->
+				if e?
+					pushResult "classes", { error: e, result: null }
+					pushResult "course", { error: e, result: null }
+					pushResult "grades", { error: e, result: null }
+				else
+					r[0].classes (error, result) -> pushResult "classes", { error, result }
+					r[0].grades no, (error, result) -> pushResult "grades", { error, result }
+					pushResult "course", { error: null, result: r[0] }
 
-		m.assignments no, (error, result) ->
-			pushResult "assignments", { error, result }
-			if error? then pushResult "assignments soon", { error, result: null }
-			else pushResult "assignments soon", error: null, result: _.filter(result, (a) -> a.deadline().date() < Date.today().addDays(7) and not a.finished() and new Date() < a.deadline())
+		if time % 3 is 0 or sensitivity is "info update"
+			m.assignments no, (error, result) ->
+				pushResult "assignments", { error, result }
+				if error? then pushResult "assignments soon", { error, result: null }
+				else pushResult "assignments soon", error: null, result: _.filter(result, (a) -> a.deadline().date() < Date.today().addDays(7) and not a.finished() and new Date() < a.deadline())
 
+	Session.set "loadMagsterInfoTimesCalled", time++
 	return "dit geeft echt niets nuttig terug ofzo, als je dat denkt."
