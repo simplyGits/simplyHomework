@@ -91,6 +91,10 @@ Template.calendar.rendered = ->
 					callback (toEvent x for x in val)
 					updateNeeded = yes
 
+				unless root.magister?
+					setTimeout (-> $(".calendar").fullCalendar "refetchEvents"), 250
+					return
+
 				root.magister.ready ->
 					root.magister.appointments start, end, no, (error, result) ->
 						setHardCacheAppointments result
