@@ -7,21 +7,21 @@ dependencies = {}
 	check name, String
 
 	results[name] = result
-	for { callback, dependency } in callbacks[name] ? []
+	for callback in callbacks[name]?.callbacks ? []
 		callback(result.error, result.result)
-		dependency.changed()
+		callbacks[name].dependency.changed()
 
 @onMagisterInfoResult = (name, callback) ->
 	# If callback is null, it will use a tracker to rerun computations, otherwise it will just recall the given callback.
 	check name, String
 	check callback, Match.Optional Function
 
-	callbacks[name] ?= []
-	callbacks[name].push { callback, dependency: new Tracker.Dependency }
+	callbacks[name] ?= { callbacks: [], dependency: new Tracker.Dependency }
+	callbacks[name].callbacks.push callback
 	callbacks[name].dependency.depend() unless callback?
 
 	if (result = results[name])?
-		callback result.error, result.result
+		callback? result.error, result.result
 		return result
 
 @resetMagisterLoader = ->
