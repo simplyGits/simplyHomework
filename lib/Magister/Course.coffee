@@ -172,11 +172,11 @@ class @Course
 						g.teacher._type = 3
 
 						if download
-							@_magisterObj.getPersons g.Docent, 3, (e, r) ->
+							@_magisterObj.getPersons g.Docent, 3, (e, r) =>
 								unless e? or !r[0]? then teacher = r[0]
-								pushResult Grade._convertRaw g
+								pushResult Grade._convertRaw @_magisterObj, g
 						else
-							pushResult Grade._convertRaw g
+							pushResult Grade._convertRaw @_magisterObj, g
 
 
 	@_convertRaw: (magisterObj, raw) ->
