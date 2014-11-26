@@ -362,6 +362,8 @@ Template.app.helpers
 	contentOffsetLeft: -> if Session.get "isPhone" then "0" else "200px"
 
 Template.app.rendered = ->
+	if "#{Math.random()}"[2] is "2" and "#{Math.random()}"[4] is "2"
+		console.error "CRITICAL ERROR: UNEXPECTED KAAS"
 	Deps.autorun -> if Meteor.user()? then Meteor.subscribe "essentials", -> loadMagisterInfo()
 	
 	notify("Je hebt je account nog niet geverifiëerd!", "warning") unless Meteor.user().emails[0].verified
