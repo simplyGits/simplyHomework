@@ -54,8 +54,7 @@ Meteor.startup ->
 
 	$.getScript "/js/advertisement.js" # adblock detection trick ;D
 
-	if Session.get "isPhone" then Session.set "sidebarOpen", false
-	else Session.set "sidebarOpen", true
+	Session.set "sidebarOpen", not Session.get "isPhone"
 
 	Deps.autorun -> try UserStatus.startMonitor idleOnBlur: true
 
