@@ -208,7 +208,7 @@ Template.plannerPrefsModal.events
 		schedular = Get.schedular() ? New.schedular Meteor.userId()
 		schedularPrefs = new SchedularPrefs
 		for day in dayWeek
-			schedularPrefs.dates().push @DayEnum[Helpers.cap day.name], switch $("##{day.name}Input").val()
+			schedularPrefs.dates().push new DateInfo @DayEnum[Helpers.cap day.name], switch $("##{day.name}Input").val()
 				when "Geen" then 0
 				when "Weinig" then 1
 				when "Gemiddeld" then 2
