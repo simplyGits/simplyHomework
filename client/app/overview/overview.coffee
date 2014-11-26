@@ -1,5 +1,5 @@
 homeworkDependency = new Deps.Dependency
-homeworkItems = []
+homeworkItems = new ReactiveVar []
 firstAppointment = new ReactiveVar null
 
 getTasks = -> # Also mix homework for tommorow and homework for days where the day before has no time. Unless today has no time.
@@ -13,14 +13,13 @@ getTasks = -> # Also mix homework for tommorow and homework for days where the d
 			__taskDescription: "leer"
 			#__chapter: Classes.findOne(task._parent.classId()).
 
-	for homework in homeworkItems
-		do (homework) ->
-			tmp.push
-				__id: homework.id()
-				__taskDescription: homework.content().replace(/\n/g, "; ")
-				__className: if (val = homework.classes()[0])[0] is val[0].toUpperCase() then val else Helpers.cap val
+	for homework in homeworkItems.get() then do (homework) ->
+		tmp.push
+			__id: homework.id()
+			__taskDescription: homework.content().replace(/\n/g, "; ")
+			__className: if (val = homework.classes()[0])[0] is val[0].toUpperCase() then val else Helpers.cap val
 
-				isDone: homework.isDone
+			isDone: homework.isDone
 	return tmp
 
 tasksAmount = -> if _.isFunction(getTasks) then getTasks().length else 0
@@ -83,7 +82,7 @@ Template.appOverview.rendered = ->
 
 			if new Date().getHours() < 4 then date.addDays(-1)
 
-			homework = _.where result, (a) -> a.content()? and a.content() isnt "" and a.begin().getTime() > new Date().getTime()
-			homeworkItems = _.where homework, (h) -> EJSON.equals(date, h.begin().date()) or Get.schedular().schedularPrefs().bias(h.begin().addDays(-1, yes).date()) is 0
+			homework = _.where result, (a) -> a.content()? and a.content() isnt "" and a.begin().getTime() > new Date().getTime() and a.infoType() isnt 0 and a.classes().length > 0
+			homeworkItems.set _.where homework, (h) -> EJSON.equals(date, h.begin().date()) or Get.schedular().schedularPrefs().bias(h.begin().addDays(-1, yes).date()) is 0
 
 			homeworkDependency.changed()
