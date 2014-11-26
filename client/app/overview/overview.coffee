@@ -9,17 +9,17 @@ getTasks = -> # Also mix homework for tommorow and homework for days where the d
 	tmp = []
 	for task in tasks
 		tmp.push _.extend task,
-			__id: task._id
+			__id: task._id.toHexString()
 			__taskDescription: "leer"
 			#__chapter: Classes.findOne(task._parent.classId()).
 
 	for homework in homeworkItems.get() then do (homework) ->
 		tmp.push
-			__id: homework.id()
+			__id: "#{homework.id()}"
 			__taskDescription: homework.content().replace(/\n/g, "; ")
 			__className: if (val = homework.classes()[0])[0] is val[0].toUpperCase() then val else Helpers.cap val
 
-			isDone: homework.isDone
+			isDone: -> homework.isDone arguments...
 	return tmp
 
 tasksAmount = -> if _.isFunction(getTasks) then getTasks().length else 0
@@ -39,25 +39,17 @@ Template.appOverview.helpers
 
 Template.taskRow.events
 	"change": (event) ->
-		checked = $(event.target).is(":checked")
-		taskId = event.target.attributes["taskid"].value
-		row = $ "[taskid=#{taskId}]"
+		t = $ event.target
+		checked = t.is(":checked")
+		taskId = t.attr "taskid"
 		
-		task = getTasks().smartFind Number(taskId), (t) -> t.__id
+		task = _.find getTasks(), (t) -> t.__id is taskId
 		task.isDone checked
 
-		row.stop()
-		# unless Session.get "isPhone"
-		# 	if checked
-		# 		originals[taskId] = row.find("span").html()
-		# 		strikeThrough(row, 0)
-		# 	else
-		# 		row.find("span#stroke")
-		# 			.css textDecoration: "initial"
-		# 			.html originals[taskId]
-		# else
-		row.css textDecoration: if checked then "line-through" else "initial"
-		row.velocity opacity: if checked then .4 else 1
+		t.parent()
+			.stop()
+			.css(textDecoration: if checked then "line-through" else "initial")
+			.velocity(opacity: if checked then .4 else 1)
 
 Template.infoNextDay.helpers
 	hours: -> firstAppointment.get().begin().getHours()
