@@ -56,10 +56,7 @@ dependencies = {}
 				pushResult "grades", { error: e, result: null }
 			else
 
-				unless amplify.store("classesLoaded")
-					r[0].classes (error, result) ->
-						unless error? then amplify.store "classesLoaded", yes, expires: 86400000 # After 24 hours class data will be reloaded
-						pushResult "classes", { error, result }
+				r[0].classes (error, result) -> pushResult "classes", { error, result }
 
 				r[0].grades no, (error, result) -> pushResult "grades", { error, result }
 				pushResult "course", { error: null, result: r[0] }
