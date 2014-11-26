@@ -101,13 +101,13 @@ classEngine = new Bloodhound
 # == Modals ==
 
 Template.getMagisterClassesModal.helpers
-	magisterClasses: magisterClasses.get
+	magisterClasses: -> magisterClasses.get()
 
 Template.getMagisterClassesModal.rendered = ->
 	onMagisterInfoResult "classes", (e, r) ->
 		magisterClasses.set r unless e?
 
-		$("#magisterClassesResult .input-group-addon").colorpicker
+		$("#magisterClassesResult .input-group-addon").colorpicker()
 
 	onMagisterInfoResult "course", (e, r) ->
 		return if e? or amplify.store "courseInfoSet"
