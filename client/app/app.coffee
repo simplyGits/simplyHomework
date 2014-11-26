@@ -424,11 +424,13 @@ Template.app.rendered = ->
 
 	if !amplify.store("allowCookies") and $(".cookiesContainer").length is 0
 		UI.insert UI.render(Template.cookies), $("body").get()[0]
-		$(".cookiesContainer").css visibility: "initial"
-		$(".cookiesContainer").velocity { bottom: 0 }, 1200, "easeOutExpo"
+		$(".cookiesContainer")
+			.css visibility: "initial"
+			.velocity { bottom: 0 }, 1200, "easeOutExpo"
+
 		$("#acceptCookiesButton").click ->
 			amplify.store "allowCookies", yes
-			$(".cookiesContainer").velocity { bottom: "-500px" }, 2400, "easeOutExpo", -> $(".cookiesContainer").remove()
+			$(".cookiesContainer").velocity { bottom: "-500px" }, 2400, "easeOutExpo", -> $(@).remove()
 
 setSwipe = ->
 	snapper = new Snap
