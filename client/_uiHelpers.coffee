@@ -142,7 +142,7 @@ class @NotificationsManager
 			
 			content: (content, html = false) ->
 				if content?
-					$(".notification##{notId} div")[if html then "html" else "text"] content
+					$(".notification##{notId} div").html (if html then body else escape body).replace /\n/g, "<br>"
 					NotificationsManager._updatePositions()
 					return content
 				else
