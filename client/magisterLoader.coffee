@@ -55,7 +55,10 @@ dependencies = {}
 				pushResult "course", { error: e, result: null }
 				pushResult "grades", { error: e, result: null }
 			else
-				r[0].classes (error, result) -> pushResult "classes", { error, result }
+				unless Session.get("timeClassesLoaded")? and new Date().getTime() - Session.get("timeClassesLoaded").getTime() < 86400000
+					r[0].classes (error, result) ->
+						unless error? then Session.set "timeClassesLoaded", new Date
+						pushResult "classes", { error, result }
 
 				r[0].grades no, (error, result) -> pushResult "grades", { error, result }
 				pushResult "course", { error: null, result: r[0] }
