@@ -52,14 +52,14 @@ Template.taskRow.events
 			.velocity(opacity: if checked then .4 else 1)
 
 Template.infoNextDay.helpers
-	hours: -> firstAppointment.get().begin().getHours()
-	minutes: -> firstAppointment.get().begin().getMinutes()
+	hours: ->   val = firstAppointment.get()?.begin().getHours()  ; if val? then Helpers.addZero(val) else ""
+	minutes: -> val = firstAppointment.get()?.begin().getMinutes(); if val? then ":#{Helpers.addZero(val)}" else ""
 
 Template.appOverview.rendered = ->
 	onMagisterInfoResult "appointments tomorrow", (e, r) ->
 		return if e?
 
-		firstAppointment.set _.find r, (a) -> not a.fullDay() and _.contains [5..19], a
+		firstAppointment.set _.find r, (a) -> not a.fullDay() and _.contains [5..19], a.begin().getHours()
 
 	$("#currentDate > span").tooltip placement: "bottom", html: true, title: "<h4>Week: #{new Date().week()}</h4>"
 

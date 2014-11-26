@@ -45,7 +45,7 @@ dependencies = {}
 		m.appointments new Date(), new Date().addDays(7), no, (error, result) -> # Currently we AREN'T downloading the persons.
 			pushResult "appointments this week", { error, result }
 			unless error?
-				pushResult "appointments tomorrow", error: null, result: _.filter result, (a) -> a.begin() > Date.today().addDays(1) and a.begin() < Date.today().addDays(1)
+				pushResult "appointments tomorrow", error: null, result: _.filter result, (a) -> a.begin() > Date.today().addDays(1) and a.begin() < Date.today().addDays(2)
 			else
 				pushResult "appointments tomorrow", { error, result: null }
 
