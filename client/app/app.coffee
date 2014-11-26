@@ -101,12 +101,12 @@ classEngine = new Bloodhound
 # == Modals ==
 
 Template.getMagisterClassesModal.helpers
-	magisterClasses: -> magisterClasses.get()
+	magisterClasses: magisterClasses.get
 
 Template.getMagisterClassesModal.rendered = ->
 	onMagisterInfoResult("classes", (e, r) -> magisterClasses.set r unless e?)
 	onMagisterInfoResult "course", (e, r) ->
-		return if e?
+		return if e? or amplify.store "courseInfoSet"
 
 		schoolVariant = /[^\d\s]+/.exec(r.type().description)[0].trim()
 		year = (Number) /\d+/.exec(r.type().description)[0].trim()
@@ -118,6 +118,8 @@ Template.getMagisterClassesModal.rendered = ->
 				schoolVariant
 				year
 			}
+
+		amplify.store "courseInfoSet", yes, expires: 172800000 # We don't want to be spammed under, thank you.
 
 	opts =
 		lines: 17
