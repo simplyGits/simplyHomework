@@ -104,7 +104,11 @@ Template.getMagisterClassesModal.helpers
 	magisterClasses: magisterClasses.get
 
 Template.getMagisterClassesModal.rendered = ->
-	onMagisterInfoResult("classes", (e, r) -> magisterClasses.set r unless e?)
+	onMagisterInfoResult "classes", (e, r) ->
+		magisterClasses.set r unless e?
+
+		$("#magisterClassesResult .input-group-addon").colorpicker
+
 	onMagisterInfoResult "course", (e, r) ->
 		return if e? or amplify.store "courseInfoSet"
 
@@ -153,8 +157,8 @@ Template.setMagisterInfoModal.events
 		school = Schools.findOne { name: schoolName }
 		school ?= New.school schoolName, school.url, new Location()
 
-		Meteor.call "setMagisterInfo", { school, schoolId: school._id, magisterCredentials: { username, password }}, (success) ->
-			if success
+		Meteor.call "setMagisterInfo", { school, schoolId: school._id, magisterCredentials: { username, password }}, (e, success) ->
+			if not e? and success
 				$("#setMagisterInfoModal").modal "hide"
 				App.step()
 				loadMagisterInfo yes
