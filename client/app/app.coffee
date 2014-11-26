@@ -394,7 +394,7 @@ Template.app.rendered = ->
 
 			for c in (z.class() for z in _.uniq recentGrades, "_class")
 				grades = _.filter recentGrades, (g) -> g.class() is c
-				s += "<b>#{c.abbreviation()}</b> - #{grades.map((z) -> if Number(z.grade().replace(",", ".")) < 5.5 then "<b style=\"color: red\">#{z.grade()}</b>" else z.grade()).join ', '}\n"
+				s += "<b>#{c.abbreviation()}</b> - #{grades.map((z) -> if Number(z.grade().replace(",", ".")) < 5.5 then "<b style=\"color: red\">#{z.grade()}</b>" else z.grade()).join ' & '}\n"
 
 			if recentGradesNotification?
 				recentGradesNotification.content s, yes
