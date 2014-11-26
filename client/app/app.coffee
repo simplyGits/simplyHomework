@@ -342,15 +342,7 @@ Template.sidebar.helpers
 	"sidebarOverflow": -> if Session.get "sidebarOpen" then "auto" else "hidden"
 
 Template.sidebar.events
-	"click .bigSidebarButton": (event) ->
-		#targetPosition = (Number) event.currentTarget.attributes["pos"].value
-		#classId = classes()[targetPosition - 1]._id unless targetPosition is 0
-		
-		#Session.set "selectedClassPosition", targetPosition
-		#Session.set "selectedClassId", classId
-
-		#if targetPosition is 0 then Router.go "app" else Router.go "classView", classId: classId.toHexString()
-		slide $(event.target).attr "id"
+	"click .bigSidebarButton": (event) -> slide $(event.target).attr "id"
 
 	"click .sidebarFooterSettingsIcon": -> $("#settingsModal").modal()
 	"click #addClassButton": ->
