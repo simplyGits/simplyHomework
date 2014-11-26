@@ -165,10 +165,10 @@ class @Course
 			else
 				result = EJSON.parse(result.content).Items
 				pushResult = _helpers.asyncResultWaiter result.length, (r) ->
-					for c in _.uniq(r, (g) -> g.class().id()).map((g) -> g.class()) then do (c) ->
-						for g in _.filter(r, (g) -> g.class().id() is c.id()) then do (g) ->
+					for c in _.uniq(r, (g) -> g.class().id()).map((g) -> g.class())
+						for g in _.filter(r, (g) -> g.class().id() is c.id())
 							g._class = c
-								
+
 					callback null, r
 
 				for g in result
