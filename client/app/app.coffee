@@ -365,6 +365,10 @@ Template.app.rendered = ->
 	Deps.autorun -> if Meteor.user()? then Meteor.subscribe "essentials", -> loadMagisterInfo()
 	
 	notify("Je hebt je account nog niet geverifiëerd!", "warning") unless Meteor.user().emails[0].verified
+
+	assignmentNotification = null
+	recentGradesNotification = null
+
 	onMagisterInfoResult "assignments soon", (e, r) ->
 		return if e? or r.length is 0
 		s = "Deadlines van opdrachten binnenkort:\nKlik voor meer info.\n\n"
@@ -372,7 +376,10 @@ Template.app.rendered = ->
 			d = if (d = assignment.deadline()).getHours() is 0 and d.getMinutes() is 0 then d.addDays(-1) else d
 			s += "<b>#{assignment.class().abbreviation()}</b> - #{DayToDutch(Helpers.weekDay(d))}\n"
 
-		NotificationsManager.notify body: s, type: "warning", time: -1, html: yes, onClick: (event) -> console.log ":D"
+		if assignmentNotification?
+			assignmentNotification.content s, yes
+		else
+			assignmentNotification = NotificationsManager.notify body: s, type: "warning", time: -1, html: yes, onClick: (event) -> console.log ":D"
 
 	onMagisterInfoResult "grades", (e, r) ->
 		return if e? or r.length is 0
@@ -389,7 +396,10 @@ Template.app.rendered = ->
 				grades = _.filter recentGrades, (g) -> g.class() is c
 				s += "<b>#{c.abbreviation()}</b> - #{grades.map((z) -> if Number(z.grade().replace(",", ".")) < 5.5 then "<b style=\"color: red\">#{z.grade()}</b>" else z.grade()).join ', '}\n"
 
-			NotificationsManager.notify body: s, type: "warning", time: -1, html: yes, onClick: (event) -> console.log ":D"
+			if recentGradesNotification?
+				recentGradesNotification.content s, yes
+			else
+				recentGradesNotification = NotificationsManager.notify body: s, type: "warning", time: -1, html: yes, onClick: (event) -> console.log ":D"
 
 	ChatHeads.initialize()
 
