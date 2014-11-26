@@ -55,7 +55,6 @@ dependencies = {}
 				pushResult "course", { error: e, result: null }
 				pushResult "grades", { error: e, result: null }
 			else
-
 				r[0].classes (error, result) -> pushResult "classes", { error, result }
 
 				r[0].grades no, (error, result) -> pushResult "grades", { error, result }
