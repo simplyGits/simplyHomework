@@ -4,7 +4,7 @@
 	<div class="container-fluid">
 		<div class="row" style="margin-top: -10px">
 			<div class="robotoHeader overviewHeader" id="classHeader">
-				{{_name}}
+				{{name}}
 				{{#if isPhone}}
 					<span id="changeClassIcon" class="fa fa-pencil"></span>
 				{{else}}
@@ -23,14 +23,14 @@
 			<div class="modal-content">
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-					<h4 class="modal-title">{{_name}}</h4>
+					<h4 class="modal-title">{{name}}</h4>
 				</div>
 				<div class="modal-body">
 					<form class="form-horizontal">
 						<div id="changeBookGroup" class="form-group">
 							<label for="changeBookInput" class="col-sm-2 control-label" style="text-align: left">Methode</label>
 							<div class="col-sm-10">
-								<input type="text" class="form-control" id="changeBookInput" value="{{__book._title}}">
+								<input type="text" class="form-control" id="changeBookInput" value="{{__book.title}}">
 							</div>
 						</div>
 						<div id="changeColorGroup" class="form-group">
