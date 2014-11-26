@@ -400,8 +400,8 @@ Template.app.rendered = ->
 		unless recentGrades.length is 0
 			s = "Recent ontvangen cijfers:\n\n"
 
-			for c in (z.class() for z in _.uniq recentGrades, (g) -> g.class().id())
-				grades = _.filter recentGrades, (g) -> g.class().abbreviation() is c.abbreviation()
+			for c in (z.class() for z in _.uniq recentGrades, "_class")
+				grades = _.filter recentGrades, (g) -> g.class() is c
 				s += "<b>#{c.abbreviation()}</b> - #{grades.map((z) -> if Number(z.grade().replace(",", ".")) < 5.5 then "<b style=\"color: red\">#{z.grade()}</b>" else z.grade()).join ', '}\n"
 
 			if recentGradesNotification?
