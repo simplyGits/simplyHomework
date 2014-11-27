@@ -45,8 +45,8 @@ dependencies = {}
 		m.appointments new Date(), new Date().addDays(7), no, (error, result) -> # Currently we AREN'T downloading the persons.
 			pushResult "appointments this week", { error, result }
 			unless error?
-				pushResult "appointments tomorrow", error: null, result: _.filter result, (a) -> a.begin().date() is Date.today().addDays(1)
-				pushResult "appointments today", error: null, result: _.filter result, (a) -> a.begin().date() is Date.today()
+				pushResult "appointments tomorrow", error: null, result: _.filter result, (a) -> EJSON.equals a.begin().date(), Date.today().addDays(1)
+				pushResult "appointments today", error: null, result: _.filter result, (a) -> EJSON.equals a.begin().date(), Date.today()
 			else
 				pushResult "appointments tomorrow", { error, result: null }
 				pushResult "appointments today"
