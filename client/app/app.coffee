@@ -389,9 +389,9 @@ Template.app.rendered = ->
 	onMagisterInfoResult "grades", (e, r) ->
 		return if e? or r.length is 0
 
-		endGrades = _.filter r, (g) -> g.type().header().toLowerCase() is "eind"
+		endGrades = _.filter r, (g) -> g.type().header()?.toLowerCase() is "eind"
 		if endGrades.length is 0
-			endGrades = _.filter r, (g) -> g.type().header().toLowerCase() is "e-jr"
+			endGrades = _.filter r, (g) -> g.type().header()?.toLowerCase() is "e-jr"
 
 		recentGrades = _.filter r, (g) -> new Date(g.dateFilledIn()) > Date.today().addDays(-7) and _.contains ["pw", "ow"], g.type().header().toLowerCase()
 		unless recentGrades.length is 0
