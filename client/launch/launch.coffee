@@ -86,7 +86,7 @@ Meteor.startup ->
 		$(".Center, .signUpForm").addClass("active")
 		_.delay ( ->
 			$(".signUpForm input#username").val(String.fromCharCode event.which).focus()
-		), 25
+		), 45
 
 	$("body").on "input", (event) ->
 		return unless $(".signUpForm input#username").val() is "" and $(".signUpForm input#password").val() is ""
