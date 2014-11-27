@@ -107,7 +107,9 @@ Template.getMagisterClassesModal.rendered = ->
 	onMagisterInfoResult "classes", (e, r) ->
 		magisterClasses.set r unless e?
 
-		$("#magisterClassesResult .input-group-addon").colorpicker()
+		Meteor.defer ->
+			for x in $("#magisterClassesResult > div").colorpicker(input: null)
+				$(x).colorpicker "setValue", "##{("00000" + (Math.random() * (1 << 24) | 0).toString(16)).slice -6}"
 
 	onMagisterInfoResult "course", (e, r) ->
 		return if e? or amplify.store "courseInfoSet"
@@ -144,7 +146,10 @@ Template.getMagisterClassesModal.rendered = ->
 
 	spinner = new Spinner(opts).spin $("#spinner").get()[0]
 
-Template.getMagisterClassesModal.events {}
+Template.getMagisterClassesModal.events
+	"click #goButton": ->
+
+		Meteor.users.update Meteor.userId(), $push: { classInfos: { $each: ({ id: c._id, color, bookId: b._id } for [c, b] in classes)}}
 
 Template.setMagisterInfoModal.events
 	"click #goButton": ->
