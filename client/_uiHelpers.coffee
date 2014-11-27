@@ -180,7 +180,7 @@ class @NotificationsManager
 						$(@).velocity opacity: 0
 						notHandle.hide()
 				drag: (event, helper) ->
-					$(@).css opacity: 1 - (Math.abs($(@).position().left - pos) / 250)
+					$(@).css opacity: 1 - ((pos - $(@).position().left) / 250)
 				revert: -> $(@).position().left - pos > MIN
 
 		for label, i in labels
