@@ -392,6 +392,8 @@ Template.app.rendered = ->
 		endGrades = _.filter r, (g) -> g.type().header()?.toLowerCase() is "eind"
 		if endGrades.length is 0
 			endGrades = _.filter r, (g) -> g.type().header()?.toLowerCase() is "e-jr"
+		if endGrades.length is 0
+			endGrades = _.uniq _.filter(r, (g) -> g.type().type() is 2), "_class"
 
 		recentGrades = _.filter r, (g) -> new Date(g.dateFilledIn()) > Date.today().addDays(-7) and _.contains ["pw", "ow"], g.type().header().toLowerCase()
 		unless recentGrades.length is 0
