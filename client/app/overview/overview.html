@@ -85,11 +85,17 @@
 	<div class="robotoHeader overviewTimeIndicator">
 		<span style="font-weight: 300">{{hours}}</span>{{minutes}}
 	</div>
+	<div class="robotoHeader overviewClassDescription">
+		{{appointment.__name}}
+	</div>
 </template>
 
 <template name="infoNextLesson">
 	<div class="robotoHeader infoNextDayHeader">Volgend lesuur</div>
 	<div class="robotoHeader overviewTimeIndicator">
 		<span style="font-weight: 300">{{hours}}</span>{{minutes}}
+	</div>
+	<div class="robotoHeader overviewClassDescription">
+		{{appointment.__name}}
 	</div>
 </template>

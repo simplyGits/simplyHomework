@@ -16,15 +16,14 @@ getTasks = -> # Also mix homework for tommorow and homework for days where the d
 			#__chapter: Classes.findOne(task._parent.classId()).
 
 	for homework in homeworkItems.get() then do (homework) ->
-		tmp.push
+		tmp.push _.extend homework,
 			__id: "#{homework.id()}"
+			__name: Helpers.cap homework.classes()[0]
 			__taskDescription: homework.content().replace(/\n/g, "; ")
 			__className: if (val = homework.classes()[0])[0] is val[0].toUpperCase() then val else Helpers.cap val
-
-			isDone: -> homework.isDone arguments...
 	return tmp
 
-tasksAmount = -> if _.isFunction(getTasks) then getTasks().length else 0
+tasksAmount = -> getTasks().length
 
 Template.appOverview.helpers
 	currentDate: -> DateToDutch()
@@ -59,10 +58,12 @@ Template.taskRow.events
 Template.infoNextDay.helpers
 	hours: ->   val = firstAppointmentTomorrow.get()?.begin().getHours()  ; if val? then Helpers.addZero(val) else ""
 	minutes: -> val = firstAppointmentTomorrow.get()?.begin().getMinutes(); if val? then ":#{Helpers.addZero(val)}" else ""
+	appointment: -> firstAppointmentTomorrow.get()
 
 Template.infoNextLesson.helpers
 	hours: ->   val = nextAppointmentToday.get()?.begin().getHours()  ; if val? then Helpers.addZero(val) else ""
 	minutes: -> val = nextAppointmentToday.get()?.begin().getMinutes(); if val? then ":#{Helpers.addZero(val)}" else ""
+	appointment: -> nextAppointmentToday.get()
 
 Template.appOverview.rendered = ->
 	onMagisterInfoResult "appointments tomorrow", (e, r) ->
@@ -93,7 +94,7 @@ Template.appOverview.rendered = ->
 
 			if new Date().getHours() < 4 then date.addDays(-1)
 
-			homework = _.where result, (a) -> a.content()? and a.content() isnt "" and a.begin().getTime() > new Date().getTime() and a.infoType() isnt 0 and a.classes().length > 0
+			homework = _.where result, (a) -> a.content()? and a.content() isnt "" and a.begin().getTime() > new Date().getTime() and _.contains([1..5], a.infoType()) and a.classes().length > 0
 			homeworkItems.set _.where homework, (h) -> EJSON.equals(date, h.begin().date()) or Get.schedular().schedularPrefs().bias(h.begin().addDays(-1, yes).date()) is 0
 
 			homeworkDependency.changed()
