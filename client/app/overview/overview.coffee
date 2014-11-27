@@ -1,6 +1,8 @@
 homeworkDependency = new Deps.Dependency
 homeworkItems = new ReactiveVar []
-firstAppointment = new ReactiveVar null
+firstAppointmentTomorrow = new ReactiveVar null
+nextAppointmentToday = new ReactiveVar null
+currentAppointment = new ReactiveVar null
 
 getTasks = -> # Also mix homework for tommorow and homework for days where the day before has no time. Unless today has no time.
 	homeworkDependency.depend()
@@ -35,6 +37,9 @@ Template.appOverview.helpers
 
 	tasks: getTasks
 
+	foundAppointment: -> _.any [firstAppointmentTomorrow, nextAppointmentToday, currentAppointment], (x) -> x.get()?
+	dayOver: -> not nextAppointmentToday.get()?
+
 @originals = {}
 
 Template.taskRow.events
@@ -52,14 +57,28 @@ Template.taskRow.events
 			.velocity(opacity: if checked then .4 else 1)
 
 Template.infoNextDay.helpers
-	hours: ->   val = firstAppointment.get()?.begin().getHours()  ; if val? then Helpers.addZero(val) else ""
-	minutes: -> val = firstAppointment.get()?.begin().getMinutes(); if val? then ":#{Helpers.addZero(val)}" else ""
+	hours: ->   val = firstAppointmentTomorrow.get()?.begin().getHours()  ; if val? then Helpers.addZero(val) else ""
+	minutes: -> val = firstAppointmentTomorrow.get()?.begin().getMinutes(); if val? then ":#{Helpers.addZero(val)}" else ""
+
+Template.infoNextLesson.helpers
+	hours: ->   val = nextAppointmentToday.get()?.begin().getHours()  ; if val? then Helpers.addZero(val) else ""
+	minutes: -> val = nextAppointmentToday.get()?.begin().getMinutes(); if val? then ":#{Helpers.addZero(val)}" else ""
 
 Template.appOverview.rendered = ->
 	onMagisterInfoResult "appointments tomorrow", (e, r) ->
 		return if e?
 
-		firstAppointment.set _.find r, (a) -> not a.fullDay() and _.contains [5..19], a.begin().getHours()
+		firstAppointmentTomorrow.set _.find r, (a) -> not a.fullDay() and _.contains [5..19], a.begin().getHours()
+
+	updateInterval = null
+	onMagisterInfoResult "appointments today", (e, r) ->
+		return if e?
+
+		clearInterval updateInterval if updateInterval?
+		updateInterval = setInterval (do (r) ->
+			nextAppointmentToday.set _.find r, (a) -> not a.fullDay() and new Date() < a.end() and a.classes().length > 0
+			currentAppointment.set _.find r, (a) -> not a.fullDay() and new Date() > a.begin() and new Date() < a.end()
+		), 1000
 
 	$("#currentDate > span").tooltip placement: "bottom", html: true, title: "<h4>Week: #{new Date().week()}</h4>"
 

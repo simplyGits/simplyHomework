@@ -9,22 +9,19 @@
 			<div class="robotoHeader overviewHeader head2" style="text-align: right">{{tasksAmount}} <span class="robotoThin" style="margin-left: 5px">{{tasksWord}}</span></div>
 		</div>
 		<div class="divider"></div>
-		<div class="overviewImportantContainer">
-			{{> infoNextDay}}
-<!-- 			{{#if inLesson}}
-				{{> infoCurrentLesson}}
-			{{else}}
-				{{#if dayOver}}
-					{{> infoNextDay}}
+		{{#if foundAppointment}}
+			<div class="overviewImportantContainer">
+				{{#if inLesson}}
+					{{> infoCurrentLesson}}
 				{{else}}
-					{{#if isVacation}}
-						{{> infoVacation}}
+					{{#if dayOver}}
+						{{> infoNextDay}}
 					{{else}}
 						{{> infoNextLesson}}
 					{{/if}}
 				{{/if}}
-			{{/if}} -->
-		</div>
+			</div>
+		{{/if}}
 		<div class="row">
 			<div class="col-sm-6">
 				<div class="overviewItemContainer" style="height: calc(100vh - {{itemContainerMargin}})">
@@ -90,6 +87,9 @@
 	</div>
 </template>
 
-<template name="infoVacation">
-	<div class="robotoHeader infoVacationHeader">VAKANTIE?!</div>
+<template name="infoNextLesson">
+	<div class="robotoHeader infoNextDayHeader">Volgend lesuur</div>
+	<div class="robotoHeader overviewTimeIndicator">
+		<span style="font-weight: 300">{{hours}}</span>{{minutes}}
+	</div>
 </template>
