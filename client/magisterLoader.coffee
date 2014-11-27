@@ -17,8 +17,8 @@ dependencies = {}
 	check callback, Match.Optional Function
 
 	callbacks[name] ?= { callbacks: [], dependency: new Tracker.Dependency }
-	callbacks[name].callbacks.push callback
-	callbacks[name].dependency.depend() unless callback?
+	if callback? then callbacks[name].callbacks.push callback
+	else callbacks[name].dependency.depend()
 
 	if (result = results[name])?
 		callback? result.error, result.result
