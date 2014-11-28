@@ -35,7 +35,7 @@ Router.map ->
 			Meteor.defer -> slide "overview"
 			document.title = "simplyHomework | #{Meteor.user().profile.firstName} #{Meteor.user().profile.lastName}"
 
-			#App.followSetupPath()
+			App.followSetupPath()
 
 			NProgress?.done()
 
