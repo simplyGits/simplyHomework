@@ -25,6 +25,7 @@ getTasks = -> # Also mix homework for tommorow and homework for days where the d
 
 tasksAmount = -> getTasks().length
 
+hasAppointments = -> _.any [firstAppointmentTomorrow, nextAppointmentToday, currentAppointment], (x) -> x.get()?
 Template.appOverview.helpers
 	currentDate: -> DateToDutch()
 	currentDay: -> DayToDutch()
@@ -32,11 +33,15 @@ Template.appOverview.helpers
 	tasksAmount: tasksAmount
 	tasksWord: -> if tasksAmount() is 1 then "taak" else "taken"
 
-	itemContainerMargin: -> if Meteor.user().hasPremium then "250px" else "350px"
+	itemContainerMargin: ->
+		d = 350
+		if has "noAds" then d -= 100
+		if not hasAppointments() then d -= 150
+		return "#{d}px"
 
 	tasks: getTasks
 
-	foundAppointment: -> _.any [firstAppointmentTomorrow, nextAppointmentToday, currentAppointment], (x) -> x.get()?
+	foundAppointment: hasAppointments
 	dayOver: -> not nextAppointmentToday.get()?
 
 @originals = {}
