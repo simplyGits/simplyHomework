@@ -43,7 +43,7 @@ Router.map ->
 		template: "appOverview"
 
 	@route "classView",
-			fastRender: yes
+		fastRender: yes
 		layoutTemplate: "app"
 		path: "/app/view/:classId"
 
