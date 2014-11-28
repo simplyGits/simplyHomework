@@ -15,6 +15,7 @@ Router.configure
 
 Router.map ->
 	@route "launchPage",
+		fastRender: yes
 		path: "/"
 		layoutTemplate: "launchPage"
 		onBeforeAction: ->
@@ -22,10 +23,10 @@ Router.map ->
 			@next()
 		onAfterAction: ->
 			document.title = "simplyHomework"
-		fastRender: true
 
 	@route "app",
-		waitOn: -> NProgress.start(); Meteor.subscribe("essentials")
+		fastRender: yes
+		waitOn: -> NProgress?.start(); Meteor.subscribe("essentials")
 
 		onBeforeAction: ->
 			Meteor.defer => @redirect "launchPage" unless Meteor.loggingIn() or Meteor.user()?
@@ -36,16 +37,17 @@ Router.map ->
 
 			#App.followSetupPath()
 
-			NProgress.done()
+			NProgress?.done()
 
 		layoutTemplate: "app"
 		template: "appOverview"
 
 	@route "classView",
+			fastRender: yes
 		layoutTemplate: "app"
 		path: "/app/view/:classId"
 
-		subscriptions: -> NProgress.start(); Meteor.subscribe("essentials")
+		subscriptions: -> NProgress?.start(); Meteor.subscribe("essentials")
 
 		onBeforeAction: ->
 			Meteor.defer => @redirect "launchPage" unless Meteor.loggingIn() or Meteor.user()?
@@ -58,7 +60,7 @@ Router.map ->
 				return
 			Meteor.defer => slide @data()._id.toHexString()
 			document.title = "simplyHomework | #{@data()._name}"
-			NProgress.done()
+			NProgress?.done()
 
 		data: ->
 			try
@@ -69,10 +71,11 @@ Router.map ->
 				return null
 
 	@route "projectView",
+		fastRender: yes
 		layoutTemplate: "app"
 		path: "/app/project/:projectId"
 
-		subscriptions: -> NProgress.start(); [ Meteor.subscribe("essentials"), Meteor.subscribe("projects"), Meteor.subscribe("usersData") ]
+		subscriptions: -> NProgress?.start(); [ Meteor.subscribe("essentials"), Meteor.subscribe("projects"), Meteor.subscribe("usersData") ]
 
 		onBeforeAction: ->
 			Meteor.defer => @redirect "launchPage" unless Meteor.loggingIn() or Meteor.user()?
@@ -86,7 +89,7 @@ Router.map ->
 
 			Meteor.defer => slide @data().currentProject.__class._id.toHexString()
 			document.title = "simplyHomework | #{@data().currentProject._name}"
-			NProgress.done()
+			NProgress?.done()
 
 		data: ->
 			try
@@ -97,10 +100,11 @@ Router.map ->
 				return null
 
 	@route "calendar",
+		fastRender: yes
 		layoutTemplate: "app"
 		path: "/app/calendar"
 
-		subscriptions: -> NProgress.start(); [ Meteor.subscribe("essentials"), Meteor.subscribe("usersData") ]
+		subscriptions: -> NProgress?.start(); [ Meteor.subscribe("essentials"), Meteor.subscribe("usersData") ]
 
 		onBeforeAction: ->
 			Meteor.defer => @redirect "launchPage" unless Meteor.loggingIn() or Meteor.user()?
@@ -108,13 +112,14 @@ Router.map ->
 		onAfterAction: ->
 			Meteor.defer -> slide "calendar"
 			document.title = "simplyHomework | Agenda"
-			NProgress.done()
+			NProgress?.done()
 
 	@route "mobileCalendar",
+		fastRender: yes
 		layoutTemplate: "app"
 		path: "/app/mobileCalendar/:date?"
 
-		subscriptions: -> NProgress.start(); [ Meteor.subscribe("essentials"), Meteor.subscribe("usersData") ]
+		subscriptions: -> NProgress?.start(); [ Meteor.subscribe("essentials"), Meteor.subscribe("usersData") ]
 
 		onBeforeAction: ->
 			Meteor.defer => @redirect "launchPage" unless Meteor.loggingIn() or Meteor.user()?
@@ -122,15 +127,16 @@ Router.map ->
 		onAfterAction: ->
 			Meteor.defer -> slide "calendar"
 			document.title = "simplyHomework | Agenda"
-			NProgress.done()
+			NProgress?.done()
 
 		data: -> if params.date? then new Date(params.date).date() else Date.today()
 
 	@route "personView",
+		fastRender: yes
 		layoutTemplate: "app"
 		path: "/app/person/:_id"
 
-		subscriptions: -> NProgress.start(); [ Meteor.subscribe("essentials"), Meteor.subscribe("usersData") ]
+		subscriptions: -> NProgress?.start(); [ Meteor.subscribe("essentials"), Meteor.subscribe("usersData") ]
 
 		onBeforeAction: ->
 			Meteor.defer => @redirect "launchPage" unless Meteor.loggingIn() or Meteor.user()?
@@ -143,7 +149,7 @@ Router.map ->
 				return
 
 			document.title = "simplyHomework | #{@data().profile.firstName} #{@data().profile.lastName}"
-			NProgress.done()
+			NProgress?.done()
 
 		data: ->
 			try
@@ -152,6 +158,7 @@ Router.map ->
 				return null
 
 	@route "beta",
+		fastRender: yes
 		layoutTemplate: "beta"
 		onBeforeAction: ->
 			Meteor.subscribe("betaPeople")
@@ -159,24 +166,30 @@ Router.map ->
 		onAfterAction: -> document.title = "simplyHomework | Bèta"
 
 	@route "press",
+		fastRender: yes
 		layoutTemplate: "press"
 		onAfterAction: -> document.title = "simplyHomework | Pers"
 
 	@route "admin",
+		fastRender: yes
 		layoutTemplate: "admin"
 
 	@route "verifyMail",
+		fastRender: yes
 		path: "/verify/:token"
 		controller: AccountController
 		action: "verifyMail"
 
 	@route "forgotPass",
+		fastRender: yes
 		path: "/forgot"
 		layoutTemplate: "forgotPass"
 
 	@route "resetPass",
+		fastRender: yes
 		path: "/reset/:token"
 		layoutTemplate: "resetPass"
 
 	@route "full",
+		fastRender: yes
 		layoutTemplate: "full"
