@@ -160,6 +160,10 @@ Template.calendar.rendered = ->
 			d.css top: "#{top}px", left: "#{left}px"
 
 			element.parent(".fc-event-container").append d
+		dayRender: (date, cell) ->
+			_.defer ->
+				return if $(".fc-left h2").text().indexOf("week") isnt -1
+				$(".fc-left h2").html "#{$(".fc-left h2").text()} <small>week: #{date.week()}</small>"
 
 	$("button.fc-button").removeClass("fc-button fc-state-default").addClass "btn btn-default"
 	$(".fc-right").prepend "<button id=\"newAppointmentButton\" class=\"btn btn-primary\">toevoegen</button>"
