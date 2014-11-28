@@ -45,7 +45,7 @@ Router.map ->
 		layoutTemplate: "app"
 		path: "/app/view/:classId"
 
-		waitOn: -> NProgress.start(); Meteor.subscribe("essentials")
+		subscriptions: -> NProgress.start(); Meteor.subscribe("essentials")
 
 		onBeforeAction: ->
 			Meteor.defer => @redirect "launchPage" unless Meteor.loggingIn() or Meteor.user()?
@@ -72,7 +72,7 @@ Router.map ->
 		layoutTemplate: "app"
 		path: "/app/project/:projectId"
 
-		waitOn: -> NProgress.start(); [ Meteor.subscribe("essentials"), Meteor.subscribe("projects"), Meteor.subscribe("usersData") ]
+		subscriptions: -> NProgress.start(); [ Meteor.subscribe("essentials"), Meteor.subscribe("projects"), Meteor.subscribe("usersData") ]
 
 		onBeforeAction: ->
 			Meteor.defer => @redirect "launchPage" unless Meteor.loggingIn() or Meteor.user()?
@@ -100,7 +100,7 @@ Router.map ->
 		layoutTemplate: "app"
 		path: "/app/calendar"
 
-		waitOn: -> NProgress.start(); [ Meteor.subscribe("essentials"), Meteor.subscribe("usersData") ]
+		subscriptions: -> NProgress.start(); [ Meteor.subscribe("essentials"), Meteor.subscribe("usersData") ]
 
 		onBeforeAction: ->
 			Meteor.defer => @redirect "launchPage" unless Meteor.loggingIn() or Meteor.user()?
@@ -114,7 +114,7 @@ Router.map ->
 		layoutTemplate: "app"
 		path: "/app/mobileCalendar/:date?"
 
-		waitOn: -> NProgress.start(); [ Meteor.subscribe("essentials"), Meteor.subscribe("usersData") ]
+		subscriptions: -> NProgress.start(); [ Meteor.subscribe("essentials"), Meteor.subscribe("usersData") ]
 
 		onBeforeAction: ->
 			Meteor.defer => @redirect "launchPage" unless Meteor.loggingIn() or Meteor.user()?
@@ -130,7 +130,7 @@ Router.map ->
 		layoutTemplate: "app"
 		path: "/app/person/:_id"
 
-		waitOn: -> NProgress.start(); [ Meteor.subscribe("essentials"), Meteor.subscribe("usersData") ]
+		subscriptions: -> NProgress.start(); [ Meteor.subscribe("essentials"), Meteor.subscribe("usersData") ]
 
 		onBeforeAction: ->
 			Meteor.defer => @redirect "launchPage" unless Meteor.loggingIn() or Meteor.user()?
