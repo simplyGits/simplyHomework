@@ -77,7 +77,7 @@ Template.appOverview.rendered = ->
 
 		clearInterval updateInterval if updateInterval?
 		updateInterval = setInterval (do (r) ->
-			nextAppointmentToday.set _.find r, (a) -> not a.fullDay() and new Date() < a.end() and a.classes().length > 0
+			nextAppointmentToday.set _.find r, (a) -> not a.fullDay() and new Date() < a.begin() and a.classes().length > 0
 			currentAppointment.set _.find r, (a) -> not a.fullDay() and new Date() > a.begin() and new Date() < a.end()
 		), 1000
 
