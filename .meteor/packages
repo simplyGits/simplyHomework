@@ -15,7 +15,6 @@ browser-policy
 coffeescript
 npm
 meteorhacks:kadira
-tsega:bootstrap3-datetimepicker
 deepwell:authorization
 jparker:crypto-base64
 mizzao:bootstrap-3
@@ -33,4 +32,5 @@ cryptoquick:stylus-multi
 reactive-var
 percolatestudio:synced-cron
 alethes:pages
+tsega:bootstrap3-datetimepicker@0.4.0
 
