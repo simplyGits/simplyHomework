@@ -54,8 +54,8 @@ Meteor.methods
 		Meteor.users.update @userId, $set: { "emails": [ { address: mail, verified: no } ] }
 		Meteor.call "verifyMail"
 
-	verifyMail: (username) ->
-		user = if username? then Meteor.users.findOne {username} else Meteor.users.findOne @userId
+	verifyMail: (address) ->
+		user = if address? then Meteor.users.findOne { "emails": $elemMatch: { address }} else Meteor.users.findOne @userId
 
 		if user.emails[0].verified
 			throw new Meteor.Error(400, "Mail already verified.")
