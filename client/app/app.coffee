@@ -250,7 +250,7 @@ Template.addClassModal.events
 		Meteor.users.update Meteor.userId(), $push: { classInfos: { id: _class._id, color, bookId: book._id }}
 		$("#addClassModal").modal "hide"
 
-	"keypress #classNameInput": (event) ->
+	"keypress #classNameInput, #courseInput": (event) ->
 		return if event.which is 0
 		val = Helpers.cap $("#classNameInput").val()
 
