@@ -51,7 +51,7 @@ Router.map ->
 			Meteor.defer => @redirect "launchPage" unless Meteor.loggingIn() or Meteor.user()?
 			@next()
 		onAfterAction: ->
-			if !@data()?
+			if !@data()? and @ready()
 				@redirect "app"
 				Template.sidebar.rendered = -> $(".slider").velocity top: 0, 150
 				swalert title: "Niet gevonden", text: "Jij hebt dit vak waarschijnlijk niet.", confirmButtonText: "o.", type: "error"
@@ -78,23 +78,23 @@ Router.map ->
 			Meteor.defer => @redirect "launchPage" unless Meteor.loggingIn() or Meteor.user()?
 			@next()
 		onAfterAction: ->
-			if !@data().currentProject?
+			if !@data()? and @ready()
 				@redirect "app"
 				Template.sidebar.rendered = -> $(".slider").velocity top: "75px", 150
 				swalert title: "Niet gevonden", text: "Dit project is niet gevonden.", type: "error"
 				return
 
-			Meteor.defer => $(".slider").velocity top: @data().currentProject.__class.__pos * 60, 150
+			Meteor.defer => slide @data().currentProject.__class._id.toHexString()
 			document.title = "simplyHomework | #{@data().currentProject._name}"
 			NProgress.done()
 
 		data: ->
 			try
 				id = new Meteor.Collection.ObjectID @params.projectId
-				return currentProject: projects().smartFind id, (p) -> p._id
+				return projects().smartFind id, (p) -> p._id
 			catch e
 				Meteor.call "log", "log", "Error while searching for the given project. #{e.message} | stack: #{e.stack}"
-				return { currentProject: null }
+				return null
 
 	@route "calendar",
 		layoutTemplate: "app"
@@ -137,7 +137,7 @@ Router.map ->
 			@next()
 		onAfterAction: ->
 			Meteor.defer -> slide "overview"
-			if !@data()?
+			if !@data()? and @ready()
 				@redirect "app"
 				swalert title: "Niet gevonden", text: "Dit persoon is niet gevonden.", type: "error"
 				return
