@@ -248,7 +248,7 @@ Meteor.startup ->
 		if Meteor.user()? and htmlNotify.isSupported and !("ActiveXObject" of window)
 			switch htmlNotify.permissionLevel()
 				when "default"
-					notification ?= notify "Als je bureaublad meldingen toestaat kan je overal meldingen van simplyHomework zien, zelfs als je op een ander tabblad zit.", null, -1, no
+					notification ?= notify "Als je bureaublad meldingen toestaat kan je overal meldingen van simplyHomework zien, zelfs als je op een ander tabblad zit.", null, -1, no, 9
 					htmlNotify.requestPermission (result) ->
 						notification?.hide()
 						Session.set "allowNotifications", result is "granted"
