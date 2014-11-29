@@ -35,8 +35,8 @@ Template.appOverview.helpers
 
 	itemContainerMargin: ->
 		d = 350
-		if has "noAds" then d -= 100
-		if not hasAppointments() then d -= 150
+		if has "noAds" then d -= 90
+		if not hasAppointments() then d -= 170
 		return "#{d}px"
 
 	tasks: getTasks
