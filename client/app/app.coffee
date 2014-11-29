@@ -406,7 +406,7 @@ Template.app.rendered = ->
 			if recentGradesNotification?
 				recentGradesNotification.content s, yes
 			else
-				recentGradesNotification = NotificationsManager.notify body: s, type: "warning", time: -1, html: yes, onClick: (event) -> console.log ":D"
+				recentGradesNotification = NotificationsManager.notify body: s, type: "warning", time: -1, html: yes
 
 	ChatHeads.initialize()
 
