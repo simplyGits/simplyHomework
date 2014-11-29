@@ -82,6 +82,8 @@ Meteor.startup ->
 	$("body").keypress (event) ->
 		return if event.which is 13 or $("input").is ":focus"
 
+		$("body").stop().animate {scrollTop: 0}, 600, "easeOutExpo"
+
 		$(".signUpForm").css( "visibility": "initial" )
 		$(".Center, .signUpForm").addClass("active")
 		_.delay ( ->
