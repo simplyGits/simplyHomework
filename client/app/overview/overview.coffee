@@ -52,8 +52,7 @@ Template.taskRow.events
 		checked = t.is(":checked")
 		taskId = t.attr "taskid"
 		
-		task = _.find getTasks(), (t) -> t.__id is taskId
-		task.isDone checked
+		@isDone checked
 
 		t.parent()
 			.stop()
