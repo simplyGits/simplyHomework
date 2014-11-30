@@ -32,12 +32,12 @@ Meteor.methods
 
 			new Magister(info.school, username, password).ready (m) ->
 				m.http.get m.profileInfo().profilePicture(200, 200, yes), {}, (e, r) ->
-					return if e?
 					# base64 = null
-					# try
-					# 	base64 = CryptoJS.enc.Base64.stringify r.content
-					# catch
-					# 	console.log "catched."
+					# if e?
+					# 	try
+					# 		base64 = CryptoJS.enc.Base64.stringify r.content
+					# 	catch
+					# 		console.log "catched."
 
 					Meteor.users.update userId,
 						$set:
