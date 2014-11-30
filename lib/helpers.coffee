@@ -42,7 +42,6 @@ Array::remove = (item) ->
 	else
 		_.remove @, (i) -> EJSON.equals item, i
 
-	item.dependency?.changed?() # why the heck not?
 	return @
 Array::smartFind = (item, loopMap) -> _.find @, (i) -> EJSON.equals((if _.isFunction(loopMap) then loopMap i else i), item)
 Array::pushMore = (items) -> [].push.apply @, items; return @
