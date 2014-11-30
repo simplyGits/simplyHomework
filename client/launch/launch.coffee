@@ -26,7 +26,6 @@ login = ->
 							firstName: Helpers.cap $("#firstNameInput").val().trim()
 							lastName: Helpers.cap $("#lastNameInput").val().trim()
 					Meteor.call "verifyMail"
-					Meteor.users.update Meteor.userId(), $set: mailSignup: $("#mailSignupInput").prop("checked"), classInfos: []
 
 Template.page1.helpers showQuickLoginhint: -> amplify.store("allowCookies")?
 Template.launchPage.rendered = -> $("#simplyLogoIntro").attr "src", "images/simplyLogo.gif"
