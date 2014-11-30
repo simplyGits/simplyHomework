@@ -49,7 +49,7 @@ class @App
 	# @return {Object} Object that gives information about the progress of the setup path.
 	###
 	@step = ->
-		return unless App._fullCount?
+		return unless App._fullCount? and App._fullCount isnt 0
 		App._currentCount++
 
 		itemName = _.find _.keys(App._setupPathItems), (k) -> not App._setupPathItems[k].done
@@ -73,7 +73,7 @@ class @App
 	@followSetupPath: ->
 		return if App._running
 		App._setupPathItems.plannerPrefs.done = App._setupPathItems.magisterInfo.done = Meteor.user().magisterCredentials?
-		App._setupPathItems.getMagisterClasses.done = Meteor.user().classInfos.length > 0
+		App._setupPathItems.getMagisterClasses.done = Meteor.user().classInfos? and Meteor.user().classInfos.length > 0
 		App._setupPathItems.newSchoolYear.done = Meteor.user().profile.courseInfo?
 
 		App._fullCount = _.filter(App._setupPathItems, (x) -> not x.done).length
@@ -184,6 +184,8 @@ Template.getMagisterClassesModal.events
 
 	"click #goButton": ->
 		{ year, schoolVariant } = Meteor.user().profile.courseInfo
+
+		Meteor.users.update(Meteor.userId(), $set: classInfos: []) unless Meteor.user().classInfos?
 
 		for c in magisterClasses.get()
 			color = $("#magisterClassesResult > div##{c.id()}").attr "colorHex"
