@@ -227,7 +227,7 @@ class @NotificationsManager
 	if userId isnt Meteor.userId() or Session.get "hasGravatar"
 		(if _.isString(userId) then Meteor.users.findOne(userId) else userId).gravatarUrl + "&s=#{size}"
 	else
-		magister.profileInfo().profilePicture size, size, yes
+		Meteor.user().profile.magisterPicture
 
 @slide = (id) ->
 	targetPosition = $("div.sidebarButton##{id}").offset().top
