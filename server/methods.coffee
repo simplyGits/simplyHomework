@@ -21,7 +21,6 @@ Meteor.methods
 	setMagisterInfo: (info) ->
 		userId = @userId
 		{ username, password } = info.magisterCredentials
-		info.school.url = "https://#{info.school.url}"
 		try
 			HTTP.post "#{info.school.url}/api/sessie",
 				data:

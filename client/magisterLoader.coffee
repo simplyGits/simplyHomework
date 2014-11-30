@@ -35,7 +35,7 @@ dependencies = {}
 	if not force and @magister? then throw new Error "loadMagisterInfo already called. To force reloading all info use loadMagisterInfo(true)."
 
 	try
-		url = "https://#{Schools.findOne(Meteor.user().profile.schoolId).url}"
+		url = Schools.findOne(Meteor.user().profile.schoolId).url
 	catch
 		console.warn "Couldn't retreive school info!"
 		return
