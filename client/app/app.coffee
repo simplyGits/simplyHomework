@@ -73,7 +73,7 @@ class @App
 	@followSetupPath: ->
 		return if App._running
 		App._setupPathItems.plannerPrefs.done = App._setupPathItems.magisterInfo.done = Meteor.user().magisterCredentials?
-		App._setupPathItems.getMagisterClasses.done = Meteor.user().classInfos?
+		App._setupPathItems.getMagisterClasses.done = Meteor.user().classInfos.length > 0
 		App._setupPathItems.newSchoolYear.done = Meteor.user().profile.courseInfo?
 
 		App._fullCount = _.filter(App._setupPathItems, (x) -> not x.done).length
@@ -184,6 +184,7 @@ Template.getMagisterClassesModal.events
 
 	"click #goButton": ->
 		{ year, schoolVariant } = Meteor.user().profile.courseInfo
+
 		for c in magisterClasses.get()
 			color = $("#magisterClassesResult > div##{c.id()}").attr "colorHex"
 			_class = Classes.findOne $or: [{ $where: "\"#{c.description().toLowerCase()}\".indexOf(this._name.toLowerCase()) > -1" }, { _course: c.abbreviation().toLowerCase() }], _schoolVariant: schoolVariant.toLowerCase(), _year: year
@@ -195,9 +196,9 @@ Template.getMagisterClassesModal.events
 					book = new Book _class, c.__method.name, undefined, c.__method.id, undefined
 					Classes.update _class._id, $push: { _books: book }
 
-			Meteor.users.update Meteor.userId(), $push: { classInfos: { id: _class._id, color, bookId: book?._id ? null }}
+			Meteor.users.update Meteor.userId(), $push: { classInfos: { id: _class._id, color, magisterId: c.id(), bookId: book?._id ? null }}
 
-		$("#getMagisterClasses").modal "hide"
+		$("#getMagisterClassesModal").modal "hide"
 		App.step()
 
 Template.setMagisterInfoModal.events
