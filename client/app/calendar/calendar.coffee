@@ -31,6 +31,10 @@ Meteor.setInterval ( ->
 ), 1800000
 
 toEvent = (appointment) ->
+	type = null
+	type = "quiz" if /\b((so)|((luister ?)?toets)|(schriftelijke overhoring))/i.test(appointment.content()?.split(" ")?[0] ? "")
+	type = "test" if /\b((proefwerk)|(pw)|(examen)|(tentamen))/i.test(appointment.content()?.split(" ")?[0] ? "")
+
 	id: appointment.id()
 	title: (
 		if appointment.classes().length > 0
@@ -44,6 +48,8 @@ toEvent = (appointment) ->
 	end: appointment.end()
 	color:
 		if appointment.scrapped() then "gray"
+		else if type is "quiz" then "#FF851B"
+		else if type is "test" then "#FF4136"
 		else switch appointment.infoType()
 			when 1 then "#32A8CE"
 			when 2, 3 then "#FF4136"
