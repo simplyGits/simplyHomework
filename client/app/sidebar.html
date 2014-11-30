@@ -39,7 +39,7 @@
 <template name="sidebarItem">
 	<div class="sidebarButton sidebarClass" id="{{_id.toHexString}}">
 		<div class="classColorBar" style="border-color: {{__color}}"></div>
-		<span>{{_name}}</span>
+		<span>{{__sidebarName}}</span>
 
 		{{#with __taskAmount}}
 			{{#unless empty}}

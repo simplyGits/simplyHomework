@@ -5,6 +5,7 @@
 			__taskAmount: Helpers.getTotal _.reject(GoaledSchedules.find(_homework: { $exists: true }, ownerId: Meteor.userId()).fetch(), (gS) -> !EJSON.equals(gS.classId(), tmpClass._id)), (gS) -> gS.tasksForToday().length
 			__color: Meteor.user().classInfos.smartFind(tmpClass._id, (cI) -> cI.id).color
 			__book: tmpClass.books().smartFind Meteor.user().classInfos.smartFind(tmpClass._id, (cI) -> cI.id).bookId, (b) -> b._id
+			__sidebarName: if (val = tmpClass.name()).length > 14 then tmpClass.course() else val
 	return tmp
 
 @projects = ->
