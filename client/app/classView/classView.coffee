@@ -24,9 +24,7 @@ Template.classView.events
 		$("#changeColorInput").colorpicker color: currentClass().__color
 		$("#changeColorLabel").css color: currentClass().__color
 
-		$("#changeClassModal").modal()
-		# Because our modal is inside the content div the backdrop also blocks the modal. As a fix: move the modal outside the content container.
-		$("#changeClassModal").appendTo "body"
+		$("#changeClassModal").modal backdrop: false
 
 Template.changeClassModal.rendered = ->
 	$("#changeColorInput").colorpicker color: currentClass().__color
@@ -62,7 +60,7 @@ Template.changeClassModal.events
 			{ main: "Verwijderen", second: "Toch niet" },
 			{ main: "btn-danger" },
 			main: ->
-				Meteor.users.update Meteor.userId(), { $pull: { classInfos: { id: currentClass()._id }}}
 				Router.go "app"
+				Meteor.users.update Meteor.userId(), { $pull: { classInfos: { id: currentClass()._id }}}
 			second: -> return
 		)
