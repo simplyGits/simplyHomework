@@ -108,22 +108,17 @@
 					{{else}}
 						<div>
 							We hebben geprobeerd zoveel mogelijk vakken van Magister automatisch op te halen.<br>
-							Voeg missende vakken toe en wijzig onjuiste informatie.
+							Verwijder overbodige vakken en wijzig onjuiste informatie, vakken kun je later toevoegen.
 						</div>
 						<div id="magisterClassesResult">
 							{{#each magisterClasses}}
-								<div>
+								<div id="{{id}}">
 									<i style="cursor: pointer" class="fa fa-times"></i>
 									<span class="input-group-addon"><i></i></span>
-									<div id="classTitle">{{_description}}</div>
-									<input type="text" id="method" value="{{method}}"/>
+									<div id="classTitle">{{description}}</div>
+									<input class="form-control" type="text" id="method" placeholder="Methode"/>
 								</div>
 							{{/each}}
-							<div>
-								<a href="#">
-									<i class="fa fa-plus"></i> Vak toevoegen
-								</a>
-							</div>
 						</div>
 					{{/unless}}
 				</div>
