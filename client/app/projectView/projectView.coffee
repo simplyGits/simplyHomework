@@ -69,7 +69,7 @@ Template.projectView.events
 		notify "Hey"
 	"click #addPersonIcon": ->
 		$("#personNameInput").val ""
-		$("#addParticipantModal").modal backrop: no
+		$("#addParticipantModal").modal backdrop: no
 
 Template.addParticipantModal.rendered = ->
 	personsEngine.initialize()
