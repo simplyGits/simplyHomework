@@ -26,7 +26,7 @@ Router.map ->
 
 	@route "app",
 		fastRender: yes
-		waitOn: -> NProgress?.start(); Meteor.subscribe("essentials")
+		waitOn: -> NProgress?.start(); [Meteor.subscribe("essentials"), Meteor.subscribe("projects")]
 
 		onBeforeAction: ->
 			Meteor.defer => @redirect "launchPage" unless Meteor.loggingIn() or Meteor.user()?

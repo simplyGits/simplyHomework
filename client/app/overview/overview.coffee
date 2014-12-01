@@ -40,6 +40,7 @@ Template.appOverview.helpers
 		return "#{d}px"
 
 	tasks: getTasks
+	projects: -> projects()
 
 	foundAppointment: hasAppointments
 	dayOver: -> not nextAppointmentToday.get()?

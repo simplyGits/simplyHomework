@@ -76,8 +76,11 @@
 </template>
 
 <template name="projectRow">
-	<div class="projectRow">
-	</div>
+	{{#linkTo route="projectView" projectId=this._id.toHexString}}
+		<div class="projectRow">
+			<div class="projectName">{{name}}</div><div class="projectClass">{{__class.name}}</div>
+		</div>
+	{{/linkTo}}
 </template>
 
 <template name="infoNextDay">
