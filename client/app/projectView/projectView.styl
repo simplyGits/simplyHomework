@@ -127,6 +127,9 @@ span.removePersonButton
 	opacity: 0
 
 	transition: opacity .1s ease-in-out
+	
+	+mobile()
+		opacity: .4
 
 div.fileRow:hover, div.personRow:hover
 	background-color: lightgray
@@ -180,3 +183,13 @@ div.fileRow:hover, div.personRow:hover
 
 	div.itemContainerContent
 		margin-top: 20px
+		
+	span.personName
+		width: calc(100% - 110px)
+		display: inline-block
+		white-space: nowrap
+		-o-text-overflow: ellipsis
+		text-overflow: ellipsis
+		overflow-x: hidden
+		position: absolute
+		margin-left: 10px
