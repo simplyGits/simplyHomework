@@ -90,7 +90,7 @@
 
 <template name="personRow">
 	<div class="personRow">
-		<img src="{{gravatarUrl}}" width="50" height="50" class="personImage" style="border-color: {{__statusColor}}">
+		<img src="{{gravatar this 100}}" width="50" height="50" class="personImage" style="border-color: {{__statusColor}}">
 		<span class="personName"><span style="color: black">{{profile.firstName}}</span> {{profile.lastName}}</span>
 		<span class="removePersonButton">&times;</span>
 	</div>
@@ -98,7 +98,7 @@
 
 <template name="selfRow">
 	<div class="personRow">
-		<img src="{{currentUser.gravatarUrl}}" width="50" height="50" class="personImage" style="border-color: {{ownStatusColor}}">
+		<img src="{{gravatar currentUser 100}}" width="50" height="50" class="personImage" style="border-color: {{ownStatusColor}}">
 		<span class="personName" style="color: black">Jij</span>
 	</div>
 </template>

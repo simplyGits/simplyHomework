@@ -1,3 +1,5 @@
+currentProject = -> Router.current().data()
+
 @getParticipants = ->
 	tmp = []
 	for participant, i in Meteor.users.find(_id: $in: currentProject().participants()).fetch()
@@ -25,8 +27,6 @@ fileTypes =
 	pdf:
 		fileTypeIconClass: "file-pdf-o"
 		fileTypeColor: "#CF1312"
-
-currentProject = -> Router.current().data().currentProject
 
 @personsEngine = new Bloodhound
 	name: "persons"
@@ -111,7 +111,7 @@ Template.fileRow.events
 Template.personRow.events
 	"click .removePersonButton": ->
 		alertModal "Zeker weten?", Locals["nl-NL"].ProjectPersonRemovalMessage(@profile.firstName), DialogButtons.OkCancel, { main: "Is de bedoeling", second: "heh!?" }, { main: "btn-danger" }, main: =>
-			currentProject().removeParticipant @._id
+			currentProject().removeParticipant @_id
 			notify Locals["nl-NL"].ProjectPersonRemovedNotice(@profile.firstName), "notice"
 
 Template.selfRow.ownStatusColor = -> if Meteor.user().status.idle then "#FF851B" else "#2ECC40"
