@@ -69,9 +69,7 @@ Template.projectView.events
 		notify "Hey"
 	"click #addPersonIcon": ->
 		$("#personNameInput").val ""
-		$("#addParticipantModal").modal()
-		# Because our modal is inside the content div the backdrop also blocks the modal. Force remove it.
-		$(".modal-backdrop").css zIndex: -1
+		$("#addParticipantModal").modal backrop: no
 
 Template.addParticipantModal.rendered = ->
 	personsEngine.initialize()
@@ -84,7 +82,7 @@ Template.addParticipantModal.rendered = ->
 	).on "typeahead:selected", (obj, datum) -> Session.set "currentSelectedPersonDatum", datum
 
 addUser = ->
-	currentProject().addParticipant Session.get("currentSelectedPersonDatum")._id
+	Projects.update currentProject._id, $push: "_participants": Session.get("currentSelectedPersonDatum")._id
 	$("#addParticipantModal").modal "hide"
 	notify Locals["nl-NL"].ProjectPersonAddedNotice(Session.get("currentSelectedPersonDatum").profile.firstName), "notice"
 

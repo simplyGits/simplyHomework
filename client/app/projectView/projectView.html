@@ -1,78 +1,80 @@
 <template name="projectView">
 	{{> addParticipantModal}}
 
-	{{#with currentProject}}
-		<div class="container-fluid">
-			<div class="row">
-				<div class="robotoHeader overviewHeader head1 projectHeader">{{_name}}</div>
-				{{#if showRightHeader}}
-					{{#with _participants}}
-						<div class="robotoHeader overviewHeader head2 projectHeader" style="text-align: right">{{length}} <span class="robotoThin" style="margin-left: 5px">personen</span></div>
-					{{/with}}
-				{{/if}}
-			</div>
-			<div class="divider"></div>
+	<div class="container-fluid">
+		<div class="row">
+			<div class="robotoHeader overviewHeader head1 projectHeader">{{_name}}</div>
+			{{#if showRightHeader}}
+				{{#with _participants}}
+					<div class="robotoHeader overviewHeader head2 projectHeader" style="text-align: right">{{length}} <span class="robotoThin" style="margin-left: 5px">personen</span></div>
+				{{/with}}
+			{{/if}}
+		</div>
+		<div class="divider"></div>
 
-			<div class="projectInfoContainer">
-				<div class="projectInfoSubContainer">
-					<b>Deadline</b>: {{friendlyDeadline}}
-					<br>
-					<b>Vak</b>: {{__class._name}}
-					<br>
-					<b>Beschrijving</b>: <span class="projectInfoDescription">{{_description}}</span>
-				</div>
-
-				<div class="projectInfoChatQuoteContainer">
-					<img class="lastChatSenderPicture" src="https://www.gravatar.com/avatar/763664ead00ca1ed8e12db1d5ad703c5?s=75&d=identicon&r=PG" width="50" height="50" style="border-color: {{lastChatMessageSenderColor}}" />
-					<span class="robotoThin lastChatSenderName" style="color: {{lastChatMessageSenderColor}}">{{lastChatMessageSenderName}} Lieuwe</span>
-					<span class="robotoThin lastChatMessage">{{lastChatMessage}} Ik hou van placeholder</span>
-					<span class="robotoThin lastChatHeader">Chat</span>
-				</div>
+		<div class="projectInfoContainer">
+			<div class="projectInfoSubContainer">
+				<b>Deadline</b>: {{friendlyDeadline}}
+				<br>
+				<b>Vak</b>: {{__class._name}}
+				<br>
+				<b>Beschrijving</b>: <span class="projectInfoDescription">{{_description}}</span>
 			</div>
 
-			<div class="row">
-				<div class="col-sm-6">
-					<div class="projectViewItemContainer" style="height: calc(100vh - {{heightOffset}}px)">
-						<span class="robotoThin overviewItemContainerHeader">
-							<span class="fa fa-plus" id="addFileIcon" onmouseover="$(this).velocity({ opacity: 1 }, 100);" onmouseleave="$(this).velocity({ opacity: .5 }, 100);"></span>
-							Bestanden
-						</span>
-						<div class="itemContainerDivider"></div>
-						<div class="itemContainerContent">
-							{{#each files}}
-								{{> fileRow}}
+			<div class="projectInfoChatQuoteContainer">
+				<img class="lastChatSenderPicture" src="https://www.gravatar.com/avatar/763664ead00ca1ed8e12db1d5ad703c5?s=75&d=identicon&r=PG" width="50" height="50" style="border-color: {{lastChatMessageSenderColor}}" />
+				<span class="robotoThin lastChatSenderName" style="color: {{lastChatMessageSenderColor}}">{{lastChatMessageSenderName}} Lieuwe</span>
+				<span class="robotoThin lastChatMessage">{{lastChatMessage}} Ik hou van placeholder</span>
+				<span class="robotoThin lastChatHeader">Chat</span>
+			</div>
+		</div>
 
-								{{#unless last files}}
-									<div class="itemContainerSmallDivider"></div>
-								{{/unless}}
-							{{/each}}
-						</div>
+		<div class="row">
+			<div class="col-sm-6">
+				<div class="projectViewItemContainer" style="height: calc(100vh - {{heightOffset}}px)">
+					<span class="robotoThin overviewItemContainerHeader">
+						<span class="fa fa-plus" id="addFileIcon" onmouseover="$(this).velocity({ opacity: 1 }, 100);" onmouseleave="$(this).velocity({ opacity: .5 }, 100);"></span>
+						Bestanden
+					</span>
+					<div class="itemContainerDivider"></div>
+					<div class="itemContainerContent">
+						{{#each files}}
+							{{> fileRow}}
+
+							{{#unless last files}}
+								<div class="itemContainerSmallDivider"></div>
+							{{/unless}}
+						{{/each}}
 					</div>
 				</div>
+			</div>
 
-				<div class="col-sm-6">
-					<div class="projectViewItemContainer" style="height: calc(100vh - {{heightOffset}}px)">
-						<span class="robotoThin overviewItemContainerHeader">
-							<span class="fa fa-plus" id="addPersonIcon" onmouseover="$(this).velocity({ opacity: 1 }, 100);" onmouseleave="$(this).velocity({ opacity: .5 }, 100);"></span>
-							Mensen
-						</span>
-						<div class="itemContainerDivider"></div>
-						<div class="itemContainerContent">
+			<div class="col-sm-6">
+				<div class="projectViewItemContainer" style="height: calc(100vh - {{heightOffset}}px)">
+					<span class="robotoThin overviewItemContainerHeader">
+						<span class="fa fa-plus" id="addPersonIcon" onmouseover="$(this).velocity({ opacity: 1 }, 100);" onmouseleave="$(this).velocity({ opacity: .5 }, 100);"></span>
+						Mensen
+					</span>
+					<div class="itemContainerDivider"></div>
+					<div class="itemContainerContent">
+						{{#linkTo route="personView" data=currentUser}}
 							{{> selfRow}}
-							<div class="itemContainerSmallDivider"></div>
-							{{#each persons}}
+						{{/linkTo}}
+						<div class="itemContainerSmallDivider"></div>
+						{{#each persons}}
+							{{#linkTo route="personView" data=this}}
 								{{> personRow}}
+							{{/linkTo}}
 
-								{{#unless last persons}}
-									<div class="itemContainerSmallDivider"></div>
-								{{/unless}}
-							{{/each}}
-						</div>
+							{{#unless last persons}}
+								<div class="itemContainerSmallDivider"></div>
+							{{/unless}}
+						{{/each}}
 					</div>
 				</div>
 			</div>
 		</div>
-	{{/with}}
+	</div>
 </template>
 
 <template name="fileRow">
