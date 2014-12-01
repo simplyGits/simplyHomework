@@ -55,7 +55,7 @@ Router.map ->
 		onAfterAction: ->
 			if !@data()? and @ready()
 				@redirect "app"
-				Template.sidebar.rendered = -> $(".slider").velocity top: 0, 150
+				Template.sidebar.rendered = -> slide "overview"
 				swalert title: "Niet gevonden", text: "Jij hebt dit vak waarschijnlijk niet.", confirmButtonText: "o.", type: "error"
 				return
 			Meteor.defer => slide @data()._id.toHexString()
@@ -83,12 +83,12 @@ Router.map ->
 		onAfterAction: ->
 			if !@data()? and @ready()
 				@redirect "app"
-				Template.sidebar.rendered = -> $(".slider").velocity top: "75px", 150
+				Template.sidebar.rendered = -> slide "overview"
 				swalert title: "Niet gevonden", text: "Dit project is niet gevonden.", type: "error"
 				return
 
-			Meteor.defer => slide @data().currentProject.__class._id.toHexString()
-			document.title = "simplyHomework | #{@data().currentProject._name}"
+			Meteor.defer => slide @data().__class._id.toHexString()
+			document.title = "simplyHomework | #{@data()._name}"
 			NProgress?.done()
 
 		data: ->
