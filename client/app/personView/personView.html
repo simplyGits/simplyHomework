@@ -11,7 +11,9 @@
 		<div class="personName robotoHeader">
 			<b>{{profile.firstName}}</b> {{profile.lastName}}
 		</div>
-
-		<button type="button" class="btn btn-trans">chat</button>
+		
+		{{#unless sameUser}}
+			<button type="button" class="btn btn-trans">chat</button>
+		{{/unless}}
 	</div>
 </template>
