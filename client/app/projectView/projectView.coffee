@@ -107,9 +107,7 @@ Template.fileRow.events
 		ripple.css(top: "#{y}px", left: "#{x}px").addClass "animate"
 
 Template.personRow.events
-	"click": (event) ->
-		return if $(event.target).hasClass "removePersonButton"
-		Router.go "personView", @
+	"click": (event) -> Router.go "personView", @ unless $(event.target).hasClass "removePersonButton"
 
 	"click .removePersonButton": ->
 		alertModal "Zeker weten?", Locals["nl-NL"].ProjectPersonRemovalMessage(@profile.firstName), DialogButtons.OkCancel, { main: "Is de bedoeling", second: "heh!?" }, { main: "btn-danger" }, main: =>
