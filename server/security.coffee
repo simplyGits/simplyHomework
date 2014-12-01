@@ -29,7 +29,7 @@ Meteor.users.allow
 
 Projects.allow
 	insert: -> yes
-	update: (userId, doc, fields, modifier) -> _.contains(doc._participants, userId) and ( !_.contains(fields, "_creatorId") or userId is doc._creatorId )
+	update: (userId, doc, fields, modifier) -> _.contains(doc._participants, userId) and ( !_.any(["_creatorId", "_participants"], (x) -> _.contains(fields, x)) or userId is doc._creatorId )
 	remove: -> no
 
 BetaPeople.allow
