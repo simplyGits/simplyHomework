@@ -78,11 +78,11 @@ Template.addParticipantModal.rendered = ->
 		source: personsEngine.ttAdapter()
 		displayKey: "fullName"
 		templates:
-			suggestion: (data) -> "<img class=\"lastChatSenderPicture\" src=\"#{data.gravatarUrl}\" width=\"50\" height=\"50\"><span class=\"personSuggestionName\"<b>#{data.fullName}</b>"
+			suggestion: (data) -> "<img class=\"lastChatSenderPicture\" src=\"#{gravatar data}\" width=\"50\" height=\"50\"><span class=\"personSuggestionName\"<b>#{data.fullName}</b>"
 	).on "typeahead:selected", (obj, datum) -> Session.set "currentSelectedPersonDatum", datum
 
 addUser = ->
-	Projects.update currentProject._id, $push: "_participants": Session.get("currentSelectedPersonDatum")._id
+	Projects.update currentProject()._id, $push: "_participants": Session.get("currentSelectedPersonDatum")._id
 	$("#addParticipantModal").modal "hide"
 	notify Locals["nl-NL"].ProjectPersonAddedNotice(Session.get("currentSelectedPersonDatum").profile.firstName), "notice"
 
@@ -107,9 +107,14 @@ Template.fileRow.events
 		ripple.css(top: "#{y}px", left: "#{x}px").addClass "animate"
 
 Template.personRow.events
+	"click": (event) ->
+		return if $(event.target).hasClass "removePersonButton"
+		Router.go "personView", @
+
 	"click .removePersonButton": ->
 		alertModal "Zeker weten?", Locals["nl-NL"].ProjectPersonRemovalMessage(@profile.firstName), DialogButtons.OkCancel, { main: "Is de bedoeling", second: "heh!?" }, { main: "btn-danger" }, main: =>
 			currentProject().removeParticipant @_id
 			notify Locals["nl-NL"].ProjectPersonRemovedNotice(@profile.firstName), "notice"
 
-Template.selfRow.ownStatusColor = -> if Meteor.user().status.idle then "#FF851B" else "#2ECC40"
+Template.selfRow.helpers
+	ownStatusColor: -> if Meteor.user().status.idle then "#FF851B" else "#2ECC40"

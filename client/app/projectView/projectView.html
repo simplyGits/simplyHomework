@@ -62,9 +62,7 @@
 						{{/linkTo}}
 						<div class="itemContainerSmallDivider"></div>
 						{{#each persons}}
-							{{#linkTo route="personView" data=this}}
-								{{> personRow}}
-							{{/linkTo}}
+							{{> personRow}}
 
 							{{#unless last persons}}
 								<div class="itemContainerSmallDivider"></div>
