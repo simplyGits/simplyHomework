@@ -9,7 +9,7 @@ currentProject = -> Router.current().data()
 
 @getOthers = ->
 	tmp = []
-	for other, i in Meteor.users.find("profile.schoolId": Meteor.user().profile.schoolId, _id: $nin: currentProject().participants()).fetch()
+	for other, i in Meteor.users.find(_id: $nin: currentProject().participants()).fetch()
 		tmp.push _.extend other,
 			fullName: "#{other.profile.firstName} #{other.profile.lastName}"
 	return tmp
