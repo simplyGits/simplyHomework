@@ -20,6 +20,40 @@ class @App
 		getMagisterClasses:
 			done: no
 			func: (current, length) ->
+				onMagisterInfoResult "classes", (e, r) ->
+					magisterClasses.set r unless e?
+					
+					WoordjesLeren.getAllClasses (result) ->
+						for c in r then do (c) ->
+							engine = new Bloodhound
+								name: "books"
+								datumTokenizer: (d) -> Bloodhound.tokenizers.whitespace d.name
+								queryTokenizer: Bloodhound.tokenizers.whitespace
+								local: []
+
+							val = _.find(result, (x) -> c.description().toLowerCase().indexOf(x.toLowerCase()) > -1) ? Helpers.cap c.description()
+
+							if /(Natuurkunde)|(Scheikunde)/ig.test val
+								val = "Natuur- en scheikunde"
+							else if /(Wiskunde( (a|b|c|d))?)|(Rekenen)/ig.test val
+								val = "Wiskunde / Rekenen"
+							else if /levensbeschouwing/ig.test val
+								val = "Godsdienst en levensbeschouwing"
+
+							do (engine) -> WoordjesLeren.getAllBooks val, (result) -> engine.add result
+
+							Meteor.defer do (engine, c) -> return ->
+								$("#magisterClassesResult > div##{c.id()} > input").typeahead(null,
+									source: engine.ttAdapter()
+									displayKey: "name"
+								).on "typeahead:selected", (obj, datum) -> Session.set "currentSelectedBookDatum", datum
+
+					Meteor.defer ->
+						for x in $("#magisterClassesResult > div").colorpicker(input: null)
+							$(x)
+								.on "changeColor", (e) -> $(@).attr "colorHex", e.color.toHex()
+								.colorpicker "setValue", "##{("00000" + (Math.random() * (1 << 24) | 0).toString(16)).slice -6}"
+
 				$("#getMagisterClassesModal").modal backdrop: "static"
 
 		newSchoolYear:
@@ -104,40 +138,6 @@ Template.getMagisterClassesModal.helpers
 	magisterClasses: -> magisterClasses.get()
 
 Template.getMagisterClassesModal.rendered = ->
-	onMagisterInfoResult "classes", (e, r) ->
-		magisterClasses.set r unless e?
-		
-		WoordjesLeren.getAllClasses (result) ->
-			for c in r then do (c) ->
-				engine = new Bloodhound
-					name: "books"
-					datumTokenizer: (d) -> Bloodhound.tokenizers.whitespace d.name
-					queryTokenizer: Bloodhound.tokenizers.whitespace
-					local: []
-
-				val = _.find(result, (x) -> c.description().toLowerCase().indexOf(x.toLowerCase()) > -1) ? Helpers.cap c.description()
-
-				if /(Natuurkunde)|(Scheikunde)/ig.test val
-					val = "Natuur- en scheikunde"
-				else if /(Wiskunde( (a|b|c|d))?)|(Rekenen)/ig.test val
-					val = "Wiskunde / Rekenen"
-				else if /levensbeschouwing/ig.test val
-					val = "Godsdienst en levensbeschouwing"
-
-				do (engine) -> WoordjesLeren.getAllBooks val, (result) -> engine.add result
-
-				Meteor.defer do (engine, c) -> return ->
-					$("#magisterClassesResult > div##{c.id()} > input").typeahead(null,
-						source: engine.ttAdapter()
-						displayKey: "name"
-					).on "typeahead:selected", (obj, datum) -> Session.set "currentSelectedBookDatum", datum
-
-		Meteor.defer ->
-			for x in $("#magisterClassesResult > div").colorpicker(input: null)
-				$(x)
-					.on "changeColor", (e) -> $(@).attr "colorHex", e.color.toHex()
-					.colorpicker "setValue", "##{("00000" + (Math.random() * (1 << 24) | 0).toString(16)).slice -6}"
-
 	onMagisterInfoResult "course", (e, r) ->
 		return if e? or amplify.store "courseInfoSet"
 
