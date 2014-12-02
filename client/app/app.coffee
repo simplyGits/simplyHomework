@@ -33,11 +33,11 @@ class @App
 
 							val = _.find(result, (x) -> c.description().toLowerCase().indexOf(x.toLowerCase()) > -1) ? Helpers.cap c.description()
 
-							if /(Natuurkunde)|(Scheikunde)/ig.test val
+							if /(Natuurkunde)|(Scheikunde)/i.test val
 								val = "Natuur- en scheikunde"
-							else if /(Wiskunde( (a|b|c|d))?)|(Rekenen)/ig.test val
+							else if /(Wiskunde( (a|b|c|d))?)|(Rekenen)/i.test val
 								val = "Wiskunde / Rekenen"
-							else if /levensbeschouwing/ig.test val
+							else if /levensbeschouwing/i.test val
 								val = "Godsdienst en levensbeschouwing"
 
 							do (engine) -> WoordjesLeren.getAllBooks val, (result) -> engine.add result
@@ -306,11 +306,11 @@ Template.addClassModal.events
 		return if event.which is 0
 		val = Helpers.cap $("#classNameInput").val()
 
-		if /(Natuurkunde)|(Scheikunde)/ig.test val
+		if /(Natuurkunde)|(Scheikunde)/i.test val
 			val = "Natuur- en scheikunde"
-		else if /(Wiskunde( (a|b|c|d))?)|(Rekenen)/ig.test val
+		else if /(Wiskunde( (a|b|c|d))?)|(Rekenen)/i.test val
 			val = "Wiskunde / Rekenen"
-		else if /levensbeschouwing/ig.test val
+		else if /levensbeschouwing/i.test val
 			val = "Godsdienst en levensbeschouwing"
 
 		WoordjesLeren.getAllBooks val, (result) ->
