@@ -9,11 +9,11 @@ Template.forgotPass.events
 			if result
 				swalert title: "Mail verstuurd", text: "Je krijgt zometeen een mailtje waarmee je je wachtwoord kan veranderen.", type: "success"
 				Accounts.forgotPassword(email: mail)
-			else if !result
-				$("#forgotPassMailInput").addClass("has-error").tooltip(placement: "bottom", title: "Geen account met deze e-mail gevonden").tooltip("show")
-			else
+			else if err?
 				Meteor.call("log", "log", "Error while checking mail. #{err.message}")
 				swalert title: "Fout", text: "Onbekende fout, we zijn op de hoogte gesteld", type: "error"
+			else
+				$("#forgotPassMailInput").addClass("has-error").tooltip(placement: "bottom", title: "Geen account met deze e-mail gevonden").tooltip("show")
 
 Template.resetPass.events
 	"keydown": ->
