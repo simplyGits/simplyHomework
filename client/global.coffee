@@ -44,7 +44,7 @@ Meteor.startup ->
 
 	if oldBrowser # old Internet Explorer versions don't even support fast-render with iron-router :')
 		$("body").text ""
-		UI.insert UI.render(Template.oldBrowser), $("body").get()[0]
+		Blaze.render Template.oldBrowser, $("body").get()[0]
 		ga "send", "event", "reject",  "old-browser", "" + version
 	else if "ActiveXObject" of window # Some css fixes for IE
 		$("head").append "<style>.vCenter { position: relative !important } span#addProjectIcon { padding-right: 30px !important } div.backdrop { display: none; }</style>"

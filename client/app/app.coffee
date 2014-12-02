@@ -474,7 +474,7 @@ Template.app.rendered = ->
 	setSwipe() if Session.get "isPhone"
 
 	if !amplify.store("allowCookies") and $(".cookiesContainer").length is 0
-		UI.insert UI.render(Template.cookies), $("body").get()[0]
+		Blaze.render Template.cookies, $("body").get()[0]
 		$(".cookiesContainer")
 			.css visibility: "initial"
 			.velocity { bottom: 0 }, 1200, "easeOutExpo"
