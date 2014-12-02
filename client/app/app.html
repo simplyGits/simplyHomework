@@ -31,7 +31,7 @@
 			<div style="z-index: 500; background-color: #222222; height: 90px; position: fixed; left: {{contentOffsetLeft}}; right: 0; bottom: 0;" id="adbar"></div>
 		</div>
 	{{else}}
-		<div class="content" style="left: {{contentOffsetLeft}}">
+		<div class="content unselectable" style="left: {{contentOffsetLeft}}">
 			{{> yield}}
 		</div>
 	{{/unless}}
