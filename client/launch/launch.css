@@ -70,10 +70,10 @@
 
 @media screen and (max-width: 760px) {
 	.card {
-		width: 75% !important;
-		margin-left: 12.5% !important;
-		margin-right: 12.5% !important;
-		float: none !important;
+		width: 75%;
+		margin-left: 12.5%;
+		margin-right: 12.5%;
+		float: none;
 	}
 
 	#page2 {
