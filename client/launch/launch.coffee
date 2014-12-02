@@ -72,7 +72,7 @@ Template.page1.events
 				$('.signUpForm').one 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', ->
 					$(".signUpForm").removeClass "animated shake"
 
-usersCount = new ReactiveVar 0
+usersCount = new ReactiveVar ""
 Template.page2.helpers
 	usersCount: -> usersCount.get()
 
@@ -82,7 +82,8 @@ Template.launchPage.events
 Meteor.startup ->
 	Meteor.defer -> Deps.autorun -> if Meteor.user()? and Router.current().route.getName() is "launchPage" then Router.go "app"
 
-	setInterval (-> Meteor.call "getUsersCount", (e, r) -> usersCount.set r unless e?), 5000
+	l = -> Meteor.call "getUsersCount", (e, r) -> usersCount.set r unless e?
+	l(); setInterval l, 5000
 
 	$("body").keypress (event) ->
 		return if event.which is 13 or $("input").is ":focus"
