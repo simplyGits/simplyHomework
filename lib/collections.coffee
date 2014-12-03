@@ -6,6 +6,6 @@
 @Utils           = new Meteor.Collection "utils"           , transform: (u) => @_decodeObject u
 @Tickets         = new Meteor.Collection "tickets"         , transform: (t) => @_decodeObject t
 @Projects        = new Meteor.Collection "projects"        , transform: (p) => @_decodeObject p
+@CalendarItems   = new Meteor.Collection "calendarItems"   , transform: (ci) => @_decodeObject ci
 
 @BetaPeople = new Meteor.Collection "betaPeople"
-@Performance = new Meteor.Collection "performance"

@@ -187,6 +187,7 @@ open = ->
 	$("div.addAppointmentForm").addClass "transformIn"
 	$("div.backdrop").addClass "dimmed"
 	$("div.backdrop").click close
+	$("div.addAppointmentForm > button").click add
 
 	$("textarea#appointmentInput").focus().keydown (event) -> close() if event.which is 27
 
@@ -195,30 +196,98 @@ close = ->
 	$("div.backdrop").removeClass "dimmed"
 	$("textarea#appointmentInput").val("").velocity { height: "54px" }, 500, "easeOutExpo"
 
-dates = [
+infos = [
 	[/eergister(en)?/i, -2, "days"]
 	[/gister(en)?/i, -1, "days"]
 	[/vandaag/i, 0, "days"]
 	[/morgen/i, 1, "days"]
 	[/overmorgen/i, 2, "days"]
-	[/maandag/i, "maandag", null]
-	[/dinsdag/i, "dinsdag", null]
-	[/woensdag/i, "woensdag", null]
-	[/vrijdag/i, "donderdag", null]
-	[/zaterdag/i, "vrijdag", null]
-	[/zondag/i, "zaterdag", null]
+
+	[/((volgende|aankomende) )?maandag/i, "maandag", null]
+	[/((volgende|aankomende) )?dinsdag/i, "dinsdag", null]
+	[/((volgende|aankomende) )?woensdag/i, "woensdag", null]
+	[/((volgende|aankomende) )?donderdag/i, "donderdag", null]
+	[/((volgende|aankomende) )?vrijdag/i, "vrijdag", null]
+	[/((volgende|aankomende) )?zaterdag/i, "zaterdag", null]
+	[/((volgende|aankomende) )?zondag/i, "zondag", null]
+
+	[/(vorige|afgelopen) maandag/i, "-maandag", null]
+	[/(vorige|afgelopen) dinsdag/i, "-dinsdag", null]
+	[/(vorige|afgelopen) woensdag/i, "-woensdag", null]
+	[/(vorige|afgelopen) donderdag/i, "-donderdag", null]
+	[/(vorige|afgelopen) vrijdag/i, "-vrijdag", null]
+	[/(vorige|afgelopen) zaterdag/i, "-zaterdag", null]
+	[/(vorige|afgelopen) zondag/i, "-zondag", null]
+
 	[/(volgende|aankomende) week/i, 1, "weeks"]
 	[/(vorige|afgelopen) week/i, -1, "weeks"]
-	[/(over|na) \d+ (weken|week)/i, null, "weeks"]
-	[/(over|na) \d+ (dagen|dag)/i, null, "days"]
-	[/\d+ (weken|week) geleden/i, null, "weeks"]
-	[/\d+ (dagen|dag) geleden/i, null, "days"]
+	[/(over|na) (\d+) (weken|week)/i, null, "weeks", 2]
+	[/(\d+) (weken|week) geleden/i, null, "weeks", 1]
+
+	[/(over|na) (\d+) (dagen|dag)/i, null, "days", 2]
+	[/(\d+) (dagen|dag) geleden/i, null, "days", 1]
+
+	[/volgende (\w+) les/, 1, "lesson", 1]
+	[/volgende les (\w+)/, 1, "lesson", 1]
+	[/(\w+) volgende les/, 1, "lesson", 1]
+
+	[/vorige (\w+) les/, -1, "lesson", 1]
+	[/vorige les (\w+)/, -1, "lesson", 1]
+	[/(\w+) vorige les/, -1, "lesson", 1]
 ]
 
 add = ->
-	input = $("textarea#appointmentInput").val("").trim()
-	for date, i in dates
-		date.test input
+	input = $("textarea#appointmentInput").val().trim()
+	for info, i in infos
+		[reg, target, type, targetGroup] = info
+		targetGroup = 0
+		date = null
+
+		if (val = reg.exec(input)?[0])?
+			if targetGroup isnt 0 then val = reg.exec(val)[targetGroup]
+
+			date = switch type
+				when "days" then new Date().addDays (target ? val)
+				when null and target[0] is "-"
+					x = moment()
+					x.add 1, "days" while dutchDays[x.weekday()] isnt target
+					x.toDate()
+				when null and target[0] isnt "-"
+					x = moment()
+					x.add -1, "days" while dutchDays[x.weekday()] isnt target[1..]
+					x.toDate()
+				when "weeks" then new Date().addDays (target ? val) * 7
+				when "lesson"
+					x = null
+					calcDistance = _.curry (s) -> DamerauLevenshtein(transpose: .5)(val, s)
+					z = _.filter onMagisterInfoResult("appointments this week").result, (c) -> c.classes().length > 0
+					distances = []
+
+					for appointment in _.uniq(z, (c) -> c.classes()[0])
+						name = appointment.classes()[0]
+						if name.length > 4 and val.length > 4 and (( val.toLowerCase().indexOf(name.toLowerCase()) > -1 ) or ( name.toLowerCase().indexOf(val.toLowerCase()) > -1 ))
+							distances.push { name, distance: 0 }
+						else
+							distances.push { name, distance: calcDistance name }
+
+					{ name, distance } = _.sortBy(distances, "distance")[0]
+					console.log distances
+
+					if target is 1
+						date = _.find(z, (c) -> c.classes()[0] is name and c.begin().date() > Date.today()).begin()
+					else
+						date = _.find(z, (c) -> c.classes()[0] is name and c.end().date() < Date.today()).begin()
+
+		else if not _.isNaN val = Date.parse(/(\d+ (\w+|\d+) (\d{4})?)|((\d{4})? (\w+\d+) \d+)/.exec()?[0])
+			date = new Date val
+
+		else continue
+
+		console.log date
+
+		#New.calendarItem
+
+		break
 	close()
 
 Template.calendar.events
