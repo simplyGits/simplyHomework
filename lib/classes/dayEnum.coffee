@@ -14,9 +14,18 @@ root = @
 	Saturday: 5
 	Sunday: 6
 
+dutchDays = [
+	"zondag"
+	"maandag"
+	"dinsdag"
+	"woensdag"
+	"donderdag"
+	"vrijdag"
+	"zaterdag"
+]
+
 @DayToDutch = (day = Helpers.currentDay()) ->
-	tracker = new Tracker.Dependency(); tracker.depend()
-	setInterval (-> tracker.changed()), 1000
+	secondTracker.depend()
 	switch day
 		when 0 then "maandag"
 		when 1 then "dinsdag"
@@ -25,10 +34,10 @@ root = @
 		when 4 then "vrijdag"
 		when 5 then "zaterdag"
 		when 6 then "zondag"
+	dutchDays[day]
 
 @DateToDutch = (date = new Date, includeYear = yes) ->
-	tracker = new Tracker.Dependency(); tracker.depend()
-	setInterval (-> tracker.changed()), 1000
+	secondTracker.depend()
 	month = switch date.getMonth()
 		when 0 then "januari"
 		when 1 then "februari"

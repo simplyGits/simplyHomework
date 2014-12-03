@@ -37,6 +37,7 @@ isOldInternetExplorer = ->
 		return [ version < 9.0, version ]
 	return false
 
+@secondTracker = new Tracker.Dependency
 Meteor.startup ->
 	window.viewportUnitsBuggyfill.init()
 	NProgress.configure showSpinner: no
@@ -76,6 +77,8 @@ Meteor.startup ->
 			Meteor.clearInterval interval
 
 			NotificationsManager.hideAll()
+
+	Meteor.setInterval (-> secondTracker.changed()), 1000
 
 	ignoreMessages = [ "Server sent add for existing id"
 		"Expected not to find a document already present for an add"
