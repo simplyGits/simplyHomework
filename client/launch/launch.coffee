@@ -72,7 +72,7 @@ Template.page1.events
 				$('.signUpForm').one 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', ->
 					$(".signUpForm").removeClass "animated shake"
 
-usersCount = new ReactiveVar ""
+usersCount = new ReactiveVar null
 Template.page2.helpers
 	usersCount: -> usersCount.get()
 
