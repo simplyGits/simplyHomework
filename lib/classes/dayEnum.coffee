@@ -14,7 +14,7 @@ root = @
 	Saturday: 5
 	Sunday: 6
 
-dutchDays = [
+@dutchDays = [
 	"zondag"
 	"maandag"
 	"dinsdag"
@@ -26,14 +26,6 @@ dutchDays = [
 
 @DayToDutch = (day = Helpers.currentDay()) ->
 	secondTracker.depend()
-	switch day
-		when 0 then "maandag"
-		when 1 then "dinsdag"
-		when 2 then "woensdag"
-		when 3 then "donderdag"
-		when 4 then "vrijdag"
-		when 5 then "zaterdag"
-		when 6 then "zondag"
 	dutchDays[day]
 
 @DateToDutch = (date = new Date, includeYear = yes) ->
