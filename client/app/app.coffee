@@ -322,14 +322,15 @@ Template.addClassModal.rendered = ->
 	$("#colorInput").on "changeColor", -> $("#colorLabel").css color: $("#colorInput").val()
 
 	WoordjesLeren.getAllClasses (result) ->
-		#classes = Classes.find(_name: $nin: (Helpers.cap c for c in result.pushMore(extraClassList) )).map((c) -> c._name).pushMore(extraClassList).pushMore(result)
-		try
-			classEngine.add ( { val: s } for s in result.pushMore(extraClassList) when !_.contains ["Overige talen",
-				"Overige vakken",
-				"Eigen methodes",
-				"Wiskunde / Rekenen",
-				"Natuur- en scheikunde",
-				"Godsdienst en levensbeschouwing"], s )
+		m = DamerauLevenshtein()
+		classes = extraClassList.pushMore(result)
+		classes.pushMore _.reject Classes.find().map((c) -> c._name), (c) -> _.any classes, (x) -> m(c, x) < 2 or c.length > 4 and x.length > 4 and (( x.toLowerCase().indexOf(c.toLowerCase()) > -1 ) or ( c.toLowerCase().indexOf(x.toLowerCase()) > -1 ))
+		classEngine.add ( { val: s } for s in classes when !_.contains ["Overige talen",
+			"Overige vakken",
+			"Eigen methodes",
+			"Wiskunde / Rekenen",
+			"Natuur- en scheikunde",
+			"Godsdienst en levensbeschouwing"], s )
 
 	bookEngine.initialize()
 	classEngine.initialize()
