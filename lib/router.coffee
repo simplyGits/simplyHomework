@@ -58,7 +58,9 @@ Router.map ->
 				Template.sidebar.rendered = -> slide "overview"
 				swalert title: "Niet gevonden", text: "Jij hebt dit vak waarschijnlijk niet.", confirmButtonText: "o.", type: "error"
 				return
-			Meteor.defer => slide @data()._id.toHexString()
+			Meteor.defer =>
+				slide @data()._id.toHexString()
+				$("meta[name='theme-color']").attr "content", @data().__color
 			document.title = "simplyHomework | #{@data()._name}"
 			NProgress?.done()
 
@@ -87,7 +89,9 @@ Router.map ->
 				swalert title: "Niet gevonden", text: "Dit project is niet gevonden.", type: "error"
 				return
 
-			Meteor.defer => slide @data().__class._id.toHexString()
+			Meteor.defer =>
+				slide @data().__class._id.toHexString()
+				$("meta[name='theme-color']").attr "content", @data().__class.__color
 			document.title = "simplyHomework | #{@data()._name}"
 			NProgress?.done()
 
