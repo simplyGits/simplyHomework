@@ -258,10 +258,10 @@ infos = [
 add = ->
 	input = $("textarea#appointmentInput").val().trim()
 	date = null
+	doBreak = no
 	for info, i in infos
 		[reg, target, type, targetGroup] = info
 		targetGroup ?= 0
-		doBreak = no
 
 		if (val = reg.exec(input)?[0])?
 			if targetGroup isnt 0 then val = reg.exec(val)[targetGroup]
@@ -321,7 +321,7 @@ add = ->
 	unless date? or _.isNaN val = Date.parse(/(\d{0,3} (\w+|\d+) (\d{4})?)|((\d{4})? (\w+\d+) \d{0,3})/.exec(input)?[0])
 		date = new Date val
 
-	unless date?
+	unless date? or doBreak
 		for word in input.split " "
 			calcDistance = _.curry (s) -> DamerauLevenshtein(transpose: .5)(word.trim().toLowerCase(), s.trim().toLowerCase())
 			z = _.filter onMagisterInfoResult("appointments this week").result, (c) -> c.classes().length > 0
