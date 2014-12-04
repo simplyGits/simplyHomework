@@ -234,20 +234,22 @@ infos = [
 	[/vorige (\w+) les/, -1, "lesson", 1]
 	[/vorige les (\w+)/, -1, "lesson", 1]
 	[/(\w+) vorige les/, -1, "lesson", 1]
+
+
 ]
 
 add = ->
 	input = $("textarea#appointmentInput").val().trim()
+	date = null
 	for info, i in infos
 		[reg, target, type, targetGroup] = info
-		targetGroup = 0
-		date = null
+		targetGroup ?= 0
 
 		if (val = reg.exec(input)?[0])?
 			if targetGroup isnt 0 then val = reg.exec(val)[targetGroup]
 
 			date = switch type
-				when "days" then new Date().addDays (target ? val)
+				when "days" then new Date().addDays (target ? +val)
 				when null and target[0] is "-"
 					x = moment()
 					x.add 1, "days" while dutchDays[x.weekday()] isnt target
@@ -256,10 +258,10 @@ add = ->
 					x = moment()
 					x.add -1, "days" while dutchDays[x.weekday()] isnt target[1..]
 					x.toDate()
-				when "weeks" then new Date().addDays (target ? val) * 7
+				when "weeks" then new Date().addDays (target ? +val) * 7
 				when "lesson"
 					x = null
-					calcDistance = _.curry (s) -> DamerauLevenshtein(transpose: .5)(val, s)
+					calcDistance = _.curry (s) -> DamerauLevenshtein(transpose: .5)(val.trim().toLowerCase(), s.trim().toLowerCase())
 					z = _.filter onMagisterInfoResult("appointments this week").result, (c) -> c.classes().length > 0
 					distances = []
 
@@ -267,11 +269,11 @@ add = ->
 						name = appointment.classes()[0]
 						if name.length > 4 and val.length > 4 and (( val.toLowerCase().indexOf(name.toLowerCase()) > -1 ) or ( name.toLowerCase().indexOf(val.toLowerCase()) > -1 ))
 							distances.push { name, distance: 0 }
-						else
-							distances.push { name, distance: calcDistance name }
+						else if (distance = calcDistance name) < 2
+							distances.push { name, distance }
 
+					if distances.length is 0 then break
 					{ name, distance } = _.sortBy(distances, "distance")[0]
-					console.log distances
 
 					if target is 1
 						date = _.find(z, (c) -> c.classes()[0] is name and c.begin().date() > Date.today()).begin()
@@ -281,14 +283,15 @@ add = ->
 		else if not _.isNaN val = Date.parse(/(\d+ (\w+|\d+) (\d{4})?)|((\d{4})? (\w+\d+) \d+)/.exec()?[0])
 			date = new Date val
 
-		else continue
-
+		break if date?
+	if date?
+		close()
 		console.log date
-
 		#New.calendarItem
-
-		break
-	close()
+	else
+		$("div.addAppointmentForm").addClass "animated shake"
+		$("div.addAppointmentForm").one 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', ->
+			$("div.addAppointmentForm").removeClass "animated shake"
 
 Template.calendar.events
 	"click button.close": close
