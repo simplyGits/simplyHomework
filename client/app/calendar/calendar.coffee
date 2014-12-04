@@ -101,25 +101,24 @@ Template.calendar.rendered = ->
 					setTimeout (-> $(".calendar").fullCalendar "refetchEvents"), 250
 					return
 
-				root.magister.ready ->
-					root.magister.appointments start, end, no, (error, result) ->
-						setHardCacheAppointments result
-						result.map (appointment) ->
-							return appointment unless appointment.scrapped()
-							a = _.find getHardCacheAppointments(start, end), (a) -> "#{appointment.begin().getTime()}#{appointment.end().getTime()}" is "#{a.begin().getTime()}#{a.end().getTime()}"
-							if a?
-								appointment._description = a._description
-								appointment._location = a._location
-								appointment._begin = a._begin
-								appointment._end = a._end
-							return appointment
-						result.pushMore _.reject getHardCacheAppointments(start, end), (a) -> _.any result, (x) -> "#{x.begin().getTime()}#{x.end().getTime()}" is "#{a.begin().getTime()}#{a.end().getTime()}"
-						
-						events = (toEvent x for x in result)
+				root.magister.ready (m) -> m.appointments start, end, no, (error, result) ->
+					setHardCacheAppointments result
+					result.map (appointment) ->
+						return appointment unless appointment.scrapped()
+						a = _.find getHardCacheAppointments(start, end), (a) -> "#{appointment.begin().getTime()}#{appointment.end().getTime()}" is "#{a.begin().getTime()}#{a.end().getTime()}"
+						if a?
+							appointment._description = a._description
+							appointment._location = a._location
+							appointment._begin = a._begin
+							appointment._end = a._end
+						return appointment
+					result.pushMore _.reject getHardCacheAppointments(start, end), (a) -> _.any result, (x) -> "#{x.begin().getTime()}#{x.end().getTime()}" is "#{a.begin().getTime()}#{a.end().getTime()}"
+					
+					events = (toEvent x for x in result)
 
-						cachedAppointments["#{start.getTime()}#{end.getTime()}"] = events
-						if updateNeeded then $(".calendar").fullCalendar "refetchEvents"
-						else callback events
+					cachedAppointments["#{start.getTime()}#{end.getTime()}"] = events
+					if updateNeeded then $(".calendar").fullCalendar "refetchEvents"
+					else callback events
 		dayClick: (date, event, view) ->
 			clearTimeout dblDateResetHandle
 			date = date.toDate()
