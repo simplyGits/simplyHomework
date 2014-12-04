@@ -197,11 +197,39 @@ close = ->
 	$("textarea#appointmentInput").val("").velocity { height: "54px" }, 500, "easeOutExpo"
 
 infos = [
+	[/volgende (\w+) les/, 1, "lesson", 1]
+	[/volgende les (\w+)/, 1, "lesson", 1]
+	[/(\w+) volgende les/, 1, "lesson", 1]
+	
+	[/vorige (\w+) les/, -1, "lesson", 1]
+	[/vorige les (\w+)/, -1, "lesson", 1]
+	[/(\w+) vorige les/, -1, "lesson", 1]
+
+	[/(\w+) eergister(en)/, "eergister", "lesson", 1]
+	[/(\w+) gister(en)/, "gister", "lesson", 1]
+	[/(\w+) morgen/, "morgen", "lesson", 1]
+	[/(\w+) overmorgen/, "overmorgen", "lesson", 1]
+
 	[/eergister(en)?/i, -2, "days"]
 	[/gister(en)?/i, -1, "days"]
 	[/vandaag/i, 0, "days"]
 	[/morgen/i, 1, "days"]
 	[/overmorgen/i, 2, "days"]
+
+	[/(\w+) maandag/i, "maandag", "lesson", 1]
+	[/(\w+) dinsdag/i, "dinsdag", "lesson", 1]
+	[/(\w+) woensdag/i, "woensdag", "lesson", 1]
+	[/(\w+) donderdag/i, "donderdag", "lesson", 1]
+	[/(\w+) vrijdag/i, "vrijdag", "lesson", 1]
+	[/(\w+) zaterdag/i, "zaterdag", "lesson", 1]
+	[/(\w+) zondag/i, "zondag", "lesson", 1]
+	[/maandag (\w+)/i, "maandag", "lesson", 1]
+	[/dinsdag (\w+)/i, "dinsdag", "lesson", 1]
+	[/woensdag (\w+)/i, "woensdag", "lesson", 1]
+	[/donderdag (\w+)/i, "donderdag", "lesson", 1]
+	[/vrijdag (\w+)/i, "vrijdag", "lesson", 1]
+	[/zaterdag (\w+)/i, "zaterdag", "lesson", 1]
+	[/zondag (\w+)/i, "zondag", "lesson", 1]
 
 	[/((volgende|aankomende) )?maandag/i, "maandag", null]
 	[/((volgende|aankomende) )?dinsdag/i, "dinsdag", null]
@@ -226,16 +254,6 @@ infos = [
 
 	[/(over|na) (\d+) (dagen|dag)/i, null, "days", 2]
 	[/(\d+) (dagen|dag) geleden/i, null, "days", 1]
-
-	[/volgende (\w+) les/, 1, "lesson", 1]
-	[/volgende les (\w+)/, 1, "lesson", 1]
-	[/(\w+) volgende les/, 1, "lesson", 1]
-
-	[/vorige (\w+) les/, -1, "lesson", 1]
-	[/vorige les (\w+)/, -1, "lesson", 1]
-	[/(\w+) vorige les/, -1, "lesson", 1]
-
-
 ]
 
 add = ->
@@ -244,6 +262,7 @@ add = ->
 	for info, i in infos
 		[reg, target, type, targetGroup] = info
 		targetGroup ?= 0
+		doBreak = no
 
 		if (val = reg.exec(input)?[0])?
 			if targetGroup isnt 0 then val = reg.exec(val)[targetGroup]
@@ -260,7 +279,6 @@ add = ->
 					x.toDate()
 				when "weeks" then new Date().addDays (target ? +val) * 7
 				when "lesson"
-					x = null
 					calcDistance = _.curry (s) -> DamerauLevenshtein(transpose: .5)(val.trim().toLowerCase(), s.trim().toLowerCase())
 					z = _.filter onMagisterInfoResult("appointments this week").result, (c) -> c.classes().length > 0
 					distances = []
@@ -276,14 +294,53 @@ add = ->
 					{ name, distance } = _.sortBy(distances, "distance")[0]
 
 					if target is 1
-						date = _.find(z, (c) -> c.classes()[0] is name and c.begin().date() > Date.today()).begin()
+						date = _.find(z, (c) -> c.classes()[0] is name and c.begin().date() > Date.today())?.begin()
+					else if target is -1
+						date = _.find(z, (c) -> c.classes()[0] is name and c.end().date() < Date.today())?.begin()
+
+					else if target is "morgen"
+						date = _.find(z, (c) -> c.classes()[0] is name and EJSON.equals c.begin().date(), Date.today().addDays(1))?.begin()
+						doBreak = yes
+					else if target is "overmorgen"
+						date = _.find(z, (c) -> c.classes()[0] is name and EJSON.equals c.begin().date(), Date.today().addDays(2))?.begin()
+						doBreak = yes
+					else if target is "gister"
+						date = _.find(z, (c) -> c.classes()[0] is name and EJSON.equals c.begin().date(), Date.today().addDays(-1))?.begin()
+						doBreak = yes
+					else if target is "eergister"
+						date = _.find(z, (c) -> c.classes()[0] is name and EJSON.equals c.begin().date(), Date.today().addDays(-2))?.begin()
+						doBreak = yes
+
 					else
-						date = _.find(z, (c) -> c.classes()[0] is name and c.end().date() < Date.today()).begin()
+						date = _.find(z, (c) -> c.classes()[0] is name and dutchDays[moment(c.begin().date()).weekday()] is target)?.begin()
+						doBreak = yes
 
-		else if not _.isNaN val = Date.parse(/(\d+ (\w+|\d+) (\d{4})?)|((\d{4})? (\w+\d+) \d+)/.exec()?[0])
-			date = new Date val
+					date
 
-		break if date?
+		break if date? or doBreak
+
+	unless date? or _.isNaN val = Date.parse(/(\d{0,3} (\w+|\d+) (\d{4})?)|((\d{4})? (\w+\d+) \d{0,3})/.exec(input)?[0])
+		date = new Date val
+
+	unless date?
+		for word in input.split " "
+			calcDistance = _.curry (s) -> DamerauLevenshtein(transpose: .5)(word.trim().toLowerCase(), s.trim().toLowerCase())
+			z = _.filter onMagisterInfoResult("appointments this week").result, (c) -> c.classes().length > 0
+			distances = []
+
+			for appointment in _.uniq(z, (c) -> c.classes()[0])
+				name = appointment.classes()[0]
+				if name.length > 4 and word.length > 4 and (( word.toLowerCase().indexOf(name.toLowerCase()) > -1 ) or ( name.toLowerCase().indexOf(word.toLowerCase()) > -1 ))
+					distances.push { name, distance: 0 }
+				else if (distance = calcDistance name) < 2
+					distances.push { name, distance }
+
+			if distances.length is 0 then break
+			{ name, distance } = _.sortBy(distances, "distance")[0]
+
+			date = _.find(z, (c) -> c.classes()[0] is name and c.begin().date() > Date.today())?.begin()
+			break if date?
+
 	if date?
 		close()
 		console.log date
