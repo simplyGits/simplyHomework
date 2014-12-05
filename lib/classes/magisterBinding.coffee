@@ -4,23 +4,14 @@ root = @
 # Binding between Magister objects and simplyHomework objects.
 #
 # @class MagisterBinding
+# @param [_homeworkId] The username of the user to login to.
+# @param [_assignmentId] The password of the user to login to.
+# @constructor
 ###
 class @MagisterBinding
-	constructor: (@_parent, @_homeworkId, @_assignmentId) ->
+	constructor: (@_homeworkId, @_assignmentId) ->
 		@_className = "MagisterBinding"
 		@_id = new Meteor.Collection.ObjectID()
 
-		@homeworkId = root.getset "_homeworkId", String
-		@assignmentId = root.getset "_assignmentId", String
-
-		@dependency = new Deps.Dependency
-
-	_setDeps: ->
-		Deps.autorun (computation) => # Calls the dependency of the sender object, unless it's null
-			@dependency.depend()
-			@_parent.dependency.changed() if @_parent? and !computation.firstRun
-
-	@_match: (binding) ->
-		return Match.test binding, Match.ObjectIncluding
-				_homeworkId: String
-				_assignmentId: String
+		@homeworkId = root.getset "_homeworkId", Match.Optional String
+		@assignmentId = root.getset "_assignmentId", Match.Optional String
