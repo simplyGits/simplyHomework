@@ -15,13 +15,13 @@ root = @
 	Sunday: 6
 
 @dutchDays = [
-	"zondag"
 	"maandag"
 	"dinsdag"
 	"woensdag"
 	"donderdag"
 	"vrijdag"
 	"zaterdag"
+	"zondag"
 ]
 
 @DayToDutch = (day = Helpers.currentDay()) ->

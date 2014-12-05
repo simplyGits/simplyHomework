@@ -248,6 +248,8 @@ class @NotificationsManager
 	closeSidebar?()
 
 Meteor.startup ->
+	moment.locale "nl"
+
 	Session.set "allowNotifications", no
 
 	notification = null
