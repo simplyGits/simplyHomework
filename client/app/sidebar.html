@@ -1,6 +1,6 @@
 <template name="sidebar">
 	<div class="sidebar unselectable" onselectstart="return false;" ondragstart="return false;">
-		<div class="slider"></div>
+		<div class="slider" id="global"></div>
 		{{#linkTo route="personView" data=currentUser}}
 			<div class="sidebarProfile">
 				<div class="sidebarProfileBack" style="background-image: url({{ gravatar currentUser 250}})"></div>
@@ -23,6 +23,7 @@
 		</div>
 
 		<div class="sidebarClasses" style="overflow-y: {{sidebarOverflow}}">
+			<div class="slider" id="classes"></div>
 			{{#each classes}}
 				{{#linkTo route="classView" classId=_id.toHexString}}
 					{{> sidebarItem}}

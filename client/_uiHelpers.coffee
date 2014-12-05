@@ -229,16 +229,22 @@ class @NotificationsManager
 	else
 		Meteor.user().profile.magisterPicture
 
-@slide = (id) ->
-	targetPosition = $("div.sidebarButton##{id}").offset().top
+@slide = (id, isClass = no) ->
 	targetHeight = $("div.sidebarButton##{id}").outerHeight yes
 
-	$(".slider").velocity {
-		top: targetPosition
-		height: targetHeight + 5
-	}, 150
+	$(".slider").css display: "none"
+	if isClass
+		$(".slider#classes").css(display: "initial").velocity {
+			top: $("div.sidebarButton##{id}").position().top + $(".sidebarClasses").scrollTop()
+			height: targetHeight + 5
+		}, 150
+	else
+		$(".slider#global").css(display: "initial").velocity {
+			top: $("div.sidebarButton##{id}").offset().top
+			height: targetHeight + 5
+		}, 150
 
-	$("meta[name='theme-color']").attr "content", "#32A8CE"
+		$("meta[name='theme-color']").attr "content", "#32A8CE"
 	closeSidebar?()
 
 Meteor.startup ->
