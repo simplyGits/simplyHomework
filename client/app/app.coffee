@@ -202,7 +202,12 @@ Template.getMagisterClassesModal.events
 					book = new Book _class, c.__method.name, undefined, c.__method.id, undefined
 					Classes.update _class._id, $push: { _books: book }
 
-			Meteor.users.update Meteor.userId(), $push: { classInfos: { id: _class._id, color, magisterId: c.id(), bookId: book?._id ? null }}
+			Meteor.users.update Meteor.userId(), $push: classInfos:
+				id: _class._id
+				color: color
+				magisterId: c.id()
+				magisterDescription: c.description()
+				bookId: book?._id ? null
 
 		$("#getMagisterClassesModal").modal "hide"
 		App.step()
@@ -469,6 +474,15 @@ Template.app.rendered = ->
 				recentGradesNotification.content s, yes
 			else
 				recentGradesNotification = NotificationsManager.notify body: s, type: "warning", time: -1, html: yes
+
+	onMagisterInfoResult "appointments next week", (e, r) -> return if e?; for c in r then do (c) ->
+		for classInfo in Meteor.user().classInfos
+			magisterGroup = _.find onMagisterInfoResult("appointments this week").result, (a) -> a.classes()[0] is classInfo.magisterDescription
+
+			continue if classInfo.magisterGroup is magisterGroup or not magisterGroup?
+
+			Meteor.users().update $pull: "profile.classInfos": id: classInfo.id
+			Meteor.users().update $push: "profile.classInfos": _.extend classInfo, { magisterGroup }
 
 	ChatHeads.initialize()
 
