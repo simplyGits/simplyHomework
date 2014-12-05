@@ -17,6 +17,8 @@ Template.classView.events
 
 		name = if _.contains ["Natuurkunde", "Scheikunde"], (val = currentClass().name()) then "Natuur- en scheikunde" else val
 		WoordjesLeren.getAllBooks name, (result) ->
+			result.pushMore ({name} for name in _.reject currentClass().books().map((b) -> b.title()), (b) -> _.any result, (x) -> x is b)
+
 			bookEngine.clear()
 			bookEngine.add result
 

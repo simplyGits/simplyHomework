@@ -40,6 +40,10 @@ class @App
 							else if /levensbeschouwing/i.test val
 								val = "Godsdienst en levensbeschouwing"
 
+							{ year, schoolVariant } = Meteor.user().profile.courseInfo
+							books = Classes.findOne({ $or: [{ _name: val }, { _course: course }], _schoolVariant: schoolVariant.toLowerCase(), _year: year})?.books() ? []
+							engine.add ({name} for name in _.reject books.map((b) -> b.title()), (b) -> _.any result, (x) -> x is b)
+
 							do (engine) -> WoordjesLeren.getAllBooks val, (result) -> engine.add result
 
 							Meteor.defer do (engine, c) -> return ->
@@ -302,9 +306,12 @@ Template.addClassModal.events
 		Meteor.users.update Meteor.userId(), $push: { classInfos: { id: _class._id, color, bookId: book._id }}
 		$("#addClassModal").modal "hide"
 
-	"keypress #classNameInput, #courseInput": (event) ->
-		return if event.which is 0
+	"keyup #classNameInput, #courseInput": (event) ->
 		val = Helpers.cap $("#classNameInput").val()
+
+		{ year, schoolVariant } = Meteor.user().profile.courseInfo
+		books = Classes.findOne({ _name: val, _schoolVariant: schoolVariant.toLowerCase(), _year: year})?.books() ? []
+		console.log books
 
 		if /(Natuurkunde)|(Scheikunde)/i.test val
 			val = "Natuur- en scheikunde"
@@ -314,6 +321,8 @@ Template.addClassModal.events
 			val = "Godsdienst en levensbeschouwing"
 
 		WoordjesLeren.getAllBooks val, (result) ->
+			result.pushMore ({name} for name in _.reject books.map((b) -> b.title()), (b) -> _.any result, (x) -> x is b)
+
 			bookEngine.clear()
 			bookEngine.add result
 
