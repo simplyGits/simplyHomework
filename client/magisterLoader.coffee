@@ -62,7 +62,7 @@ loaders =
 		cb m for cb in magisterWaiters
 		magisterWaiters = []
 
-		m.appointments new Date(), new Date().addDays(7), no, (error, result) -> # Currently we AREN'T downloading the persons.
+		m.appointments new Date().addDays(-4), new Date().addDays(7), no, (error, result) -> # Currently we AREN'T downloading the persons.
 			pushResult "appointments this week", { error, result }
 			unless error?
 				pushResult "appointments tomorrow", error: null, result: _.filter result, (a) -> EJSON.equals a.begin().date(), Date.today().addDays(1)
