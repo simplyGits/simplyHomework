@@ -268,11 +268,11 @@ add = ->
 
 			date = switch type
 				when "days" then new Date().addDays (target ? +val)
-				when null and target[0] is "-"
+				when null and target[0] isnt "-"
 					x = moment()
 					x.add 1, "days" while dutchDays[x.weekday()] isnt target
 					x.toDate()
-				when null and target[0] isnt "-"
+				when null and target[0] is "-"
 					x = moment()
 					x.add -1, "days" while dutchDays[x.weekday()] isnt target[1..]
 					x.toDate()
@@ -311,7 +311,7 @@ add = ->
 						doBreak = yes
 
 					else
-						date = _.find(z, (c) -> c.classes()[0] is name and dutchDays[moment(c.begin().date()).weekday()] is target)?.begin()
+						date = _.find(z, (c) -> c.classes()[0] is name and c.begin().date() >= Date.today() and dutchDays[moment(c.begin().date()).weekday()] is target)?.begin()
 						doBreak = yes
 
 					date
