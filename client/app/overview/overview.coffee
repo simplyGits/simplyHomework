@@ -97,7 +97,7 @@ Template.appOverview.rendered = ->
 				when 5 then Date.today().addDays(2)
 				else Date.today().addDays(1)
 
-			if new Date().getHours() < 4 then date.addDays(-1)
+			if new Date().getHours() < 4 and Helpers.weekDay(date) isnt 0 then date.addDays(-1)
 
 			homework = _.where result, (a) -> a.content()? and a.content() isnt "" and a.begin().getTime() > new Date().getTime() and _.contains([1..5], a.infoType()) and a.classes().length > 0
 			homeworkItems.set _.where homework, (h) -> EJSON.equals(date, h.begin().date()) or Get.schedular().schedularPrefs().bias(h.begin().addDays(-1, yes).date()) is 0
