@@ -51,7 +51,7 @@ Template.changeClassModal.events
 		Meteor.users.update Meteor.userId(), { $pull: { classInfos: { id: _class._id }}}
 		Meteor.users.update Meteor.userId(), { $push: { classInfos: { id: _class._id, color, bookId: book._id }}}
 
-		$("meta[name='theme-color']").attr "content", @data().__color
+		$("meta[name='theme-color']").attr "content", color
 		$("#changeClassModal").modal "hide"
 
 	"click #deleteClassButton": ->
