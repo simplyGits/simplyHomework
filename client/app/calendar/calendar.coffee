@@ -204,8 +204,8 @@ infos = [
 	[/vorige les (\w+)/, -1, "lesson", 1]
 	[/(\w+) vorige les/, -1, "lesson", 1]
 
-	[/(\w+) eergister(en)/, "eergister", "lesson", 1]
-	[/(\w+) gister(en)/, "gister", "lesson", 1]
+	[/(\w+) eergister(en)?/, "eergister", "lesson", 1]
+	[/(\w+) gister(en)?/, "gister", "lesson", 1]
 	[/(\w+) morgen/, "morgen", "lesson", 1]
 	[/(\w+) overmorgen/, "overmorgen", "lesson", 1]
 
