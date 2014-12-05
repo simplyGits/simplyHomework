@@ -21,6 +21,8 @@ Meteor.publish "usersData", ->
 		gravatarUrl: 1
 
 Meteor.publish "essentials", ->
+	{ year, schoolVariant } = Meteor.users.findOne(@userId).profile.courseInfo
+
 	userData = Meteor.users.find @userId, fields:
 		classInfos: 1
 		mailSignup: 1
@@ -32,7 +34,7 @@ Meteor.publish "essentials", ->
 		"status.online": 1
 		"status.idle": 1
 		gravatarUrl: 1
-	[ Schools.find(), Classes.find(), userData ]
+	[ Schools.find(), Classes.find(_schoolVariant: schoolVariant.toLowerCase(), _year: year), userData ]
 
 Meteor.publish "goaledSchedules", -> GoaledSchedules.find { ownerId: @userId }
 Meteor.publish "projects", -> Projects.find(_participants: @userId)
