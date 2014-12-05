@@ -1,12 +1,9 @@
-homeworkDependency = new Deps.Dependency
 homeworkItems = new ReactiveVar []
 firstAppointmentTomorrow = new ReactiveVar null
 nextAppointmentToday = new ReactiveVar null
 currentAppointment = new ReactiveVar null
 
 getTasks = -> # Also mix homework for tommorow and homework for days where the day before has no time. Unless today has no time.
-	homeworkDependency.depend()
-
 	tasks = _.flatten (gS.tasksForToday() for gS in GoaledSchedules.find(_homework: { $exists: true }, ownerId: Meteor.userId()).fetch())
 	tmp = []
 	for task in tasks
@@ -101,5 +98,3 @@ Template.appOverview.rendered = ->
 
 			homework = _.where result, (a) -> a.content()? and a.content() isnt "" and a.begin().getTime() > new Date().getTime() and _.contains([1..5], a.infoType()) and a.classes().length > 0
 			homeworkItems.set _.where homework, (h) -> EJSON.equals(date, h.begin().date()) or Get.schedular().schedularPrefs().bias(h.begin().addDays(-1, yes).date()) is 0
-
-			homeworkDependency.changed()
