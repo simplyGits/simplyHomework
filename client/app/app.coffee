@@ -476,14 +476,15 @@ Template.app.rendered = ->
 			else
 				recentGradesNotification = NotificationsManager.notify body: s, type: "warning", time: -1, html: yes, onDismissed: -> amplify.store "seenGradeIds", (g.id() for g in recentGrades)
 
-	onMagisterInfoResult "appointments next week", (e, r) -> return if e?; for c in r then do (c) ->
+	onMagisterInfoResult "appointments this week", ->
 		for classInfo in Meteor.user().classInfos
-			magisterGroup = _.find onMagisterInfoResult("appointments this week").result, (a) -> a.classes()[0] is classInfo.magisterDescription
+			magisterGroup = _.find(onMagisterInfoResult("appointments this week").result, (a) -> a.classes()[0] is classInfo.magisterDescription)?.description()
+			groupInfo = _.find (Meteor.user().profile.groupInfo ? []), (gi) -> gi.id is classInfo.id
 
-			continue if classInfo.magisterGroup is magisterGroup or not magisterGroup?
+			continue if groupInfo?.group is magisterGroup or not magisterGroup?
 
-			Meteor.users().update $pull: "profile.classInfos": id: classInfo.id
-			Meteor.users().update $push: "profile.classInfos": _.extend classInfo, { magisterGroup }
+			Meteor.users.update Meteor.userId(), $pull: "profile.groupInfo": id: classInfo.id
+			Meteor.users.update Meteor.userId(), $push: "profile.groupInfo": _.extend id: classInfo.id, group: magisterGroup
 
 	ChatHeads.initialize()
 
