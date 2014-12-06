@@ -463,6 +463,7 @@ Template.app.rendered = ->
 			endGrades = _.uniq _.filter(r, (g) -> g.type().type() is 2), "_class"
 
 		recentGrades = _.filter r, (g) -> new Date(g.dateFilledIn()) > Date.today().addDays(-7) and g.type().type() is 1
+		recentGrades = _.reject recentGrades, (g) -> _.contains (amplify.store("seenGradeIds") ? []), g.id()
 		unless recentGrades.length is 0
 			s = "Recent ontvangen cijfers:\n\n"
 
@@ -473,7 +474,7 @@ Template.app.rendered = ->
 			if recentGradesNotification?
 				recentGradesNotification.content s, yes
 			else
-				recentGradesNotification = NotificationsManager.notify body: s, type: "warning", time: -1, html: yes
+				recentGradesNotification = NotificationsManager.notify body: s, type: "warning", time: -1, html: yes, onDismissed: -> amplify.store "seenGradeIds", (g.id() for g in recentGrades)
 
 	onMagisterInfoResult "appointments next week", (e, r) -> return if e?; for c in r then do (c) ->
 		for classInfo in Meteor.user().classInfos
