@@ -258,12 +258,16 @@ infos = [
 add = ->
 	input = $("textarea#appointmentInput").val().trim()
 	date = null
+	endDate = null
+	appointment = null
+	descriptionOnly = null
 	doBreak = no
 	for info, i in infos
 		[reg, target, type, targetGroup] = info
 		targetGroup ?= 0
 
 		if (val = reg.exec(input)?[0])?
+			descriptionOnly = input.replace val, ""
 			if targetGroup isnt 0 then val = reg.exec(val)[targetGroup]
 
 			date = switch type
@@ -293,33 +297,49 @@ add = ->
 					{ name, distance } = _.sortBy(distances, "distance")[0]
 
 					if target is 1
-						date = _.find(z, (c) -> c.classes()[0] is name and c.begin().date() > Date.today())?.begin()
+						appointment = _.find(z, (c) -> c.classes()[0] is name and c.begin().date() > Date.today())
+						date = appointment?.begin()
+						endDate = appointment?.end()
 					else if target is -1
-						date = _.find(z, (c) -> c.classes()[0] is name and c.end().date() < Date.today())?.begin()
+						appointment = _.find(z, (c) -> c.classes()[0] is name and c.end().date() < Date.today())
+						date = appointment?.begin()
+						endDate = appointment?.end()
 
 					else if target is "morgen"
-						date = _.find(z, (c) -> c.classes()[0] is name and EJSON.equals c.begin().date(), Date.today().addDays(1))?.begin()
+						appointment = _.find(z, (c) -> c.classes()[0] is name and EJSON.equals c.begin().date(), Date.today().addDays(1))
+						date = appointment?.begin()
+						endDate = appointment?.end()
 						doBreak = yes
 					else if target is "overmorgen"
-						date = _.find(z, (c) -> c.classes()[0] is name and EJSON.equals c.begin().date(), Date.today().addDays(2))?.begin()
+						appointment = _.find(z, (c) -> c.classes()[0] is name and EJSON.equals c.begin().date(), Date.today().addDays(2))
+						date = appointment?.begin()
+						endDate = appointment?.end()
 						doBreak = yes
 					else if target is "gister"
-						date = _.find(z, (c) -> c.classes()[0] is name and EJSON.equals c.begin().date(), Date.today().addDays(-1))?.begin()
+						appointment = _.find(z, (c) -> c.classes()[0] is name and EJSON.equals c.begin().date(), Date.today().addDays(-1))
+						date = appointment?.begin()
+						endDate = appointment?.end()
 						doBreak = yes
 					else if target is "eergister"
-						date = _.find(z, (c) -> c.classes()[0] is name and EJSON.equals c.begin().date(), Date.today().addDays(-2))?.begin()
+						appointment = _.find(z, (c) -> c.classes()[0] is name and EJSON.equals c.begin().date(), Date.today().addDays(-2))
+						date = appointment?.begin()
+						endDate = appointment?.end()
 						doBreak = yes
 
 					else
-						date = _.find(z, (c) -> c.classes()[0] is name and c.begin().date() >= Date.today() and dutchDays[moment(c.begin().date()).weekday()] is target)?.begin()
+						appointment = _.find(z, (c) -> c.classes()[0] is name and c.begin().date() >= Date.today() and dutchDays[moment(c.begin().date()).weekday()] is target)
+						date = appointment?.begin()
+						endDate = appointment?.end()
 						doBreak = yes
 
 					date
 
 		break if date? or doBreak
 
-	unless date? or _.isNaN val = Date.parse(/(\d{0,3} (\w+|\d+) (\d{4})?)|((\d{4})? (\w+\d+) \d{0,3})/.exec(input)?[0])
-		date = new Date val
+	unless date?
+		match = /(\d{0,3} (\w+|\d+) (\d{4})?)|((\d{4})? (\w+\d+) \d{0,3})/.exec(input)?[0]
+		descriptionOnly = input.replace match, ""
+		date = new Date val unless _.isNaN val = Date.parse match
 
 	unless date? or doBreak
 		calcDistance = _.curry (s) -> DamerauLevenshtein(transpose: .5)(word.trim().toLowerCase(), s.trim().toLowerCase())
@@ -337,13 +357,29 @@ add = ->
 			if distances.length is 0 then break
 			{ name, distance } = _.sortBy(distances, "distance")[0]
 
-			date = _.find(z, (c) -> c.classes()[0] is name and c.begin().date() > Date.today())?.begin()
-			break if date?
+			appointment = _.find(z, (c) -> c.classes()[0] is name and c.begin().date() > Date.today())
+			date = appointment?.begin()
+			endDate = appointment?.end()
+			if date?
+				descriptionOnly = (descriptionOnly ? "").replace word, ""
+				break
+
+	unless endDate? or doBreak
+		match = /\S+ ?(-|tot) ?(\S+)/i.exec(input)?[2]
+		if match?
+			descriptionOnly = (descriptionOnly ? "").replace match, ""
+
+			val = Date.parse(match)
+			endDate = new Date(val) unless _.isNaN val
 
 	if date?
 		close()
-		console.log date
-		#New.calendarItem
+
+		classId = null
+		if appointment? and not _.isEmpty appointment.description()
+			classId = _.find(Meteor.user().profile.groupInfos, (gi) -> gi.group is appointment.description()).id
+
+		New.calendarItem Meteor.userId(), (if descriptionOnly? then descriptionOnly else input).trim(), date, endDate, classId
 	else
 		$("div.addAppointmentForm").addClass "animated shake"
 		$("div.addAppointmentForm").one 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', ->
