@@ -322,9 +322,9 @@ add = ->
 		date = new Date val
 
 	unless date? or doBreak
+		calcDistance = _.curry (s) -> DamerauLevenshtein(transpose: .5)(word.trim().toLowerCase(), s.trim().toLowerCase())
+		z = _.filter onMagisterInfoResult("appointments this week").result, (c) -> c.classes().length > 0
 		for word in input.split " "
-			calcDistance = _.curry (s) -> DamerauLevenshtein(transpose: .5)(word.trim().toLowerCase(), s.trim().toLowerCase())
-			z = _.filter onMagisterInfoResult("appointments this week").result, (c) -> c.classes().length > 0
 			distances = []
 
 			for appointment in _.uniq(z, (c) -> c.classes()[0])
