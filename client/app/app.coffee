@@ -479,12 +479,12 @@ Template.app.rendered = ->
 	onMagisterInfoResult "appointments this week", ->
 		for classInfo in Meteor.user().classInfos
 			magisterGroup = _.find(onMagisterInfoResult("appointments this week").result, (a) -> a.classes()[0] is classInfo.magisterDescription)?.description()
-			groupInfo = _.find (Meteor.user().profile.groupInfo ? []), (gi) -> gi.id is classInfo.id
+			groupInfo = _.find (Meteor.user().profile.groupInfos ? []), (gi) -> gi.id is classInfo.id
 
 			continue if groupInfo?.group is magisterGroup or not magisterGroup?
 
-			Meteor.users.update Meteor.userId(), $pull: "profile.groupInfo": id: classInfo.id
-			Meteor.users.update Meteor.userId(), $push: "profile.groupInfo": _.extend id: classInfo.id, group: magisterGroup
+			Meteor.users.update Meteor.userId(), $pull: "profile.groupInfos": id: classInfo.id
+			Meteor.users.update Meteor.userId(), $push: "profile.groupInfos": _.extend id: classInfo.id, group: magisterGroup
 
 	ChatHeads.initialize()
 
