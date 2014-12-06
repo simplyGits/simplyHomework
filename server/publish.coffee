@@ -1,9 +1,7 @@
 # PUSH ONLY FROM SAME SCHOOL <<<<
-#
+
 # Meteor.publish "usersData", ->
-# 	return unless @userId?
-# 	callerSchoolId = Meteor.users.findOne(@userId).profile.schoolId
-# 	unless callerSchoolId?
+# 	unless @userId? and (callerSchoolId = Meteor.users.findOne(@userId).profile.schoolId)?
 # 		@ready()
 # 		return
 
@@ -22,7 +20,9 @@ Meteor.publish "usersData", ->
 		gravatarUrl: 1
 
 Meteor.publish "essentials", ->
-	return unless @userId?
+	unless @userId?
+		@ready()
+		return
 	{ year, schoolVariant } = Meteor.users.findOne(@userId).profile.courseInfo
 
 	userData = Meteor.users.find @userId, fields:
