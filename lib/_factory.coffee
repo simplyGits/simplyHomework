@@ -48,6 +48,11 @@
 		@Projects.insert project
 		return project
 
+	calendarItem: =>
+		calendarItem = new CalendarItem arguments...
+		@CalendarItems.insert calendarItem
+		return calendarItem
+
 	schedular: ->
 		throw new WrongPlatformException("Schedular is only settable from the client") unless Meteor.isClient
 

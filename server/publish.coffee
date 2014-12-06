@@ -36,7 +36,7 @@ Meteor.publish "essentials", ->
 		"status.online": 1
 		"status.idle": 1
 		gravatarUrl: 1
-	[ Schools.find(), Classes.find(_schoolVariant: schoolVariant.toLowerCase(), _year: year), userData ]
+	[ Schools.find(), Classes.find(_schoolVariant: schoolVariant.toLowerCase(), _year: year), userData, CalendarItems.find(_ownerId: @userId) ]
 
 Meteor.publish "goaledSchedules", -> GoaledSchedules.find { ownerId: @userId }
 Meteor.publish "projects", -> Projects.find(_participants: @userId)
