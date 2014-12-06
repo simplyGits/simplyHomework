@@ -117,7 +117,7 @@ class @NotificationsManager
 	@notify = (options) ->
 		throw new ArgumentException "options", "Can't be null" unless options?
 		_.defaults options, { type: "default", time: 4000, dismissable: yes, labels: [], styles: [], callbacks: [], html: no, priority: 0 }
-		{ body, type, time, dismissable, labels, styles, callbacks, html, onClick, priority } = options
+		{ body, type, time, dismissable, labels, styles, callbacks, html, onClick, priority, onDismissed } = options
 
 		check time, Match.Where (t) -> _.isNumber(t) and ( t is -1 or t > 0 )
 		check priority, Number
@@ -179,6 +179,7 @@ class @NotificationsManager
 					else
 						$(@).velocity opacity: 0
 						notHandle.hide()
+						onDismissed?()
 				drag: (event, helper) ->
 					$(@).css opacity: 1 - ((pos - $(@).position().left) / 250)
 				revert: -> $(@).position().left - pos > MIN
