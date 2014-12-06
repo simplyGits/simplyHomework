@@ -196,18 +196,18 @@ close = ->
 	$("textarea#appointmentInput").val("").velocity { height: "54px" }, 500, "easeOutExpo"
 
 infos = [
-	[/volgende (\w+) les/, 1, "lesson", 1]
-	[/volgende les (\w+)/, 1, "lesson", 1]
-	[/(\w+) volgende les/, 1, "lesson", 1]
+	[/volgende (\w+) les/i, 1, "lesson", 1]
+	[/volgende les (\w+)/i, 1, "lesson", 1]
+	[/(\w+) volgende les/i, 1, "lesson", 1]
 	
-	[/vorige (\w+) les/, -1, "lesson", 1]
-	[/vorige les (\w+)/, -1, "lesson", 1]
-	[/(\w+) vorige les/, -1, "lesson", 1]
+	[/vorige (\w+) les/i, -1, "lesson", 1]
+	[/vorige les (\w+)/i, -1, "lesson", 1]
+	[/(\w+) vorige les/i, -1, "lesson", 1]
 
-	[/(\w+) eergister(en)?/, "eergister", "lesson", 1]
-	[/(\w+) gister(en)?/, "gister", "lesson", 1]
-	[/(\w+) morgen/, "morgen", "lesson", 1]
-	[/(\w+) overmorgen/, "overmorgen", "lesson", 1]
+	[/(\w+) eergister(en)?/i, "eergister", "lesson", 1]
+	[/(\w+) gister(en)?/i, "gister", "lesson", 1]
+	[/(\w+) morgen/i, "morgen", "lesson", 1]
+	[/(\w+) overmorgen/i, "overmorgen", "lesson", 1]
 
 	[/eergister(en)?/i, -2, "days"]
 	[/gister(en)?/i, -1, "days"]
