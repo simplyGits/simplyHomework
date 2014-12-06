@@ -489,7 +489,7 @@ Template.app.rendered = ->
 	ChatHeads.initialize()
 
 	Deps.autorun ->
-		if Meteor.user()? and !Meteor.user().hasPremium
+		if Meteor.user()? and not has("noAds") and Meteor.status().connected
 			setTimeout (-> Meteor.defer ->
 				if !Session.get "adsAllowed"
 					Router.go "launchPage"
