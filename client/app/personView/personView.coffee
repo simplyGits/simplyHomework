@@ -4,12 +4,15 @@ status = ->
 	$(".personPicture").tooltip title: "Klik hier om je foto aan te passen", container: "body" if sameUser()
 
 	s = Router.current().data().status
+	res = null
 	if s.idle
-		return backColor: "#FF9800", borderColor: "#E65100"
+		res = backColor: "#FF9800", borderColor: "#E65100"
 	else if s.online
-		return backColor: "#4CAF50", borderColor: "#1B5E20"
-	
-	return backColor: "#EF5350", borderColor: "#B71C1C"
+		res = backColor: "#4CAF50", borderColor: "#1B5E20"
+	else
+		res = backColor: "#EF5350", borderColor: "#B71C1C"
+	$("meta[name='theme-color']").attr "content", res.backColor
+	return res
 
 Template.personView.helpers
 	backColor: -> status().backColor
