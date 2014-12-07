@@ -24,7 +24,11 @@ getTasks = -> # Also mix homework for tommorow and homework for days where the d
 			__id: calendarItem._id.toHexString()
 			__taskDescription: calendarItem.description()
 			__className: Classes.findOne(calendarItem.classId())?.name() ? ""
-			isDone: ->
+			isDone: (d) ->
+				if d?
+					CalendarItems.update calendarItem._id, $set: _isDone: d
+					calendarItem._isDone = d
+				else calendarItem._isDone
 
 	return tmp
 
