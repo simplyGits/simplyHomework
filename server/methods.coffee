@@ -80,8 +80,6 @@ Meteor.methods
 		catch e
 			throw new Meteor.Error "500", e.message
 
-	getGravatar: (userId, size = 50) -> "https://www.gravatar.com/avatar/#{md5 Meteor.users.findOne(userId).emails[0].address}?s=#{size}&d=identicon&r=PG"
-
 	getUsersCount: -> Meteor.users.find().count()
 
 	congratulate: ->
