@@ -68,11 +68,9 @@ http://tomsmeding.nl/
 		cancelButtonText
 		allowOutsideClick: cancelButtonText?
 		showCancelButton: cancelButtonText?
-	}, onSuccess
+	}, (success) -> if success then onSuccess() else onCancel()
 
 	if html? then $(".sweet-alert > p").html html
-
-	if cancelButtonText? then $(".sweet-overlay, .sweet-alert > button.cancel").click onCancel
 
 	return undefined
 
