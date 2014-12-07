@@ -18,6 +18,14 @@ getTasks = -> # Also mix homework for tommorow and homework for days where the d
 			__name: Helpers.cap homework.classes()[0]
 			__taskDescription: homework.content().replace(/\n/g, "; ")
 			__className: if (val = homework.classes()[0])[0] is val[0].toUpperCase() then val else Helpers.cap val
+
+	for calendarItem in CalendarItems.find(_ownerId: Meteor.userId()).fetch()
+		tmp.push _.extend calendarItem,
+			__id: calendarItem._id.toHexString()
+			__taskDescription: calendarItem.description()
+			__className: Classes.findOne(calendarItem.classId())?.name() ? ""
+			isDone: ->
+
 	return tmp
 
 tasksAmount = -> getTasks().length
