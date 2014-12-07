@@ -41,7 +41,7 @@ class @App
 								val = "Godsdienst en levensbeschouwing"
 
 							{ year, schoolVariant } = Meteor.user().profile.courseInfo
-							books = Classes.findOne({ $or: [{ _name: val }, { _course: course }], _schoolVariant: schoolVariant.toLowerCase(), _year: year})?.books() ? []
+							books = Classes.findOne({_name: val, _schoolVariant: schoolVariant.toLowerCase(), _year: year})?.books() ? []
 							engine.add ({name} for name in _.reject books.map((b) -> b.title()), (b) -> _.any result, (x) -> x is b)
 
 							do (engine) -> WoordjesLeren.getAllBooks val, (result) -> engine.add result
@@ -476,10 +476,15 @@ Template.app.rendered = ->
 			else
 				recentGradesNotification = NotificationsManager.notify body: s, type: "warning", time: -1, html: yes, onDismissed: -> amplify.store "seenGradeIds", (g.id() for g in recentGrades)
 
-	onMagisterInfoResult "appointments this week", ->
+	onMagisterInfoResult "appointments this week", (e, r) ->
+		unless _.isArray Meteor.user().profile.groupInfos
+			Meteor.users.update Meteor.userId(), $set: "profile.groupInfos": []
+
+		return unless Meteor.user().classInfos?
+
 		for classInfo in Meteor.user().classInfos
-			magisterGroup = _.find(onMagisterInfoResult("appointments this week").result, (a) -> a.classes()[0] is classInfo.magisterDescription)?.description()
-			groupInfo = _.find (Meteor.user().profile.groupInfos ? []), (gi) -> gi.id is classInfo.id
+			magisterGroup = _.find(r, (a) -> a.classes()[0] is classInfo.magisterDescription)?.description()
+			groupInfo = _.find Meteor.user().profile.groupInfos, (gi) -> gi.id is classInfo.id
 
 			continue if groupInfo?.group is magisterGroup or not magisterGroup?
 
