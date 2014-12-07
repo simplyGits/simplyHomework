@@ -486,6 +486,10 @@ Template.app.rendered = ->
 			Meteor.users.update Meteor.userId(), $pull: "profile.groupInfos": id: classInfo.id
 			Meteor.users.update Meteor.userId(), $push: "profile.groupInfos": _.extend id: classInfo.id, group: magisterGroup
 
+	if (val = Meteor.user().profile.birthDate?.date()) is Date.today() and not amplify.store("congratulated")?
+		swalert title: "Gefeliciteerd!", text: "Gefeliciteerd met je #{moment().diff(val, "years")}e verjaardag!"
+		amplify.store "congratulated", yes, expires: 172800000
+
 	ChatHeads.initialize()
 
 	Deps.autorun ->
