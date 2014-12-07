@@ -86,10 +86,10 @@
 <template name="infoNextDay">
 	<div class="robotoHeader infoNextDayHeader">Morgen</div>
 	<div class="robotoHeader overviewTimeIndicator">
-		<span style="font-weight: 300">{{hours}}</span>{{minutes}}
+		<span style="font-weight: 300">{{firstHour}}<sup>e</sup></span> - {{lastHour}}<sup>e</sup>
 	</div>
-	<div class="robotoHeader overviewClassDescription">
-		{{appointment.__name}}
+	<div class="overviewPersons">
+		
 	</div>
 </template>
 

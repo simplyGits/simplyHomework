@@ -1,5 +1,5 @@
-homeworkItems = new ReactiveVar []
-firstAppointmentTomorrow = new ReactiveVar null
+@homeworkItems = new ReactiveVar []
+appointmentsTommorow = new ReactiveVar []
 nextAppointmentToday = new ReactiveVar null
 currentAppointment = new ReactiveVar null
 
@@ -22,7 +22,7 @@ getTasks = -> # Also mix homework for tommorow and homework for days where the d
 
 tasksAmount = -> getTasks().length
 
-hasAppointments = -> _.any [firstAppointmentTomorrow, nextAppointmentToday, currentAppointment], (x) -> x.get()?
+hasAppointments = -> appointmentsTommorow.get().length > 0 or _.any [nextAppointmentToday, currentAppointment], (x) -> x.get()?
 Template.appOverview.helpers
 	currentDate: -> DateToDutch()
 	currentDay: -> DayToDutch()
@@ -58,9 +58,8 @@ Template.taskRow.events
 			.velocity(opacity: if checked then .4 else 1)
 
 Template.infoNextDay.helpers
-	hours: ->   val = firstAppointmentTomorrow.get()?.begin().getHours()  ; if val? then Helpers.addZero(val) else ""
-	minutes: -> val = firstAppointmentTomorrow.get()?.begin().getMinutes(); if val? then ":#{Helpers.addZero(val)}" else ""
-	appointment: -> firstAppointmentTomorrow.get()
+	firstHour: -> appointmentsTommorow.get()[0].beginBySchoolHour()
+	lastHour: -> _.last(appointmentsTommorow.get()).beginBySchoolHour()
 
 Template.infoNextLesson.helpers
 	hours: ->   val = nextAppointmentToday.get()?.begin().getHours()  ; if val? then Helpers.addZero(val) else ""
@@ -71,7 +70,7 @@ Template.appOverview.rendered = ->
 	onMagisterInfoResult "appointments tomorrow", (e, r) ->
 		return if e?
 
-		firstAppointmentTomorrow.set _.find r, (a) -> not a.fullDay() and _.contains [5..19], a.begin().getHours()
+		appointmentsTommorow.set _.filter r, (a) -> not a.fullDay() and a.classes().length > 0 and _.contains [5..19], a.begin().getHours()
 
 	updateInterval = null
 	onMagisterInfoResult "appointments today", (e, r) ->
