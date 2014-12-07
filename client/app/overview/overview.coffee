@@ -59,6 +59,7 @@ Template.taskRow.events
 		taskId = t.attr "taskid"
 		
 		@isDone checked
+		homeworkItems.dep.changed()
 
 		t.parent()
 			.stop()
