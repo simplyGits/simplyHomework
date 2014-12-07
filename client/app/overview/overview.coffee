@@ -83,7 +83,7 @@ Template.appOverview.rendered = ->
 			currentAppointment.set _.find r, (a) -> not a.fullDay() and new Date() > a.begin() and new Date() < a.end()
 		), 1000
 
-	$("#currentDate > span").tooltip placement: "bottom", html: true, title: "<h4>Week: #{new Date().week()}</h4>"
+	$("#currentDate > span").tooltip placement: "bottom", html: true, title: "<h4>Week: #{moment().week()}</h4>"
 
 	unless Get.schedular()?.biasToday() is 0
 		onMagisterInfoResult "appointments this week", (error, result) ->
