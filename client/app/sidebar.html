@@ -42,10 +42,12 @@
 		<div class="classColorBar" style="border-color: {{__color}}"></div>
 		<span>{{__sidebarName}}</span>
 
-		{{#with __taskAmount}}
-			{{#unless empty}}
-				<div class="badge pull-right">{{this}}</div>
-			{{/unless}}
-		{{/with}}
+		{{#if __showBadge}}
+			{{#with __taskAmount}}
+				{{#unless empty}}
+					<div class="badge pull-right">{{this}}</div>
+				{{/unless}}
+			{{/with}}
+		{{/if}}
 	</div>
 </template>
