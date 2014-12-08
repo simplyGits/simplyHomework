@@ -57,7 +57,11 @@ Meteor.methods
 			throw new Meteor.Error(400, "Mail already verified.")
 		else
 			Accounts.sendVerificationEmail user._id
-			Meteor.users.update user._id, $set: gravatarUrl: "https://www.gravatar.com/avatar/#{md5 user.emails[0].address}?d=identicon&r=PG"
+
+			request.get { url: "https://www.gravatar.com/avatar/#{md5 user.emails[0].address}?d=identicon&d=404&s=1" }, Meteor.bindEnvironment (error, response) ->
+				Meteor.users.update user._id, $set:
+					gravatarUrl: "https://www.gravatar.com/avatar/#{md5 user.emails[0].address}?d=identicon&r=PG"
+					hasGravatar: response.statusCode isnt 404
 
 	mailExists: (mail) ->
 		Meteor.users.find(
