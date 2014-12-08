@@ -223,10 +223,8 @@ class @NotificationsManager
 @notify = (body, type = "default", time = 4000, dismissable = yes, priority = 0) -> NotificationsManager.notify { body: "<b>#{escape body}</b>", type, time, dismissable, priority, html: yes }
 
 @gravatar = (userId = Meteor.userId(), size = 100) ->
-	if userId isnt Meteor.userId() or Session.get "hasGravatar"
-		(if _.isString(userId) then Meteor.users.findOne(userId) else userId).gravatarUrl + "&s=#{size}"
-	else
-		Meteor.user().profile.magisterPicture
+	user = if _.isString(userId) then Meteor.users.findOne(userId) else userId
+	if user.hasGravatar then "#{user.gravatarUrl}&s=#{size}" else user.profile.magisterPicture
 
 @slide = (id, isClass = no) ->
 	targetHeight = $("div.sidebarButton##{id}").outerHeight yes
@@ -242,7 +240,7 @@ class @NotificationsManager
 			top: $("div.sidebarButton##{id}").offset().top
 			height: targetHeight + 5
 		}, 150
-		
+
 	closeSidebar?()
 
 Meteor.startup ->
@@ -272,12 +270,6 @@ Meteor.startup ->
 	UI.registerHelper "minus", (base, substraction) -> base - substraction
 	UI.registerHelper "gravatar", gravatar
 	UI.registerHelper "has", (feature) -> has feature
-
-	Meteor.defer -> Deps.autorun ->
-		if Meteor.user()?
-			$.get "#{Meteor.user().gravatarUrl}&s=1&d=404"
-				.done -> Session.set "hasGravatar", yes
-				.fail -> Session.set "hasGravatar", no
 
 	disconnectedNotify = null
 	_.delay ->
