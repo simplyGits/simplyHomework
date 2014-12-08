@@ -23,6 +23,7 @@ Router.map ->
 			@next()
 		onAfterAction: ->
 			document.title = "simplyHomework"
+			$("meta[name='theme-color']").attr "content", "#32A8CE"
 
 	@route "app",
 		fastRender: yes
@@ -32,7 +33,9 @@ Router.map ->
 			Meteor.defer => @redirect "launchPage" unless Meteor.loggingIn() or Meteor.user()?
 			@next()
 		onAfterAction: ->
-			Meteor.defer -> slide "overview"
+			Meteor.defer ->
+				slide "overview"
+				$("meta[name='theme-color']").attr "content", "#32A8CE"
 			document.title = "simplyHomework | #{Meteor.user().profile.firstName} #{Meteor.user().profile.lastName}"
 
 			App.followSetupPath()
@@ -114,7 +117,9 @@ Router.map ->
 			Meteor.defer => @redirect "launchPage" unless Meteor.loggingIn() or Meteor.user()?
 			@next()
 		onAfterAction: ->
-			Meteor.defer -> slide "calendar"
+			Meteor.defer ->
+				slide "calendar"
+				$("meta[name='theme-color']").attr "content", "#32A8CE"
 			document.title = "simplyHomework | Agenda"
 			NProgress?.done()
 
@@ -129,7 +134,9 @@ Router.map ->
 			Meteor.defer => @redirect "launchPage" unless Meteor.loggingIn() or Meteor.user()?
 			@next()
 		onAfterAction: ->
-			Meteor.defer -> slide "calendar"
+			Meteor.defer ->
+				slide "calendar"
+				$("meta[name='theme-color']").attr "content", "#32A8CE"
 			document.title = "simplyHomework | Agenda"
 			NProgress?.done()
 

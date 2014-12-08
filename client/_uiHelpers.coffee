@@ -242,8 +242,7 @@ class @NotificationsManager
 			top: $("div.sidebarButton##{id}").offset().top
 			height: targetHeight + 5
 		}, 150
-
-		$("meta[name='theme-color']").attr "content", "#32A8CE"
+		
 	closeSidebar?()
 
 Meteor.startup ->
