@@ -68,6 +68,12 @@ div.itemContainerContent
 	height: 95%
 	overflow-y: auto
 	min-height: 50px
+	text-rendering: optimizeLegibility
+	roboto(600)
+	font-size: 35px
+	
+	a
+		text-decoration: none !important
 
 .overviewItemContainerHeader
 	font-size: 40px
@@ -88,6 +94,20 @@ span#addProjectIcon
 	cursor: pointer
 	opacity: .5
 	-moz-padding-end: 30px
+
+div.projectRow
+	transition: all .1s ease-in-out
+	padding-left: 10px
+	color: black
+	white-space: nowrap
+	text-overflow: ellipsis
+	overflow: hidden
+	span
+		font-size: 50%
+		roboto(300)
+	
+div.projectRow:hover
+	background-color: lightgray
 
 div.taskRow
 	margin-left: 5px
