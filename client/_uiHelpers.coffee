@@ -271,6 +271,12 @@ Meteor.startup ->
 	UI.registerHelper "gravatar", gravatar
 	UI.registerHelper "has", (feature) -> has feature
 
+	Meteor.defer -> Deps.autorun ->
+		if Meteor.user()?
+			$.get "#{Meteor.user().gravatarUrl}&s=1&d=404"
+				.done -> Meteor.users.update Meteor.userId(), $set: hasGravatar: yes
+				.fail -> Meteor.users.update Meteor.userId(), $set: hasGravatar: no
+
 	disconnectedNotify = null
 	_.delay ->
 		Deps.autorun ->
