@@ -25,7 +25,15 @@ Meteor.startup -> # my eyes feel dizzy, i think. cant remember. please. help.
 	BrowserPolicy.content.allowEval()
 
 Meteor.users.allow
-	update: (userId, doc, fields, modifier) -> userId is doc._id and (_.contains(fields, "profile") or _.contains(fields, "classInfos") or _.contains(fields, "mailSignup") or _.contains(fields, "schedular"))
+	update: (userId, doc, fields, modifier) ->
+		allowed = [
+			"classInfos"
+			"mailSignup"
+			"schedular"
+			"profile"
+			"hasGravatar"
+		]
+		userId is doc._id and not _.any fields, (f) -> not _.contains allowed, f
 
 Projects.allow
 	insert: -> yes
