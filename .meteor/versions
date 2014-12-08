@@ -42,8 +42,6 @@ iron:location@1.0.3
 iron:middleware-stack@1.0.3
 iron:router@1.0.3
 iron:url@1.0.3
-jparker:crypto-base64@0.1.0
-jparker:crypto-core@0.1.0
 jquery@1.0.1
 json@1.0.1
 launch-screen@1.0.0
