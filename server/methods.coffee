@@ -1,3 +1,5 @@
+request = Npm.require "request"
+
 Meteor.methods
 	http: (method, url, options = {}) ->
 		options.headers = _.extend (options.headers ? {}), "User-Agent": "simplyHomework"
@@ -30,20 +32,15 @@ Meteor.methods
 				headers:
 					"Content-Type": "application/json;charset=UTF-8"
 
-			new Magister(info.school, username, password).ready (m) ->
-				m.http.get m.profileInfo().profilePicture(200, 200, yes), {}, (e, r) ->
-					# base64 = null
-					# if e?
-					# 	try
-					# 		base64 = CryptoJS.enc.Base64.stringify r.content
-					# 	catch
-					# 		console.log "catched."
+			new Magister(info.school, username, password, no).ready (m) ->
+				url = m.profileInfo().profilePicture(200, 200, yes)
 
+				request.get { url, encoding: null, headers: cookie: m.http._cookie }, Meteor.bindEnvironment (error, response, body) ->
 					Meteor.users.update userId,
 						$set:
 							magisterCredentials: info.magisterCredentials
 							"profile.schoolId": info.schoolId
-							# "profile.magisterPicture": base64
+							"profile.magisterPicture": "data:image/jpg;base64,#{body.toString "base64"}"
 							"profile.birthDate": m.profileInfo().birthDate()
 			return yes
 		catch
@@ -83,4 +80,4 @@ Meteor.methods
 	getUsersCount: -> Meteor.users.find().count()
 
 	congratulate: ->
-		
+		return unless @userId? and Meteor.users.findOne(@userId).profile.birthDate.date() is Date.today()
