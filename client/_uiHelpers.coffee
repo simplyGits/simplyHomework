@@ -224,7 +224,7 @@ class @NotificationsManager
 
 @gravatar = (userId = Meteor.userId(), size = 100) ->
 	user = if _.isString(userId) then Meteor.users.findOne(userId) else userId
-	if user.hasGravatar then "#{user.gravatarUrl}&s=#{size}" else user.profile.magisterPicture
+	if user.hasGravatar or _.isEmpty(user.profile.magisterPicture) then "#{user.gravatarUrl}&s=#{size}" else user.profile.magisterPicture
 
 @slide = (id, isClass = no) ->
 	targetHeight = $("div.sidebarButton##{id}").outerHeight yes

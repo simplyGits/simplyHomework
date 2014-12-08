@@ -40,7 +40,7 @@ Meteor.methods
 						$set:
 							magisterCredentials: info.magisterCredentials
 							"profile.schoolId": info.schoolId
-							"profile.magisterPicture": "data:image/jpg;base64,#{body.toString "base64"}"
+							"profile.magisterPicture": if body? then "data:image/jpg;base64,#{body.toString "base64"}" else ""
 							"profile.birthDate": m.profileInfo().birthDate()
 			return yes
 		catch
