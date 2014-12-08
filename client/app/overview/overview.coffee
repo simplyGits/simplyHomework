@@ -38,7 +38,7 @@ hasAppointments = -> appointmentsTommorow.get().length > 0 or _.any [nextAppoint
 Template.appOverview.helpers
 	currentDate: -> DateToDutch()
 	currentDay: -> DayToDutch()
-	weekNumber: -> new Date().week()
+	weekNumber: -> moment().week()
 	tasksAmount: tasksAmount
 	tasksWord: -> if tasksAmount() is 1 then "taak" else "taken"
 
