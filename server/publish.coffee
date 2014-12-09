@@ -24,7 +24,10 @@ Meteor.publish "essentials", ->
 	unless @userId?
 		@ready()
 		return
-	{ year, schoolVariant } = Meteor.users.findOne(@userId).profile.courseInfo
+	classes = Classes.find()
+	if (val = Meteor.users.findOne(@userId).profile.courseInfo)?
+		{ year, schoolVariant } = val
+		classes = Classes.find(_schoolVariant: schoolVariant.toLowerCase(), _year: year)
 
 	userData = Meteor.users.find @userId, fields:
 		classInfos: 1
@@ -37,7 +40,7 @@ Meteor.publish "essentials", ->
 		"status.online": 1
 		"status.idle": 1
 		gravatarUrl: 1
-	[ Schools.find(), Classes.find(_schoolVariant: schoolVariant.toLowerCase(), _year: year), userData, CalendarItems.find(_ownerId: @userId) ]
+	[ Schools.find(), classes, userData, CalendarItems.find(_ownerId: @userId) ]
 
 Meteor.publish "goaledSchedules", -> GoaledSchedules.find { ownerId: @userId }
 Meteor.publish "projects", -> Projects.find(_participants: @userId)
