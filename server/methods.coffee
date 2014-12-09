@@ -38,7 +38,7 @@ Meteor.methods
 				request.get { url, encoding: null, headers: cookie: m.http._cookie }, Meteor.bindEnvironment (error, response, body) ->
 					Meteor.users.update userId,
 						$set:
-							magisterCredentials: info.magisterCredentials
+							"magisterCredentials": info.magisterCredentials
 							"profile.schoolId": info.schoolId
 							"profile.magisterPicture": if body? then "data:image/jpg;base64,#{body.toString "base64"}" else ""
 							"profile.birthDate": m.profileInfo().birthDate()
