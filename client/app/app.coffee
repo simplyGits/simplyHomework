@@ -217,7 +217,7 @@ Template.setMagisterInfoModal.events
 		schoolName = Helpers.cap $("#schoolNameInput").val()
 		s = Session.get("currentSelectedSchoolDatum")
 		s ?= { url: "" }
-		username = $("#magisterUsernameInput").val()
+		username = $("#magisterUsernameInput").val().trim()
 		password = $("#magisterPasswordInput").val()
 
 		school = Schools.findOne { name: schoolName }
