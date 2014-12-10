@@ -40,6 +40,8 @@ loaders =
 		if magister? then cb magister
 		else magisterWaiters.push cb
 
+	return error: null, result: null
+
 @resetMagisterLoader = ->
 	results = {}
 	callbacks = {}
