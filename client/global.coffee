@@ -7,6 +7,8 @@
 			__book: tmpClass.books().smartFind Meteor.user().classInfos.smartFind(tmpClass._id, (cI) -> cI.id).bookId, (b) -> b._id
 			__sidebarName: Helpers.cap if (val = tmpClass.name()).length > 14 then tmpClass.course() else val
 			__showBadge: not _.contains [11..14], tmpClass.name().length
+
+			__classInfo: _.find Meteor.user().classInfos, (c) -> EJSON.equals c.id, tmpClass._id
 	return tmp
 
 @projects = ->
