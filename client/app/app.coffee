@@ -11,11 +11,11 @@ class @App
 		magisterInfo:
 			done: no
 			func: (current, length) ->
-				$("#setMagisterInfoModal").modal backdrop: "static"
+				$("#setMagisterInfoModal").modal backdrop: "static", keyboard: no
 		plannerPrefs:
 			done: no
 			func: (current, length) ->
-				$("#plannerPrefsModal").modal backdrop: "static"
+				$("#plannerPrefsModal").modal backdrop: "static", keyboard: no
 				$("#plannerPrefsModal .modal-header button").remove()
 		getMagisterClasses:
 			done: no
@@ -58,7 +58,7 @@ class @App
 								.on "changeColor", (e) -> $(@).attr "colorHex", e.color.toHex()
 								.colorpicker "setValue", "##{("00000" + (Math.random() * (1 << 24) | 0).toString(16)).slice -6}"
 
-				$("#getMagisterClassesModal").modal backdrop: "static"
+				$("#getMagisterClassesModal").modal backdrop: "static", keyboard: no
 
 		newSchoolYear:
 			done: no
