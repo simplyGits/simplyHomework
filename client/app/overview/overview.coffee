@@ -73,6 +73,10 @@ Template.taskRow.events
 Template.infoNextDay.helpers
 	firstHour: -> appointmentsTommorow.get()[0].beginBySchoolHour()
 	lastHour: -> _.last(appointmentsTommorow.get()).beginBySchoolHour()
+	people: ->
+		groupsTommorow = (x.group for x in _.filter Meteor.user().profile.groupInfos, (gi) -> _.any appointmentsTommorow.get(), (a) -> a.description() is gi.group)
+		Meteor.defer -> $('[data-toggle="tooltip"]').tooltip() # Render the shit out of them
+		return Meteor.users.find( {_id: { $not: Meteor.userId() }, "profile.groupInfos": $elemMatch: group: $in: groupsTommorow}, {limit: 56} ).fetch()
 
 Template.infoNextLesson.helpers
 	hours: ->   val = nextAppointmentToday.get()?.begin().getHours()  ; if val? then Helpers.addZero(val) else ""

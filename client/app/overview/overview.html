@@ -89,7 +89,9 @@
 		<span style="font-weight: 300">{{firstHour}}<sup>e</sup></span> - {{lastHour}}<sup>e</sup>
 	</div>
 	<div class="overviewPersons">
-		
+		{{#each people}}
+			<img src="{{gravatar this 50}}" width="25" height="25" data-toggle="tooltip" title="{{profile.firstName}} {{profile.lastName}}"/>
+		{{/each}}
 	</div>
 </template>
 
