@@ -14,9 +14,9 @@ loaders =
 	check name, String
 
 	results[name] = result
-	for callback in callbacks[name]?.callbacks ? []
+	for callback in (callbacks[name]?.callbacks ? [])
 		callback(result.error, result.result)
-		callbacks[name].dependency.changed()
+	callbacks[name]?.dependency.changed()
 
 @onMagisterInfoResult = (name, callback) ->
 	# If callback is null, it will use a tracker to rerun computations, otherwise it will just recall the given callback.
