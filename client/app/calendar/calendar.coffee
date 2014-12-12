@@ -101,7 +101,7 @@ Template.calendar.rendered = ->
 					setTimeout (-> $(".calendar").fullCalendar "refetchEvents"), 250
 					return
 
-				root.magister.ready (m) -> m.appointments start, end, no, (error, result) ->
+				root.magister.ready -> @appointments start, end, no, (error, result) ->
 					setHardCacheAppointments result
 					result.map (appointment) ->
 						return appointment unless appointment.scrapped()

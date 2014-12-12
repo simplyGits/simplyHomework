@@ -67,11 +67,12 @@ pushResult = (name, result) ->
 
 	{ username, password } = Meteor.user().magisterCredentials
 
-	(@magister = new Magister(school, username, password, no)).ready (m) ->
-		cb m for cb in magisterWaiters
+	(@magister = new Magister(school, username, password, no)).ready (err) ->
+		return if err?
+		cb @ for cb in magisterWaiters
 		magisterWaiters = []
 
-		m.appointments new Date().addDays(-4), new Date().addDays(7), no, (error, result) -> # Currently we AREN'T downloading the persons.
+		@appointments new Date().addDays(-4), new Date().addDays(7), no, (error, result) -> # Currently we AREN'T downloading the persons.
 			pushResult "appointments this week", { error, result }
 			unless error?
 				pushResult "appointments tomorrow", error: null, result: _.filter result, (a) -> EJSON.equals a.begin().date(), Date.today().addDays(1)
@@ -80,7 +81,7 @@ pushResult = (name, result) ->
 				pushResult "appointments tomorrow", { error, result: null }
 				pushResult "appointments today"
 
-		m.courses (e, r) ->
+		@courses (e, r) ->
 			if e?
 				pushResult "course", { error: e, result: null }
 				pushResult "grades", { error: e, result: null }
@@ -88,7 +89,7 @@ pushResult = (name, result) ->
 				r[0].grades no, (error, result) -> pushResult "grades", { error, result }
 				pushResult "course", { error: null, result: r[0] }
 
-		m.assignments no, (error, result) ->
+		@assignments no, (error, result) ->
 			pushResult "assignments", { error, result }
 			if error? then pushResult "assignments soon", { error, result: null }
 			else pushResult "assignments soon", error: null, result: _.filter(result, (a) -> a.deadline().date() < Date.today().addDays(7) and not a.finished() and new Date() < a.deadline())
