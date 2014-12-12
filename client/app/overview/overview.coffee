@@ -83,14 +83,19 @@ Template.infoNextLesson.helpers
 	minutes: -> val = nextAppointmentToday.get()?.begin().getMinutes(); if val? then ":#{Helpers.addZero(val)}" else ""
 	appointment: -> nextAppointmentToday.get()
 
+Template.infoCurrentLesson.helpers
+	hours: ->   val = currentAppointment.get()?.end().getHours()  ; if val? then Helpers.addZero(val) else ""
+	minutes: -> val = currentAppointment.get()?.end().getMinutes(); if val? then ":#{Helpers.addZero(val)}" else ""
+	appointment: -> currentAppointment.get()
+
 Template.appOverview.rendered = ->
-	onMagisterInfoResult "appointments tomorrow", (e, r) ->
+	magisterResult "appointments tomorrow", (e, r) ->
 		return if e?
 
 		appointmentsTommorow.set _.filter r, (a) -> not a.fullDay() and a.classes().length > 0 and _.contains [5..19], a.begin().getHours()
 
 	updateInterval = null
-	onMagisterInfoResult "appointments today", (e, r) ->
+	magisterResult "appointments today", (e, r) ->
 		return if e?
 
 		clearInterval updateInterval if updateInterval?
@@ -102,7 +107,7 @@ Template.appOverview.rendered = ->
 	$("#currentDate > span").tooltip placement: "bottom", html: true, title: "<h4>Week: #{moment().week()}</h4>"
 
 	unless Get.schedular()?.biasToday() is 0
-		onMagisterInfoResult "appointments this week", (error, result) ->
+		magisterResult "appointments this week", (error, result) ->
 			return if error?
 
 			date = switch Helpers.weekDay new Date()

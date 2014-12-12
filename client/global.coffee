@@ -70,13 +70,13 @@ Meteor.startup ->
 
 			# Automagically update Magister info.
 			interval ?= Meteor.setInterval ( ->
-				loadMagisterInfo yes if Meteor.status().connected
+				initializeMagister yes if Meteor.status().connected
 			), 1200000
 		else
 			for key in _.keys amplify.store() when key.substring(0, 22) is "hardCachedAppointments"
 				amplify.store key, null
 
-			resetMagisterLoader()
+			resetMagister()
 			Meteor.clearInterval interval
 
 			NotificationsManager.hideAll()

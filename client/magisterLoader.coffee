@@ -6,19 +6,18 @@ magisterWaiters = []
 
 loaders =
 	"classes": (m, cb) ->
-		onMagisterInfoResult "course", (e, r) ->
+		magisterResult "course", (e, r) ->
 			if e? then cb e, null
 			else r.classes (error, result) -> cb error, result
 
-@pushMagisterResult = (name, result) ->
+pushResult = (name, result) ->
 	check name, String
 
 	results[name] = result
-	for callback in (callbacks[name]?.callbacks ? [])
-		callback(result.error, result.result)
+	callback(result.error, result.result) for callback in (callbacks[name]?.callbacks ? [])
 	callbacks[name]?.dependency.changed()
 
-@onMagisterInfoResult = (name, callback) ->
+@magisterResult = (name, callback) ->
 	# If callback is null, it will use a tracker to rerun computations, otherwise it will just recall the given callback.
 	check name, String
 	check callback, Match.Optional Function
@@ -35,32 +34,40 @@ loaders =
 
 		cb = (m) -> val m, (error, result) ->
 			_.remove currentlyFetching, name
-			pushMagisterResult name, { error, result }
+			pushResult name, { error, result }
 
 		if magister? then cb magister
 		else magisterWaiters.push cb
 
 	return error: null, result: null
 
-@resetMagisterLoader = ->
+@resetMagister = ->
 	results = {}
 	callbacks = {}
 	currentlyFetching = []
 	@magister = null
 
-@loadMagisterInfo = (force = no) ->
-	pushResult = @pushMagisterResult
+@initializeMagister = (force = no) ->
 	check force, Boolean
-	if not force and @magister? then throw new Error "loadMagisterInfo already called. To force reloading all info use loadMagisterInfo(true)."
+	if not force and @magister? then throw new Error "initializeMagister already called. To force reloading all info use initializeMagister(true)."
 
 	try
 		url = Schools.findOne(Meteor.user().profile.schoolId).url
 	catch
 		console.warn "Couldn't retreive school info!"
 		return
+
+	school = Schools.findOne(Meteor.user().profile.schoolId)
+	unless Meteor.user().profile.schoolId?
+		console.warn "User has no school info."
+		return
+	else unless school?
+		console.warn "Can't find the school of the user in the database."
+		return
+
 	{ username, password } = Meteor.user().magisterCredentials
 
-	(@magister = new Magister({ url }, username, password, no)).ready (m) ->
+	(@magister = new Magister(school, username, password, no)).ready (m) ->
 		cb m for cb in magisterWaiters
 		magisterWaiters = []
 

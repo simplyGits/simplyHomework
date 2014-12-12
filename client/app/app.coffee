@@ -20,7 +20,7 @@ class @App
 		getMagisterClasses:
 			done: no
 			func: (current, length) ->
-				onMagisterInfoResult "classes", (e, r) ->
+				magisterResult "classes", (e, r) ->
 					magisterClasses.set r unless e?
 					
 					WoordjesLeren.getAllClasses (result) ->
@@ -142,7 +142,7 @@ Template.getMagisterClassesModal.helpers
 	magisterClasses: -> magisterClasses.get()
 
 Template.getMagisterClassesModal.rendered = ->
-	onMagisterInfoResult "course", (e, r) ->
+	magisterResult "course", (e, r) ->
 		return if e? or amplify.store "courseInfoSet"
 
 		schoolVariant = /[^\d\s]+/.exec(r.type().description)[0].trim()
@@ -227,7 +227,7 @@ Template.setMagisterInfoModal.events
 			if not e? and success
 				$("#setMagisterInfoModal").modal "hide"
 				App.step()
-				loadMagisterInfo yes
+				initializeMagister yes
 			else
 				$("#setMagisterInfoModal").addClass "animated shake"
 				$('#setMagisterInfoModal').one 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', ->
@@ -434,14 +434,14 @@ Template.app.helpers
 Template.app.rendered = ->
 	if "#{Math.random()}"[2] is "2" and "#{Math.random()}"[4] is "2"
 		console.error "CRITICAL ERROR: UNEXPECTED KAAS"
-	Deps.autorun -> if Meteor.user()? then Meteor.subscribe "essentials", -> loadMagisterInfo()
+	Deps.autorun -> if Meteor.user()? then Meteor.subscribe "essentials", -> initializeMagister()
 	
 	notify("Je hebt je account nog niet geverifiëerd!", "warning") unless Meteor.user().emails[0].verified
 
 	assignmentNotification = null
 	recentGradesNotification = null
 
-	onMagisterInfoResult "assignments soon", (e, r) ->
+	magisterResult "assignments soon", (e, r) ->
 		return if e? or r.length is 0
 		s = "Deadlines van opdrachten binnenkort:\nKlik voor meer info.\n\n"
 		for assignment in _.uniq(r, "_class") then do (assignment) ->
@@ -453,7 +453,7 @@ Template.app.rendered = ->
 		else
 			assignmentNotification = NotificationsManager.notify body: s, type: "warning", time: -1, html: yes, onClick: (event) -> console.log ":D"
 
-	onMagisterInfoResult "grades", (e, r) ->
+	magisterResult "grades", (e, r) ->
 		return if e? or r.length is 0
 		seenGradeIds = amplify.store("seenGradeIds") ? []
 
@@ -477,7 +477,7 @@ Template.app.rendered = ->
 			else
 				recentGradesNotification = NotificationsManager.notify body: s, type: "warning", time: -1, html: yes, onDismissed: -> amplify.store "seenGradeIds", (g.id() for g in recentGrades).concat(seenGradeIds)
 
-	onMagisterInfoResult "appointments this week", (e, r) ->
+	magisterResult "appointments this week", (e, r) ->
 		unless _.isArray Meteor.user().profile.groupInfos
 			Meteor.users.update Meteor.userId(), $set: "profile.groupInfos": []
 
