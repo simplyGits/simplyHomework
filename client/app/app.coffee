@@ -223,15 +223,21 @@ Template.setMagisterInfoModal.events
 		school = Schools.findOne { name: schoolName }
 		school ?= New.school schoolName, s.url, new Location()
 
+		shake = ->
+			$("#setMagisterInfoModal").addClass "animated shake"
+			$('#setMagisterInfoModal').one 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', ->
+				$("#setMagisterInfoModal").removeClass "animated shake"
+
+		unless $("#allowGroup input").is ":checked"
+			shake()
+			return
+
 		Meteor.call "setMagisterInfo", { school, schoolId: school._id, magisterCredentials: { username, password }}, (e, success) ->
 			if not e? and success
 				$("#setMagisterInfoModal").modal "hide"
 				App.step()
 				initializeMagister yes
-			else
-				$("#setMagisterInfoModal").addClass "animated shake"
-				$('#setMagisterInfoModal').one 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', ->
-					$("#setMagisterInfoModal").removeClass "animated shake"
+			else shake()
 
 Template.setMagisterInfoModal.rendered = ->
 	$("#schoolNameInput").typeahead({
