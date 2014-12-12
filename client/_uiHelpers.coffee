@@ -70,7 +70,7 @@ http://tomsmeding.nl/
 		showCancelButton: cancelButtonText?
 	}, (success) -> if success then onSuccess() else onCancel()
 
-	if html? then $(".sweet-alert > p").html html
+	if html? then $(".sweet-alert > p").html html.replace "\n", "<br>"
 
 	return undefined
 
