@@ -481,9 +481,7 @@ Template.app.rendered = ->
 		unless _.isArray Meteor.user().profile.groupInfos
 			Meteor.users.update Meteor.userId(), $set: "profile.groupInfos": []
 
-		return unless Meteor.user().classInfos?
-
-		for classInfo in Meteor.user().classInfos
+		for classInfo in (Meteor.user().classInfos ? [])
 			magisterGroup = _.find(r, (a) -> a.classes()[0] is classInfo.magisterDescription)?.description()
 			groupInfo = _.find Meteor.user().profile.groupInfos, (gi) -> gi.id is classInfo.id
 
