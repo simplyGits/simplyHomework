@@ -82,7 +82,7 @@ Template.launchPage.events
 Meteor.startup ->
 	Meteor.defer -> Deps.autorun -> if Meteor.user()? and Router.current().route.getName() is "launchPage" then Router.go "app"
 
-	l = -> Meteor.call "getUsersCount", (e, r) -> usersCount.set r unless e?
+	l = -> if Router.current()?.route.getName() is "launchPage" then Meteor.call "getUsersCount", (e, r) -> usersCount.set r unless e?
 	l(); setInterval l, 5000
 
 	$("body").keypress (event) ->
