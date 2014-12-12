@@ -140,7 +140,7 @@ class @NotificationsManager
 			
 			content: (content, html = false) ->
 				if content?
-					$(".notification##{notId} div").html (if html then body else escape body).replace /\n/g, "<br>"
+					$(".notification##{notId} div").html (if html then body else _.escape body).replace /\n/g, "<br>"
 					NotificationsManager._updatePositions()
 					return content
 				else
@@ -151,7 +151,7 @@ class @NotificationsManager
 		d = $ document.createElement "div"
 		d.addClass "notification #{type}"
 		d.attr "id", notId
-		d.html "<div>#{(if html then body else escape body).replace(/\n/g, "<br>")}</div>"
+		d.html "<div>#{(if html then body else _.escape body).replace(/\n/g, "<br>")}</div>"
 		d.append "<br>"
 		if onClick?
 			d.click ->
@@ -220,7 +220,7 @@ class @NotificationsManager
 
 		return undefined
 
-@notify = (body, type = "default", time = 4000, dismissable = yes, priority = 0) -> NotificationsManager.notify { body: "<b>#{escape body}</b>", type, time, dismissable, priority, html: yes }
+@notify = (body, type = "default", time = 4000, dismissable = yes, priority = 0) -> NotificationsManager.notify { body: "<b>#{_.escape body}</b>", type, time, dismissable, priority, html: yes }
 
 @gravatar = (userId = Meteor.userId(), size = 100) ->
 	user = if _.isString(userId) then Meteor.users.findOne(userId) else userId

@@ -3,8 +3,6 @@ root = @
 @uS = _ 	 # We need underscore sometimes; refer uS to underscore
 @_  = lodash # Shortcut for lo-dash. Replaces underscore.
 
-@escape = Handlebars._escape
-
 ###*
 # Returns today as an Date object.
 #

@@ -11,6 +11,6 @@
 			"Het haalt automatisch je huiswerk van magister, zoekt de juiste woordenlijsten bij het huiswerk, plant automatisch voor proefwerken en nog veel meer.\n\n" +
 			
 			"Voordat we beginnen hebben we nog een paar vraagjes."
-		ProjectPersonRemovalMessage: (name) -> "Je staat op het punt om <b>#{escape name}</b> te verwijderen.\nWe wilden even zeker weten of dit de bedoeling was."
+		ProjectPersonRemovalMessage: (name) -> "Je staat op het punt om <b>#{_.escape name}</b> te verwijderen.\nWe wilden even zeker weten of dit de bedoeling was."
 		ProjectPersonRemovedNotice: (name) -> "#{name} verwijderd."
 		ProjectPersonAddedNotice: (name) -> "#{name} toegevoegd."
