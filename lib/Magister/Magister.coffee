@@ -37,7 +37,7 @@ class @Magister
 	# @async
 	# @param from {Date} The start date for the Appointments, you won't get appointments from before this date.
 	# @param [to] {Date} The end date for the Appointments, you won't get appointments from after this date.
-	# @param [download=true] {Boolean} Whether or not to download the users from the server.
+	# @param [fillPersons=true] {Boolean} Whether or not to download the full user objects from the server.
 	# @param callback {Function} A standard callback.
 	# 	@param [callback.error] {Object} The error, if it exists.
 	# 	@param [callback.result] {Appointment[]} An array containing the Appointments.
@@ -198,8 +198,7 @@ class @Magister
 			return undefined
 
 		type = switch Person._convertType type
-			when 1 then "Groep"
-			when 3 then "Docent"
+			when 3 then "Personeel"
 			when 4 then "Leerling"
 			when 8 then "Project"
 
@@ -319,7 +318,7 @@ class @Magister
 	# @async
 	# @param [amount=50] {Number} The amount of Assignments to fetch from the server.
 	# @param [skip=0] {Number} The amount of Assignments to skip.
-	# @param [download=true] {Boolean} Whether or not to download the users from the server.
+	# @param [fillPersons=true] {Boolean} Whether or not to download the full user objects from the server.
 	# @param callback {Function} A standard callback.
 	# 	@param [callback.error] {Object} The error, if it exists.
 	# 	@param [callback.result] {Assignment[]} An array containing Assignments.
@@ -471,21 +470,6 @@ class @Magister
 			if @_ready or @_magisterLoadError? then _.bind(callback, @)(@._magisterLoadError)
 			else @_readyCallbacks.push _.bind callback, @
 		return @_ready is yes
-
-	###*
-	# Uploads a single file to the Magister servers and returns the info about the file.
-	#
-	# @method _uploadFile
-	# @private
-	# @param data {FormData} FormData about the file to upload.
-	# @param callback {Function} A standard callback.
-	# 	@param [callback.error] {Object} The error, if it exists.
-	# 	@param [callback.result] {Object} An object containing the data about the newely uploaded file.
-	###
-	_uploadFile: (data, callback) ->
-		throw new Error "Data is empty" unless data?
-		return unless callback?
-
 
 	_forceReady: -> throw new Error "Not done with logging in! (use Magister.ready(callback) to be sure that logging in is done)" unless @_ready
 	_setReady: ->
