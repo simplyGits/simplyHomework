@@ -36,6 +36,7 @@ fileTypes =
 
 Template.projectView.rendered = =>
 	Deps.autorun =>
+		return unless Router.current().route.getName() is "projectView"
 		@personsEngine.clear()
 		@personsEngine.add getOthers()
 
