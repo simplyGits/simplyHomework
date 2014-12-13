@@ -70,9 +70,9 @@ Template.page1.events
 				$('input#password').one 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', ->
 					$("input#password").removeClass "animated shake"
 			else if error?
-				$(".signUpForm").addClass "animated shake"
-				$('.signUpForm').one 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', ->
-					$(".signUpForm").removeClass "animated shake"
+				$("input").addClass "animated shake"
+				$('input').one 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', ->
+					$("input").removeClass "animated shake"
 
 usersCount = new ReactiveVar null
 Template.page2.helpers
