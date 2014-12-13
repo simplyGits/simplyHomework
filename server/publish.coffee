@@ -19,7 +19,6 @@ Meteor.publish "usersData", ->
 		profile: 1
 		gravatarUrl: 1
 		hasGravatar: 1
-		studyGuidesHashes: 1
 
 Meteor.publish "essentials", ->
 	unless @userId?
@@ -37,10 +36,13 @@ Meteor.publish "essentials", ->
 		magisterCredentials: 1
 		schedular: 1
 		hasMagisterSix: 1
-
 		"status.online": 1
 		"status.idle": 1
 		gravatarUrl: 1
+		hasGravatar: 1
+		studyGuidesHashes: 1
+		profile: 1
+
 	[ Schools.find(), classes, userData, CalendarItems.find(_ownerId: @userId) ]
 
 Meteor.publish "goaledSchedules", -> GoaledSchedules.find { ownerId: @userId }
