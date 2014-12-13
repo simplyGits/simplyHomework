@@ -2,7 +2,7 @@
 	tmp = []
 	for tmpClass in _.sortBy(Classes.find(_id: { $in: (cI.id for cI in (Meteor.user().classInfos ? [])) }).fetch(), (c) -> c.name())
 		tmp.push _.extend tmpClass,
-			__taskAmount: _.filter(homeworkItems.get(), (a) -> Meteor.user().profile.groupInfos.smartFind(tmpClass._id, (i) -> i.id).group is a.description() and not a.isDone()).length#Helpers.getTotal _.reject(GoaledSchedules.find(_homework: { $exists: true }, ownerId: Meteor.userId()).fetch(), (gS) -> !EJSON.equals(gS.classId(), tmpClass._id)), (gS) -> gS.tasksForToday().length
+			__taskAmount: _.filter(homeworkItems.get(), (a) -> Meteor.user().profile.groupInfos.smartFind(tmpClass._id, (i) -> i.id)?.group is a.description() and not a.isDone()).length#Helpers.getTotal _.reject(GoaledSchedules.find(_homework: { $exists: true }, ownerId: Meteor.userId()).fetch(), (gS) -> !EJSON.equals(gS.classId(), tmpClass._id)), (gS) -> gS.tasksForToday().length
 			__color: Meteor.user().classInfos.smartFind(tmpClass._id, (cI) -> cI.id).color
 			__book: tmpClass.books().smartFind Meteor.user().classInfos.smartFind(tmpClass._id, (cI) -> cI.id).bookId, (b) -> b._id
 			__sidebarName: Helpers.cap if (val = tmpClass.name()).length > 14 then tmpClass.course() else val
