@@ -11,7 +11,7 @@ div.projectInfoContainer
 	padding-top: 5px
 	padding-bottom: 5px
 	margin-top: 15px
-	center(95%)
+	center(100%)
 
 div.projectInfoSubContainer
 	width: 65%
@@ -160,6 +160,7 @@ div.fileRow:hover, div.personRow:hover
 +mobile()
 	div.projectHeader
 		stack()
+		text-align: center
 
 	div.head2.projectHeader
 		text-align: center !important
@@ -171,12 +172,10 @@ div.fileRow:hover, div.personRow:hover
 		width: 100%
 
 	div.projectInfoChatQuoteContainer
-		margin-right: -15px
+		width: 100%
 
-	div.projectInfoChatQuoteContainer
-		center()
-		min-width: 300px
-		margin-left: -15px
+		span.lastChatHeader
+			absolute: right 40px
 
 	div.projectViewItemContainer
 		height: initial !important
