@@ -502,7 +502,7 @@ Template.app.rendered = ->
 		oldStudyGuideHashes = Meteor.user().studyGuidesHashes
 		left = r.length
 		push = (result) ->
-			studyGuidesHashes[result.id()] = md5 EJSON.stringify result.parts
+			studyGuidesHashes[result.id()] = md5(EJSON.stringify result.parts).substring 0, 6
 
 			if --left is 0
 				return if EJSON.equals studyGuidesHashes, oldStudyGuideHashes
