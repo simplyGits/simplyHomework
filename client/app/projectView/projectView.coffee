@@ -55,13 +55,13 @@ Template.projectView.helpers
 		time = "#{currentProject().deadline().getHours()}:#{currentProject().deadline().getMinutes()}"
 
 		return (switch Helpers.daysRange new Date(), currentProject().deadline()
-			when -6,-5,-4,-3 then "Afgelopen #{day}"
+			when -6, -5, -4, -3 then "Afgelopen #{day}"
 			when -2 then "Eergisteren"
 			when -1 then "Gisteren"
 			when 0 then "Vandaag"
 			when 1 then "Morgen"
 			when 2 then "Overmorgen"
-			when 3,4,5,6 then "Aanstaande #{day}"
+			when 3, 4, 5, 6 then "Aanstaande #{day}"
 			else "#{Helpers.cap day} #{DateToDutch(currentProject().deadline(), no)}") + " " + time
 	heightOffset: -> if Meteor.user().hasPremium then 260 else 350
 
@@ -114,6 +114,3 @@ Template.personRow.events
 		alertModal "Zeker weten?", Locals["nl-NL"].ProjectPersonRemovalMessage(@profile.firstName), DialogButtons.OkCancel, { main: "Is de bedoeling", second: "heh!?" }, { main: "btn-danger" }, main: =>
 			currentProject().removeParticipant @_id
 			notify Locals["nl-NL"].ProjectPersonRemovedNotice(@profile.firstName), "notice"
-
-Template.selfRow.helpers
-	ownStatusColor: -> if Meteor.user().status.idle then "#FF851B" else "#2ECC40"
