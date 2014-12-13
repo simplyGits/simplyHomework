@@ -9,7 +9,6 @@ accounts-password
 http
 email
 amplify
-insecure
 spiderable
 browser-policy
 coffeescript
