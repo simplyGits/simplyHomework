@@ -63,3 +63,25 @@ Meteor.startup ->
 			sendMail doc.mail, "simplyHomework | Bèta", message
 
 			BetaPeople.update doc._id, $set: mailSent: yes
+
+	recents = {}
+	longTimeIgnore = []
+	Accounts.onLoginFailure (res) ->
+		{user, error} = res
+		return unless error.error is 403
+		if ++recents[user._id]?.times is 5
+			message = "Hey,\n\n" +
+
+			"Pas heeft iemand in een korte tijd meerdere keren een fout wachtwoord ingevuld.\n" +
+			"Als jij dit niet was verander dan zo snel mogelijk je wachtwoord in <a href=\"#{Meteor.absoluteUrl()}\">simplyHomework</a>.\n" +
+			"Als jij dit wel was en je bent je wachtwoord vergeten kan je het <a href=\"#{Meteor.absoluteUrl()}forgot\">hier</a> veranderen."
+
+			sendMail user, "simplyHomework | Account mogelijk in gevaar", message
+
+			delete recents[user._id]
+			longTimeIgnore.push user._id
+			Meteor.setTimeout (-> delete recents[user._id] ), 86400000
+
+		else unless recents[user._id]? and not _.contains longTimeIgnore, user._id
+			recents[user._id] = times: 0
+			Meteor.setTimeout (-> delete recents[user._id] ), 300000
