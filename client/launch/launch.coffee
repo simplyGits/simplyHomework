@@ -27,6 +27,8 @@ login = ->
 							lastName: Helpers.cap $("#lastNameInput").val().trim()
 					Meteor.call "verifyMail"
 
+	Router.go "app" if Meteor.user()? or Meteor.loggingIn()
+
 Template.page1.helpers showQuickLoginhint: -> amplify.store("allowCookies")?
 Template.launchPage.rendered = -> $("#simplyLogoIntro").attr "src", "images/simplyLogo.gif"
 
@@ -80,8 +82,6 @@ Template.launchPage.events
 	'click #page1': -> if $("#page2").hasClass("topShadow") then $("body").stop().animate {scrollTop: 0}, 600, "easeOutExpo"
 
 Meteor.startup ->
-	Meteor.defer -> Deps.autorun -> if Meteor.user()? and Router.current().route.getName() is "launchPage" then Router.go "app"
-
 	l = -> if Router.current()?.route.getName() is "launchPage" then Meteor.call "getUsersCount", (e, r) -> usersCount.set r unless e?
 	l(); setInterval l, 5000
 
