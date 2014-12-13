@@ -94,4 +94,7 @@ pushResult = (name, result) ->
 			if error? then pushResult "assignments soon", { error, result: null }
 			else pushResult "assignments soon", error: null, result: _.filter(result, (a) -> a.deadline().date() < Date.today().addDays(7) and not a.finished() and new Date() < a.deadline())
 
+		@studyGuides (error, result) ->
+			pushResult "studyGuides", { error, result }
+
 	return "dit geeft echt niets nuttig terug ofzo, als je dat denkt."

@@ -19,6 +19,7 @@ Meteor.publish "usersData", ->
 		profile: 1
 		gravatarUrl: 1
 		hasGravatar: 1
+		studyGuidesHashes: 1
 
 Meteor.publish "essentials", ->
 	unless @userId?

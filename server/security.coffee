@@ -32,6 +32,7 @@ Meteor.users.allow
 			"schedular"
 			"profile"
 			"hasGravatar"
+			"studyGuidesHashes"
 		]
 		userId is doc._id and not _.any fields, (f) -> not _.contains allowed, f
 

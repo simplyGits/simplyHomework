@@ -496,6 +496,38 @@ Template.app.rendered = ->
 			Meteor.users.update Meteor.userId(), $pull: "profile.groupInfos": id: classInfo.id
 			Meteor.users.update Meteor.userId(), $push: "profile.groupInfos": _.extend id: classInfo.id, group: magisterGroup
 
+	studyGuideChangeNotification = null
+	magisterResult "studyGuides", (e, r) ->
+		studyGuidesHashes = {}
+		oldStudyGuideHashes = Meteor.user().studyGuidesHashes
+		left = r.length
+		push = (result) ->
+			studyGuidesHashes[result.id()] = md5 EJSON.stringify result.parts
+
+			if --left is 0
+				return if EJSON.equals studyGuidesHashes, oldStudyGuideHashes
+				if _.isEmpty(oldStudyGuideHashes)
+					Meteor.users.update Meteor.userId(), $set: { studyGuidesHashes }
+					return
+
+				s = "Studiewijzers die veranderd zijn:\n\n"
+				x = _(studyGuidesHashes)
+					.keys()
+					.filter((s) -> studyGuidesHashes[s] isnt oldStudyGuideHashes[s])
+					.map((id) -> _.find(r, (sg) -> sg.id() is +id))
+					.sortBy((sg) -> sg.classCodes()[0])
+
+				s += "<b>#{studyGuide.classCodes()[0]}</b> - #{studyGuide.name()}\n" for studyGuide in x.value()
+
+				if studyGuideChangeNotification?
+					studyGuideChangeNotification.content s, yes
+				else
+					assignmentNotification = NotificationsManager.notify body: s, type: "warning", time: -1, html: yes, onDismissed: -> Meteor.users.update Meteor.userId(), $set: { studyGuidesHashes }
+
+		for studyGuide in r then do (studyGuide) -> studyGuide.parts (e, r) ->
+			studyGuide.parts = ( { id: x.id(), description: x.description(), fileDates: (z.size() for z in x._files) } for x in r )
+			push studyGuide
+
 	if (val = Meteor.user().profile.birthDate?.date()) is Date.today() and not amplify.store("congratulated")?
 		swalert title: "Gefeliciteerd!", text: "Gefeliciteerd met je #{moment().diff(val, "years")}e verjaardag!"
 		amplify.store "congratulated", yes, expires: 172800000
