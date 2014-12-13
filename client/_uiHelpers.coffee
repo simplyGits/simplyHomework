@@ -114,8 +114,8 @@ class @NotificationsManager
 
 	@notify = (options) ->
 		throw new ArgumentException "options", "Can't be null" unless options?
-		_.defaults options, { type: "default", time: 4000, dismissable: yes, labels: [], styles: [], callbacks: [], html: no, priority: 0 }
-		{ body, type, time, dismissable, labels, styles, callbacks, html, onClick, priority, onDismissed } = options
+		_.defaults options, { type: "default", time: 4000, dismissable: yes, labels: [], styles: [], callbacks: [], html: no, priority: 0, allowDesktopNotifications: yes, image: "" }
+		{ body, type, time, dismissable, labels, styles, callbacks, html, onClick, priority, onDismissed, allowDesktopNotifications, image } = options
 
 		check time, Match.Where (t) -> _.isNumber(t) and ( t is -1 or t > 0 )
 		check priority, Number
@@ -124,21 +124,27 @@ class @NotificationsManager
 		notHandle =
 			_startedHiding: no
 			_delayHandle: null
+			_htmlNotification: null
 			id: notId
 			priority: priority
 			hide: ->
 				clearTimeout @_delayHandle
-				$(".notification##{notId}").removeClass "transformIn"
-				@_startedHiding = yes
-				_.delay ( =>
-					$(".notification##{notId}").remove()
+				if @_htmlNotification?
+					@_htmlNotification.close()
 					delete NotificationsManager._notifications[@id]
-				), 2000
-				NotificationsManager._updatePositions()
+				else
+					$(".notification##{notId}").removeClass "transformIn"
+					@_startedHiding = yes
+					_.delay ( =>
+						$(".notification##{notId}").remove()
+						delete NotificationsManager._notifications[@id]
+					), 2000
+					NotificationsManager._updatePositions()
 			
-			height: -> @element().outerHeight(yes)
+			height: -> unless @_htmlNotification? then @element().outerHeight(yes) else 0
 			
 			content: (content, html = false) ->
+				return if @_htmlNotification?
 				if content?
 					$(".notification##{notId} div").html (if html then body else _.escape body).replace /\n/g, "<br>"
 					NotificationsManager._updatePositions()
@@ -148,59 +154,74 @@ class @NotificationsManager
 					
 			element: -> $(".notification##{notId}")
 
-		d = $ document.createElement "div"
-		d.addClass "notification #{type}"
-		d.attr "id", notId
-		d.html "<div>#{(if html then body else _.escape body).replace(/\n/g, "<br>")}</div>"
-		d.append "<br>"
-		if onClick?
-			d.click ->
-				if $(@).hasClass("noclick") then $(@).removeClass "noclick"
-				else onClick arguments...
-			d.css cursor: "pointer"
+		if document.hasFocus() or not allowDesktopNotifications or not Session.get "allowNotifications"
+			d = $ document.createElement "div"
+			d.addClass "notification #{type}"
+			d.attr "id", notId
+			d.html "<div>#{(if html then body else _.escape body).replace(/\n/g, "<br>")}</div>"
+			d.append "<br>"
+			if onClick?
+				d.click ->
+					if $(@).hasClass("noclick") then $(@).removeClass "noclick"
+					else onClick arguments...
+				d.css cursor: "pointer"
 
-		if dismissable
-			pos = null
-			MIN = -200
+			if dismissable
+				pos = null
+				MIN = -200
 
-			d.draggable
-				axis: "x"
-				start: (event, helper) ->
-					pos = $(@).position().left
-					$(@)
-						.css width: $(this).outerWidth()
-						.addClass "noclick"
-				stop: (event, helper) ->
-					$(@).css width: "initial"
-					if $(@).position().left - pos > MIN
-						$(@).css opacity: 1
-					else
-						$(@).velocity opacity: 0
-						notHandle.hide()
-						onDismissed?()
-				drag: (event, helper) ->
-					$(@).css opacity: 1 - ((pos - $(@).position().left) / 250)
-				revert: -> $(@).position().left - pos > MIN
+				d.draggable
+					axis: "x"
+					start: (event, helper) ->
+						pos = $(@).position().left
+						$(@)
+							.css width: $(this).outerWidth()
+							.addClass "noclick"
+					stop: (event, helper) ->
+						$(@).css width: "initial"
+						if $(@).position().left - pos > MIN
+							$(@).css opacity: 1
+						else
+							$(@).velocity opacity: 0
+							notHandle.hide()
+							onDismissed?()
+					drag: (event, helper) ->
+						$(@).css opacity: 1 - ((pos - $(@).position().left) / 250)
+					revert: -> $(@).position().left - pos > MIN
 
-		for label, i in labels
-			style = styles[i] ? "btn-default"
-			btn = $.parseHTML "<button type=\"button\" class=\"btn #{style}\" id=\"#{notId}_#{i}\">#{label}</button>"
+			for label, i in labels
+				style = styles[i] ? "btn-default"
+				btn = $.parseHTML "<button type=\"button\" class=\"btn #{style}\" id=\"#{notId}_#{i}\">#{label}</button>"
 
-			callback = callbacks[i] ? (->)
-			do (callback) -> btn[0].onclick = (event) -> callback event, notHandle
-			
-			d.append btn
+				callback = callbacks[i] ? (->)
+				do (callback) -> btn[0].onclick = (event) -> callback event, notHandle
+				
+				d.append btn
 
-		unless time is -1 # Handles that sick timeout, yo.
-			hide = -> notHandle.hide()
-			notHandle._delayHandle = _.delay hide, time + 500
+			unless time is -1 # Handles that sick timeout, yo.
+				hide = -> notHandle.hide()
+				notHandle._delayHandle = _.delay hide, time + 500
 
-			d.mouseover -> clearTimeout notHandle._delayHandle
-			d.mouseleave -> notHandle._delayHandle = _.delay hide, time + 500
+				d.mouseover -> clearTimeout notHandle._delayHandle
+				d.mouseleave -> notHandle._delayHandle = _.delay hide, time + 500
 
-		$("body").append d
+			$("body").append d
 
-		_.delay ( -> $(".notification##{notId}").addClass "transformIn" ), 10
+			_.delay ( -> $(".notification##{notId}").addClass "transformIn" ), 10
+
+		else
+			text = if html then body.trim().replace(/(<[^>]*>)|(&nbsp;)/g, "").replace("<br>", "\n") else body.trim()
+			x = new Notification text.split("\n")[0], body: text.split("\n")[1..].join("\n"), tag: notId, icon: image
+			notHandle._htmlNotification = x
+			x.onclick = ->
+				window.focus()
+				onClick?()
+				notHandle.hide()
+			x.onclose = ->
+				onDismissed?()
+				notHandle.hide()
+
+			unless time is -1 then notHandle._delayHandle = _.delay (-> notHandle.hide()), time + 500
 
 		NotificationsManager._notifications.push notHandle
 		NotificationsManager._updatePositions()
@@ -214,13 +235,13 @@ class @NotificationsManager
 	@_updatePositions = ->
 		height = 0
 
-		for notification, i in _.sortBy(NotificationsManager.notifications().reverse(), "priority").reverse()
+		for notification, i in _.sortBy(_.reject(NotificationsManager.notifications(), (n) -> n._htmlNotification?).reverse(), "priority").reverse()
 			notification.element().css top: height + 15
 			height += notification.height() + 10
 
 		return undefined
 
-@notify = (body, type = "default", time = 4000, dismissable = yes, priority = 0) -> NotificationsManager.notify { body: "<b>#{_.escape body}</b>", type, time, dismissable, priority, html: yes }
+@notify = (body, type = "default", time = 4000, dismissable = yes, priority = 0) -> NotificationsManager.notify { body: "<b>#{_.escape body}</b>", type, time, dismissable, priority, html: yes, allowDesktopNotifications: no }
 
 @gravatar = (userId = Meteor.userId(), size = 100) ->
 	user = if _.isString(userId) then Meteor.users.findOne(userId) else userId
