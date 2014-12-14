@@ -84,7 +84,7 @@
 		else
 			Projects.find query, options
 
-@_decodeObject = (val, sender) ->
+@_decodeObject = (val) ->
 	if _.isObject val
 		readyVal = val
 
@@ -97,12 +97,12 @@
 			value = val[key]
 
 			if _.isArray(value)
-				readyVal[key] = (_decodeObject(item, readyVal) for item in value)
+				readyVal[key] = (_decodeObject item for item in value)
 			else
-				readyVal[key] = _decodeObject(value, readyVal)
+				readyVal[key] = _decodeObject value
 		
 		return readyVal
 
-	else if _.isArray val then return (_decodeObject(item, sender) for item in val)
+	else if _.isArray val then return (_decodeObject item for item in val)
 		
 	else return val
