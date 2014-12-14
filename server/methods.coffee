@@ -1,22 +1,31 @@
 request = Npm.require "request"
+Future = Npm.require "fibers/future"
 
 Meteor.methods
 	http: (method, url, options = {}) ->
-		options.headers = _.extend (options.headers ? {}), "User-Agent": "simplyHomework"
+		headers = _.extend (options.headers ? {}), "User-Agent": "simplyHomework"
+		fut = new Future()
 
 		console.log "-----"
-		if @userId?
-			console.log "#{method} (by #{Meteor.users.findOne(@userId).emails[0].address})"
-		else
-			console.log method
+		console.log if @userId? then "#{method} (by #{Meteor.users.findOne(@userId).emails[0].address})" else method
 		console.log url
 		console.log options
-		try
-			return HTTP.call method, url, options
-		catch e
-			console.log "ERROR ======"
-			console.log e
-			throw new Meteor.Error 500, "Error 500: Internal server error", "error while calling HTTP.call: #{e.name} | #{e.message} | #{e.stack}"
+
+		opt = {
+			method
+			url
+			headers
+			jar: no
+			body: options.data ? options.content
+			json: options.data?
+			encoding: if _.isUndefined(options.encoding) then "utf8" else options.encoding
+		}
+
+		request opt, (error, response, content) ->
+			if error? then fut.throw error
+			else fut.return { content, headers: response.headers }
+
+		fut.wait()
 	
 	log: (type, message, elements...) -> console[type] message, elements...
 
