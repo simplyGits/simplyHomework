@@ -63,7 +63,7 @@ Template.projectView.helpers
 			when 2 then "Overmorgen"
 			when 3, 4, 5, 6 then "Aanstaande #{day}"
 			else "#{Helpers.cap day} #{DateToDutch(currentProject().deadline(), no)}") + " " + time
-	heightOffset: -> if Meteor.user().hasPremium then 260 else 350
+	heightOffset: -> if has("noAds") then 260 else 350
 
 Template.projectView.events
 	"click #addFileIcon": ->
