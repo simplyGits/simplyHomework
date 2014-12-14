@@ -146,6 +146,10 @@ class @Helpers
 		catch
 			return no
 
+@userIsInRole = (user = Meteor.user(), role = "admin") ->
+	if _.isString(user) then user = Meteor.users.findOne user
+	_.every (if _.isArray(role) then role else [role]), (s) -> _.contains user.roles, s
+
 ###*
 # Generates a getter/setter method for a global class variable.
 #

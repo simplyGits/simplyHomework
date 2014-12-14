@@ -184,6 +184,7 @@ Router.map ->
 	@route "admin",
 		fastRender: yes
 		layoutTemplate: "admin"
+		subscriptions: -> Meteor.subscribe "rolesOnly"
 
 	@route "verifyMail",
 		fastRender: yes

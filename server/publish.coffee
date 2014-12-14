@@ -40,9 +40,11 @@ Meteor.publish "essentials", ->
 		hasGravatar: 1
 		studyGuidesHashes: 1
 		profile: 1
+		roles: 1
 
 	[ Schools.find(), classes, userData, CalendarItems.find(ownerId: @userId) ]
 
 Meteor.publish "goaledSchedules", -> GoaledSchedules.find { ownerId: @userId }
 Meteor.publish "projects", -> Projects.find(participants: @userId)
+Meteor.publish "rolesOnly", -> Meteor.users.find(@userId, fields: roles: 1)
 Meteor.publish "betaPeople", -> BetaPeople.find {}, fields: hash: 1

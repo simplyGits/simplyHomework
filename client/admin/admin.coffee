@@ -18,7 +18,7 @@ Template.admin.events
 			else $(".commandOutput").JSONView result
 
 Template.admin.rendered = ->
-	unless AuthManager.userIsInRole(Meteor.user(), "admin")
+	unless userIsInRole()
 		swalert title: "D:", text: "Hoe ben je hier beland? Je hoort hier niet eens te kunnen komen", confirmButtonText: "Terug", type: "error", onSuccess: -> Router.go "launchPage"
 
 	$("input").focus()
