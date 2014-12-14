@@ -84,8 +84,7 @@ Meteor.startup ->
 
 	Meteor.setInterval (-> secondTracker.changed()), 1000
 
-	ignoreMessages = [ "Server sent add for existing id"
-		"Expected not to find a document already present for an add"
-		"Script error."
+	ignoreMessages = [ "Script error."
+		"initializeMagister already called."
 	]
 	window.onerror = (message, url, lineNumber) -> Meteor.call "log", "error", "Uncaught error at client: #{message} | #{url}:#{lineNumber}" unless _.some ignoreMessages, (m) -> Helpers.contains message, m
