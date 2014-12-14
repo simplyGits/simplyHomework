@@ -8,12 +8,7 @@ root = @
 ###
 class @Location
 	constructor: (@_parent) ->
-		@_className = "Location"
-		@_location = ""
-
-		@longitude = root.getset "_longitude", Number
-		@latitude = root.getset "_latitude", Number
-		@location = root.getset "_location", String
+		@location = ""
 
 	@_match: (location) ->
 		return Match.test location, Match.OneOf(

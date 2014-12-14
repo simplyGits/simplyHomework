@@ -1,21 +1,14 @@
 root = @
 class @SchoolClass
-	constructor: (name, course, @_year, schoolVariant) ->
-		@_className = "SchoolClass"
+	constructor: (name, course, @year, schoolVariant) ->
 		@_id = new Meteor.Collection.ObjectID()
 		
-		@_course = course?.toLowerCase()
-		@_schoolVariant = schoolVariant?.toLowerCase()
-		@_name = Helpers.cap name if name?
+		@course = course?.toLowerCase()
+		@schoolVariant = schoolVariant?.toLowerCase()
+		@name = Helpers.cap name if name?
 		
-		@_schedules = [] # Contains schedule ID's.
-		@_books = []
-
-		@name = root.getset "_name", String, yes, (n) -> Helpers.cap n
-		@course = root.getset "_course", String, (c) -> c.toLowerCase()
-		@year = root.getset "_year", Number
-		@schoolVariant = root.getset "_schoolVariant", String, (sV) -> sV.toLowerCase()
-		@books = root.getset "_books", [root.Book._match], no
+		@schedules = [] # Contains schedule ID's.
+		@books = []
 
 	###*
 	# Returns a cursor pointing to the schedules with this class' ID
@@ -23,7 +16,7 @@ class @SchoolClass
 	# @method schedules
 	# @return {Cursor} A cursor pointing to the schedules with this class' ID
 	###
-	schedules: -> return Schedules.find { _class: { _id: @_id }, isPublic: yes }
+	getSchedules: -> return Schedules.find { _class: { _id: @_id }, isPublic: yes }
 
 	addSchedule: (schedule) ->
 		if (schedule = Schedules.findOne(schedule._id))?

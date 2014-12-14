@@ -15,11 +15,9 @@ class @School
 	# @param location {Location} The location of the school
 	###
 	constructor: (@name, @url, @location) ->
-		@_className = "School"
 		@_id = new Meteor.Collection.ObjectID()
 
 		@books = []   # books by ID
-		@classes = [] # classes by ID
 		@utils = []   # utils by ID.
 
 	###*
@@ -28,15 +26,7 @@ class @School
 	# @method books
 	# @return {Cursor} Cursor pointing to the books this school uses.
 	###
-	books: () -> return root.Books.find { _id: { $in: @_books }}
-
-	###*
-	# Return a cursor pointing to the classes that this school offers.
-	#
-	# @method classes
-	# @return {Cursor} A cursor pointing to the classes this school offers.
-	###
-	classes: -> return Root.classes.find { _id: { $in: @classes }}
+	getBooks: () -> return root.Books.find { _id: { $in: @_books }}
 
 	###*
 	# Return a cursor pointing to the users that that are pupils of this school.
@@ -46,7 +36,7 @@ class @School
 	###
 	users: -> Meteor.users.find "profile.schoolId": @_id
 
-	utils: -> return root.Utils.find { _id: { $in: @_utils }}
+	getUtils: -> return root.Utils.find { _id: { $in: @_utils }}
 
 	addUtil: (util) ->
 		if util.binding?

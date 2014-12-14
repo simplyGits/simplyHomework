@@ -27,7 +27,7 @@ Meteor.publish "essentials", ->
 	classes = Classes.find()
 	if (val = Meteor.users.findOne(@userId).profile.courseInfo)?
 		{ year, schoolVariant } = val
-		classes = Classes.find(_schoolVariant: schoolVariant.toLowerCase(), _year: year)
+		classes = Classes.find(schoolVariant: schoolVariant.toLowerCase(), year: year)
 
 	userData = Meteor.users.find @userId, fields:
 		classInfos: 1
@@ -43,8 +43,8 @@ Meteor.publish "essentials", ->
 		studyGuidesHashes: 1
 		profile: 1
 
-	[ Schools.find(), classes, userData, CalendarItems.find(_ownerId: @userId) ]
+	[ Schools.find(), classes, userData, CalendarItems.find(ownerId: @userId) ]
 
 Meteor.publish "goaledSchedules", -> GoaledSchedules.find { ownerId: @userId }
-Meteor.publish "projects", -> Projects.find(_participants: @userId)
+Meteor.publish "projects", -> Projects.find(participants: @userId)
 Meteor.publish "betaPeople", -> BetaPeople.find {}, fields: hash: 1

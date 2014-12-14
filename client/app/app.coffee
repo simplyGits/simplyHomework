@@ -41,8 +41,8 @@ class @App
 								val = "Godsdienst en levensbeschouwing"
 
 							{ year, schoolVariant } = Meteor.user().profile.courseInfo
-							books = Classes.findOne({_name: val, _schoolVariant: schoolVariant.toLowerCase(), _year: year})?.books() ? []
-							engine.add ({name} for name in _.reject books.map((b) -> b.title()), (b) -> _.any result, (x) -> x is b)
+							books = Classes.findOne({_name: val, schoolVariant: schoolVariant, year: year})?.books() ? []
+							engine.add ({name} for name in _(books).map("title").reject((b) -> _.any result, (x) -> x is b).value())
 
 							do (engine) -> WoordjesLeren.getAllBooks val, (result) -> engine.add result
 
@@ -145,7 +145,7 @@ Template.getMagisterClassesModal.rendered = ->
 	magisterResult "course", (e, r) ->
 		return if e? or amplify.store "courseInfoSet"
 
-		schoolVariant = /[^\d\s]+/.exec(r.type().description)[0].trim()
+		schoolVariant = /[^\d\s]+/.exec(r.type().description)[0].trim().toLowerCase()
 		year = (Number) /\d+/.exec(r.type().description)[0].trim()
 
 		Meteor.users.update Meteor.userId(), $set:
@@ -193,14 +193,14 @@ Template.getMagisterClassesModal.events
 
 		for c in magisterClasses.get()
 			color = $("#magisterClassesResult > div##{c.id()}").attr "colorHex"
-			_class = Classes.findOne $or: [{ $where: "\"#{c.description().toLowerCase()}\".indexOf(this._name.toLowerCase()) > -1" }, { _course: c.abbreviation().toLowerCase() }], _schoolVariant: schoolVariant.toLowerCase(), _year: year
+			_class = Classes.findOne $or: [{ $where: "\"#{c.description().toLowerCase()}\".indexOf(this.name.toLowerCase()) > -1" }, { course: c.abbreviation().toLowerCase() }], schoolVariant: schoolVariant, year: year
 			_class ?= New.class c.description(), c.abbreviation(), year, schoolVariant
 
 			if c.__method?
-				book = _class.books().smartFind c.__method.name, (b) -> b.title()
+				book = _class.books.smartFind c.__method.name, (b) -> b.title
 				unless book?
 					book = new Book _class, c.__method.name, undefined, c.__method.id, undefined
-					Classes.update _class._id, $push: { _books: book }
+					Classes.update _class._id, $push: { books: book }
 
 			Meteor.users.update Meteor.userId(), $push: classInfos:
 				id: _class._id
@@ -306,13 +306,13 @@ Template.addClassModal.events
 		color = $("#colorInput").val()
 		{ year, schoolVariant } = Meteor.user().profile.courseInfo
 
-		_class = Classes.findOne { $or: [{ _name: name }, { _course: course }], _schoolVariant: schoolVariant.toLowerCase(), _year: year}
+		_class = Classes.findOne { $or: [{ name: name }, { course: course }], schoolVariant: schoolVariant, year: year}
 		_class ?= New.class name, course, year, schoolVariant
 
-		book = _class.books().smartFind bookName, (b) -> b.title()
+		book = _class.books.smartFind bookName, (b) -> b.title
 		unless book?
 			book = new Book _class, bookName, undefined, Session.get("currentSelectedBookDatum")?.id, undefined
-			Classes.update _class._id, $push: { _books: book }
+			Classes.update _class._id, $push: { books: book }
 
 		Meteor.users.update Meteor.userId(), $push: { classInfos: { id: _class._id, color, bookId: book._id }}
 		$("#addClassModal").modal "hide"
@@ -321,7 +321,7 @@ Template.addClassModal.events
 		val = Helpers.cap $("#classNameInput").val()
 
 		{ year, schoolVariant } = Meteor.user().profile.courseInfo
-		books = Classes.findOne({ _name: val, _schoolVariant: schoolVariant.toLowerCase(), _year: year})?.books() ? []
+		books = Classes.findOne({ name: val, schoolVariant: schoolVariant, year: year})?.books() ? []
 		console.log books
 
 		if /(Natuurkunde)|(Scheikunde)/i.test val
@@ -332,7 +332,7 @@ Template.addClassModal.events
 			val = "Godsdienst en levensbeschouwing"
 
 		WoordjesLeren.getAllBooks val, (result) ->
-			result.pushMore ({name} for name in _.reject books.map((b) -> b.title()), (b) -> _.any result, (x) -> x is b)
+			result.pushMore ({name} for name in _(books).map("title").reject((b) -> _.any result, (x) -> x is b).value())
 
 			bookEngine.clear()
 			bookEngine.add result
@@ -344,7 +344,7 @@ Template.addClassModal.rendered = ->
 	WoordjesLeren.getAllClasses (result) ->
 		m = DamerauLevenshtein()
 		classes = extraClassList.pushMore(result)
-		classes.pushMore _.reject Classes.find().map((c) -> c._name), (c) -> _.any classes, (x) -> m(c, x) < 2 or c.length > 4 and x.length > 4 and (( x.toLowerCase().indexOf(c.toLowerCase()) > -1 ) or ( c.toLowerCase().indexOf(x.toLowerCase()) > -1 ))
+		classes.pushMore _.reject Classes.find().map((c) -> c.name), (c) -> _.any classes, (x) -> m(c, x) < 2 or c.length > 4 and x.length > 4 and (( x.toLowerCase().indexOf(c.toLowerCase()) > -1 ) or ( c.toLowerCase().indexOf(x.toLowerCase()) > -1 ))
 		classEngine.add ( { val: s } for s in classes when !_.contains ["Overige talen",
 			"Overige vakken",
 			"Eigen methodes",

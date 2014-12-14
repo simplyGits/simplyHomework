@@ -2,14 +2,14 @@ currentProject = -> Router.current().data()
 
 @getParticipants = ->
 	tmp = []
-	for participant, i in Meteor.users.find(_id: $in: currentProject().participants()).fetch()
+	for participant, i in Meteor.users.find(_id: $in: currentProject().participants).fetch()
 		tmp.push _.extend participant,
 			__statusColor: if participant.status.idle then "#FF851B" else if participant.status.online then "#2ECC40" else "#FF4136"
 	return tmp
 
 @getOthers = ->
 	tmp = []
-	for other, i in Meteor.users.find(_id: $nin: currentProject().participants()).fetch()
+	for other, i in Meteor.users.find(_id: $nin: currentProject().participants).fetch()
 		tmp.push _.extend other,
 			fullName: "#{other.profile.firstName} #{other.profile.lastName}"
 	return tmp
@@ -49,12 +49,12 @@ Template.projectView.helpers
 		return tmp
 	persons: -> _.reject getParticipants(), (p) -> EJSON.equals p._id, Meteor.userId()
 
-	showRightHeader: -> if currentProject().participants().length is 1 then false else true
+	showRightHeader: -> if currentProject().participants.length is 1 then false else true
 	friendlyDeadline: ->
-		day = DayToDutch Helpers.weekDay currentProject().deadline()
-		time = "#{currentProject().deadline().getHours()}:#{currentProject().deadline().getMinutes()}"
+		day = DayToDutch Helpers.weekDay currentProject().deadline
+		time = "#{currentProject().deadline.getHours()}:#{currentProject().deadline.getMinutes()}"
 
-		return (switch Helpers.daysRange new Date(), currentProject().deadline()
+		return (switch Helpers.daysRange new Date(), currentProject().deadline
 			when -6, -5, -4, -3 then "Afgelopen #{day}"
 			when -2 then "Eergisteren"
 			when -1 then "Gisteren"
@@ -62,7 +62,7 @@ Template.projectView.helpers
 			when 1 then "Morgen"
 			when 2 then "Overmorgen"
 			when 3, 4, 5, 6 then "Aanstaande #{day}"
-			else "#{Helpers.cap day} #{DateToDutch(currentProject().deadline(), no)}") + " " + time
+			else "#{Helpers.cap day} #{DateToDutch(currentProject().deadline, no)}") + " " + time
 	heightOffset: -> if has("noAds") then 260 else 350
 
 Template.projectView.events
@@ -83,7 +83,7 @@ Template.addParticipantModal.rendered = ->
 	).on "typeahead:selected", (obj, datum) -> Session.set "currentSelectedPersonDatum", datum
 
 addUser = ->
-	Projects.update currentProject()._id, $push: "_participants": Session.get("currentSelectedPersonDatum")._id
+	Projects.update currentProject()._id, $push: participants: Session.get("currentSelectedPersonDatum")._id
 	$("#addParticipantModal").modal "hide"
 	notify Locals["nl-NL"].ProjectPersonAddedNotice(Session.get("currentSelectedPersonDatum").profile.firstName), "notice"
 
@@ -112,5 +112,5 @@ Template.personRow.events
 
 	"click .removePersonButton": ->
 		alertModal "Zeker weten?", Locals["nl-NL"].ProjectPersonRemovalMessage(@profile.firstName), DialogButtons.OkCancel, { main: "Is de bedoeling", second: "heh!?" }, { main: "btn-danger" }, main: =>
-			currentProject().removeParticipant @_id
+			Projects.update currentProject()._id, $pull: participants: @_id
 			notify Locals["nl-NL"].ProjectPersonRemovedNotice(@profile.firstName), "notice"

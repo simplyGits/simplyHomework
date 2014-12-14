@@ -96,10 +96,7 @@
 		for key in _.keys val
 			value = val[key]
 
-			if _.isArray(value)
-				readyVal[key] = (_decodeObject item for item in value)
-			else
-				readyVal[key] = _decodeObject value
+			if _.isObject(value) or _.isArray(value) then readyVal[key] = _decodeObject value
 		
 		return readyVal
 

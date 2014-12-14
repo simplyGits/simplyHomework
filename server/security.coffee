@@ -36,12 +36,11 @@ Meteor.users.allow
 		]
 		userId is doc._id and not _.any fields, (f) -> not _.contains allowed, f
 
+Classes.allow
+	insert: -> yes
+	update: (userId, doc, fields, modifier) -> fields.length is 1 and fields[0] is "books"
+
 Projects.allow
 	insert: -> yes
-	update: (userId, doc, fields, modifier) -> _.contains(doc._participants, userId) and ( !_.any(["_creatorId", "_participants"], (x) -> _.contains(fields, x)) or userId is doc._creatorId )
-	remove: -> no
-
-BetaPeople.allow
-	insert: -> yes
-	update: -> no
+	update: (userId, doc, fields, modifier) -> _.contains(doc.participants, userId) and ( !_.any(["creatorId", "participants"], (x) -> _.contains(fields, x)) or userId is doc.creatorId )
 	remove: -> no
