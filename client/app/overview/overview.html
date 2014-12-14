@@ -78,7 +78,7 @@
 <template name="projectRow">
 	{{#linkTo route="projectView" projectId=this._id.toHexString}}
 		<div class="projectRow">
-			{{name}} <span>{{__class.name}}</span>
+			<span>{{name}}</span> {{__class.name}}
 		</div>
 	{{/linkTo}}
 </template>
