@@ -13,7 +13,7 @@
 
 # WARNING: PUSH ALL DATA
 Meteor.publish "usersData", ->
-	Meteor.users.find {}, fields:
+	Meteor.users.find { _id: $ne: @userId }, fields:
 		"status.online": 1
 		"status.idle": 1
 		profile: 1
@@ -24,20 +24,18 @@ Meteor.publish "essentials", ->
 	unless @userId?
 		@ready()
 		return
+
 	classes = Classes.find()
 	if (val = Meteor.users.findOne(@userId).profile.courseInfo)?
 		{ year, schoolVariant } = val
-		classes = Classes.find(schoolVariant: schoolVariant.toLowerCase(), year: year)
+		classes = Classes.find { schoolVariant, year }
 
 	userData = Meteor.users.find @userId, fields:
 		classInfos: 1
-		mailSignup: 1
 		premiumInfo: 1
 		magisterCredentials: 1
 		schedular: 1
-		hasMagisterSix: 1
-		"status.online": 1
-		"status.idle": 1
+		status: 1
 		gravatarUrl: 1
 		hasGravatar: 1
 		studyGuidesHashes: 1
