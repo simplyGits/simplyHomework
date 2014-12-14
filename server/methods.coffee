@@ -3,13 +3,9 @@ Future = Npm.require "fibers/future"
 
 Meteor.methods
 	http: (method, url, options = {}) ->
+		@unblock()
 		headers = _.extend (options.headers ? {}), "User-Agent": "simplyHomework"
 		fut = new Future()
-
-		console.log "-----"
-		console.log if @userId? then "#{method} (by #{Meteor.users.findOne(@userId).emails[0].address})" else method
-		console.log url
-		console.log options
 
 		opt = {
 			method
@@ -30,6 +26,7 @@ Meteor.methods
 	log: (type, message, elements...) -> console[type] message, elements...
 
 	setMagisterInfo: (info) ->
+		@unblock()
 		userId = @userId
 		{ username, password } = info.magisterCredentials
 		try
@@ -82,6 +79,7 @@ Meteor.methods
 		).count() isnt 0
 
 	execute: (command, useCoffee = yes) ->
+		@unblock()
 		throw new Meteor.Error 401, "You're not an admin!" unless AuthManager.userIsInRole @userId, ["admin"]
 		
 		try
