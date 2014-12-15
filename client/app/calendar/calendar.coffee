@@ -112,7 +112,6 @@ Template.calendar.rendered = ->
 							appointment._begin = a._begin
 							appointment._end = a._end
 						return appointment
-					result.pushMore _.reject getHardCacheAppointments(start, end), (a) -> _.any result, (x) -> "#{x.begin().getTime()}#{x.end().getTime()}" is "#{a.begin().getTime()}#{a.end().getTime()}"
 					
 					events = (toEvent x for x in result)
 
