@@ -3,10 +3,10 @@
 		<div class="background" style="background-color: {{backColor}}; border-color: {{borderColor}}"></div>
 		{{#if sameUser}}
 			<a href="http://en.gravatar.com/emails/" target="_blank">
-				<img class="personPicture" style="pointer-events: initial; border-color: {{borderColor}}" src="{{gravatar this 200}}" width="100" height="100"/>
+				<img class="personPicture" style="pointer-events: initial; border-color: {{borderColor}}" src="{{gravatar this 200}}" width="150" height="150"/>
 			</a>
 		{{else}}
-			<img class="personPicture" style="border-color: {{borderColor}}" src="{{gravatar this 200}}" width="100" height="100"/>
+			<img class="personPicture" style="border-color: {{borderColor}}" src="{{gravatar this 200}}" width="150" height="150"/>
 		{{/if}}
 		<div class="personName robotoHeader">
 			<b>{{profile.firstName}}</b> {{profile.lastName}}
