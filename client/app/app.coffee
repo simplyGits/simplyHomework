@@ -42,7 +42,7 @@ class @App
 								val = "Godsdienst en levensbeschouwing"
 
 							{ year, schoolVariant } = Meteor.user().profile.courseInfo
-							books = Classes.findOne({_name: val, schoolVariant: schoolVariant, year: year})?.books() ? []
+							books = Classes.findOne({_name: val, schoolVariant: schoolVariant, year: year})?.books ? []
 							engine.add ({name} for name in _(books).map("title").reject((b) -> _.any result, (x) -> x is b).value())
 
 							do (engine) -> WoordjesLeren.getAllBooks val, (result) -> engine.add result
@@ -322,8 +322,7 @@ Template.addClassModal.events
 		val = Helpers.cap $("#classNameInput").val()
 
 		{ year, schoolVariant } = Meteor.user().profile.courseInfo
-		books = Classes.findOne({ name: val, schoolVariant: schoolVariant, year: year})?.books() ? []
-		console.log books
+		books = Classes.findOne({ name: val, schoolVariant: schoolVariant, year: year})?.books ? []
 
 		if /(Natuurkunde)|(Scheikunde)/i.test val
 			val = "Natuur- en scheikunde"
