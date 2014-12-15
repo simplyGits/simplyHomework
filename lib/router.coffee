@@ -48,7 +48,7 @@ Router.map ->
 	@route "classView",
 		fastRender: yes
 		layoutTemplate: "app"
-		path: "/app/view/:classId"
+		path: "/app/class/:classId"
 
 		subscriptions: -> NProgress?.start(); Meteor.subscribe("essentials")
 
