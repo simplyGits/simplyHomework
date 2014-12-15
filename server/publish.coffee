@@ -13,6 +13,7 @@
 
 # WARNING: PUSH ALL DATA
 Meteor.publish "usersData", ->
+	@unblock()
 	Meteor.users.find { _id: $ne: @userId }, fields:
 		"status.online": 1
 		"status.idle": 1
@@ -25,6 +26,7 @@ Meteor.publish "essentials", ->
 		@ready()
 		return
 
+	@unblock()
 	classes = Classes.find()
 	if (val = Meteor.users.findOne(@userId).profile.courseInfo)?
 		{ year, schoolVariant } = val
@@ -45,6 +47,6 @@ Meteor.publish "essentials", ->
 	[ Schools.find(), classes, userData, CalendarItems.find(ownerId: @userId) ]
 
 Meteor.publish "goaledSchedules", -> GoaledSchedules.find { ownerId: @userId }
-Meteor.publish "projects", -> Projects.find(participants: @userId)
-Meteor.publish "rolesOnly", -> Meteor.users.find(@userId, fields: roles: 1)
+Meteor.publish "projects", -> @unblock(); Projects.find(participants: @userId)
+Meteor.publish "rolesOnly", -> @unblock(); Meteor.users.find(@userId, fields: roles: 1)
 Meteor.publish "betaPeople", -> BetaPeople.find {}, fields: hash: 1
