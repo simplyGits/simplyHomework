@@ -1,5 +1,6 @@
 @snapper = null
 magisterClasses = new ReactiveVar null
+magisterAssignments = new ReactiveVar []
 class @App
 	@_setupPathItems:
 		tutorial:
@@ -410,6 +411,45 @@ Template.accountInfoModal.events
 		else if oldPass is newPass
 			$("#newPassInput").addClass("has-error").tooltip(placement: "bottom", title: "Nieuw wachtwoord is hetzelfde als je oude wachtwoord.").tooltip("show")
 
+Template.addProjectModal.helpers
+	assignments: -> (_.extend(x, added: Projects.findOne(magisterId: x.id())?, __class: Classes.findOne(Meteor.user().classInfos.smartFind(x.class().id(), (z) -> z.magisterId).id)) for x in _.filter(magisterAssignments.get(), (a) -> a.deadline() > new Date()))
+
+Template.addProjectModal.events
+	"click #createButton": ->
+		@added = yes
+		project = new Project @name(), @description(), @deadline(), @id(), @__class._id, Meteor.userId()
+		Projects.insert project, (e) =>
+			if e? then @added = no
+			else $("#addProjectModal").modal "hide"
+
+	"click #goButton": ->
+		name = $("#projectNameInput").val().trim()
+		description = $("#projectDescriptionInput").val().trim()
+		deadline = $("#projectDeadlineInput").data("DateTimePicker").getDate().toDate()
+		classId = Session.get("currentSelectedClassDatum")._id
+
+		unless _.isEmpty(name = $("#projectNameInput").val().trim())
+			New.project name, description, deadline, null, classId, Meteor.userId()
+
+		$("#addProjectModal").modal "hide"
+
+Template.addProjectModal.rendered = ->
+	magisterResult "assignments", (e, r) -> magisterAssignments.set r unless e?
+
+	ownClassesEngine = new Bloodhound
+		name: "ownClasses"
+		datumTokenizer: (d) -> Bloodhound.tokenizers.whitespace d.name
+		queryTokenizer: Bloodhound.tokenizers.whitespace
+		local: classes()
+
+	ownClassesEngine.initialize()
+
+	$("#projectClassNameInput").typeahead(null,
+		source: ownClassesEngine.ttAdapter()
+		displayKey: "name"
+	).on "typeahead:selected", (obj, datum) -> Session.set "currentSelectedClassDatum", datum
+
+	$("#projectDeadlineInput").datetimepicker()
 
 # == End Modals ==
 

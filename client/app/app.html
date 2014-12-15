@@ -334,29 +334,49 @@
 					<h4 class="modal-title">Project aanmaken</h4>
 				</div>
 				<div class="modal-body">
+					<h3>Kies een een opdracht van Magister</h3>
+					{{#each assignments}}
+						<div class="assignmentRow">
+							<div class="className">{{__class.course}}</div>
+							<div class="assignmentName">{{name}}</div>
+
+							{{#unless added}}
+								<button type="button" class="btn btn-default" id="createButton">aanmaken</button>
+							{{else}}
+								<button type="button" class="btn btn-default" disabled="disabled">aangemaakt</button>
+							{{/unless}}
+						</div>
+					{{/each}}
+
+					<h3>Of maak zelf een project</h3>
 					<form class="form-horizontal">
-						<div id="mailGroup" class="form-group">
-							<label for="mailInput" class="col-sm-2 control-label" style="text-align: left">Naam</label>
+						<div id="projectNameGroup" class="form-group">
+							<label for="projectNameInput" class="col-sm-2 control-label" style="text-align: left">Naam</label>
 							<div class="col-sm-10">
-								<input type="text" class="form-control" id="mailInput" placeholder="hello@simplyApps.nl" value="Saai engels projec">
+								<input type="text" class="form-control" id="projectNameInput" placeholder="Saai engels project">
 							</div>
 						</div>
-						<div id="oldPassGroup" class="form-group">
-							<label for="oldPassInput" class="col-sm-2 control-label" style="text-align: left">Oud wachtwoord</label>
+						<div id="projectDescriptionGroup" class="form-group">
+							<label for="projectDescriptionInput" class="col-sm-2 control-label" style="text-align: left">Beschrijving</label>
 							<div class="col-sm-10">
-								<input type="password" class="form-control" id="oldPassInput" placeholder="●●●●●●●●●●">
+								<input type="text" class="form-control" id="projectDescriptionInput" placeholder="Kaas">
 							</div>
 						</div>
-						<div id="newPassGroup" class="form-group">
-							<label for="newPassInput" class="col-sm-2 control-label" style="text-align: left">Nieuw wachtwoord</label>
+						<div id="projectDeadlineGroup" class="form-group">
+							<label for="projectDeadlineInput" class="col-sm-2 control-label" style="text-align: left">Deadline</label>
 							<div class="col-sm-10">
-								<input type="password" class="form-control" id="newPassInput" placeholder="●●●●●●●●●●">
+								<input type="text" class="form-control" id="projectDeadlineInput" placeholder="2014-12-05">
+							</div>
+						</div>
+						<div id="projectClassGroup" class="form-group">
+							<label for="projectClassNameInput" class="col-sm-2 control-label" style="text-align: left">Vak</label>
+							<div class="col-sm-10">
+								<input type="text" class="form-control" id="projectClassNameInput" placeholder="Engels">
 							</div>
 						</div>
 					</form>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-default" data-dismiss="modal">Annuleren</button>
 					<button type="button" class="btn btn-primary" id="goButton">Opslaan</button>
 				</div>
 			</div>
