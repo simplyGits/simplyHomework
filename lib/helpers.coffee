@@ -148,6 +148,7 @@ class @Helpers
 
 @userIsInRole = (user = Meteor.user(), role = "admin") ->
 	if _.isString(user) then user = Meteor.users.findOne user
+	return no unless user?
 	_.every (if _.isArray(role) then role else [role]), (s) -> _.contains user.roles, s
 
 ###*
