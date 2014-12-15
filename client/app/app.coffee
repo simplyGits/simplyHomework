@@ -449,7 +449,7 @@ Template.addProjectModal.rendered = ->
 		displayKey: "name"
 	).on "typeahead:selected", (obj, datum) -> Session.set "currentSelectedClassDatum", datum
 
-	$("#projectDeadlineInput").datetimepicker()
+	$("#projectDeadlineInput").datetimepicker language: "nl"
 
 # == End Modals ==
 
