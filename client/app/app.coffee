@@ -417,9 +417,8 @@ Template.addProjectModal.events
 	"click #createButton": ->
 		@added = yes
 		project = new Project @name(), @description(), @deadline(), @id(), @__class._id, Meteor.userId()
-		Projects.insert project, (e) =>
-			if e? then @added = no
-			else $("#addProjectModal").modal "hide"
+		Projects.insert project, (e) => @added = not e?
+		$("#addProjectModal").modal "hide"
 
 	"click #goButton": ->
 		name = $("#projectNameInput").val().trim()
