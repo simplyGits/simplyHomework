@@ -426,10 +426,17 @@ Template.addProjectModal.events
 		name = $("#projectNameInput").val().trim()
 		description = $("#projectDescriptionInput").val().trim()
 		deadline = $("#projectDeadlineInput").data("DateTimePicker").getDate().toDate()
-		classId = Session.get("currentSelectedClassDatum")._id
+		classId = Session.get("currentSelectedClassDatum")?._id
 
-		unless _.isEmpty(name = $("#projectNameInput").val().trim())
-			New.project name, description, deadline, null, classId, Meteor.userId()
+		return if name is ""
+
+		if $("#projectClassNameInput").val().trim() isnt "" and not classId?
+			$("#addProjectModal").addClass "animated shake"
+			$('#addProjectModal').one 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', ->
+				$("#addProjectModal").removeClass "animated shake"
+			return
+
+		New.project name, description, deadline, null, classId, Meteor.userId()
 
 		$("#addProjectModal").modal "hide"
 
@@ -449,7 +456,7 @@ Template.addProjectModal.rendered = ->
 		displayKey: "name"
 	).on "typeahead:selected", (obj, datum) -> Session.set "currentSelectedClassDatum", datum
 
-	$("#projectDeadlineInput").datetimepicker language: "nl"
+	$("#projectDeadlineInput").datetimepicker language: "nl", defaultDate: new Date()
 
 # == End Modals ==
 
