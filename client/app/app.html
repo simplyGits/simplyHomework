@@ -334,21 +334,24 @@
 					<h4 class="modal-title">Project aanmaken</h4>
 				</div>
 				<div class="modal-body">
-					<h3>Kies een een opdracht van Magister</h3>
-					{{#each assignments}}
-						<div class="assignmentRow">
-							<div class="className">{{__class.course}}</div>
-							<div class="assignmentName">{{name}}</div>
+					{{#with assignments}}
+						{{#unless empty}}
+							<h3>Kies een een opdracht van Magister</h3>
+							{{#each this}}
+								<div class="assignmentRow">
+									<div class="className">{{__class.course}}</div>
+									<div class="assignmentName">{{name}}</div>
 
-							{{#unless added}}
-								<button type="button" class="btn btn-default" id="createButton">aanmaken</button>
-							{{else}}
-								<button type="button" class="btn btn-default" disabled="disabled">aangemaakt</button>
-							{{/unless}}
-						</div>
-					{{/each}}
-
-					<h3>Of maak zelf een project</h3>
+									{{#unless added}}
+										<button type="button" class="btn btn-default" id="createButton">aanmaken</button>
+									{{else}}
+										<button type="button" class="btn btn-default" disabled="disabled">aangemaakt</button>
+									{{/unless}}
+								</div>
+							{{/each}}
+							<h3>Of maak zelf een project</h3>
+						{{/unless}}
+					{{/with}}
 					<form class="form-horizontal">
 						<div id="projectNameGroup" class="form-group">
 							<label for="projectNameInput" class="col-sm-2 control-label" style="text-align: left">Naam</label>
