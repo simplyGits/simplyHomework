@@ -65,6 +65,10 @@ pushResult = (name, result) ->
 		console.warn "Can't find the school of the user in the database."
 		return
 
+	else unless Meteor.user().magisterCredentials?
+		console.warn "User has no magisterCredentials."
+		return
+
 	{ username, password } = Meteor.user().magisterCredentials
 
 	(@magister = new Magister(school, username, password, no)).ready (err) ->
