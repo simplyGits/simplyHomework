@@ -38,16 +38,16 @@ Meteor.methods
 				headers:
 					"Content-Type": "application/json;charset=UTF-8"
 
-			new Magister(info.school, username, password, no).ready (m) ->
-				url = m.profileInfo().profilePicture(200, 200, yes)
+			new Magister(info.school, username, password, no).ready ->
+				url = @profileInfo().profilePicture(200, 200, yes)
 
-				request.get { url, encoding: null, headers: cookie: m.http._cookie }, Meteor.bindEnvironment (error, response, body) ->
+				request.get { url, encoding: null, headers: cookie: @http._cookie }, Meteor.bindEnvironment (error, response, body) =>
 					Meteor.users.update userId,
 						$set:
 							"magisterCredentials": info.magisterCredentials
 							"profile.schoolId": info.schoolId
 							"profile.magisterPicture": if body? then "data:image/jpg;base64,#{body.toString "base64"}" else ""
-							"profile.birthDate": m.profileInfo().birthDate()
+							"profile.birthDate": @profileInfo().birthDate()
 			return yes
 		catch
 			return no
