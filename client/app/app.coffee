@@ -525,7 +525,7 @@ Template.app.rendered = ->
 					assignmentNotification = NotificationsManager.notify body: s, type: "warning", time: -1, html: yes, onDismissed: -> Meteor.users.update Meteor.userId(), $set: { studyGuidesHashes }
 
 		for studyGuide in r then do (studyGuide) -> studyGuide.parts (e, r) ->
-			studyGuide.parts = ( { id: x.id(), description: x.description(), fileDates: (z.size() for z in x._files) } for x in r )
+			studyGuide.parts = _.sortBy ( { id: x.id(), description: x.description(), fileSizes: (z.size() for z in x._files) } for x in r ), "id"
 			push studyGuide
 
 	if (val = Meteor.user().profile.birthDate?.date()) is Date.today() and not amplify.store("congratulated")?
