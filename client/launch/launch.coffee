@@ -74,6 +74,8 @@ Template.page1.events
 				$('input').one 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', ->
 					$("input").removeClass "animated shake"
 
+			else Router.go "app"
+
 usersCount = new ReactiveVar null
 Template.page2.helpers
 	usersCount: -> usersCount.get()
