@@ -503,7 +503,10 @@ Template.app.helpers
 Template.app.rendered = ->
 	if "#{Math.random()}"[2] is "2" and "#{Math.random()}"[4] is "2"
 		console.error "CRITICAL ERROR: UNEXPECTED KAAS"
-	initializeMagister()
+	Deps.autorun ->
+		if Meteor.user().magisterCredentials?
+			initializeMagister()
+			@stop()
 	
 	notify("Je hebt je account nog niet geverifiëerd!", "warning") unless Meteor.user().emails[0].verified
 

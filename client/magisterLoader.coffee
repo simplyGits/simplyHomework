@@ -49,8 +49,6 @@ pushResult = (name, result) ->
 
 @initializeMagister = (force = no) ->
 	check force, Boolean
-	if not force and @magister? then throw new Error "initializeMagister already called. To force reloading all info use initializeMagister(true)."
-
 	try
 		url = Schools.findOne(Meteor.user().profile.schoolId).url
 	catch
