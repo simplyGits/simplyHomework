@@ -8,6 +8,21 @@ Template.classView.helpers
 	classColor: -> currentClass().__color
 	textAlign: -> if Session.get "isPhone" then "left" else "right"
 
+	# recentGrades: ->
+	# 	grades = _.filter magisterResult("grades").result, (g) -> g.class().id is currentClass().__classInfo.magisterId
+	# 	return _.filter grades, (g) -> new Date(g.dateFilledIn()) > Date.today().addDays(-7) and g.type().type() is 1
+
+	# endGrade: ->
+	# 	grades = _.filter magisterResult("grades").result, (g) -> g.class().id is currentClass().__classInfo.magisterId
+
+	# 	endGrade = _.find r, (g) -> g.type().header()?.toLowerCase() is "eind"
+	# 	if endGrade.length is 0
+	# 		endGrade = _.find r, (g) -> g.type().header()?.toLowerCase() is "e-jr"
+	# 	if endGrade.length is 0
+	# 		endGrade = _.uniq _.find(r, (g) -> g.type().type() is 2), "_class"
+
+	# 	return endGrade
+
 Template.classView.events
 	"mouseenter #classHeader": -> unless Session.get "isPhone" then $("#changeClassIcon").velocity { opacity: 1 }, 100
 	"mouseleave #classHeader": -> unless Session.get "isPhone" then $("#changeClassIcon").velocity { opacity: 0 }, 100
