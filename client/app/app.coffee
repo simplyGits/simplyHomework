@@ -411,7 +411,15 @@ Template.accountInfoModal.events
 			$("#newPassInput").addClass("has-error").tooltip(placement: "bottom", title: "Nieuw wachtwoord is hetzelfde als je oude wachtwoord.").tooltip("show")
 
 Template.addProjectModal.helpers
-	assignments: -> (_.extend(x, added: Projects.findOne(magisterId: x.id())?, __class: Classes.findOne(Meteor.user().classInfos.smartFind(x.class().id(), (z) -> z.magisterId).id)) for x in _.filter(magisterAssignments.get(), (a) -> a.deadline() > new Date()))
+	assignments: ->
+		_(magisterAssignments.get())
+			.filter((a) -> a.deadline() > new Date())
+			.map((a) -> _.extend a,
+				added: Projects.findOne(magisterId: a.id())?
+				__class: Classes.findOne Meteor.user().classInfos.smartFind(a.class().id(), (z) -> z.magisterId).id
+			)
+			.sortBy((a) -> a.deadline()).sortBy((a) -> a.class().abbreviation())
+			.value()
 
 Template.addProjectModal.events
 	"click #createButton": ->
