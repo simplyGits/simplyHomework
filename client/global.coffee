@@ -83,8 +83,3 @@ Meteor.startup ->
 			NotificationsManager.hideAll()
 
 	Meteor.setInterval (-> secondTracker.changed()), 1000
-
-	ignoreMessages = [ "Script error."
-		"initializeMagister already called."
-	]
-	window.onerror = (message, url, lineNumber) -> Meteor.call "log", "error", "Uncaught error at client: #{message} | #{url}:#{lineNumber}" unless _.some ignoreMessages, (m) -> Helpers.contains message, m
