@@ -12,9 +12,8 @@ class @School
 	# @method constructor
 	# @param name {String} The name of the school
 	# @param url {String} The URL of the school.
-	# @param location {Location} The location of the school
 	###
-	constructor: (@name, @url, @location) ->
+	constructor: (@name, @url) ->
 		@_id = new Meteor.Collection.ObjectID()
 
 		@books = []   # books by ID
