@@ -88,6 +88,14 @@ Template.infoCurrentLesson.helpers
 	minutes: -> val = currentAppointment.get()?.end().getMinutes(); if val? then ":#{Helpers.addZero(val)}" else ""
 	appointment: -> currentAppointment.get()
 
+Template.appOverview.events
+	"click #addProjectIcon": ->
+		$("#projectNameInput").val ""
+		$("#projectDescriptionInput").val ""
+		$("#projectClassNameInput").val ""
+
+		$("#addProjectModal").modal()
+
 Template.appOverview.rendered = ->
 	magisterResult "appointments tomorrow", (e, r) ->
 		return if e?
