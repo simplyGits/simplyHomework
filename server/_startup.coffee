@@ -68,7 +68,7 @@ Meteor.startup ->
 	longTimeIgnore = []
 	Accounts.onLoginFailure (res) ->
 		{user, error} = res
-		return unless error.error is 403
+		return unless error.error is 403 and user?
 		if ++recents[user._id]?.times is 5
 			message = "Hey,\n\n" +
 
