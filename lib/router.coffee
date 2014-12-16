@@ -1,3 +1,5 @@
+@subs = new SubsManager
+
 AccountController = RouteController.extend
 	verifyMail: -> Accounts.verifyEmail @params.token, ->
 		Router.go "app"
@@ -27,7 +29,15 @@ Router.map ->
 
 	@route "app",
 		fastRender: yes
-		subscriptions: -> NProgress?.start(); [Meteor.subscribe("essentials"), Meteor.subscribe("projects")]
+		subscriptions: ->
+			NProgress?.start()
+			return [
+				Meteor.subscribe("userData")
+				Meteor.subscribe("classes")
+				subs.subscribe("calendarItems")
+				subs.subscribe("schools")
+				subs.subscribe("projects")
+			]
 
 		onBeforeAction: ->
 			Meteor.defer => @redirect "launchPage" unless Meteor.loggingIn() or Meteor.user()?
@@ -50,7 +60,12 @@ Router.map ->
 		layoutTemplate: "app"
 		path: "/app/class/:classId"
 
-		subscriptions: -> NProgress?.start(); Meteor.subscribe("essentials")
+		subscriptions: ->
+			NProgress?.start()
+			return [
+				Meteor.subscribe("userData")
+				Meteor.subscribe("classes")
+			]
 
 		onBeforeAction: ->
 			Meteor.defer => @redirect "launchPage" unless Meteor.loggingIn() or Meteor.user()?
@@ -80,7 +95,14 @@ Router.map ->
 		layoutTemplate: "app"
 		path: "/app/project/:projectId"
 
-		subscriptions: -> NProgress?.start(); [ Meteor.subscribe("essentials"), Meteor.subscribe("projects"), Meteor.subscribe("usersData") ]
+		subscriptions: ->
+			NProgress?.start()
+			return [
+				Meteor.subscribe("userData")
+				subs.subscribe("usersData")
+				Meteor.subscribe("classes")
+				subs.subscribe("projects", new Meteor.Collection.ObjectID @params.projectId)
+			]
 
 		onBeforeAction: ->
 			Meteor.defer => @redirect "launchPage" unless Meteor.loggingIn() or Meteor.user()?
@@ -111,7 +133,14 @@ Router.map ->
 		layoutTemplate: "app"
 		path: "/app/calendar"
 
-		subscriptions: -> NProgress?.start(); [ Meteor.subscribe("essentials"), Meteor.subscribe("usersData") ]
+		subscriptions: ->
+			NProgress?.start()
+			return [
+				Meteor.subscribe("userData")
+				subs.subscribe("usersData")
+				Meteor.subscribe("classes")
+				subs.subscribe("calendarItems")
+			]
 
 		onBeforeAction: ->
 			Meteor.defer => @redirect "launchPage" unless Meteor.loggingIn() or Meteor.user()?
@@ -128,7 +157,14 @@ Router.map ->
 		layoutTemplate: "app"
 		path: "/app/mobileCalendar/:date?"
 
-		subscriptions: -> NProgress?.start(); [ Meteor.subscribe("essentials"), Meteor.subscribe("usersData") ]
+		subscriptions: ->
+			NProgress?.start()
+			return [
+				Meteor.subscribe("userData")
+				subs.subscribe("usersData")
+				Meteor.subscribe("classes")
+				subs.subscribe("calendarItems")
+			]
 
 		onBeforeAction: ->
 			Meteor.defer => @redirect "launchPage" unless Meteor.loggingIn() or Meteor.user()?
@@ -147,7 +183,13 @@ Router.map ->
 		layoutTemplate: "app"
 		path: "/app/person/:_id"
 
-		subscriptions: -> NProgress?.start(); [ Meteor.subscribe("essentials"), Meteor.subscribe("usersData") ]
+		subscriptions: ->
+			NProgress?.start()
+			return [
+				Meteor.subscribe("userData")
+				subs.subscribe("usersData")
+				Meteor.subscribe("classes")
+			]
 
 		onBeforeAction: ->
 			Meteor.defer => @redirect "launchPage" unless Meteor.loggingIn() or Meteor.user()?
@@ -168,14 +210,6 @@ Router.map ->
 			catch
 				return null
 
-	@route "beta",
-		fastRender: yes
-		layoutTemplate: "beta"
-		onBeforeAction: ->
-			Meteor.subscribe("betaPeople")
-			@next()
-		onAfterAction: -> document.title = "simplyHomework | Bèta"
-
 	@route "press",
 		fastRender: yes
 		layoutTemplate: "press"
@@ -184,7 +218,7 @@ Router.map ->
 	@route "admin",
 		fastRender: yes
 		layoutTemplate: "admin"
-		subscriptions: -> Meteor.subscribe "rolesOnly"
+		subscriptions: -> Meteor.subscribe "roles"
 
 	@route "verifyMail",
 		fastRender: yes

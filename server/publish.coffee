@@ -5,7 +5,9 @@
 # 		@ready()
 # 		return
 
-# 	Meteor.users.find { "profile.schoolId": callerSchoolId }, fields:
+# 	@unblock()
+
+# 	Meteor.users.find { _id: { $ne: @userId }, "profile.schoolId": callerSchoolId }, fields:
 # 		"status.online": 1
 # 		"status.idle": 1
 # 		profile: 1
@@ -21,32 +23,56 @@ Meteor.publish "usersData", ->
 		gravatarUrl: 1
 		hasGravatar: 1
 
-Meteor.publish "essentials", ->
+Meteor.publish "userData", ->
 	unless @userId?
 		@ready()
 		return
-
+	
 	@unblock()
+
+	return [
+		Meteor.users.find(@userId, fields:
+			classInfos: 1
+			premiumInfo: 1
+			magisterCredentials: 1
+			schedular: 1
+			status: 1
+			gravatarUrl: 1
+			hasGravatar: 1
+			studyGuidesHashes: 1
+			profile: 1)
+		Schools.find _id: Meteor.users.findOne(@userId).profile.schoolId
+	]
+
+Meteor.publish "classes", ->
+	@unblock()
+
 	classes = Classes.find()
-	if (val = Meteor.users.findOne(@userId).profile.courseInfo)?
+	if (val = Meteor.users.findOne(@userId)?.profile.courseInfo)?
 		{ year, schoolVariant } = val
 		classes = Classes.find { schoolVariant, year }
 
-	userData = Meteor.users.find @userId, fields:
-		classInfos: 1
-		premiumInfo: 1
-		magisterCredentials: 1
-		schedular: 1
-		status: 1
-		gravatarUrl: 1
-		hasGravatar: 1
-		studyGuidesHashes: 1
-		profile: 1
-		roles: 1
+	return classes
 
-	[ Schools.find(), classes, userData, CalendarItems.find(ownerId: @userId) ]
+Meteor.publish "schools", -> Schools.find()
+
+Meteor.publish "calendarItems", ->
+	unless @userId?
+		@ready()
+		return
+	@unblock()
+	return CalendarItems.find ownerId: @userId
 
 Meteor.publish "goaledSchedules", -> GoaledSchedules.find { ownerId: @userId }
-Meteor.publish "projects", -> @unblock(); Projects.find(participants: @userId)
-Meteor.publish "rolesOnly", -> @unblock(); Meteor.users.find(@userId, fields: roles: 1)
-Meteor.publish "betaPeople", -> BetaPeople.find {}, fields: hash: 1
+Meteor.publish "projects", (id) ->
+	@unblock()
+	if id?
+		Projects.find id, participants: @userId
+	else
+		Projects.find { participants: @userId }, fields:
+			name: 1
+			magisterId: 1
+			classId: 1
+			participants: 1
+
+Meteor.publish "roles", -> @unblock(); Meteor.users.find(@userId, fields: roles: 1)

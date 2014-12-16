@@ -51,6 +51,7 @@ Template.projectView.helpers
 
 	showRightHeader: -> if currentProject().participants.length is 1 then false else true
 	friendlyDeadline: ->
+		return "" unless currentProject().deadline?
 		day = DayToDutch Helpers.weekDay currentProject().deadline
 		time = "#{currentProject().deadline.getHours()}:#{currentProject().deadline.getMinutes()}"
 
