@@ -1,9 +1,17 @@
 <template name="projectView">
 	{{> addParticipantModal}}
+	{{> changeProjectModal}}
 
 	<div class="container-fluid">
 		<div class="row">
-			<div class="robotoHeader overviewHeader head1 projectHeader">{{name}}</div>
+			<div class="robotoHeader overviewHeader head1 projectHeader">
+				{{name}}
+				{{#if isPhone}}
+					<span id="changeProjectIcon" class="fa fa-pencil"></span>
+				{{else}}
+					<span id="changeProjectIcon" class="fa fa-pencil" style="opacity: 0"></span>
+				{{/if}}
+			</div>
 			{{#if showRightHeader}}
 				{{#with participants}}
 					<div class="robotoHeader overviewHeader head2 projectHeader" style="text-align: right">{{length}} <span class="robotoThin" style="margin-left: 5px">personen</span></div>
@@ -120,6 +128,52 @@
 							</div>
 						</div>
 					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Annuleren</button>
+					<button type="button" class="btn btn-primary" id="goButton">Opslaan</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</template>
+
+<template name="changeProjectModal">
+	<div class="modal fade" id="changeProjectModal">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+					<h4 class="modal-title">Project instellingen</h4>
+				</div>
+				<div class="modal-body">
+					<form class="form-horizontal">
+						<div id="changeNameGroup" class="form-group">
+							<label for="changeNameInput" class="col-sm-2 control-label" style="text-align: left">Naam</label>
+							<div class="col-sm-10">
+								<input type="text" class="form-control" id="changeNameInput" value="{{name}}">
+							</div>
+						</div>
+						<div id="changeDescriptionGroup" class="form-group">
+							<label for="changeDescriptionInput" class="col-sm-2 control-label" style="text-align: left">Beschrijving</label>
+							<div class="col-sm-10">
+								<input type="text" class="form-control" id="changeDescriptionInput" value="{{description}}">
+							</div>
+						</div>
+						<div id="changeDeadlineGroup" class="form-group">
+							<label for="changeDeadlineInput" class="col-sm-2 control-label" style="text-align: left">Deadline</label>
+							<div class="col-sm-10">
+								<input type="text" class="form-control" id="changeDeadlineInput">
+							</div>
+						</div>
+						<div id="changeClassGroup" class="form-group">
+							<label for="changeClassInput" class="col-sm-2 control-label" style="text-align: left">Vak</label>
+							<div class="col-sm-10">
+								<input type="text" class="form-control" id="changeClassInput" value="{{__class.name}}">
+							</div>
+						</div>
+					</form>
+					<button class="btn btn-danger" id="leaveProjectButton">Verlaat project</button>
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">Annuleren</button>

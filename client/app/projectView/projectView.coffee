@@ -67,11 +67,50 @@ Template.projectView.helpers
 	heightOffset: -> if has("noAds") then 260 else 350
 
 Template.projectView.events
+	"mouseenter .projectHeader": -> unless Session.get "isPhone" then $("#changeProjectIcon").velocity { opacity: 1 }, 100
+	"mouseleave .projectHeader": -> unless Session.get "isPhone" then $("#changeProjectIcon").velocity { opacity: 0 }, 100
+
 	"click #addFileIcon": ->
 		notify "Hey"
 	"click #addPersonIcon": ->
 		$("#personNameInput").val ""
 		$("#addParticipantModal").modal backdrop: no
+
+	"click #changeProjectIcon": ->
+		ga "send", "event", "button", "click", "projectInfoChange"
+
+		$("#changeDeadlineInput").datetimepicker language: "nl", defaultDate: currentProject().deadline
+
+		ownClassesEngine = new Bloodhound
+			name: "ownClasses"
+			datumTokenizer: (d) -> Bloodhound.tokenizers.whitespace d.name
+			queryTokenizer: Bloodhound.tokenizers.whitespace
+			local: classes()
+
+		ownClassesEngine.initialize()
+
+		$("#changeClassInput").typeahead(null,
+			source: ownClassesEngine.ttAdapter()
+			displayKey: "name"
+		).on "typeahead:selected", (obj, datum) -> Session.set "currentSelectedClassDatum", datum
+
+		$("#changeProjectModal").modal backdrop: false
+
+Template.changeProjectModal.events
+	"click #goButton": ->
+		name = $("#changeNameInput").val().trim()
+		description = $("#changeDescriptionInput").val().trim()
+		deadline = $("#changeDeadlineInput").data("DateTimePicker").getDate().toDate()
+		classId = Session.get("currentSelectedClassDatum")?._id ? currentProject().__class._id
+
+		Project.update $set: { name, description, deadline, magisterId: currentProject().magisterId, classId }
+
+		$("#addProjectModal").modal "hide"
+
+	"click #leaveProjectButton": ->
+		id = currentProject()._id
+		Router.go "app"
+		Projects.update id, $pull: participants: Meteor.userId()
 
 Template.addParticipantModal.rendered = ->
 	personsEngine.initialize()

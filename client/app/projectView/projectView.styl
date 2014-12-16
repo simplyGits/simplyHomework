@@ -156,6 +156,24 @@ div.fileRow:hover, div.personRow:hover
 
 .personSuggestionName
 	margin-left: 15px
+	
+span#changeProjectIcon
+	color: lightgray
+	vertical-align: middle
+	font-size: 20px
+	cursor: pointer
+
+button#leaveProjectButton
+	col(10/12)
+	shift(2/12)
+	float: initial
+	text-align: center
+
+	+mobile()
+		shift()
+		col()
+		width: 100%
+		float: initial
 
 +mobile()
 	div.projectHeader
