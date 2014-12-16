@@ -58,6 +58,8 @@ Meteor.startup ->
 		changed: (oldDoc, newDoc) ->
 			if newDoc.participants.length is 0
 				Projects.remove newDoc._id
+			else if not _.contains(newDoc.participants, newDoc.ownerId)
+				Projects.ownerId = newDoc.participants[0]
 
 	recents = {}
 	longTimeIgnore = []
