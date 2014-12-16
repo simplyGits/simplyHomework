@@ -52,6 +52,8 @@ Meteor.methods
 		catch
 			return no
 
+	clearMagisterInfo: -> Meteor.users.update @userId, $set: magisterCredentials: null
+
 	changeMail: (mail) ->
 		Meteor.users.update @userId, $set: { "emails": [ { address: mail, verified: no } ] }
 		Meteor.call "verifyMail"

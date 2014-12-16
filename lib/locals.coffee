@@ -14,3 +14,7 @@
 		ProjectPersonRemovalMessage: (name) -> "Je staat op het punt om <b>#{_.escape name}</b> te verwijderen.\nWe wilden even zeker weten of dit de bedoeling was."
 		ProjectPersonRemovedNotice: (name) -> "#{name} verwijderd."
 		ProjectPersonAddedNotice: (name) -> "#{name} toegevoegd."
+		ClearInfoWarning: ->
+			"Zodra je verder gaat worden alle vakken verwijderd en kan je uit alle projecten gegooid worden.\n" +
+			"Dit kan NIET terug worden gedraait, zeker weten dat je ALLE data wilt verwijderen?\n" +
+			"<span style=\"font-size: 10px\">zeker zeker zeker zeker weten?</span>"
