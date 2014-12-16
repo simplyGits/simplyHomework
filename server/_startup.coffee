@@ -54,6 +54,11 @@ Meteor.startup ->
 			unless EJSON.equals old.classInfos, newDoc.classInfos
 				Projects.update { participants: newDoc._id, classId: $nin: (x.id for x in old.classInfos) }, { $pull: participants: newDoc._id }, multi: yes
 
+	Projects.find().observe
+		changed: (oldDoc, newDoc) ->
+			if newDoc.participants.length is 0
+				Projects.remove newDoc._id
+
 	recents = {}
 	longTimeIgnore = []
 	Accounts.onLoginFailure (res) ->
