@@ -248,6 +248,7 @@ class @NotificationsManager
 	if user.hasGravatar or _.isEmpty(user.profile.magisterPicture) then "#{user.gravatarUrl}&s=#{size}" else user.profile.magisterPicture
 
 @slide = (id, isClass = no) ->
+	return if $("div.sidebarButton##{id}").length is 0
 	targetHeight = $("div.sidebarButton##{id}").outerHeight yes
 
 	$(".slider").css display: "none"
