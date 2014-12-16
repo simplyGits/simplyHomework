@@ -8,10 +8,10 @@ class @Project
 	# @param _magisterBinding {MagisterBinding} The binding between the homework / assignment object.
 	#
 	###
-	constructor: (@name, @description, @deadline, @magisterId, @classId, @creatorId) ->
+	constructor: (@name, @description, @deadline, @magisterId, @classId, @ownerId) ->
 		@_className = "Project"
 		@_id = new Meteor.Collection.ObjectID()
 
-		@participants = [ @creatorId ]
+		@participants = [ @ownerId ]
 
 	bindedWithMagister: -> return @magisterId()?

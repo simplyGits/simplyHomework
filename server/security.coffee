@@ -42,5 +42,5 @@ Classes.allow
 
 Projects.allow
 	insert: -> yes
-	update: (userId, doc, fields, modifier) -> _.contains(doc.participants, userId) and ( !_.any(["creatorId", "participants"], (x) -> _.contains(fields, x)) or userId is doc.creatorId )
+	update: (userId, doc, fields, modifier) -> _.contains(doc.participants, userId) and ( !_.any(["ownerId", "participants"], (x) -> _.contains(fields, x)) or userId is doc.ownerId )
 	remove: -> no
