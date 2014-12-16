@@ -48,7 +48,7 @@ Router.map ->
 				$("meta[name='theme-color']").attr "content", "#32A8CE"
 			document.title = "simplyHomework | #{Meteor.user().profile.firstName} #{Meteor.user().profile.lastName}"
 
-			App.followSetupPath()
+			App.followSetupPath() if @ready()
 
 			NProgress?.done()
 
