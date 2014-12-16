@@ -49,6 +49,8 @@ pushResult = (name, result) ->
 
 @initializeMagister = (force = no) ->
 	check force, Boolean
+	return if not force and @magister?
+
 	try
 		url = Schools.findOne(Meteor.user().profile.schoolId).url
 	catch
