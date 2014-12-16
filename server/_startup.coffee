@@ -30,26 +30,29 @@ Meteor.startup ->
 			passChanged = old.services.password.bcrypt isnt newDoc.services.password.bcrypt
 			mailChanged = old.emails[0].address isnt newDoc.emails[0].address
 
-			return unless passChanged or mailChanged
-			user = if mailChanged then old else newDoc
-			message = "Hey #{user.profile.firstName}!\n\n" +
-			(
-				if passChanged and mailChanged then "Zojuist is het wachtwoord en het email adres van je account veranderd.\n"
-				else if passChanged and not mailChanged then "Zojuist is het wachtwoord van je account veranderd.\n"
-				else if not passChanged and mailChanged then "Zojuist is het mail adres van je account veranderd.\n"
-			) +
-			"Als je dit zelf was kan je dit bericht negeren en het uitprinten en als papieren vliegtuigje gebruiken ofzo.\n" +
-			"Als je dit niet was heb je 2 opties:\n"+
-			"- Rondjes rennen.\n" +
-			"- Emailtje terug sturen (<a href=\"mailto:hello@simplyApps.nl\">hello@simplyApps.nl</a>)"
-			
-			subject = (
-				if passChanged and mailChanged then "Wachtwoord en Mail Adres Veranderd"
-				else if passChanged and not mailChanged then "Wachtwoord Veranderd"
-				else if not passChanged and mailChanged then "Mail Adres Veranderd"
-			)
+			if passChanged or mailChanged
+				user = if mailChanged then old else newDoc
+				message = "Hey #{user.profile.firstName}!\n\n" +
+				(
+					if passChanged and mailChanged then "Zojuist is het wachtwoord en het email adres van je account veranderd.\n"
+					else if passChanged and not mailChanged then "Zojuist is het wachtwoord van je account veranderd.\n"
+					else if not passChanged and mailChanged then "Zojuist is het mail adres van je account veranderd.\n"
+				) +
+				"Als je dit zelf was kan je dit bericht negeren en het uitprinten en als papieren vliegtuigje gebruiken ofzo.\n" +
+				"Als je dit niet was heb je 2 opties:\n"+
+				"- Rondjes rennen.\n" +
+				"- Emailtje terug sturen (<a href=\"mailto:hello@simplyApps.nl\">hello@simplyApps.nl</a>)"
+				
+				subject = (
+					if passChanged and mailChanged then "Wachtwoord en Mail Adres Veranderd"
+					else if passChanged and not mailChanged then "Wachtwoord Veranderd"
+					else if not passChanged and mailChanged then "Mail Adres Veranderd"
+				)
 
-			sendMail user, "simplyHomework | #{subject}", message
+				sendMail user, "simplyHomework | #{subject}", message
+
+			unless EJSON.equals old.classInfos, newDoc.classInfos
+				Projects.update { participants: newDoc._id, classId: $nin: (x.id for x in old.classInfos) }, { $pull: participants: newDoc._id }, multi: yes
 
 	recents = {}
 	longTimeIgnore = []
