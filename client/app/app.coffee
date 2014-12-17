@@ -527,7 +527,7 @@ Template.app.rendered = ->
 		if assignmentNotification?
 			assignmentNotification.content s, yes
 		else
-			assignmentNotification = NotificationsManager.notify body: s, type: "warning", time: -1, html: yes, onClick: (event) -> console.log ":D"
+			assignmentNotification = NotificationsManager.notify body: s, type: "warning", time: -1, html: yes, onClick: -> $("#addProjectModal").modal()
 
 	magisterResult "grades", (e, r) ->
 		return if e? or r.length is 0
