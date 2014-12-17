@@ -343,10 +343,10 @@
 									<div class="className">{{__class.course}}</div>
 									<div class="assignmentName">{{name}}</div>
 
-									{{#unless added}}
+									{{#unless project}}
 										<button type="button" class="btn btn-default" id="createButton">aanmaken</button>
 									{{else}}
-										<button type="button" class="btn btn-default" disabled="disabled">aangemaakt</button>
+										<button type="button" class="btn btn-default goToProjectButton" id="{{project._id.toHexString}}">aangemaakt</button>
 									{{/unless}}
 								</div>
 							{{/each}}

@@ -425,7 +425,7 @@ Template.addProjectModal.helpers
 		_(magisterAssignments.get())
 			.filter((a) -> a.deadline() > new Date())
 			.map((a) -> _.extend a,
-				added: Projects.findOne(magisterId: a.id())?
+				project: Projects.findOne magisterId: a.id()
 				__class: Classes.findOne Meteor.user().classInfos.smartFind(a.class().id(), (z) -> z.magisterId).id
 			)
 			.sortBy((a) -> a.deadline()).sortBy((a) -> a.class().abbreviation())
@@ -436,6 +436,10 @@ Template.addProjectModal.events
 		@added = yes
 		project = new Project @name(), @description(), @deadline(), @id(), @__class._id, Meteor.userId()
 		Projects.insert project, (e) => @added = not e?
+		$("#addProjectModal").modal "hide"
+
+	"click .goToProjectButton": (event) ->
+		Router.go "projectView", projectId: $(event.target).attr "id"
 		$("#addProjectModal").modal "hide"
 
 	"click #goButton": ->
