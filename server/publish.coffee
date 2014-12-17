@@ -23,7 +23,7 @@ Meteor.publish "usersData", ->
 		gravatarUrl: 1
 		hasGravatar: 1
 
-Meteor.publish "userData", ->
+Meteor.publish null, ->
 	unless @userId?
 		@ready()
 		return
