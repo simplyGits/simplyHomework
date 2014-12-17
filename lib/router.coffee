@@ -73,7 +73,7 @@ Router.map ->
 		onAfterAction: ->
 			if !@data()? and @ready()
 				@redirect "app"
-				Template.sidebar.rendered = -> slide "overview"
+				Meteor.defer -> slide "overview"
 				swalert title: "Niet gevonden", text: "Jij hebt dit vak waarschijnlijk niet.", confirmButtonText: "o.", type: "error"
 				return
 			Meteor.defer =>
@@ -110,7 +110,7 @@ Router.map ->
 		onAfterAction: ->
 			if !@data()? and @ready()
 				@redirect "app"
-				Template.sidebar.rendered = -> slide "overview"
+				Meteor.defer -> slide "overview"
 				swalert title: "Niet gevonden", text: "Dit project is niet gevonden.", type: "error"
 				return
 
