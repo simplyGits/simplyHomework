@@ -16,7 +16,7 @@
 	for tmpProject in Projects.find(participants: Meteor.userId()).fetch()
 		tmp.push _.extend tmpProject,
 			__class: classes().smartFind tmpProject.classId, (c) -> c._id
-	return tmp
+	return _.sortBy tmp, "name"
 
 @kaas = ->
 	unless Meteor.user()?
