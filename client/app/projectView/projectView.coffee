@@ -53,7 +53,7 @@ Template.projectView.helpers
 	friendlyDeadline: ->
 		return "" unless currentProject().deadline?
 		day = DayToDutch Helpers.weekDay currentProject().deadline
-		time = "#{currentProject().deadline.getHours()}:#{currentProject().deadline.getMinutes()}"
+		time = "#{Helpers.addZero currentProject().deadline.getHours()}:#{Helpers.addZero currentProject().deadline.getMinutes()}"
 
 		return (switch Helpers.daysRange new Date(), currentProject().deadline
 			when -6, -5, -4, -3 then "Afgelopen #{day}"
