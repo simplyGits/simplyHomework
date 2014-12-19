@@ -72,6 +72,7 @@ Meteor.methods
 					hasGravatar: response.statusCode isnt 404
 
 	mailExists: (mail) ->
+		@unblock()
 		Meteor.users.find(
 			emails: {
 				$elemMatch: {
@@ -90,7 +91,9 @@ Meteor.methods
 		catch e
 			throw new Meteor.Error "500", e.message
 
-	getUsersCount: -> Meteor.users.find().count()
+	getUsersCount: ->
+		@unblock()
+		return Meteor.users.find().count()
 
 	congratulate: ->
 		return unless @userId? and Meteor.users.findOne(@userId).profile.birthDate.date() is Date.today()
