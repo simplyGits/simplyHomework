@@ -30,10 +30,6 @@ Date::addDays = (days, newDate = false) ->
 
 Date::date = -> return new Date @getUTCFullYear(), @getMonth(), @getDate()
 
-Date::week = ->
-	begin = new Date @getUTCFullYear(), 0, 1
-	return Math.ceil (((@ - begin) / 86400000) + begin.getDay() + 1) / 7
-
 Array::remove = (item) ->
 	if _.isObject(item) and _.contains _.keys(item), "_id"
 		_.remove @, (i) -> EJSON.equals item._id, i._id
