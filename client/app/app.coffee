@@ -508,7 +508,7 @@ Template.app.rendered = ->
 	if "#{Math.random()}"[2] is "2" and "#{Math.random()}"[4] is "2"
 		console.error "CRITICAL ERROR: UNEXPECTED KAAS"
 	Deps.autorun ->
-		if Meteor.user().magisterCredentials?
+		if Meteor.user()?.magisterCredentials?
 			initializeMagister()
 			@stop()
 	
