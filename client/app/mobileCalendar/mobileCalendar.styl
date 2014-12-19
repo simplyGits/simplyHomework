@@ -1,19 +1,21 @@
+@import "../../main"
+
 div.mobileCalendarTopBar
-	fixed: top 0 right 0 left 200px
+	font-size: 30px
+	fixed: top 0 right 0 left 0
 	height: 50px
-	background-color: red
 	
-	div.currentDate
-		font-size: 15px
-		background-color: green
+	i#newAppointmentButton
+		margin-right: 15px
+		margin-top: 10px
+
+	span.currentDate
+		roboto(300)
+		absolute: left 5px top 3px
 
 div.mobileCalendar
-	background-color: cyan
-	position: fixed
-	bottom: 0
-	left: 200px
-	right: 0
-	top: 50px
+	fixed: left 0 right 0 bottom 0 top 50px
+	position: fixed !important // Seperate just so that we can apply `!important` to it.
 	
 #swipeview-slider 
 	height: calc(100% + 50px)
@@ -109,11 +111,17 @@ div.mobileCalendar
 		vertical-align: center
 		margin-top: 0px
 
-.uur-normaal .icon
+.uur
 	background-color: #05cdf8
 
-.uur-wijziging .icon
-	background-color: #f8af05
-
-.uur-uitval .icon
+.uur.scrapped
 	background-color: #d60000
+	
+.uur.homework
+	background-color: #05cdf8
+
+.uur.test
+	background-color: #05cdf8
+
+.uur.test
+	background-color: #05cdf8

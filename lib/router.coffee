@@ -171,7 +171,7 @@ Router.map ->
 			document.title = "simplyHomework | Agenda"
 			NProgress?.done()
 
-		data: -> if params.date? then new Date(params.date).date() else Date.today()
+		data: -> if @params.date? then new Date(@params.date).date() else Date.today()
 
 	@route "personView",
 		fastRender: yes

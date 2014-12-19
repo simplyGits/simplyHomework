@@ -2,7 +2,7 @@
  * SwipeView v1.0 ~ Copyright (c) 2012 Matteo Spinelli, http://cubiq.org
  * Released under MIT license, http://cubiq.org/license
  */
-var SwipeView = (function (window, document) {
+SwipeView = (function (window, document) {
 	var dummyStyle = document.createElement('div').style,
 		vendor = (function () {
 			var vendors = 't,webkitT,MozT,msT,OT'.split(','),

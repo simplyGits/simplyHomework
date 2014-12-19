@@ -1,8 +1,19 @@
 <template name="mobileCalendar">
 	<div class="mobileCalendarTopBar">
-		<div class="currentDate">
-
-		</div>
+		<span class="currentDate">{{currentDate}}</span>
+		<i class="fa fa-plus pull-right" id="newAppointmentButton"></i>
 	</div>
-	<div class="mobileCalendar"></div>
+	<div class="mobileCalendar">
+		
+	</div>
+</template>
+
+<template name="mobileCalendarPage">
+	{{#each this}}
+		<div class="hour">
+			<div class="hourIndicator {{__colorType}}">{{__classSchoolHour}}</div>
+			<div class="hourContent">{{__className}}</div>
+			<div class="classLocation">{{__classLocation}}</div>
+		</div>
+	{{/each}}
 </template>
