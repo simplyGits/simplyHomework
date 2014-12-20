@@ -1,19 +1,16 @@
-@subs = new SubsManager
+subs = new SubsManager
 
 AccountController = RouteController.extend
 	verifyMail: -> Accounts.verifyEmail @params.token, ->
 		Router.go "app"
 		notify "Email geverifiëerd", "success"
 
-forceRemoveModal = ->
-	$("body").removeClass "modal-open"
-	$(".modal-backdrop").remove()
-
 Router.configure
-	onStop: forceRemoveModal
+	onStop: ->
+		$("body").removeClass "modal-open"
+		$(".modal-backdrop").remove()
 	trackPageView: true
 	notFoundTemplate: "notFound"
-	loadingTemplate: "loading"
 
 Router.map ->
 	@route "launchPage",
