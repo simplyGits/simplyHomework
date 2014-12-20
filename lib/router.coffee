@@ -1,19 +1,16 @@
-@subs = new SubsManager
+subs = new SubsManager
 
 AccountController = RouteController.extend
 	verifyMail: -> Accounts.verifyEmail @params.token, ->
 		Router.go "app"
 		notify "Email geverifiëerd", "success"
 
-forceRemoveModal = ->
-	$("body").removeClass "modal-open"
-	$(".modal-backdrop").remove()
-
 Router.configure
-	onStop: forceRemoveModal
+	onStop: ->
+		$("body").removeClass "modal-open"
+		$(".modal-backdrop").remove()
 	trackPageView: true
 	notFoundTemplate: "notFound"
-	loadingTemplate: "loading"
 
 Router.map ->
 	@route "launchPage",
@@ -39,7 +36,7 @@ Router.map ->
 			]
 
 		onBeforeAction: ->
-			Meteor.defer => @redirect "launchPage" unless Meteor.loggingIn() or Meteor.user()?
+			@redirect "launchPage" unless Meteor.loggingIn() or Meteor.user()?
 			@next()
 		onAfterAction: ->
 			Meteor.defer ->
@@ -66,7 +63,7 @@ Router.map ->
 			]
 
 		onBeforeAction: ->
-			Meteor.defer => @redirect "launchPage" unless Meteor.loggingIn() or Meteor.user()?
+			@redirect "launchPage" unless Meteor.loggingIn() or Meteor.user()?
 			@next()
 		onAfterAction: ->
 			if !@data()? and @ready()
@@ -102,7 +99,7 @@ Router.map ->
 			]
 
 		onBeforeAction: ->
-			Meteor.defer => @redirect "launchPage" unless Meteor.loggingIn() or Meteor.user()?
+			@redirect "launchPage" unless Meteor.loggingIn() or Meteor.user()?
 			@next()
 		onAfterAction: ->
 			if !@data()? and @ready()
@@ -139,7 +136,7 @@ Router.map ->
 			]
 
 		onBeforeAction: ->
-			Meteor.defer => @redirect "launchPage" unless Meteor.loggingIn() or Meteor.user()?
+			@redirect "launchPage" unless Meteor.loggingIn() or Meteor.user()?
 			@next()
 		onAfterAction: ->
 			Meteor.defer ->
@@ -162,7 +159,7 @@ Router.map ->
 			]
 
 		onBeforeAction: ->
-			Meteor.defer => @redirect "launchPage" unless Meteor.loggingIn() or Meteor.user()?
+			@redirect "launchPage" unless Meteor.loggingIn() or Meteor.user()?
 			@next()
 		onAfterAction: ->
 			Meteor.defer ->
@@ -186,7 +183,7 @@ Router.map ->
 			]
 
 		onBeforeAction: ->
-			Meteor.defer => @redirect "launchPage" unless Meteor.loggingIn() or Meteor.user()?
+			@redirect "launchPage" unless Meteor.loggingIn() or Meteor.user()?
 			@next()
 		onAfterAction: ->
 			Meteor.defer -> slide "overview"
@@ -208,11 +205,6 @@ Router.map ->
 		fastRender: yes
 		layoutTemplate: "press"
 		onAfterAction: -> document.title = "simplyHomework | Pers"
-
-	@route "admin",
-		fastRender: yes
-		layoutTemplate: "admin"
-		subscriptions: -> Meteor.subscribe "roles"
 
 	@route "verifyMail",
 		fastRender: yes

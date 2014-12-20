@@ -12,7 +12,6 @@ amplify
 spiderable
 browser-policy
 coffeescript
-npm
 meteorhacks:kadira
 mizzao:bootstrap-3
 mrt:nprogress
@@ -32,4 +31,7 @@ alethes:pages
 tsega:bootstrap3-datetimepicker@0.4.0
 meteorhacks:unblock
 meteorhacks:subs-manager
+meteorhacks:npm
 
+
+npm-container

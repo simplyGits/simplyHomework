@@ -68,7 +68,7 @@ class TimeHolder
 		return dateInfo ? { date, biasPenalty: 0 }
 
 class @Schedular
-	constructor: (@userId) ->
+	constructor: ->
 		@_id = new Meteor.Collection.ObjectID()
 		@_className = "Schedular"
 

@@ -284,7 +284,7 @@ Template.plannerPrefsModal.rendered = ->
 
 Template.plannerPrefsModal.events
 	"click #goButton": =>
-		schedular = Get.schedular() ? New.schedular Meteor.userId()
+		schedular = Get.schedular() ? New.schedular()
 		schedularPrefs = new SchedularPrefs
 		for day in dayWeek
 			schedularPrefs.dates().push new DateInfo @DayEnum[Helpers.cap day.name], switch $("##{day.name}Input").val()
