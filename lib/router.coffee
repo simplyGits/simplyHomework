@@ -209,11 +209,6 @@ Router.map ->
 		layoutTemplate: "press"
 		onAfterAction: -> document.title = "simplyHomework | Pers"
 
-	@route "admin",
-		fastRender: yes
-		layoutTemplate: "admin"
-		subscriptions: -> Meteor.subscribe "roles"
-
 	@route "verifyMail",
 		fastRender: yes
 		path: "/verify/:token"

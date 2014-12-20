@@ -81,16 +81,6 @@ Meteor.methods
 			}
 		).count() isnt 0
 
-	execute: (command, useCoffee = yes) ->
-		@unblock()
-		throw new Meteor.Error 401, "You're not an admin!" unless userIsInRole @userId
-		
-		try
-			result = if useCoffee then CoffeeScript.eval(command) else eval(command)
-			return EJSON.stringify { command, result }
-		catch e
-			throw new Meteor.Error "500", e.message
-
 	getUsersCount: ->
 		@unblock()
 		return Meteor.users.find().count()
