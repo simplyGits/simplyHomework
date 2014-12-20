@@ -122,13 +122,13 @@ class @Schedular
 
 	schedule: ->
 		timeHolder = new TimeHolder
-		goaledSchedules = _.filter Get.goaledSchedules(_homework: { $exists: true }, ownerId: @userId).fetch(), (gS) -> Helpers.daysRange(Date.today(), gS.homework().dueDate()) >= 2
+		goaledSchedules = _.filter GoaledSchedules.find(_homework: { $exists: true }, ownerId: @userId).fetch(), (gS) -> Helpers.daysRange(Date.today(), gS.homework().dueDate()) >= 2
 
 		paras = []
 		for gS in goaledSchedules
 			gS.repeatDates = []
 
-			book = _.find(Get.classes(gS.classId()).fetch()[0].books(), (b) => EJSON.equals(b._id, _.find(@user.profile.classInfos, (classInfo) -> EJSON.equals classInfo.id, gS.classId()).bookId))
+			book = _.find(Classes.find(gS.classId()).fetch()[0].books(), (b) => EJSON.equals(b._id, _.find(@user.profile.classInfos, (classInfo) -> EJSON.equals classInfo.id, gS.classId()).bookId))
 			paragraphs = _.sortBy(gS.homework().getParsedParagraphs(book), (p) -> p.priority).reverse()
 
 			currentDate = gS.dueDate().addDays -1 * (paragraphs.length / 2), yes
