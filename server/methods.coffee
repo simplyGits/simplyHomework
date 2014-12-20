@@ -1,4 +1,4 @@
-request = Npm.require "request"
+request = Meteor.npmRequire "request"
 Future = Npm.require "fibers/future"
 
 Meteor.methods
