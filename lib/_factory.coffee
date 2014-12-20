@@ -60,29 +60,7 @@
 		Meteor.users.update Meteor.userId(), $set: { schedular }
 		return schedular
 
-@Get = #needed for serverside, also has additions for some client side shit.
-	schedular: (userId) -> _decodeObject (if userId then Meteor.users.findOne(userId) else Meteor.user()).schedular
-	
-	classes: (query = {}, options = {}) =>
-		if Meteor.isServer
-			Classes.find query, _.extend options, transform: (c) => @_decodeObject c
-		else
-			Classes.find query, options
-	goaledSchedules: (query = {}, options = {}) =>
-		if Meteor.isServer
-			GoaledSchedules.find query, _.extend options, transform: (gs) => @_decodeObject gs
-		else
-			GoaledSchedules.find query, options
-	schools: (query = {}, options = {}) =>
-		if Meteor.isServer
-			Schools.find query, _.extend options, transform: (s) => @_decodeObject s
-		else
-			Schools.find query, options
-	projects: (query = {}, options = {}) =>
-		if Meteor.isServer
-			Projects.find query, _.extend options, transform: (p) => @_decodeObject p
-		else
-			Projects.find query, options
+@Get = schedular: (userId) -> _decodeObject (if userId then Meteor.users.findOne(userId) else Meteor.user()).schedular
 
 @_decodeObject = (val) ->
 	if _.isObject val
