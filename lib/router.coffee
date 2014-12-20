@@ -36,7 +36,7 @@ Router.map ->
 			]
 
 		onBeforeAction: ->
-			Meteor.defer => @redirect "launchPage" unless Meteor.loggingIn() or Meteor.user()?
+			@redirect "launchPage" unless Meteor.loggingIn() or Meteor.user()?
 			@next()
 		onAfterAction: ->
 			Meteor.defer ->
@@ -63,7 +63,7 @@ Router.map ->
 			]
 
 		onBeforeAction: ->
-			Meteor.defer => @redirect "launchPage" unless Meteor.loggingIn() or Meteor.user()?
+			@redirect "launchPage" unless Meteor.loggingIn() or Meteor.user()?
 			@next()
 		onAfterAction: ->
 			if !@data()? and @ready()
@@ -99,7 +99,7 @@ Router.map ->
 			]
 
 		onBeforeAction: ->
-			Meteor.defer => @redirect "launchPage" unless Meteor.loggingIn() or Meteor.user()?
+			@redirect "launchPage" unless Meteor.loggingIn() or Meteor.user()?
 			@next()
 		onAfterAction: ->
 			if !@data()? and @ready()
@@ -136,7 +136,7 @@ Router.map ->
 			]
 
 		onBeforeAction: ->
-			Meteor.defer => @redirect "launchPage" unless Meteor.loggingIn() or Meteor.user()?
+			@redirect "launchPage" unless Meteor.loggingIn() or Meteor.user()?
 			@next()
 		onAfterAction: ->
 			Meteor.defer ->
@@ -159,7 +159,7 @@ Router.map ->
 			]
 
 		onBeforeAction: ->
-			Meteor.defer => @redirect "launchPage" unless Meteor.loggingIn() or Meteor.user()?
+			@redirect "launchPage" unless Meteor.loggingIn() or Meteor.user()?
 			@next()
 		onAfterAction: ->
 			Meteor.defer ->
@@ -183,7 +183,7 @@ Router.map ->
 			]
 
 		onBeforeAction: ->
-			Meteor.defer => @redirect "launchPage" unless Meteor.loggingIn() or Meteor.user()?
+			@redirect "launchPage" unless Meteor.loggingIn() or Meteor.user()?
 			@next()
 		onAfterAction: ->
 			Meteor.defer -> slide "overview"
