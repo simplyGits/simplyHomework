@@ -47,6 +47,10 @@ pushResult = (name, result) ->
 	currentlyFetching = []
 	@magister = null
 
+@magisterObj = (cb) ->
+	if magister? then cb magister
+	else magisterWaiters.push cb
+
 @initializeMagister = (force = no) ->
 	check force, Boolean
 	return if not force and @magister?
