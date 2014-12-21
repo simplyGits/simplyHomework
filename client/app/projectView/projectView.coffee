@@ -103,7 +103,7 @@ Template.changeProjectModal.events
 		deadline = $("#changeDeadlineInput").data("DateTimePicker").getDate().toDate()
 		classId = Session.get("currentSelectedClassDatum")?._id ? currentProject().__class._id
 
-		Project.update $set: { name, description, deadline, magisterId: currentProject().magisterId, classId }
+		Projects.update currentProject()._id, $set: { name, description, deadline, magisterId: currentProject().magisterId, classId }
 
 		$("#addProjectModal").modal "hide"
 
