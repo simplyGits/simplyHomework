@@ -632,6 +632,7 @@ setSwipe = ->
 		flickThreshold: 45
 		minPosition: 0
 		resistance: .9
+		disable: "right"
 
 	snapper.on "end", -> Session.set "sidebarOpen", snapper.state().state is "left"
 	snapper.on "animated", -> Session.set "sidebarOpen", snapper.state().state is "left"
