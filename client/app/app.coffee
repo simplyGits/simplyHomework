@@ -507,10 +507,18 @@ Template.app.helpers
 Template.app.rendered = ->
 	if "#{Math.random()}"[2] is "2" and "#{Math.random()}"[4] is "2"
 		console.error "CRITICAL ERROR: UNEXPECTED KAAS"
+
 	Deps.autorun ->
 		if Meteor.user()?.magisterCredentials?
 			initializeMagister()
 			@stop()
+
+	Deps.autorun (c) ->
+		if Meteor.user()? and Meteor.status().connected
+			$.get "#{Meteor.user().gravatarUrl}&s=1&d=404"
+				.done -> Meteor.users.update Meteor.userId(), $set: hasGravatar: yes
+				.fail -> Meteor.users.update Meteor.userId(), $set: hasGravatar: yes
+			c.stop()
 	
 	notify("Je hebt je account nog niet geverifiëerd!", "warning") unless Meteor.user().emails[0].verified
 
