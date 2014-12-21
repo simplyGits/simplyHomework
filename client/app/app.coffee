@@ -382,7 +382,7 @@ Template.settingsModal.events
 			Meteor.call "clearMagisterInfo"
 
 	"click #logOutButton": ->
-		Router.go "app"
+		Router.go "launchPage"
 		Meteor.logout()
 
 Template.newSchoolYearModal.helpers classes: -> classes()
