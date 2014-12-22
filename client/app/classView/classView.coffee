@@ -60,10 +60,10 @@ Template.changeClassModal.events
 		color = $("#changeColorInput").val()
 		bookName = $("#changeBookInput").val()
 
-		book = _class.books().smartFind bookName, (b) -> b.title()
+		book = _class.books.smartFind bookName, (b) -> b.title
 		unless book?
 			book = new Book _class, bookName, undefined, Session.get("currentSelectedBookDatum").id, undefined
-			Classes.update _class._id, $push: { _books: book }
+			Classes.update _class._id, $push: { books: book }
 
 		Meteor.users.update Meteor.userId(), { $pull: { classInfos: { id: _class._id }}}
 		Meteor.users.update Meteor.userId(), { $push: { classInfos: { id: _class._id, color, bookId: book._id }}}
