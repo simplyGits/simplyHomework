@@ -137,6 +137,7 @@ Router.map ->
 
 		onBeforeAction: ->
 			@redirect "launchPage" unless Meteor.loggingIn() or Meteor.user()?
+			@redirect "mobileCalendar" if Session.get "isPhone"
 			@next()
 		onAfterAction: ->
 			Meteor.defer ->
@@ -160,6 +161,7 @@ Router.map ->
 
 		onBeforeAction: ->
 			@redirect "launchPage" unless Meteor.loggingIn() or Meteor.user()?
+			@redirect "calendar" if (val = Session.get "isPhone")? and not val
 			@next()
 		onAfterAction: ->
 			Meteor.defer ->
