@@ -17,7 +17,7 @@ class @WoordjesLeren
 		$.get urls.categories, (result) ->
 			classId = $(result).find("category:contains('#{className}')").attr("id")
 			$.get urls.books + classId, (result) ->
-				callback ({ id: Number(n.attributes.id.value), name: n.innerHTML.trim() } for n in $(result).find("book"))
+				callback ({ id: Number(n.attributes.id.value), name: n.firstChild.nodeValue.trim() } for n in $(result).find("book"))
 
 	@getAllLists: (className, bookName, callback) ->
 		$.get urls.categories, (result) ->
@@ -25,4 +25,4 @@ class @WoordjesLeren
 			$.get urls.books + classId, (result) ->
 				bookId = $(result).find("book:contains('#{bookName}')").attr("id")
 				$.get urls.lists + bookId, (result) ->
-					callback ({ id: Number(n.attributes.id.value), name: n.innerHTML } for n in $(result).find("list"))
+					callback ({ id: Number(n.attributes.id.value), name: n.firstChild.nodeValue } for n in $(result).find("list"))
