@@ -1,4 +1,4 @@
-@ExecutedCommands = new Meteor.Collection "exectuedCommands"
+
 
 Meteor.startup ->
 	Accounts.urls.verifyEmail = (token) -> Meteor.absoluteUrl "verify/#{token}"
