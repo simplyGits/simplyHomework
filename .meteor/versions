@@ -43,6 +43,7 @@ launch-screen@1.0.1
 livedata@1.0.12
 localstorage@1.0.2
 logging@1.0.6
+mdg:reload-on-resume@1.0.4
 meteor@1.1.4
 meteor-platform@1.2.1
 meteorhacks:async@1.0.0
