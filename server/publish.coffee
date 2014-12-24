@@ -16,7 +16,7 @@
 # WARNING: PUSH ALL DATA
 Meteor.publish "usersData", (ids) ->
 	@unblock()
-	
+
 	if ids.length is 1 and ids[0] is @userId
 		@ready()
 		return
@@ -53,12 +53,11 @@ Meteor.publish null, ->
 Meteor.publish "classes", ->
 	@unblock()
 
-	classes = Classes.find()
 	if (val = Meteor.users.findOne(@userId)?.profile.courseInfo)?
 		{ year, schoolVariant } = val
-		classes = Classes.find { schoolVariant, year }
-
-	return classes
+		return Classes.find { schoolVariant, year }
+	else
+		return Classes.find()
 
 Meteor.publish "schools", ->
 	@unblock()
