@@ -40,7 +40,7 @@ isOldInternetExplorer = ->
 		return [ version < 9.0, version ]
 	return false
 
-@secondTracker = new Tracker.Dependency
+@minuteTracker = new Tracker.Dependency
 Meteor.startup ->
 	window.viewportUnitsBuggyfill.init()
 	NProgress.configure showSpinner: no
@@ -82,4 +82,9 @@ Meteor.startup ->
 
 			NotificationsManager.hideAll()
 
-	Meteor.setInterval (-> secondTracker.changed()), 1000
+	prevTime = _.now()
+	Meteor.setInterval (->
+		x = _.now()
+		minuteTracker.changed() if x - prevTime >= 60000
+		prevTime = x
+	), 10000

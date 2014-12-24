@@ -25,11 +25,11 @@ root = @
 ]
 
 @DayToDutch = (day = Helpers.currentDay()) ->
-	secondTracker.depend()
+	minuteTracker?.depend()
 	dutchDays[day]
 
 @DateToDutch = (date = new Date, includeYear = yes) ->
-	secondTracker.depend()
+	minuteTracker?.depend()
 	month = switch date.getMonth()
 		when 0 then "januari"
 		when 1 then "februari"
