@@ -13,7 +13,7 @@
 
 @projects = ->
 	tmp = []
-	for tmpProject in Projects.find(participants: Meteor.userId()).fetch()
+	for tmpProject in Projects.find().fetch()
 		tmp.push _.extend tmpProject,
 			__class: classes().smartFind tmpProject.classId, (c) -> c._id
 	return _.sortBy tmp, "name"
