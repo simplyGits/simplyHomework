@@ -30,12 +30,12 @@ Router.map ->
 			NProgress?.start()
 			return [
 				Meteor.subscribe("classes")
-				subs.subscribe("calendarItems")
-				subs.subscribe("projects")
 			]
 
 		onBeforeAction: ->
 			@redirect "launchPage" unless Meteor.loggingIn() or Meteor.user()?
+			subs.subscribe("calendarItems")
+			subs.subscribe("projects")
 			@next()
 		onAfterAction: ->
 			Meteor.defer ->
@@ -93,13 +93,13 @@ Router.map ->
 		subscriptions: ->
 			NProgress?.start()
 			return [
-				subs.subscribe("usersData", @data?()?.participants)
 				Meteor.subscribe("classes")
-				subs.subscribe("projects", new Meteor.Collection.ObjectID @params.projectId)
 			]
 
 		onBeforeAction: ->
 			@redirect "launchPage" unless Meteor.loggingIn() or Meteor.user()?
+			subs.subscribe("projects", new Meteor.Collection.ObjectID @params.projectId)
+			subs.subscribe("usersData", @data?()?.participants)
 			@next()
 		onAfterAction: ->
 			if !@data()? and @ready()
