@@ -84,7 +84,7 @@ Template.launchPage.events
 	'click #page1': -> if $("#page2").hasClass("topShadow") then $("body").stop().animate {scrollTop: 0}, 600, "easeOutExpo"
 
 Meteor.startup ->
-	l = -> if Router.current()?.route.getName() is "launchPage" then Meteor.call "getUsersCount", (e, r) -> usersCount.set r unless e?
+	l = -> if Router.current()?.route?.getName() is "launchPage" then Meteor.call "getUsersCount", (e, r) -> usersCount.set r unless e?
 	l(); setInterval l, 5000
 
 	$("body").keypress (event) ->
