@@ -14,9 +14,10 @@
 # 		gravatarUrl: 1
 
 # WARNING: PUSH ALL DATA
-Meteor.publish "usersData", ->
+Meteor.publish "usersData", (ids) ->
 	@unblock()
-	Meteor.users.find { _id: $ne: @userId }, fields:
+	query = if ids? then { _id: $in: _.reject(ids, (s) -> s is @userId) } else { _id: $ne: @userId }
+	Meteor.users.find query, fields:
 		"status.online": 1
 		"status.idle": 1
 		profile: 1
@@ -54,7 +55,9 @@ Meteor.publish "classes", ->
 
 	return classes
 
-Meteor.publish "schools", -> Schools.find()
+Meteor.publish "schools", ->
+	@unblock()
+	Schools.find()
 
 Meteor.publish "calendarItems", ->
 	unless @userId?

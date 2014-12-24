@@ -1,3 +1,4 @@
+schoolSub = null
 @snapper = null
 magisterClasses = new ReactiveVar null
 magisterAssignments = new ReactiveVar []
@@ -12,7 +13,7 @@ class @App
 		magisterInfo:
 			done: no
 			func: (current, length) ->
-				$("#setMagisterInfoModal").modal backdrop: "static", keyboard: no
+				schoolSub = Meteor.subscribe "schools", -> $("#setMagisterInfoModal").modal backdrop: "static", keyboard: no
 		plannerPrefs:
 			done: no
 			func: (current, length) ->
@@ -238,6 +239,7 @@ Template.setMagisterInfoModal.events
 				$("#setMagisterInfoModal").modal "hide"
 				App.step()
 				initializeMagister yes
+				schoolSub.stop()
 			else shake()
 
 Template.setMagisterInfoModal.rendered = ->

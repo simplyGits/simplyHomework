@@ -1,4 +1,4 @@
-subs = new SubsManager
+@subs = new SubsManager
 
 AccountController = RouteController.extend
 	verifyMail: -> Accounts.verifyEmail @params.token, ->
@@ -31,7 +31,6 @@ Router.map ->
 			return [
 				Meteor.subscribe("classes")
 				subs.subscribe("calendarItems")
-				subs.subscribe("schools")
 				subs.subscribe("projects")
 			]
 
@@ -93,7 +92,7 @@ Router.map ->
 		subscriptions: ->
 			NProgress?.start()
 			return [
-				subs.subscribe("usersData")
+				subs.subscribe("usersData", @data?()?.participants)
 				Meteor.subscribe("classes")
 				subs.subscribe("projects", new Meteor.Collection.ObjectID @params.projectId)
 			]
@@ -180,7 +179,7 @@ Router.map ->
 		subscriptions: ->
 			NProgress?.start()
 			return [
-				subs.subscribe("usersData")
+				subs.subscribe("usersData", [@params._id])
 				Meteor.subscribe("classes")
 			]
 
