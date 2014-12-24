@@ -73,6 +73,7 @@ Template.projectView.events
 	"click #addFileIcon": ->
 		notify "Hey"
 	"click #addPersonIcon": ->
+		subs.subscribe "usersData"
 		$("#personNameInput").val ""
 		$("#addParticipantModal").modal backdrop: no
 
