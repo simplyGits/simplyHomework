@@ -16,6 +16,11 @@
 # WARNING: PUSH ALL DATA
 Meteor.publish "usersData", (ids) ->
 	@unblock()
+	
+	if ids.length is 1 and ids[0] is @userId
+		@ready()
+		return
+
 	query = if ids? then { _id: $in: _.reject(ids, (s) -> s is @userId) } else { _id: $ne: @userId }
 	Meteor.users.find query, fields:
 		"status.online": 1
