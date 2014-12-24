@@ -94,11 +94,11 @@ Router.map ->
 			NProgress?.start()
 			return [
 				Meteor.subscribe("classes")
+				subs.subscribe("projects", new Meteor.Collection.ObjectID @params.projectId)
 			]
 
 		onBeforeAction: ->
 			@redirect "launchPage" unless Meteor.loggingIn() or Meteor.user()?
-			subs.subscribe("projects", new Meteor.Collection.ObjectID @params.projectId)
 			subs.subscribe("usersData", @data?()?.participants)
 			@next()
 		onAfterAction: ->
