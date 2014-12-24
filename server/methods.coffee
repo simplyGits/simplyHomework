@@ -54,6 +54,10 @@ Meteor.methods
 
 	clearMagisterInfo: -> Meteor.users.update @userId, $set: magisterCredentials: null
 
+	removeMagisterPicture: -> # Called when the client detects a gravatar for the current user.
+		return unless Meteor.users.findOne(@userId).hasGravatar
+		Meteor.users.update @userId, $set: "profile.magisterPicture": ""
+
 	changeMail: (mail) ->
 		Meteor.users.update @userId, $set: { "emails": [ { address: mail, verified: no } ] }
 		Meteor.call "verifyMail"
