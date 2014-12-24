@@ -63,7 +63,7 @@ Router.map ->
 
 		onBeforeAction: ->
 			@redirect "launchPage" unless Meteor.loggingIn() or Meteor.user()?
-			subs.subscribe("books", @params.classId) # Non blocking subscribe.
+			subs.subscribe("books", new Meteor.Collection.ObjectID @params.classId) # Non blocking subscribe.
 			@next()
 		onAfterAction: ->
 			if !@data()? and @ready()
