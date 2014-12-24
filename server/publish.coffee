@@ -17,7 +17,7 @@
 Meteor.publish "usersData", (ids) ->
 	@unblock()
 
-	if ids.length is 1 and ids[0] is @userId
+	if ids? and ids.length is 1 and ids[0] is @userId
 		@ready()
 		return
 
@@ -74,7 +74,7 @@ Meteor.publish "goaledSchedules", -> GoaledSchedules.find { ownerId: @userId }
 Meteor.publish "projects", (id) ->
 	@unblock()
 	if id?
-		Projects.find id, participants: @userId
+		Projects.find _id: id, participants: @userId
 	else
 		Projects.find { participants: @userId }, fields:
 			name: 1
