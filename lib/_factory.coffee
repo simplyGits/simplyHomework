@@ -28,6 +28,11 @@
 		@Classes.insert _class
 		return _class
 
+	book: =>
+		book = new Book arguments...
+		@Books.insert book
+		return book
+
 	vote: =>
 		vote = new Vote arguments...
 		@Votes.insert vote

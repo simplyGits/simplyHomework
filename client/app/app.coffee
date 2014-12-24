@@ -43,7 +43,8 @@ class @App
 								val = "Godsdienst en levensbeschouwing"
 
 							{ year, schoolVariant } = Meteor.user().profile.courseInfo
-							books = Classes.findOne({_name: val, schoolVariant: schoolVariant, year: year})?.books ? []
+							classId = Classes.findOne({_name: val, schoolVariant: schoolVariant, year: year})?._id
+							books = Books.find({classId}).fetch() if classId?
 							engine.add ({name} for name in _(books).map("title").reject((b) -> _.any result, (x) -> x is b).value())
 
 							do (engine) -> WoordjesLeren.getAllBooks val, (result) -> engine.add result
@@ -199,10 +200,9 @@ Template.getMagisterClassesModal.events
 			_class ?= New.class c.description(), c.abbreviation(), year, schoolVariant
 
 			if c.__method?
-				book = _class.books.smartFind c.__method.name, (b) -> b.title
-				unless book?
-					book = new Book _class, c.__method.name, undefined, c.__method.id, undefined
-					Classes.update _class._id, $push: { books: book }
+				book = Books.findOne title: c.__method.name
+				unless book? or c.__method.name.trim() is ""
+					book = New.book c.__method.name, undefined, c.__method.id, undefined, _class._id
 
 			Meteor.users.update Meteor.userId(), $push: classInfos:
 				id: _class._id
@@ -312,10 +312,9 @@ Template.addClassModal.events
 		_class = Classes.findOne { $or: [{ name: name }, { course: course }], schoolVariant: schoolVariant, year: year}
 		_class ?= New.class name, course, year, schoolVariant
 
-		book = _class.books.smartFind bookName, (b) -> b.title
-		unless book?
-			book = new Book _class, bookName, undefined, Session.get("currentSelectedBookDatum")?.id, undefined
-			Classes.update _class._id, $push: { books: book }
+		book = Books.findOne title: bookName
+		unless book? or bookName.trim() is ""
+			book = New.book bookName, undefined, Session.get("currentSelectedBookDatum")?.id, undefined, _class._id
 
 		Meteor.users.update Meteor.userId(), $push: { classInfos: { id: _class._id, color, bookId: book._id }}
 		$("#addClassModal").modal "hide"
@@ -324,7 +323,8 @@ Template.addClassModal.events
 		val = Helpers.cap $("#classNameInput").val()
 
 		{ year, schoolVariant } = Meteor.user().profile.courseInfo
-		books = Classes.findOne({ name: val, schoolVariant: schoolVariant, year: year})?.books ? []
+		classId = Classes.findOne({_name: val, schoolVariant: schoolVariant, year: year})?._id
+		books = Books.find({classId}).fetch() if classId?
 
 		if /(Natuurkunde)|(Scheikunde)/i.test val
 			val = "Natuur- en scheikunde"
@@ -499,6 +499,7 @@ Template.sidebar.events
 		$("#bookInput").val("")
 		$("#colorInput").colorpicker 'setValue', "#333"
 
+		subs.subscribe("books")
 		$("#addClassModal").modal()
 
 # == End Sidebar ==

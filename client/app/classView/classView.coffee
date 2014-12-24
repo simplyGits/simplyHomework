@@ -32,7 +32,7 @@ Template.classView.events
 
 		name = if _.contains ["Natuurkunde", "Scheikunde"], (val = currentClass().name) then "Natuur- en scheikunde" else val
 		WoordjesLeren.getAllBooks name, (result) ->
-			result.pushMore ({name} for name in _.reject currentClass().books.map((b) -> b.title), (b) -> _.any result, (x) -> x is b)
+			result.pushMore ({name} for name in _.reject Books.find(classId: currentClass()._id).fetch().map((b) -> b.title), (b) -> _.any result, (x) -> x is b)
 
 			bookEngine.clear()
 			bookEngine.add result
@@ -60,10 +60,9 @@ Template.changeClassModal.events
 		color = $("#changeColorInput").val()
 		bookName = $("#changeBookInput").val()
 
-		book = _class.books.smartFind bookName, (b) -> b.title
-		unless book?
-			book = new Book _class, bookName, undefined, Session.get("currentSelectedBookDatum").id, undefined
-			Classes.update _class._id, $push: { books: book }
+		book = Books.findOne title: bookName
+		unless book? or bookName.trim() is ""
+			book = New.book bookName, undefined, Session.get("currentSelectedBookDatum")?.id, undefined, _class._id
 
 		Meteor.users.update Meteor.userId(), { $pull: { classInfos: { id: _class._id }}}
 		Meteor.users.update Meteor.userId(), { $push: { classInfos: { id: _class._id, color, bookId: book._id }}}

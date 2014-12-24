@@ -82,4 +82,16 @@ Meteor.publish "projects", (id) ->
 			classId: 1
 			participants: 1
 
+Meteor.publish "books", (classId) ->
+	@unblock()
+
+	unless @userId?
+		@ready()
+		return
+
+	if classId?
+		return Books.find { classId }
+	else
+		return Books.find _id: $in: (x.bookId for x in (Meteor.users.findOne(@userId).classInfos ? []))
+
 Meteor.publish "roles", -> @unblock(); Meteor.users.find(@userId, fields: roles: 1)

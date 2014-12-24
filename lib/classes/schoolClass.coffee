@@ -8,7 +8,6 @@ class @SchoolClass
 		@name = Helpers.cap name if name?
 		
 		@schedules = [] # Contains schedule ID's.
-		@books = []
 
 	###*
 	# Returns a cursor pointing to the schedules with this class' ID

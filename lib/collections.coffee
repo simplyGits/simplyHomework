@@ -1,5 +1,6 @@
 @GoaledSchedules = new Meteor.Collection "goaledSchedules"
 @Classes         = new Meteor.Collection "classes"
+@Books           = new Meteor.Collection "books"
 @Schools         = new Meteor.Collection "schools"
 @Schedules       = new Meteor.Collection "schedules"
 @Votes           = new Meteor.Collection "votes"
@@ -7,5 +8,3 @@
 @Tickets         = new Meteor.Collection "tickets"
 @Projects        = new Meteor.Collection "projects"
 @CalendarItems   = new Meteor.Collection "calendarItems"
-
-@BetaPeople = new Meteor.Collection "betaPeople"

@@ -38,7 +38,9 @@ Meteor.users.allow
 
 Classes.allow
 	insert: -> yes
-	update: (userId, doc, fields, modifier) -> fields.length is 1 and fields[0] is "books"
+
+Books.allow
+	insert: -> yes
 
 Projects.allow
 	insert: -> yes
