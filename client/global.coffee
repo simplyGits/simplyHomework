@@ -1,4 +1,4 @@
-classTransform = (tmpClass) ->
+@classTransform = (tmpClass) ->
 	return _.extend tmpClass,
 		__taskAmount: _.filter(homeworkItems.get(), (a) -> Meteor.user().profile.groupInfos.smartFind(tmpClass._id, (i) -> i.id)?.group is a.description() and not a.isDone()).length#Helpers.getTotal _.reject(GoaledSchedules.find(_homework: { $exists: true }, ownerId: Meteor.userId()).fetch(), (gS) -> !EJSON.equals(gS.classId(), tmpClass._id)), (gS) -> gS.tasksForToday().length
 		__color: Meteor.user().classInfos.smartFind(tmpClass._id, (cI) -> cI.id).color
@@ -8,6 +8,10 @@ classTransform = (tmpClass) ->
 
 		__classInfo: _.find Meteor.user().classInfos, (c) -> EJSON.equals c.id, tmpClass._id
 
+@projectTransform = (p) ->
+	return _.extend p,
+		__class: Classes.findOne(p.classId, transform: classTransform)
+
 @classes = ->
 	return Classes.find {_id: { $in: (cI.id for cI in (Meteor.user().classInfos ? [])) }},
 		transform: classTransform
@@ -15,9 +19,7 @@ classTransform = (tmpClass) ->
 
 @projects = ->
 	return Projects.find {},
-		transform: (p) ->
-			_.extend p,
-				__class: Classes.findOne(p.classId, transform: classTransform)
+		transform: projectTransform
 		sort: "name": 1
 
 @kaas = ->
