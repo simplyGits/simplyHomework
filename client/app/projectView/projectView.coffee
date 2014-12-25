@@ -2,7 +2,7 @@ currentProject = -> Router.current().data()
 
 @getParticipants = ->
 	tmp = []
-	for participant, i in Meteor.users.find(_id: $in: currentProject().participants).fetch()
+	for participant, i in Meteor.users.find({_id: $in: currentProject().participants}, sort: "profile.firstName": 1).fetch()
 		tmp.push _.extend participant,
 			__statusColor: if participant.status.idle then "#FF851B" else if participant.status.online then "#2ECC40" else "#FF4136"
 	return tmp
