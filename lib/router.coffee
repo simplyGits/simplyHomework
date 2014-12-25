@@ -33,7 +33,9 @@ Router.map ->
 			]
 
 		onBeforeAction: ->
-			@redirect "launchPage" unless Meteor.loggingIn() or Meteor.user()?
+			unless Meteor.loggingIn() or Meteor.user()?
+				@redirect "launchPage"
+				return
 			subs.subscribe("calendarItems")
 			subs.subscribe("projects")
 			@next()
@@ -62,7 +64,9 @@ Router.map ->
 			]
 
 		onBeforeAction: ->
-			@redirect "launchPage" unless Meteor.loggingIn() or Meteor.user()?
+			unless Meteor.loggingIn() or Meteor.user()?
+				@redirect "launchPage"
+				return
 			subs.subscribe("books", new Meteor.Collection.ObjectID @params.classId) # Non blocking subscribe.
 			@next()
 		onAfterAction: ->
@@ -98,7 +102,9 @@ Router.map ->
 			]
 
 		onBeforeAction: ->
-			@redirect "launchPage" unless Meteor.loggingIn() or Meteor.user()?
+			unless Meteor.loggingIn() or Meteor.user()?
+				@redirect "launchPage"
+				return
 			subs.subscribe("usersData", @data?()?.participants)
 			@next()
 		onAfterAction: ->
@@ -136,7 +142,9 @@ Router.map ->
 			]
 
 		onBeforeAction: ->
-			@redirect "launchPage" unless Meteor.loggingIn() or Meteor.user()?
+			unless Meteor.loggingIn() or Meteor.user()?
+				@redirect "launchPage"
+				return
 			@redirect "mobileCalendar" if Session.get "isPhone"
 			@next()
 		onAfterAction: ->
@@ -160,7 +168,9 @@ Router.map ->
 			]
 
 		onBeforeAction: ->
-			@redirect "launchPage" unless Meteor.loggingIn() or Meteor.user()?
+			unless Meteor.loggingIn() or Meteor.user()?
+				@redirect "launchPage"
+				return
 			@redirect "calendar" if (val = Session.get "isPhone")? and not val
 			@next()
 		onAfterAction: ->
@@ -185,7 +195,9 @@ Router.map ->
 			]
 
 		onBeforeAction: ->
-			@redirect "launchPage" unless Meteor.loggingIn() or Meteor.user()?
+			unless Meteor.loggingIn() or Meteor.user()?
+				@redirect "launchPage"
+				return
 			@next()
 		onAfterAction: ->
 			Meteor.defer -> slide "overview"
