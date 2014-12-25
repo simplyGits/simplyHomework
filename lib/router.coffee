@@ -80,7 +80,7 @@ Router.map ->
 		data: ->
 			try
 				id = new Meteor.Collection.ObjectID @params.classId
-				return classes().smartFind id, (c) -> c._id
+				return classes().fetch().smartFind id, (c) -> c._id
 			catch e
 				Meteor.call "log", "log", "Error while searching for the given class. #{e.message} | stack: #{e.stack}"
 				return null
@@ -117,7 +117,7 @@ Router.map ->
 		data: ->
 			try
 				id = new Meteor.Collection.ObjectID @params.projectId
-				return projects().smartFind id, (p) -> p._id
+				return projects().fetch().smartFind id, (p) -> p._id
 			catch e
 				Meteor.call "log", "log", "Error while searching for the given project. #{e.message} | stack: #{e.stack}"
 				return null

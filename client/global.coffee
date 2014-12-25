@@ -1,22 +1,24 @@
-@classes = ->
-	tmp = []
-	for tmpClass in Classes.find(_id: { $in: (cI.id for cI in (Meteor.user().classInfos ? [])) }).fetch()
-		tmp.push _.extend tmpClass,
-			__taskAmount: _.filter(homeworkItems.get(), (a) -> Meteor.user().profile.groupInfos.smartFind(tmpClass._id, (i) -> i.id)?.group is a.description() and not a.isDone()).length#Helpers.getTotal _.reject(GoaledSchedules.find(_homework: { $exists: true }, ownerId: Meteor.userId()).fetch(), (gS) -> !EJSON.equals(gS.classId(), tmpClass._id)), (gS) -> gS.tasksForToday().length
-			__color: Meteor.user().classInfos.smartFind(tmpClass._id, (cI) -> cI.id).color
-			__book: Books.findOne Meteor.user().classInfos.smartFind(tmpClass._id, (cI) -> cI.id).bookId
-			__sidebarName: Helpers.cap if (val = tmpClass.name).length > 14 then tmpClass.course else val
-			__showBadge: not _.contains [11..14], tmpClass.name.length
+classTransform = (tmpClass) ->
+	return _.extend tmpClass,
+		__taskAmount: _.filter(homeworkItems.get(), (a) -> Meteor.user().profile.groupInfos.smartFind(tmpClass._id, (i) -> i.id)?.group is a.description() and not a.isDone()).length#Helpers.getTotal _.reject(GoaledSchedules.find(_homework: { $exists: true }, ownerId: Meteor.userId()).fetch(), (gS) -> !EJSON.equals(gS.classId(), tmpClass._id)), (gS) -> gS.tasksForToday().length
+		__color: Meteor.user().classInfos.smartFind(tmpClass._id, (cI) -> cI.id).color
+		__book: Books.findOne Meteor.user().classInfos.smartFind(tmpClass._id, (cI) -> cI.id).bookId
+		__sidebarName: Helpers.cap if (val = tmpClass.name).length > 14 then tmpClass.course else val
+		__showBadge: not _.contains [11..14], tmpClass.name.length
 
-			__classInfo: _.find Meteor.user().classInfos, (c) -> EJSON.equals c.id, tmpClass._id
-	return _.sortBy tmp, "name"
+		__classInfo: _.find Meteor.user().classInfos, (c) -> EJSON.equals c.id, tmpClass._id
+
+@classes = ->
+	return Classes.find {_id: { $in: (cI.id for cI in (Meteor.user().classInfos ? [])) }},
+		transform: classTransform
+		sort: "name": 1
 
 @projects = ->
-	tmp = []
-	for tmpProject in Projects.find().fetch()
-		tmp.push _.extend tmpProject,
-			__class: classes().smartFind tmpProject.classId, (c) -> c._id
-	return _.sortBy tmp, "name"
+	return Projects.find {},
+		transform: (p) ->
+			_.extend p,
+				__class: Classes.findOne(p.classId, transform: classTransform)
+		sort: "name": 1
 
 @kaas = ->
 	unless Meteor.user()?
