@@ -1,30 +1,73 @@
+pickerLoaded = new ReactiveVar no
+authLoaded = new ReactiveVar no
+driveLoaded = new ReactiveVar no
+pickerResult = new ReactiveVar null
+
+runningAuthLoop = no
+oauthToken = null
+@projectFilePicker = null
+
 @onGoogleLoad = ->
-	gapi.load "auth", callback: onAuthLoad
-	gapi.load "picker", callback: onPickerLoad
-	gapi.client.load "drive", "v2", onDriveLoad
+	gapi.client.setApiKey "AIzaSyDZldjOJq0jrsi5IhtBIGz1ZHhbF3g-_ec"
 
-@onAuthLoad = ->
-	gapi.auth.authorize {
-		"client-id": "kaas"
-		scope: "https://www.googleapis.com/auth/drive"
-		immediate: no
-	}, (authResult) =>
-		if authResult? and !authResult.error?
-			@googleOauthToken = authResult.access_token
-			buildPicker()
+	gapi.load("auth", callback: -> authLoaded.set yes)
+	gapi.load("picker", callback: -> pickerLoaded.set yes)
+	gapi.client.load("drive", "v2").then -> driveLoaded.set yes
 
-buildPicker = ->
-	return unless Session.get "pickerLoaded"
+###*
+# Start Google auth flow and assign a callback to the picker result.
+#
+# @method onPickerResult
+# @param cb {Function} The callback to give the result of the picker to.
+# @return {Tracker.Computation} A computation which can be stopped.
+###
+@onPickerResult = (cb) ->
+	projectFilePicker?.setVisible? yes
 
-	@picker = new google.picker.PickerBuilder()
-		.addView "google.picker.ViewId.DOCUMENTS"
-		.addView "google.picker.ViewId.PRESENTATIONS"
-		.addView "google.picker.ViewId.SPREADSHEETS"
-		.addView "google.picker.ViewId.PDFS"
+	return Tracker.autorun (c) ->
+		if authLoaded.get() and not runningAuthLoop
+			gapi.auth.authorize { # This succeeds if the user already has given us permission.
+				"client_id": "319072777142-apafv4ffhg4sv4thrertjtjk2q8eelke.apps.googleusercontent.com"
+				"scope": "https://www.googleapis.com/auth/drive"
+				"immediate": yes
+			}, (res) ->
+				if !res? or res.error?
+					gapi.auth.authorize { # If the user hasn't given us permission try again.
+						"client_id": "319072777142-apafv4ffhg4sv4thrertjtjk2q8eelke.apps.googleusercontent.com"
+						"scope": "https://www.googleapis.com/auth/drive"
+						"immediate": no
+					}, authResult
+
+				else authResult arguments...
+
+			runningAuthLoop = yes
+
+		return unless pickerLoaded.get() and authLoaded.get() and driveLoaded.get() and pickerResult.get()?
+		res = pickerResult.get()
+		cb res
+		c.stop()
+		pickerResult.set null
+
+authResult = (res) ->
+	if res? and !res.error?
+		oauthToken = res.access_token
+		buildPicker()
+
+buildPicker = =>
+	return unless pickerLoaded and oauthToken? and !projectFilePicker?
+
+	NProgress.start()
+	@projectFilePicker = new google.picker.PickerBuilder()
+		.addView google.picker.ViewId.DOCUMENTS
+		.addView google.picker.ViewId.PRESENTATIONS
+		.addView google.picker.ViewId.SPREADSHEETS
+		.addView google.picker.ViewId.PDFS
 		.addView new google.picker.DocsUploadView()
-
-@onPickerLoad = ->
-	Session.set "pickerLoaded", yes
-	buildPicker()
-
-@onDriveLoad = -> return
+		.setLocale "nl"
+		.setOAuthToken oauthToken
+		.setDeveloperKey "AIzaSyDZldjOJq0jrsi5IhtBIGz1ZHhbF3g-_ec"
+		.setCallback (data) ->
+			if data.action is "loaded" then NProgress.done()
+			else pickerResult.set data
+		.build()
+	@projectFilePicker.setVisible yes

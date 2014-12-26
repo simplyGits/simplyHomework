@@ -20,6 +20,7 @@ Meteor.startup -> # my eyes feel dizzy, i think. cant remember. please. help.
 	BrowserPolicy.content.allowScriptOrigin "www.google-analytics.com"
 
 	BrowserPolicy.content.allowFrameOrigin "accounts.google.com"
+	BrowserPolicy.content.allowFrameOrigin "docs.google.com"
 	BrowserPolicy.content.allowFrameOrigin "content.googleapis.com"
 	
 	BrowserPolicy.content.allowEval()
