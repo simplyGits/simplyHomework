@@ -25,7 +25,6 @@ login = ->
 						profile:
 							firstName: Helpers.cap $("#firstNameInput").val().trim()
 							lastName: Helpers.cap $("#lastNameInput").val().trim()
-					Meteor.call "verifyMail"
 
 	Router.go "app" if Meteor.user()? or Meteor.loggingIn()
 

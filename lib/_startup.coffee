@@ -1,1 +1,3 @@
-Meteor.startup -> #Accounts.config forbidClientAccountCreation: yes
+Meteor.startup ->
+	Accounts.config
+		sendVerificationEmail: yes

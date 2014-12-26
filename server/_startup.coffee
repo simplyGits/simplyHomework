@@ -89,3 +89,5 @@ Meteor.startup ->
 		else unless recents[user._id]? and not _.contains longTimeIgnore, user._id
 			recents[user._id] = times: 0
 			Meteor.setTimeout (-> delete recents[user._id] ), 300000
+
+	Accounts.validateNewUser (user) -> correctMail user.emails[0].address
