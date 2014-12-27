@@ -46,6 +46,9 @@ Template.projectView.rendered = =>
 
 		x = []
 		needed = (currentProject().driveFileIds ? []).length
+		if needed is 0
+			cachedProjectFiles.set []
+			return
 		push = (r) ->
 			x.push r
 			if --needed is 0 then cachedProjectFiles.set _.sortBy(x, (x) -> new Date(Date.parse x.modifiedDate).getTime()).reverse()
