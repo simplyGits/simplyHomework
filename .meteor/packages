@@ -23,7 +23,6 @@ meteorhacks:fast-render
 reywood:iron-router-ga
 natestrauser:animate-css
 percolate:velocityjs
-mizzao:user-status
 cryptoquick:stylus-multi
 reactive-var
 percolatestudio:synced-cron
@@ -36,3 +35,5 @@ meteorhacks:npm
 
 npm-container
 mdg:reload-on-resume
+mizzao:user-status
+fastclick
