@@ -51,17 +51,23 @@ Template.projectView.rendered = =>
 
 		push = (r) ->
 			x[r.id] = r
-			if --needed is 0 then cachedProjectFiles.set _.sortBy(x, (x) -> new Date(Date.parse x.modifiedDate).getTime()).reverse()
+			if --needed is 0 then cachedProjectFiles.set x
 
 		for driveFileId in fileIds
 			loading.push driveFileId
 			gapi.client.drive.files.get(fileId: driveFileId).execute (r) ->
 				push _.extend r, fileTypes[r.mimeType]
-				
+
 				_.remove loading, r.id
 
 Template.projectView.helpers
-	files: -> _.filter cachedProjectFiles.get(), (f) -> _.contains currentProject().driveFileIds, f.id
+	files: ->
+		_(cachedProjectFiles.get())
+			.values()
+			.filter((f) -> _.contains currentProject().driveFileIds, f.id)
+			.sortBy((f) -> new Date(Date.parse f.modifiedDate).getTime())
+			.reverse()
+			.value()
 	persons: -> _.reject getParticipants(), (p) -> EJSON.equals p._id, Meteor.userId()
 
 	showRightHeader: -> if currentProject().participants.length is 1 then false else true
