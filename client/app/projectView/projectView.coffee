@@ -1,5 +1,5 @@
 currentProject = -> Router.current().data()
-@cachedProjectFiles = cachedProjectFiles = new ReactiveVar []
+cachedProjectFiles = new ReactiveVar {}
 
 @getParticipants = ->
 	tmp = []
@@ -41,24 +41,27 @@ Template.projectView.rendered = =>
 		@personsEngine.clear()
 		@personsEngine.add getOthers()
 
+	loading = []
 	Tracker.autorun ->
 		return unless driveLoaded.get() and Router.current().route.getName() is "projectView"
 
-		x = []
-		needed = (currentProject().driveFileIds ? []).length
-		if needed is 0
-			cachedProjectFiles.set []
-			return
+		x = cachedProjectFiles.get()
+		fileIds = _.reject currentProject().driveFileIds, (s) -> s in x or _.contains loading, s
+		needed = fileIds.length
+
 		push = (r) ->
-			x.push r
+			x[r.id] = r
 			if --needed is 0 then cachedProjectFiles.set _.sortBy(x, (x) -> new Date(Date.parse x.modifiedDate).getTime()).reverse()
 
-		for driveFileId in (currentProject().driveFileIds ? [])
+		for driveFileId in fileIds
+			loading.push driveFileId
 			gapi.client.drive.files.get(fileId: driveFileId).execute (r) ->
 				push _.extend r, fileTypes[r.mimeType]
+				
+				_.remove loading, r.id
 
 Template.projectView.helpers
-	files: -> cachedProjectFiles.get()
+	files: -> _.filter cachedProjectFiles.get(), (f) -> _.contains currentProject().driveFileIds, f.id
 	persons: -> _.reject getParticipants(), (p) -> EJSON.equals p._id, Meteor.userId()
 
 	showRightHeader: -> if currentProject().participants.length is 1 then false else true
