@@ -13,5 +13,6 @@ class @Project
 		@_id = new Meteor.Collection.ObjectID()
 
 		@participants = [ @ownerId ]
+		@driveFileIds = []
 
 	bindedWithMagister: -> return @magisterId()?

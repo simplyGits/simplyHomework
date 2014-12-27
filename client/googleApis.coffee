@@ -43,8 +43,7 @@ oauthToken = null
 			runningAuthLoop = yes
 
 		return unless pickerLoaded.get() and authLoaded.get() and driveLoaded.get() and pickerResult.get()?
-		res = pickerResult.get()
-		cb res
+		cb pickerResult.get()
 		c.stop()
 		pickerResult.set null
 
@@ -58,16 +57,19 @@ buildPicker = =>
 
 	NProgress.start()
 	@projectFilePicker = new google.picker.PickerBuilder()
-		.addView google.picker.ViewId.DOCUMENTS
-		.addView google.picker.ViewId.PRESENTATIONS
-		.addView google.picker.ViewId.SPREADSHEETS
-		.addView google.picker.ViewId.PDFS
+		.addView ( ->
+			x = new google.picker.DocsView()
+			x.setIncludeFolders yes
+			x.setMode google.picker.DocsViewMode.LIST
+			x.setOwnedByMe yes
+			return x
+		)()
 		.addView new google.picker.DocsUploadView()
-		.setLocale "nl"
 		.setOAuthToken oauthToken
 		.setDeveloperKey "AIzaSyDZldjOJq0jrsi5IhtBIGz1ZHhbF3g-_ec"
 		.setCallback (data) ->
 			if data.action is "loaded" then NProgress.done()
 			else pickerResult.set data
+		.setLocale "nl"
 		.build()
 	@projectFilePicker.setVisible yes

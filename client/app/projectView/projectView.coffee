@@ -1,4 +1,5 @@
 currentProject = -> Router.current().data()
+@cachedProjectFiles = cachedProjectFiles = new ReactiveVar []
 
 @getParticipants = ->
 	tmp = []
@@ -15,16 +16,16 @@ currentProject = -> Router.current().data()
 	return tmp
 
 fileTypes =
-	document:
+	"application/vnd.google-apps.document":
 		fileTypeIconClass: "file-text-o"
 		fileTypeColor: "#32A8CE"
-	presentation:
+	"application/vnd.google-apps.spreadsheet":
 		fileTypeIconClass: "file-powerpoint-o"
 		fileTypeColor: "#F4B400"
-	spreadsheet:
+	"application/vnd.google-apps.presentation":
 		fileTypeIconClass: "file-excel-o"
 		fileTypeColor: "#0F9D58"
-	pdf:
+	"application/pdf":
 		fileTypeIconClass: "file-pdf-o"
 		fileTypeColor: "#CF1312"
 
@@ -40,13 +41,21 @@ Template.projectView.rendered = =>
 		@personsEngine.clear()
 		@personsEngine.add getOthers()
 
+	Tracker.autorun ->
+		return unless Router.current().route.getName() is "projectView"
+
+		x = []
+		needed = (currentProject().driveFileIds ? []).length
+		push = (r) ->
+			x.push r
+			if --needed is 0 then cachedProjectFiles.set _.sortBy(x, (x) -> new Date(Date.parse x.modifiedDate).getTime()).reverse()
+
+		for driveFileId in (currentProject().driveFileIds ? [])
+			gapi.client.drive.files.get(fileId: driveFileId).execute (r) ->
+				push _.extend r, fileTypes[r.mimeType]
+
 Template.projectView.helpers
-	files: ->
-		tmp = []
-		for i in [1..100]
-			type = _.first _.shuffle fileTypes
-			tmp.push { name: "kaas ##{i}", fileTypeIconClass: type.fileTypeIconClass, fileTypeColor: type.fileTypeColor }
-		return tmp
+	files: -> cachedProjectFiles.get()
 	persons: -> _.reject getParticipants(), (p) -> EJSON.equals p._id, Meteor.userId()
 
 	showRightHeader: -> if currentProject().participants.length is 1 then false else true
@@ -71,7 +80,19 @@ Template.projectView.events
 	"mouseleave .projectHeader": -> unless Session.get "isPhone" then $("#changeProjectIcon").velocity { opacity: 0 }, 100
 
 	"click #addFileIcon": ->
-		notify "Hey"
+		onPickerResult (r) ->
+			return unless r.action is "picked"
+			cb = -> Projects.update currentProject()._id, $push: driveFileIds: r.docs[0].id
+
+			if _.any(r.docs[0].permissions, (p) -> p.type is "anyone" and p.role is "writer") then cb()
+			else
+				gapi.client.drive.permissions.insert(
+					fileId: r.docs[0].id
+					resource:
+						type: "anyone"
+						role: "writer"
+				).execute cb
+
 	"click #addPersonIcon": ->
 		subs.subscribe "usersData"
 		$("#personNameInput").val ""
@@ -102,7 +123,7 @@ Template.changeProjectModal.events
 		name = $("#changeNameInput").val().trim()
 		description = $("#changeDescriptionInput").val().trim()
 		deadline = $("#changeDeadlineInput").data("DateTimePicker").getDate().toDate()
-		classId = Session.get("currentSelectedClassDatum")?._id ? currentProject().__class._id
+		classId = Session.get("currentSelectedClassDatum")?._id ? currentProject().__class?._id
 
 		Projects.update currentProject()._id, $set: { name, description, deadline, magisterId: currentProject().magisterId, classId }
 
