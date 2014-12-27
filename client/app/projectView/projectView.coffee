@@ -42,7 +42,7 @@ Template.projectView.rendered = =>
 		@personsEngine.add getOthers()
 
 	Tracker.autorun ->
-		return unless Router.current().route.getName() is "projectView"
+		return unless driveLoaded.get() and Router.current().route.getName() is "projectView"
 
 		x = []
 		needed = (currentProject().driveFileIds ? []).length

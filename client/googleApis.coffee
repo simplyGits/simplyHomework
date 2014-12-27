@@ -1,6 +1,6 @@
 pickerLoaded = new ReactiveVar no
 authLoaded = new ReactiveVar no
-driveLoaded = new ReactiveVar no
+@driveLoaded = new ReactiveVar no
 pickerResult = new ReactiveVar null
 
 runningAuthLoop = no
