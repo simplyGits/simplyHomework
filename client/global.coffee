@@ -51,6 +51,9 @@ Meteor.startup ->
 
 	Session.set "sidebarOpen", not Session.get "isPhone"
 
+	unless Session.get "isPhone"
+		Deps.autorun -> try UserStatus.startMonitor idleOnBlur: true
+
 	interval = null
 	Deps.autorun -> # User Login/Logout
 		if Meteor.user()?
