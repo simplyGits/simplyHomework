@@ -514,7 +514,6 @@ Template.app.rendered = ->
 	Deps.autorun ->
 		if Meteor.user()?.magisterCredentials?
 			initializeMagister()
-			@stop()
 
 	Deps.autorun (c) ->
 		if Meteor.user()? and Meteor.status().connected and not Meteor.user().hasGravatar
