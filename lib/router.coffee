@@ -114,7 +114,7 @@ Router.map ->
 				swalert title: "Niet gevonden", text: "Dit project is niet gevonden.", type: "error"
 				return
 
-			Meteor.defer =>
+			if @data().__class? then Meteor.defer =>
 				slide @data().__class._id.toHexString(), yes
 				$("meta[name='theme-color']").attr "content", @data().__class.__color
 			document.title = "simplyHomework | #{@data().name}"
