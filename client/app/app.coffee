@@ -521,7 +521,6 @@ Template.app.rendered = ->
 				.done ->
 					Meteor.users.update Meteor.userId(), $set: hasGravatar: yes
 					Meteor.call "removeMagisterPicture"
-			c.stop()
 	
 	notify("Je hebt je account nog niet geverifiëerd!", "warning") unless Meteor.user().emails[0].verified
 
