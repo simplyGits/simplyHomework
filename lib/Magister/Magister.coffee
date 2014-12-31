@@ -455,6 +455,27 @@ class @Magister
 				callback null, res
 
 	###*
+	# Uploads a file behind the given URL to Magister.
+	#
+	# @method _uploadUrl
+	# @async
+	# @apram url {String} The URL to the file to upload to Magister.
+	# @param fileName {String} The name of the file.
+	# @param callback {Function} A standard callback.
+	# 	@param [callback.error] {Object} The error, if it exists.
+	# 	@param [callback.result] {Object} An object containg the fileName and id of the uploaded file.
+	###
+	_uploadUrl: (url, fileName, callback) ->
+		Meteor.call "multipart", "#{@magisterSchool.url}/api/file", url, @http._cookieInserter({fileName}), (e, r) ->
+			if e? then callback e, null
+			else
+				parsed = EJSON.parse r.content
+				callback null, {
+					fileName: parsed.FileName
+					id: parsed.Value
+				}
+
+	###*
 	# Checks if this Magister instance is done logging in.
 	#
 	# You can also provide a callback, which will be called when this instance is done logging in.

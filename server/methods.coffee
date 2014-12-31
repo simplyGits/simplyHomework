@@ -7,7 +7,7 @@ Meteor.methods
 		headers = _.extend (options.headers ? {}), "User-Agent": "simplyHomework"
 		fut = new Future()
 
-		opt = {
+		opt = _.extend options, {
 			method
 			url
 			headers
@@ -20,6 +20,29 @@ Meteor.methods
 		request opt, (error, response, content) ->
 			if error? then fut.throw error
 			else fut.return { content, headers: response.headers }
+
+		fut.wait()
+
+	"multipart": (destUrl, fromUrl, options = {}) ->
+		@unblock()
+		headers = _.extend (options.headers ? {}), "User-Agent": "simplyHomework"
+		fut = new Future()
+
+		request { method: "GET", url: fromUrl, encoding: null, headers }, (error, response, content) ->
+			opt = _.extend options, {
+				method: "POST"
+				url: destUrl
+				headers
+				formData: file:
+					value: content
+					options:
+						filename: options.fileName
+						contentType: "application/octet-stream"
+			}
+
+			request opt, (error, response, content) ->
+				if error? then fut.throw error
+				else fut.return { content, headers: response.headers }
 
 		fut.wait()
 	
