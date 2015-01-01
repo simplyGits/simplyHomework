@@ -104,7 +104,11 @@ Template.projectView.events
 						type: "anyone"
 						role: "writer"
 						withLink: yes
-				).execute cb
+				).execute (r) ->
+					if r.error?
+						notify "Bestand kan niet worden toegevoegd", "error"
+						Kadira.trackError "Drive-client", r.error.message, stacks: EJSON.stringify r
+					else cb()
 
 	"click #addPersonIcon": ->
 		subs.subscribe "usersData"
