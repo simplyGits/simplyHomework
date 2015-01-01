@@ -26,19 +26,11 @@ oauthToken = null
 
 	return Tracker.autorun (c) ->
 		if authLoaded.get() and not runningAuthLoop
-			gapi.auth.authorize { # This succeeds if the user already has given us permission.
+			gapi.auth.authorize {
 				"client_id": "319072777142-apafv4ffhg4sv4thrertjtjk2q8eelke.apps.googleusercontent.com"
 				"scope": "https://www.googleapis.com/auth/drive"
-				"immediate": yes
-			}, (res) ->
-				if !res? or res.error?
-					gapi.auth.authorize { # If the user hasn't given us permission try again.
-						"client_id": "319072777142-apafv4ffhg4sv4thrertjtjk2q8eelke.apps.googleusercontent.com"
-						"scope": "https://www.googleapis.com/auth/drive"
-						"immediate": no
-					}, authResult
-
-				else authResult arguments...
+				"immediate": no
+			}, authResult
 
 			runningAuthLoop = yes
 
@@ -53,7 +45,7 @@ authResult = (res) ->
 		buildPicker()
 
 buildPicker = =>
-	return unless pickerLoaded and oauthToken? and !projectFilePicker?
+	return unless pickerLoaded.get() and oauthToken? and !projectFilePicker?
 
 	NProgress.start()
 	@projectFilePicker = new google.picker.PickerBuilder()
