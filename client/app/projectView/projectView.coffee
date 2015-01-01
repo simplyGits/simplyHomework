@@ -103,6 +103,7 @@ Template.projectView.events
 					resource:
 						type: "anyone"
 						role: "writer"
+						withLink: yes
 				).execute cb
 
 	"click #addPersonIcon": ->
