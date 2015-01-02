@@ -15,4 +15,4 @@ class @CalendarItem
 	constructor: (@ownerId, @description, @startDate, @endDate, @classId) ->
 		@_id = new Meteor.Collection.ObjectID()
 		@isDone = no
-		@endDate ?= moment(@_startDate).add(1, "hour").toDate()
+		@endDate ?= moment(@startDate).add(1, "hour").toDate()
