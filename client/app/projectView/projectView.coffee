@@ -28,6 +28,9 @@ fileTypes =
 	"application/pdf":
 		fileTypeIconClass: "file-pdf-o"
 		fileTypeColor: "#CF1312"
+	"image/":
+		fileTypeIconClass: "file-image-o"
+		fileTypeColor: "#85144B"
 
 @personsEngine = new Bloodhound
 	name: "persons"
@@ -56,7 +59,7 @@ Template.projectView.rendered = =>
 		for driveFileId in fileIds
 			loading.push driveFileId
 			gapi.client.drive.files.get(fileId: driveFileId).execute (r) ->
-				push _.extend r, fileTypes[r.mimeType]
+				push _.extend r, fileTypes[_(fileTypes).keys().find((s) -> r.mimeType.indexOf(s) is 0)]
 
 				_.remove loading, r.id
 
