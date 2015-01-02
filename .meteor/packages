@@ -37,3 +37,4 @@ mdg:reload-on-resume
 mizzao:user-status
 fastclick
 percolate:synced-cron
+mousetrap:mousetrap
