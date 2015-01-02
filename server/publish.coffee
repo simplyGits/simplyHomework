@@ -74,7 +74,7 @@ Meteor.publish "goaledSchedules", -> GoaledSchedules.find { ownerId: @userId }
 Meteor.publish "projects", (id) ->
 	@unblock()
 	if id?
-		Projects.find _id: id, participants: @userId
+		Projects.find id
 	else
 		Projects.find { participants: @userId }, fields:
 			name: 1
