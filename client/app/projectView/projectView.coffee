@@ -1,3 +1,4 @@
+root = @
 currentProject = -> Router.current().data()
 cachedProjectFiles = new ReactiveVar {}
 
@@ -38,15 +39,14 @@ fileTypes =
 	queryTokenizer: Bloodhound.tokenizers.whitespace
 	local: []
 
-Template.projectView.rendered = =>
-	Deps.autorun =>
-		return unless Router.current().route.getName() is "projectView"
-		@personsEngine.clear()
-		@personsEngine.add getOthers()
+Template.projectView.rendered = ->
+	@autorun ->
+		root.personsEngine.clear()
+		root.personsEngine.add getOthers()
 
 	loading = []
-	Tracker.autorun ->
-		return unless driveLoaded.get() and Router.current().route.getName() is "projectView"
+	@autorun ->
+		return unless driveLoaded.get()
 
 		x = cachedProjectFiles.get()
 		fileIds = _.reject currentProject().driveFileIds, (s) -> s in x or _.contains loading, s
