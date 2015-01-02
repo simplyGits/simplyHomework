@@ -96,19 +96,36 @@ Template.projectView.events
 			return unless r.action is "picked"
 			cb = -> Projects.update currentProject()._id, $push: driveFileIds: r.docs[0].id
 
-			if _.any(r.docs[0].permissions, (p) -> p.type is "anyone" and p.role is "writer") then cb()
+			setPermissions = ->
+				if _.any(r.docs[0].permissions, (p) -> p.type is "anyone" and p.role is "writer") then cb()
+				else
+					gapi.client.drive.permissions.insert(
+						fileId: r.docs[0].id
+						resource:
+							type: "anyone"
+							role: "writer"
+							withLink: yes
+					).execute (r) ->
+						if r.error?
+							notify "Bestand kan niet worden toegevoegd", "error"
+							Kadira.trackError "Drive-client", r.error.message, stacks: EJSON.stringify r
+						else cb()
+
+			if _(fileTypes).keys().contains(r.docs[0].mimeType) then setPermissions()
 			else
-				gapi.client.drive.permissions.insert(
+				gapi.client.drive.files.copy(
 					fileId: r.docs[0].id
+					convert: yes
 					resource:
-						type: "anyone"
-						role: "writer"
-						withLink: yes
-				).execute (r) ->
-					if r.error?
+						title: _.initial(r.docs[0].name.replace(/[-_]/g, " ").split("."))[0]
+				).execute (res) ->
+					if res.error?
 						notify "Bestand kan niet worden toegevoegd", "error"
-						Kadira.trackError "Drive-client", r.error.message, stacks: EJSON.stringify r
-					else cb()
+						Kadira.trackError "Drive-client", res.error.message, stacks: EJSON.stringify res
+					else
+						gapi.client.drive.files.delete(fileId: r.docs[0].id).execute()
+						r.docs[0] = res
+						setPermissions()
 
 	"click #addPersonIcon": ->
 		subs.subscribe "usersData"
