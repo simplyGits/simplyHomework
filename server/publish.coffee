@@ -80,7 +80,6 @@ Meteor.publish "projects", (id) ->
 			name: 1
 			magisterId: 1
 			classId: 1
-			participants: 1
 
 Meteor.publish "books", (classId) ->
 	@unblock()
