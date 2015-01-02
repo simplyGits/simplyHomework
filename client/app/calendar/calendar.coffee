@@ -185,10 +185,14 @@ Template.calendar.rendered = ->
 open = ->
 	$("div.addAppointmentForm").addClass "transformIn"
 	$("div.backdrop").addClass "dimmed"
-	$("div.backdrop").click close
-	$("div.addAppointmentForm > button").click add
+	$("div.backdrop, div.addAppointmentForm > .close").click close
+	$("div.addAppointmentForm > button#saveButton").click add
 
-	$("textarea#appointmentInput").focus().keydown (event) -> close() if event.which is 27
+	$("textarea#appointmentInput").focus().keydown (event) ->
+		close() if event.which is 27
+		if event.which is 13 and event.shiftKey
+			event.preventDefault()
+			add()
 
 close = ->
 	$("div.addAppointmentForm").removeClass "transformIn"
