@@ -3,14 +3,14 @@ cachedProjectFiles = new ReactiveVar {}
 
 @getParticipants = ->
 	tmp = []
-	for participant, i in Meteor.users.find({_id: $in: currentProject().participants}, sort: "profile.firstName": 1).fetch()
+	for participant, i in Meteor.users.find({_id: $in: currentProject().participants ? []}, sort: "profile.firstName": 1).fetch()
 		tmp.push _.extend participant,
 			__statusColor: if participant.status.idle then "#FF851B" else if participant.status.online then "#2ECC40" else "#FF4136"
 	return tmp
 
 @getOthers = ->
 	tmp = []
-	for other, i in Meteor.users.find(_id: $nin: currentProject().participants).fetch()
+	for other, i in Meteor.users.find(_id: $nin: currentProject().participants ? []).fetch()
 		tmp.push _.extend other,
 			fullName: "#{other.profile.firstName} #{other.profile.lastName}"
 	return tmp
@@ -73,7 +73,7 @@ Template.projectView.helpers
 			.value()
 	persons: -> _.reject getParticipants(), (p) -> EJSON.equals p._id, Meteor.userId()
 
-	showRightHeader: -> if currentProject().participants.length is 1 then false else true
+	showRightHeader: -> if (currentProject().participants ? []).length is 1 then false else true
 	friendlyDeadline: ->
 		return "" unless currentProject().deadline?
 		day = DayToDutch Helpers.weekDay currentProject().deadline
