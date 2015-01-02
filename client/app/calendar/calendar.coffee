@@ -172,6 +172,7 @@ Template.calendar.rendered = ->
 	$("button.fc-button").removeClass("fc-button fc-state-default").addClass "btn btn-default"
 	$(".fc-right").prepend "<button id=\"newAppointmentButton\" class=\"btn btn-primary\">toevoegen</button>"
 	$("button#newAppointmentButton").click open
+	Mousetrap.bind "shift+n", (e) -> open(); e.preventDefault()
 
 	$(window).resize -> $('.calendar').fullCalendar('option', 'height', height())
 
