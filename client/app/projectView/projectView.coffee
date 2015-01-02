@@ -117,7 +117,12 @@ Template.projectView.events
 					fileId: r.docs[0].id
 					convert: yes
 					resource:
-						title: _.initial(r.docs[0].name.replace(/[-_]/g, " ").split("."))[0]
+						title: (
+							if (val = r.docs[0].name.replace(/[-_]/g, " ").split(".")).length is 1
+								val[0]
+							else
+								_.initial(val)[0]
+						)
 				).execute (res) ->
 					if res.error?
 						notify "Bestand kan niet worden toegevoegd", "error"
