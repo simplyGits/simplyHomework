@@ -25,7 +25,6 @@ natestrauser:animate-css
 percolate:velocityjs
 cryptoquick:stylus-multi
 reactive-var
-alethes:pages
 tsega:bootstrap3-datetimepicker@0.4.0
 meteorhacks:unblock
 meteorhacks:subs-manager
@@ -38,3 +37,4 @@ mizzao:user-status
 fastclick
 percolate:synced-cron
 mousetrap:mousetrap
+percolate:paginated-subscription
