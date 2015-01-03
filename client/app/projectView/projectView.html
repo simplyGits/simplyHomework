@@ -65,12 +65,10 @@
 					</span>
 					<div class="itemContainerDivider"></div>
 					<div class="itemContainerContent">
-						{{#if currentUser}}
-							{{#linkTo route="personView" data=currentUser}}
-								{{> selfRow}}
-							{{/linkTo}}
-							<div class="itemContainerSmallDivider"></div>
-						{{/if}}
+						{{#linkTo route="personView" data=currentUser}}
+							{{> selfRow}}
+						{{/linkTo}}
+						<div class="itemContainerSmallDivider"></div>
 						{{#each persons}}
 							{{> personRow}}
 

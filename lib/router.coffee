@@ -128,39 +128,6 @@ Router.map ->
 				Meteor.call "log", "log", "Error while searching for the given project. #{e.message} | stack: #{e.stack}"
 				return null
 
-	@route "projectViewPublic",
-		fastRender: yes
-		layoutTemplate: "projectView"
-		path: "/project/:projectId"
-
-		subscriptions: ->
-			NProgress?.start()
-			return Meteor.subscribe "projects", new Meteor.Collection.ObjectID @params.projectId
-
-		onBeforeAction: ->
-			if Meteor.loggingIn() or Meteor.user()?
-				@redirect "projectView", projectId: @params.projectId
-				return
-			subs.subscribe "usersData", @data?()?.participants
-			@next()
-
-		onAfterAction: ->
-			if !@data()? and @ready()
-				swalert title: "Niet gevonden", text: "Dit project is niet gevonden.", type: "error"
-				return
-
-			$("body").css padding: "10px"
-			document.title = "simplyHomework | #{@data().name}"
-			NProgress?.done()
-
-		data: ->
-			try
-				id = new Meteor.Collection.ObjectID @params.projectId
-				return Projects.findOne id, transform: projectTransform
-			catch
-				Meteor.call "log", "log", "Error while searching for the given project. #{e.message} | stack: #{e.stack}"
-				return null
-
 	@route "calendar",
 		fastRender: yes
 		layoutTemplate: "app"
@@ -247,12 +214,6 @@ Router.map ->
 				return Meteor.users.findOne @params._id
 			catch
 				return null
-
-	@route "premium",
-		fastRender: yes
-		layoutTemplate: "premium"
-
-		onAfterAction: -> document.title = "simplyHomework | Premium"
 
 	@route "press",
 		fastRender: yes
