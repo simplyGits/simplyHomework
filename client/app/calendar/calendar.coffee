@@ -30,7 +30,7 @@ Meteor.setInterval ( ->
 		$(".calendar").fullCalendar "refetchEvents"
 ), 1800000
 
-toEvent = (appointment) ->
+appointmentToEvent = (appointment) ->
 	type = null
 	type = "quiz" if /\b((so)|((luister ?)?toets)|(schriftelijke overhoring))/i.test(appointment.content()?.split(" ")?[0] ? "")
 	type = "test" if /\b((proefwerk)|(pw)|(examen)|(tentamen))/i.test(appointment.content()?.split(" ")?[0] ? "")
@@ -59,6 +59,28 @@ toEvent = (appointment) ->
 	clickable: not appointment.scrapped()
 	open: no
 	appointment: appointment
+
+calendarItemToEvent = (calendarItem) ->
+	type = null
+	type = "quiz" if /\b((so)|((luister ?)?toets)|(schriftelijke overhoring))/i.test(calendarItem.description?.split(" ")?[0] ? "")
+	type = "test" if /\b((proefwerk)|(pw)|(examen)|(tentamen))/i.test(calendarItem.description?.split(" ")?[0] ? "")
+
+	id: calendarItem._id
+	title: (
+		if calendarItem.classId? then Classes.findOne(calendarItem.classId).name
+		else if calendarItem.description.length > 12 then "#{calendarItem.description.substring(0, 9)}..."
+		else calendarItem.description
+	)
+	allDay: calendarItem.startDate.getHours() is 0 and moment(calendarItem.endDate).diff(calendarItem.beginDate, "hours") is 24
+	start: calendarItem.startDate
+	end: calendarItem.endDate
+	color:
+		if type is "quiz" then "#FF851B"
+		else if type is "test" then "#FF4136"
+		else "#3a87ad"
+	clickable: yes
+	open: no
+	calendarItem: calendarItem
 
 Template.calendar.rendered = ->
 	$(".calendar").fullCalendar
@@ -89,12 +111,13 @@ Template.calendar.rendered = ->
 			start = start.toDate(); end = end.toDate()
 
 			Session.set "currentDateRange", "#{start.getTime()}#{end.getTime()}"
+			calendarItems = CalendarItems.find({}, transform: calendarItemToEvent).fetch()
 
 			if (val = cachedAppointments["#{start.getTime()}#{end.getTime()}"])?
-				callback val
+				callback val.concat calendarItems
 			else
 				unless (val = getHardCacheAppointments(start, end)).length is 0
-					callback (toEvent x for x in val)
+					callback (appointmentToEvent x for x in val).concat calendarItems
 					updateNeeded = yes
 
 				unless root.magister?
@@ -113,11 +136,11 @@ Template.calendar.rendered = ->
 							appointment._end = a._end
 						return appointment
 					
-					events = (toEvent x for x in result)
+					events = (appointmentToEvent x for x in result)
 
 					cachedAppointments["#{start.getTime()}#{end.getTime()}"] = events
 					if updateNeeded then $(".calendar").fullCalendar "refetchEvents"
-					else callback events
+					else callback events.concat calendarItems
 		dayClick: (date, event, view) ->
 			clearTimeout dblDateResetHandle
 			date = date.toDate()
@@ -144,7 +167,8 @@ Template.calendar.rendered = ->
 		loading: (isLoading) -> if isLoading then NProgress.start() else NProgress.done()
 		eventAfterRender: (event, element) ->
 			event.element = element
-			element.popover content: event.appointment.content(), placement: "auto top", animation: yes, delay: {show: 750}, trigger: "hover", container: ".content"
+			if event.appointment?
+				element.popover content: event.appointment.content(), placement: "auto top", animation: yes, delay: {show: 750}, trigger: "hover", container: ".content"
 			return unless event.clickable
 			
 			element = $(element)
