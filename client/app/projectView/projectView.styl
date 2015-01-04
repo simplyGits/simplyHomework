@@ -74,6 +74,12 @@ span#addPersonIcon, span#addFileIcon
 	cursor: pointer
 	opacity: .5
 	-moz-padding-end: 30px
+	
+span.projectTitle
+	absolute: left 40px
+	width: 400px
+	overflow-x: hidden
+	text-overflow: ellipsis
 
 div.projectViewItemContainer
 	width: 100%
@@ -108,6 +114,7 @@ div.fileRow, div.personRow
 	overflow: hidden
 	position: relative
 	color: #000
+	white-space: nowrap
 
 div.personRow
 	padding-top: 5px
@@ -122,10 +129,11 @@ span.personName
 	absolute: left 70px right 40px
 	color: #a4a4a4
 
-span.removePersonButton
+span.removePersonButton, span.removeFileButton
 	float: right
 	margin-right: 15px
 	opacity: 0
+	pointer-events: initial
 
 	transition: opacity .1s ease-in-out
 	
@@ -134,7 +142,8 @@ span.removePersonButton
 
 div.fileRow:hover, div.personRow:hover
 	background-color: lightgray
-	span.removePersonButton
+	
+	span.removePersonButton, span.removeFileButton
 		opacity: .4
 
 .ripple
@@ -205,7 +214,6 @@ button#leaveProjectButton
 	span.personName
 		width: calc(100% - 110px)
 		display: inline-block
-		white-space: nowrap
 		-o-text-overflow: ellipsis
 		text-overflow: ellipsis
 		overflow-x: hidden

@@ -211,6 +211,14 @@ Template.fileRow.events
 
 		ripple.css(top: "#{y}px", left: "#{x}px").addClass "animate"
 
+	"click .removeFileButton": (event) ->
+		event.preventDefault()
+		Projects.update currentProject()._id, $pull: driveFileIds: @id, (e) =>
+			if e?
+				notify "Bestand kan niet worden verwijderd.", "error"
+				Kadira.trackError "Remove-project-file", e.message, stacks: e.stack
+			else notify "#{@title} verwijderd.", "notice"
+
 Template.personRow.events
 	"click": (event) -> Router.go "personView", @ unless $(event.target).hasClass "removePersonButton"
 

@@ -6,7 +6,7 @@ div.projectInfoChatQuoteContainer {
 	display: flex; /* same here */
 }
 
-span.removePersonButton:hover {
+span.removePersonButton:hover, span.removeFileButton:hover {
 	opacity: .8 !important;
 }
 
