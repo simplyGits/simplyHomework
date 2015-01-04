@@ -149,7 +149,7 @@ Template.projectView.events
 			name: "ownClasses"
 			datumTokenizer: (d) -> Bloodhound.tokenizers.whitespace d.name
 			queryTokenizer: Bloodhound.tokenizers.whitespace
-			local: classes()
+			local: classes().fetch()
 
 		ownClassesEngine.initialize()
 
