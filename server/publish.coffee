@@ -90,6 +90,8 @@ Meteor.publish "books", (classId) ->
 
 	if classId?
 		return Books.find { classId }
+	else if _.isNull classId
+		return Books.find classId: $in: (x.id for x in (Meteor.users.findOne(@userId).classInfos ? []))
 	else
 		return Books.find _id: $in: (x.bookId for x in (Meteor.users.findOne(@userId).classInfos ? []))
 

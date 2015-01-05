@@ -1,4 +1,5 @@
 schoolSub = null
+bookSub = null
 @snapper = null
 magisterClasses = new ReactiveVar null
 magisterAssignments = new ReactiveVar []
@@ -22,46 +23,47 @@ class @App
 		getMagisterClasses:
 			done: no
 			func: (current, length) ->
-				magisterResult "classes", (e, r) ->
-					magisterClasses.set r unless e?
-					
-					WoordjesLeren.getAllClasses (result) ->
-						for c in r then do (c) ->
-							engine = new Bloodhound
-								name: "books"
-								datumTokenizer: (d) -> Bloodhound.tokenizers.whitespace d.name
-								queryTokenizer: Bloodhound.tokenizers.whitespace
-								local: []
+				bookSub = Meteor.subscribe "books", null, ->
+					magisterResult "classes", (e, r) ->
+						magisterClasses.set r unless e?
+						
+						WoordjesLeren.getAllClasses (result) ->
+							for c in r then do (c) ->
+								engine = new Bloodhound
+									name: "books"
+									datumTokenizer: (d) -> Bloodhound.tokenizers.whitespace d.name
+									queryTokenizer: Bloodhound.tokenizers.whitespace
+									local: []
 
-							val = _.find(result, (x) -> c.description().toLowerCase().indexOf(x.toLowerCase()) > -1) ? Helpers.cap c.description()
+								val = _.find(result, (x) -> c.description().toLowerCase().indexOf(x.toLowerCase()) > -1) ? Helpers.cap c.description()
 
-							if /(Natuurkunde)|(Scheikunde)/i.test val
-								val = "Natuur- en scheikunde"
-							else if /(Wiskunde( (a|b|c|d))?)|(Rekenen)/i.test val
-								val = "Wiskunde / Rekenen"
-							else if /levensbeschouwing/i.test val
-								val = "Godsdienst en levensbeschouwing"
+								if /(Natuurkunde)|(Scheikunde)/i.test val
+									val = "Natuur- en scheikunde"
+								else if /(Wiskunde( (a|b|c|d))?)|(Rekenen)/i.test val
+									val = "Wiskunde / Rekenen"
+								else if /levensbeschouwing/i.test val
+									val = "Godsdienst en levensbeschouwing"
 
-							{ year, schoolVariant } = Meteor.user().profile.courseInfo
-							classId = Classes.findOne({_name: val, schoolVariant: schoolVariant, year: year})?._id
-							books = Books.find({classId}).fetch() if classId?
-							engine.add ({name} for name in _(books).map("title").reject((b) -> _.any result, (x) -> x is b).value())
+								{ year, schoolVariant } = Meteor.user().profile.courseInfo
+								classId = Classes.findOne({_name: val, schoolVariant: schoolVariant, year: year})?._id
+								books = Books.find({classId}).fetch() if classId?
+								engine.add ({name} for name in _(books).map("title").reject((b) -> _.any result, (x) -> x is b).value())
 
-							do (engine) -> WoordjesLeren.getAllBooks val, (result) -> engine.add result
+								do (engine) -> WoordjesLeren.getAllBooks val, (result) -> engine.add result
 
-							Meteor.defer do (engine, c) -> return ->
-								$("#magisterClassesResult > div##{c.id()} > input").typeahead(null,
-									source: engine.ttAdapter()
-									displayKey: "name"
-								).on "typeahead:selected", (obj, datum) -> Session.set "currentSelectedBookDatum", datum
+								Meteor.defer do (engine, c) -> return ->
+									$("#magisterClassesResult > div##{c.id()} > input").typeahead(null,
+										source: engine.ttAdapter()
+										displayKey: "name"
+									).on "typeahead:selected", (obj, datum) -> Session.set "currentSelectedBookDatum", datum
 
-					Meteor.defer ->
-						for x in $("#magisterClassesResult > div").colorpicker(input: null)
-							$(x)
-								.on "changeColor", (e) -> $(@).attr "colorHex", e.color.toHex()
-								.colorpicker "setValue", "##{("00000" + (Math.random() * (1 << 24) | 0).toString(16)).slice -6}"
+						Meteor.defer ->
+							for x in $("#magisterClassesResult > div").colorpicker(input: null)
+								$(x)
+									.on "changeColor", (e) -> $(@).attr "colorHex", e.color.toHex()
+									.colorpicker "setValue", "##{("00000" + (Math.random() * (1 << 24) | 0).toString(16)).slice -6}"
 
-				$("#getMagisterClassesModal").modal backdrop: "static", keyboard: no
+					$("#getMagisterClassesModal").modal backdrop: "static", keyboard: no
 
 		newSchoolYear:
 			done: no
@@ -212,6 +214,7 @@ Template.getMagisterClassesModal.events
 				bookId: book?._id ? null
 
 		$("#getMagisterClassesModal").modal "hide"
+		bookSub.stop()
 		App.step()
 
 Template.setMagisterInfoModal.events
@@ -499,7 +502,7 @@ Template.sidebar.events
 		$("#bookInput").val("")
 		$("#colorInput").colorpicker 'setValue', "#333"
 
-		subs.subscribe("books")
+		subs.subscribe "books", null
 		$("#addClassModal").modal()
 
 # == End Sidebar ==
