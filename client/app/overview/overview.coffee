@@ -100,7 +100,7 @@ Template.appOverview.rendered = ->
 	magisterResult "appointments tomorrow", (e, r) ->
 		return if e?
 
-		appointmentsTommorow.set _.filter r, (a) -> not a.fullDay() and a.classes().length > 0 and _.contains [5..19], a.begin().getHours()
+		appointmentsTommorow.set magisterAppointmentTransform _.filter r, (a) -> not a.fullDay() and a.classes().length > 0 and _.contains [5..19], a.begin().getHours()
 
 	updateInterval = null
 	magisterResult "appointments today", (e, r) ->
@@ -108,8 +108,8 @@ Template.appOverview.rendered = ->
 
 		clearInterval updateInterval if updateInterval?
 		updateInterval = setInterval (do (r) ->
-			nextAppointmentToday.set _.find r, (a) -> not a.fullDay() and new Date() < a.begin() and a.classes().length > 0
-			currentAppointment.set _.find r, (a) -> not a.fullDay() and new Date() > a.begin() and new Date() < a.end() and a.classes().length > 0
+			nextAppointmentToday.set magisterAppointmentTransform _.find r, (a) -> not a.fullDay() and new Date() < a.begin() and a.classes().length > 0
+			currentAppointment.set magisterAppointmentTransform _.find r, (a) -> not a.fullDay() and new Date() > a.begin() and new Date() < a.end() and a.classes().length > 0
 		), 1000
 
 	$("#currentDate > span").tooltip placement: "bottom", html: true, title: "<h4>Week: #{moment().week()}</h4>"

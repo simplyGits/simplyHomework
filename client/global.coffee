@@ -8,6 +8,17 @@
 		transform: projectTransform
 		sort: "name": 1
 
+@magisterAppointmentTransform = (appointment) ->
+	return appointment unless _.isObject appointment
+	return ( @magisterAppointmentTransform a for a in appointment ) if _.isArray appointment
+
+	return _.extend appointment,
+		__id: "#{appointment.id()}"
+		__name: Helpers.cap appointment.classes()[0]
+		__taskDescription: appointment.content().replace(/\n/g, "; ")
+		__className: if (val = appointment.classes()[0])[0] is val[0].toUpperCase() then val else Helpers.cap val
+		__class: _.find(Meteor.user().profile.groupInfos, (gi) -> gi.group is appointment.description())?.id
+
 @kaas = ->
 	unless Meteor.user()?
 		alertModal "swag", "420 blze it\nKaas FTW"
