@@ -87,14 +87,14 @@
 	<a href="{{alternateLink}}" target="_blank">
 		<div class="fileRow">
 			<div class="ripple" style="background-color: {{fileTypeColor}}"></div>
-			<span style="position: relative; pointer-events: none"> {{! otherwise the ripple will go over the content}}
+			<div style="position: relative; pointer-events: none"> {{! otherwise the ripple will go over the content}}
 				<i class="fa fa-{{fileTypeIconClass}}"></i>
 				<span class="projectTitle">{{title}}</span>
 				{{#if currentWorker}}
 					<span class="fileCurrentPeople"><b>{{currentWorker.profile.firstName}}</b> is nu hiermee bezig</span>
 				{{/if}}
 				<span class="removeFileButton">&times;</span>
-			</span>
+			</div>
 		</div>
 	</a>
 </template>
