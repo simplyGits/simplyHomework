@@ -97,7 +97,7 @@ class @Grade
 
 		obj._gradePeriod =
 			id: -> raw.CijferPeriode.Id
-			abbreviation: -> raw.CijferPeriode.Afkorting
+			name: -> raw.CijferPeriode.Naam
 
 		obj._class =
 			id: -> raw.Vak.Id
