@@ -405,7 +405,7 @@ add = ->
 
 		classId = null
 		if appointment? and not _.isEmpty appointment.description()
-			classId = _.find(Meteor.user().profile.groupInfos, (gi) -> gi.group is appointment.description()).id
+			classId = _.find(Meteor.user().profile.groupInfos, (gi) -> gi.group is appointment.description())?.id
 
 		New.calendarItem Meteor.userId(), (if descriptionOnly? then descriptionOnly else input).trim(), date, endDate, classId
 	else
