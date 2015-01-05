@@ -188,7 +188,7 @@ class @Course
 		obj = new Course magisterObj
 
 		obj._classesUrl = magisterObj.magisterSchool.url + _.find(raw.Links, Rel: "Vakken").Href
-		obj._gradesUrl = magisterObj._personUrl + "/aanmeldingen/#{raw.Id}/cijfers/cijferoverzichtvooraanmelding?actievePerioden=true&alleenBerekendeKolommen=false&alleenPTAKolommen=false"
+		obj._gradesUrl = magisterObj._personUrl + "/aanmeldingen/#{raw.Id}/cijfers/cijferoverzichtvooraanmelding?actievePerioden=false&alleenBerekendeKolommen=false&alleenPTAKolommen=false"
 
 		obj._id = raw.Id
 		obj._begin = new Date Date.parse raw.Start
