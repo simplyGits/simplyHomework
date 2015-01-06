@@ -34,7 +34,7 @@ Meteor.users.allow
 			"profile"
 			"hasGravatar"
 			"studyGuidesHashes"
-			"seenGradeIds"
+			"gradeNotificationDismissTime"
 		]
 		userId is doc._id and not _.any fields, (f) -> not _.contains allowed, f
 

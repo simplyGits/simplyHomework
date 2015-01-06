@@ -544,7 +544,7 @@ Template.app.rendered = ->
 
 	magisterResult "grades", (e, r) ->
 		return if e? or r.length is 0
-		seenGradeIds = Meteor.user().seenGradeIds ? []
+		gradeNotificationDismissTime = Meteor.user().gradeNotificationDismissTime
 
 		endGrades = _.filter r, (g) -> g.type().header()?.toLowerCase() is "eind"
 		if endGrades.length is 0
@@ -553,7 +553,7 @@ Template.app.rendered = ->
 			endGrades = _.uniq _.filter(r, (g) -> g.type().type() is 2), "_class"
 
 		recentGrades = _.filter r, (g) -> new Date(g.dateFilledIn()) > Date.today().addDays(-7) and g.type().type() is 1
-		recentGrades = _.reject recentGrades, (g) -> _.contains seenGradeIds, g.id()
+		recentGrades = _.reject recentGrades, (g) -> gradeNotificationDismissTime > new Date(g.dateFilledIn())
 		unless recentGrades.length is 0
 			s = "Recent ontvangen cijfers:\n\n"
 
@@ -564,7 +564,7 @@ Template.app.rendered = ->
 			if recentGradesNotification?
 				recentGradesNotification.content s, yes
 			else
-				recentGradesNotification = NotificationsManager.notify body: s, type: "warning", time: -1, html: yes, onDismissed: -> Meteor.users.update Meteor.userId(), $set: seenGradeIds: (g.id() for g in recentGrades).concat(seenGradeIds)
+				recentGradesNotification = NotificationsManager.notify body: s, type: "warning", time: -1, html: yes, onDismissed: -> Meteor.users.update(Meteor.userId(), $set: gradeNotificationDismissTime: new Date)
 
 	magisterResult "appointments this week", (e, r) ->
 		unless _.isArray Meteor.user().profile.groupInfos
