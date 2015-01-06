@@ -544,7 +544,7 @@ Template.app.rendered = ->
 
 	magisterResult "grades", (e, r) ->
 		return if e? or r.length is 0
-		seenGradeIds = amplify.store("seenGradeIds") ? []
+		seenGradeIds = Meteor.user().seenGradeIds ? []
 
 		endGrades = _.filter r, (g) -> g.type().header()?.toLowerCase() is "eind"
 		if endGrades.length is 0
@@ -564,7 +564,7 @@ Template.app.rendered = ->
 			if recentGradesNotification?
 				recentGradesNotification.content s, yes
 			else
-				recentGradesNotification = NotificationsManager.notify body: s, type: "warning", time: -1, html: yes, onDismissed: -> amplify.store "seenGradeIds", (g.id() for g in recentGrades).concat(seenGradeIds)
+				recentGradesNotification = NotificationsManager.notify body: s, type: "warning", time: -1, html: yes, onDismissed: -> Meteor.users.update Meteor.userId(), $set: seenGradeIds: (g.id() for g in recentGrades).concat(seenGradeIds)
 
 	magisterResult "appointments this week", (e, r) ->
 		unless _.isArray Meteor.user().profile.groupInfos

@@ -46,6 +46,7 @@ Meteor.publish null, ->
 			gravatarUrl: 1
 			hasGravatar: 1
 			studyGuidesHashes: 1
+			seenGradeIds: 1
 			profile: 1)
 		Schools.find _id: Meteor.users.findOne(@userId).profile.schoolId
 	]
