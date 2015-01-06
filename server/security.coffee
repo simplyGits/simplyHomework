@@ -44,11 +44,11 @@ Books.allow
 	insert: -> yes
 
 CalendarItems.allow
-	insert: -> yes
+	insert: (userId, doc) -> doc.ownerId is userId
 	update: (userId, doc, fields, modifier) -> userId is doc.ownerId
 	remove: (userId, doc) -> userId is doc.ownerId
 
 Projects.allow
-	insert: -> yes
-	update: (userId, doc, fields, modifier) -> _.contains(doc.participants, userId) and ( !_.any(["ownerId", "participants"], (x) -> _.contains(fields, x)) or userId is doc.ownerId )
+	insert: (userId, doc) -> doc.ownerId is userId and _.contains doc.participants, userId
+	update: (userId, doc, fields, modifier) -> _.contains(doc.participants, userId) and ( !_.any(["ownerId", "participants"], (x) -> _.contains(fields, x)) or userId is doc.ownerId or EJSON.equals modifier, { $pull: participants: userId } )
 	remove: -> no
