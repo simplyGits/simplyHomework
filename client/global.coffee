@@ -1,4 +1,5 @@
 @classes = ->
+	homeworkItems.dep.depend()
 	return Classes.find {_id: { $in: (cI.id for cI in (Meteor.user().classInfos ? [])) }},
 		transform: classTransform
 		sort: "name": 1
