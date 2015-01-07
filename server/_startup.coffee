@@ -8,7 +8,7 @@ Meteor.startup ->
 			ScholierenClasses.set classes
 	getClasses(); Meteor.setInterval getClasses, 3600000
 
-	Projects._ensureIndex "name": 1
+	Projects._ensureIndex "deadline": 1, "name": 1
 	Classes._ensureIndex "name": 1
 
 	Accounts.urls.verifyEmail = (token) -> Meteor.absoluteUrl "verify/#{token}"

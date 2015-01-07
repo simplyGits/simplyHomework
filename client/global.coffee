@@ -7,7 +7,9 @@
 @projects = ->
 	return Projects.find {},
 		transform: projectTransform
-		sort: "name": 1
+		sort:
+			"deadline": 1
+			"name": 1
 
 @magisterAppointmentTransform = (appointment) ->
 	return appointment unless _.isObject appointment
