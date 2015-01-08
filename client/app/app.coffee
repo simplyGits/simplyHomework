@@ -532,10 +532,14 @@ Template.app.rendered = ->
 
 	magisterResult "assignments soon", (e, r) ->
 		return if e? or r.length is 0
-		s = "Deadlines van opdrachten binnenkort:\nKlik voor meer info.\n\n"
-		for assignment in _.uniq(r, "_class") then do (assignment) ->
+		s = "Projecten en opdrachten met deadline binnenkort:\nKlik voor meer info.\n\n"
+		_(r).reject((a) -> Projects.find(magisterId: a.id()).count()).forEach (assignment) ->
 			d = if (d = assignment.deadline()).getHours() is 0 and d.getMinutes() is 0 then d.addDays(-1) else d
 			s += "<b>#{assignment.class().abbreviation()}</b> - #{DayToDutch(Helpers.weekDay(d))}\n"
+
+		Projects.find({deadline: $gt: new Date(), $lt: Date.today().addDays(7)}, transform: projectTransform, sort: "deadline": 1).forEach (project) ->
+			d = if (d = project.deadline).getHours() is 0 and d.getMinutes() is 0 then d.addDays(-1) else d
+			s += "<b>#{project.__class.course}</b> - #{DayToDutch(Helpers.weekDay(d))}\n"
 
 		if assignmentNotification?
 			assignmentNotification.content s, yes
