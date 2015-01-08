@@ -86,11 +86,13 @@
 <template name="infoNextDay">
 	<div class="robotoHeader infoNextDayHeader">Morgen</div>
 	<div class="robotoHeader overviewTimeIndicator">
-		<span style="font-weight: 300">{{firstHour}}<sup>e</sup></span> - {{lastHour}}<sup>e</sup>
+		<span>{{firstHour}}<sup>e</sup></span> - {{lastHour}}<sup>e</sup>
 	</div>
 	<div class="overviewPersons">
 		{{#each people}}
-			<img src="{{gravatar this 50}}" width="25" height="25" data-toggle="tooltip" title="{{profile.firstName}} {{profile.lastName}}"/>
+			{{#linkTo route="personView" data=this}}
+				<img src="{{gravatar this 50}}" width="25" height="25" data-toggle="tooltip" title="{{profile.firstName}} {{profile.lastName}}"/>
+			{{/linkTo}}
 		{{/each}}
 	</div>
 </template>
@@ -98,7 +100,17 @@
 <template name="infoNextLesson">
 	<div class="robotoHeader infoNextDayHeader">Volgend lesuur</div>
 	<div class="robotoHeader overviewTimeIndicator">
-		<span style="font-weight: 300">{{hours}}</span>{{minutes}}
+		<span>{{hours}}</span>{{minutes}}
+	</div>
+	<div class="robotoHeader overviewClassDescription">
+		{{appointment.__name}}
+	</div>
+</template>
+
+<template name="infoCurrentLesson">
+	<div class="robotoHeader infoNextDayHeader">Huidig lesuur</div>
+	<div class="robotoHeader overviewTimeIndicator">
+		tot <span>{{hours}}</span>{{minutes}}
 	</div>
 	<div class="robotoHeader overviewClassDescription">
 		{{appointment.__name}}
