@@ -176,9 +176,10 @@ class @NotificationsManager
 							.css width: $(this).outerWidth()
 							.addClass "noclick"
 					stop: (event, helper) ->
-						$(@).css width: "initial"
 						if $(@).position().left - pos > MIN
-							$(@).css opacity: 1
+							$(@).css
+								width: "initial"
+								opacity: 1
 						else
 							$(@).velocity opacity: 0
 							notHandle.hide()
