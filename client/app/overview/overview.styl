@@ -44,12 +44,17 @@ div.overviewImportantContainer
 		display: inline-block
 		position: absolute
 		margin-top: 14px
-		width: 100%
+		width: calc(100% - 185px)
+		
+		text-overflow: ellipsis
+		overflow-x: hidden
+		white-space: nowrap
 		
 		+mobile()
 			text-align: center
 			position: relative
 			margin: 0
+			width: 100%
 		
 	div.overviewPersons
 		absolute: right 0 left 20% bottom 0
