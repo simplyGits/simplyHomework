@@ -100,6 +100,7 @@ Template.appOverview.events
 		$("#addProjectModal").modal()
 
 Template.appOverview.rendered = ->
+	template = @
 	magisterResult "appointments tomorrow", (e, r) ->
 		return if e?
 
@@ -109,11 +110,11 @@ Template.appOverview.rendered = ->
 	magisterResult "appointments today", (e, r) ->
 		return if e?
 
-		clearInterval updateInterval if updateInterval?
-		updateInterval = setInterval (do (r) ->
+		template.autorun ->
+			minuteTracker.depend()
+
 			nextAppointmentToday.set magisterAppointmentTransform _.find r, (a) -> not a.fullDay() and new Date() < a.begin() and a.classes().length > 0
 			currentAppointment.set magisterAppointmentTransform _.find r, (a) -> not a.fullDay() and new Date() > a.begin() and new Date() < a.end() and a.classes().length > 0
-		), 1000
 
 	$("#currentDate > span").tooltip placement: "bottom", html: true, title: "<h4>Week: #{moment().week()}</h4>"
 
