@@ -163,7 +163,9 @@ class @App
 			$("div.backdrop").one "click", tour.cancel
 			
 			Mousetrap.bind "escape", tour.cancel
-			Mousetrap.bind "left", tour.back
+			Mousetrap.bind "left", ->
+				if tour.currentStep.id is "step-0" then tour.cancel()
+				else tour.back()
 			Mousetrap.bind "right", tour.next
 
 	@_fullCount: null
