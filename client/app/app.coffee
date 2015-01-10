@@ -81,6 +81,8 @@ class @App
 					onSuccess: -> App.runTour()
 	
 	@runTour: ->
+		Router.go "app"
+
 		tour = null
 		tour = new Shepherd.Tour
 			defaults:
