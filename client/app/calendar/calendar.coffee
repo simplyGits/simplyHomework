@@ -204,7 +204,7 @@ Template.calendar.rendered = ->
 	unless keydownSet
 		keydownSet = yes
 		$(window).keydown (event) ->
-			return if $("input, textarea").is(":focus")
+			return if $("input, textarea").is(":focus") or $("body").hasClass "shepherd-active"
 			$(".calendar").fullCalendar if event.which is 39 then "next" else if event.which is 37 then "prev"
 
 open = ->
