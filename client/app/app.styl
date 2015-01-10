@@ -139,3 +139,24 @@ span#checkboxLabel
 	input#method
 		float: right
 		width: auto
+	
+div.backdrop
+	absolute: top bottom left right
+	opacity: 0
+	z-index: 998
+	pointer-events: none
+
+	background-color: #000
+
+	transition: .5s opacity linear
+
+div.backdrop.dimmed
+	opacity: .6
+	pointer-events: initial
+	
+body.shepherd-active > div
+	filter: brightness(0.5)
+		
+body.shepherd-active > .shepherd-step
+	z-index: 9999
+	filter: none
