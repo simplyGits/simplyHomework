@@ -100,6 +100,12 @@ class @App
 		tour.addStep
 			text: "Dit is de sidebar, hier kun je op een simpele manier overal komen."
 			attachTo: ".sidebar"
+			buttons: [
+				{
+					text: "verder"
+					action: -> tour.next arguments...
+				}
+			]
 
 		tour.addStep
 			text: "Dit ben jij, als je op jezelf klikt zie je je profiel."
