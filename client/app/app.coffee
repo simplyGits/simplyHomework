@@ -132,11 +132,16 @@ class @App
 		tour.addStep "calendar",
 			text: "Dit is je agenda. Dubbel klik op een lege plek om een afspraak toe te voegen."
 
-		tour.addStep
+		tour.addStep "calendar",
 			text: "Hier kun je afspraken toevoegen aan je agenda en navigeren tussen de weken"
 			attachTo: "div.fc-right"
 
-		tour.on "show", (o) -> Router.go "calendar" if o.step.id is "calendar"
+		tour.on "show", (o) ->
+			if o.step.id is "calendar" and Router.current().route.getName() isnt "calendar"
+				Router.go "calendar"
+			else if o.step.id isnt "calendar" and Router.current().route.getName() isnt "app"
+				Router.go "app"
+
 		tour.on "complete", ->
 			swalert
 				title: "Dit was de tour!"
