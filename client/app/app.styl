@@ -153,10 +153,9 @@ div.backdrop
 div.backdrop.dimmed
 	opacity: .6
 	pointer-events: initial
-	
-body.shepherd-active > div
-	filter: brightness(0.5)
+
+body.shepherd-active > div.backdrop
+	@extend div.backdrop.dimmed
 		
 body.shepherd-active > .shepherd-step
 	z-index: 9999
-	filter: none

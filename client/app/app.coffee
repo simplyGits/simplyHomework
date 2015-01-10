@@ -78,9 +78,80 @@ class @App
 					text: "Wil je een complete rondleiding volgen?"
 					confirmButtonText: "Rondleiding"
 					cancelButtonText: "Afsluiten"
-					onSuccess: (->)
-					onCancel: (->)
+					onSuccess: -> App.runTour()
 	
+	@runTour: ->
+		tour = null
+		tour = new Shepherd.Tour
+			defaults:
+				classes: 'shepherd-theme-arrows'
+				scrollTo: true
+				buttons: [
+					{
+						text: "verder"
+						action: -> tour.next arguments...
+					}
+					{
+						text: "terug"
+						action: -> tour.back arguments...
+					}
+				]
+
+		tour.addStep
+			text: "Dit is de sidebar, hier kun je op een simpele manier overal komen."
+			attachTo: ".sidebar"
+
+		tour.addStep
+			text: "Dit ben jij, als je op jezelf klikt zie je je profiel."
+			attachTo: ".sidebarProfile"
+
+		tour.addStep
+			text: "Dit is het overzicht, in principe staat hier alles wat je nodig hebt."
+			attachTo: "div.sidebarButton#overview"
+
+		tour.addStep
+			text: "Hier staan je taken voor vandaag, als je deze af hebt gewerkt ben je klaar."
+			attachTo: "div#overviewTaskContainer"
+
+		tour.addStep
+			text: "Hier staan je projecten. Je kunt een nieuwe aanmaken door op het plusje te klikken."
+			attachTo: "div#overviewProjectContainer"
+
+		tour.addStep
+			text: "Dit is je agenda, hij is slim en overzichtelijk."
+			attachTo: "div.sidebarButton#calendar"
+
+		tour.addStep
+			text: "Wil je alles van een bepaald vak zien? Klik op de naam en krijg een mooi overzicht."
+			attachTo: "div.sidebarClasses"
+
+		tour.addStep
+			text: "Hier vind je alle opties van simplyHomework. Je kunt gegevens aanpassen en de planner personaliseren."
+			attachTo: "div.sidebarFooterSettingsIcon"
+
+		tour.addStep "calendar",
+			text: "Dit is je agenda. Dubbel klik op een lege plek om een afspraak toe te voegen."
+
+		tour.addStep
+			text: "Hier kun je afspraken toevoegen aan je agenda en navigeren tussen de weken"
+			attachTo: "div.fc-right"
+
+		tour.on "show", (o) -> Router.go "calendar" if o.step.id is "calendar"
+		tour.on "complete", ->
+			swalert
+				title: "Dit was de tour!"
+				text: "Veel success! Als je hulp nodig hebt kun je altijd ctrl+? indrukken."
+				type: "success"
+
+		tour.start()
+
+		_.defer ->
+			$("div.backdrop").one "click", tour.cancel
+			
+			Mousetrap.bind "escape", tour.cancel
+			Mousetrap.bind "left", tour.back
+			Mousetrap.bind "right", tour.next
+
 	@_fullCount: null
 	@_currentCount: 0
 	@_running: no
@@ -386,6 +457,10 @@ Template.settingsModal.events
 				"profile.groupInfos": null
 			Meteor.call "clearMagisterInfo"
 
+	"click #startTourButton": ->
+		$("#settingsModal").modal "hide"
+		App.runTour()
+
 	"click #logOutButton": ->
 		Router.go "launchPage"
 		Meteor.logout()
@@ -641,6 +716,10 @@ Template.app.rendered = ->
 		$("#acceptCookiesButton").click ->
 			amplify.store "allowCookies", yes
 			$(".cookiesContainer").velocity { bottom: "-500px" }, 2400, "easeOutExpo", -> $(@).remove()
+
+	Mousetrap.bind ["ctrl+/", "command+/", "ctrl+?", "command+?"], ->
+		App.runTour()
+		return no
 
 setSwipe = ->
 	snapper = new Snap
