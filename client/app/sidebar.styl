@@ -6,13 +6,18 @@
 	height: 100vh
 	cursor: default
 
-	div.slider
-		border: 0px simplyBlue solid
-		border-left-width: 2px
-		height: 42px
-		absolute: top 75px
-		z-index: 10
-
+	div.selectedBorder
+		position: absolute
+		left: 0
+		height: 37px
+		border-left: 2px simplyBlue solid
+		
+		opacity: 0
+		transition: .5s opacity ease
+		
+	div.selectedBorder.selected
+		opacity: 1
+		
 	a
 		text-decoration: none !important
 

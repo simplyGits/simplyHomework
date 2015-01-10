@@ -246,21 +246,9 @@ class @NotificationsManager
 	user = if _.isString(userId) then Meteor.users.findOne(userId) else userId
 	if user.hasGravatar or _.isEmpty(user.profile.magisterPicture) then "#{user.gravatarUrl}&s=#{size}" else user.profile.magisterPicture
 
-@slide = (id, isClass = no) ->
-	return if $("div.sidebarButton##{id}").length is 0
-	targetHeight = $("div.sidebarButton##{id}").outerHeight yes
-
-	$(".slider").css display: "none"
-	if isClass
-		$(".slider#classes").css(display: "initial").velocity {
-			top: $("div.sidebarButton##{id}").position().top + $(".sidebarClasses").scrollTop()
-			height: targetHeight + 5
-		}, 150
-	else
-		$(".slider#global").css(display: "initial").velocity {
-			top: $("div.sidebarButton##{id}").offset().top
-			height: targetHeight + 5
-		}, 150
+@slide = (id) ->
+	$("div.selectedBorder.selected").removeClass "selected"
+	$("div.sidebarButton##{id} > div.selectedBorder").addClass "selected"
 
 	closeSidebar?()
 

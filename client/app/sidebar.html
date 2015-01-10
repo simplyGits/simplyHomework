@@ -1,6 +1,5 @@
 <template name="sidebar">
 	<div class="sidebar unselectable" onselectstart="return false;" ondragstart="return false;">
-		<div class="slider" id="global"></div>
 		{{#linkTo route="personView" data=currentUser}}
 			<div class="sidebarProfile">
 				<div class="sidebarProfileBack" style="background-image: url({{ gravatar currentUser 250}})"></div>
@@ -12,8 +11,18 @@
 				</div>
 			</div>
 		{{/linkTo}}
-		<a href="{{pathFor 'app'}}"><div class="sidebarButton bigSidebarButton" id="overview">Overzicht</div></a>
-		<a href="{{pathFor 'calendar'}}"><div class="sidebarButton bigSidebarButton" id="calendar">Agenda</div></a>
+		<a href="{{pathFor 'app'}}">
+			<div class="sidebarButton bigSidebarButton" id="overview">
+				<div class="selectedBorder"></div>
+				Overzicht
+			</div>
+		</a>
+		<a href="{{pathFor 'calendar'}}">
+			<div class="sidebarButton bigSidebarButton" id="calendar">
+				<div class="selectedBorder"></div>
+				Agenda
+			</div>
+		</a>
 
 		<div class="sidebarSubheading" id="classes">
 			Vakken
@@ -23,7 +32,6 @@
 		</div>
 
 		<div class="sidebarClasses" style="overflow-y: {{sidebarOverflow}}">
-			<div class="slider" id="classes"></div>
 			{{#each classes}}
 				{{#linkTo route="classView" classId=_id.toHexString}}
 					{{> sidebarItem}}
@@ -40,6 +48,7 @@
 <template name="sidebarItem">
 	<div class="sidebarButton sidebarClass" id="{{_id.toHexString}}">
 		<div class="classColorBar" style="border-color: {{__color}}"></div>
+		<div class="selectedBorder"></div>
 		<span>{{__sidebarName}}</span>
 
 		{{#if __showBadge}}
