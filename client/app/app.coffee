@@ -154,6 +154,8 @@ class @App
 			$(o.step.options.attachTo).addClass "tour-current-active"
 
 		tour.on "complete", ->
+			Router.go "app"
+			
 			swalert
 				title: "Dit was de tour!"
 				text: "Veel success! Als je hulp nodig hebt kun je altijd ctrl+? indrukken."
