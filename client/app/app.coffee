@@ -148,6 +148,9 @@ class @App
 			else if o.step.id isnt "calendar" and Router.current().route.getName() isnt "app"
 				Router.go "app"
 
+			$(".tour-current-active").removeClass "tour-current-active"
+			$(o.step.options.attachTo).addClass "tour-current-active"
+
 		tour.on "complete", ->
 			swalert
 				title: "Dit was de tour!"
