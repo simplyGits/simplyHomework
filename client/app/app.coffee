@@ -155,11 +155,13 @@ class @App
 
 		tour.on "complete", ->
 			Router.go "app"
-			
+
 			swalert
 				title: "Dit was de tour!"
 				text: "Veel success! Als je hulp nodig hebt kun je altijd ctrl+? indrukken."
 				type: "success"
+
+			Mousetrap.unbind ["escape", "left", "right"]
 
 		tour.start()
 
