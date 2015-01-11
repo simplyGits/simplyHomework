@@ -36,7 +36,7 @@ Meteor.startup ->
 		return getMail message
 
 	Meteor.users.find().observe
-		changed: (old, newDoc) ->
+		changed: (newDoc, old) ->
 			passChanged = old.services.password.bcrypt isnt newDoc.services.password.bcrypt
 			mailChanged = old.emails[0].address isnt newDoc.emails[0].address
 
@@ -65,7 +65,7 @@ Meteor.startup ->
 				Projects.update { participants: newDoc._id, classId: $nin: (x.id for x in old.classInfos) }, { $pull: participants: newDoc._id }, multi: yes
 
 	Projects.find().observe
-		changed: (oldDoc, newDoc) ->
+		changed: (newDoc, oldDoc) ->
 			if newDoc.participants.length is 0
 				Projects.remove newDoc._id
 			else if not _.contains(newDoc.participants, newDoc.ownerId)
