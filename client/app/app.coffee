@@ -145,10 +145,10 @@ class @App
 			attachTo: "div.fc-right"
 
 		tour.on "show", (o) ->
-			if o.step.id is "calendar" and Router.current().route.getName() isnt "calendar"
-				Router.go "calendar"
-			else if o.step.id isnt "calendar" and Router.current().route.getName() isnt "app"
-				Router.go "app"
+			Router.go (switch o.step.id
+				when "calendar" then "calendar"
+				else "app"
+			)
 
 			$(".tour-current-active").removeClass "tour-current-active"
 			$(o.step.options.attachTo).addClass "tour-current-active"
