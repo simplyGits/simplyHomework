@@ -1,3 +1,4 @@
+@Schemas         = {}
 @GoaledSchedules = new Meteor.Collection "goaledSchedules"
 @Classes         = new Meteor.Collection "classes"
 @Books           = new Meteor.Collection "books"
@@ -8,6 +9,82 @@
 @Tickets         = new Meteor.Collection "tickets"
 @Projects        = new Meteor.Collection "projects"
 @CalendarItems   = new Meteor.Collection "calendarItems"
+@ChatMessages    = new Meteor.Collection "chatMessages"
+
+Schemas.Classes = new SimpleSchema
+	name:
+		type: String
+		label: "Vaknaam"
+		regEx: /^[A-Z][a-z]+$/
+		index: 1
+	course:
+		type: String
+		label: "Vakafkorting"
+		regEx: /^[a-z]+$/
+	year:
+		type: Number
+	schoolVariant:
+		type: String
+		regEx: /^[a-z]+$/
+	schedules:
+		type: [Object]
+
+Schemas.Books = new SimpleSchema
+	title:
+		type: String
+	publisher:
+		type: String
+		optional: yes
+	woordjesLerenBookId:
+		type: Number
+		optional: yes
+	release:
+		type: Number
+		optional: yes
+	classId:
+		type: Meteor.Collection.ObjectID
+	utils:
+		type: [Object]
+	chapters:
+		type: [Object]
+
+Schemas.Schools = new SimpleSchema
+	name:
+		type: String
+	url:
+		type: String
+		regEx: /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/
+
+Schemas.Projects = new SimpleSchema
+	name:
+		type: String
+		index: 1
+	description:
+		type: String
+		optional: yes
+	deadline:
+		type: Date
+		index: 1
+	magisterId:
+		type: Number
+	classId:
+		type: Meteor.Collection.ObjectID
+	ownerId:
+		type: String
+		autoValue: ->
+			if not @isFromTrustedCode and @isInsert
+				@userId
+			else @unset()
+	participants:
+		type: [String]
+		autoValue: ->
+			if not @isFromTrustedCode and @isInsert
+				[@userId]
+			else @unset()
+	driveFileIds:
+		type: [String]
+
+@[key].attachSchema Schemas[key] for key of Schemas
 
 @classTransform = (tmpClass) ->
 	return _.extend tmpClass,
