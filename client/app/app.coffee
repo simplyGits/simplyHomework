@@ -90,12 +90,12 @@ class @App
 				scrollTo: true
 				buttons: [
 					{
-						text: "verder"
-						action: -> tour.next arguments...
-					}
-					{
 						text: "terug"
 						action: -> tour.back arguments...
+					}
+					{
+						text: "verder"
+						action: -> tour.next arguments...
 					}
 				]
 
