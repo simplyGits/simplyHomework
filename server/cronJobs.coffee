@@ -1,6 +1,6 @@
 SyncedCron.add
 	name: "Clear inactive users"
-	schedule: (parser) -> parser.recur().on(2).dayOfWeek().on(3).hour()
+	schedule: (parser) -> parser.recur().on(3).hour()
 	job: ->
 		amountUsersRemoved = Meteor.users.remove { "status.lastActivity": $lt: new Date().addDays(-120) }
 		usersWarned = Meteor.users.find({ "status.lastActivity": $lt: new Date().addDays(-90) }).fetch()
