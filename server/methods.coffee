@@ -23,7 +23,7 @@ Meteor.methods
 
 		fut.wait()
 
-	"multipart": (destUrl, fromUrl, options = {}) ->
+	multipart: (destUrl, fromUrl, options = {}) ->
 		@unblock()
 		headers = _.extend (options.headers ? {}), "User-Agent": "simplyHomework"
 		fut = new Future()

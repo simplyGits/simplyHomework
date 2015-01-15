@@ -93,6 +93,12 @@ Meteor.startup ->
 			recents[user._id] = times: 0
 			Meteor.setTimeout (-> delete recents[user._id] ), 300000
 
-	Accounts.validateNewUser (user) -> correctMail user.emails[0].address
+	Accounts.validateNewUser (user) ->
+		mail = user.emails[0].address
+
+		if correctMail mail
+			verifyMail mail
+			return yes
+		return no
 
 	SyncedCron.start()
