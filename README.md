@@ -22,11 +22,9 @@ Random Info
 
 License
 ===
-simply: Lieuwe Rooijakkers, holds all the right to simplyHomework.
+simply (e.g. Lieuwe Rooijakkers and Thomas Konings) holds all the right to simplyHomework.
 
-Everybody is permitted to look through the code and modify it for PERSONAL use.
-
-Code SHOULDN'T be distributed without explicit permission of simply.
+It is not permitted to modify, duplicate and/or distritube, or do anything at all with this code in any way without explicit permission of simply.
 
 How to run
 ===
