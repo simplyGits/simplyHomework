@@ -197,6 +197,7 @@ Template.addParticipantModal.events
 
 Template.fileRow.events
 	"click": (event) ->
+		return # Ripple isn't really visible.
 		target = $(event.target)
 		ripple = target.find(".ripple")
 
