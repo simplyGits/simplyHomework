@@ -76,7 +76,10 @@ pushResult = (name, result) ->
 	{ username, password } = Meteor.user().magisterCredentials
 
 	(@magister = new Magister(school, username, password, no)).ready (err) ->
-		return if err?
+		if err?
+			notify("Kan niet met Magister verbinden.", "error", -1, yes, 9)
+			return
+
 		cb @ for cb in magisterWaiters
 		magisterWaiters = []
 
