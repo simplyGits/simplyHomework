@@ -71,6 +71,7 @@ Meteor.methods
 							"profile.schoolId": info.schoolId
 							"profile.magisterPicture": if body? then "data:image/jpg;base64,#{body.toString "base64"}" else ""
 							"profile.birthDate": @profileInfo().birthDate()
+							"gavePermission": yes
 			return yes
 		catch
 			return no
