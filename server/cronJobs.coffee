@@ -14,4 +14,6 @@ SyncedCron.add
 
 			sendMail user, "simplyHomework | inactief account", m
 
-		return "Warned #{usersWarned.length} inactive users and removed #{amountUsersRemoved} users."
+		result = "Warned #{usersWarned.length} inactive users and removed #{amountUsersRemoved} users."
+		console.log result
+		return result
