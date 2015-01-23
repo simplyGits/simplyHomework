@@ -211,7 +211,7 @@ class @GradeType
 		obj._isTeacher = raw.IsDocentKolom
 		obj._hasNestedTypes = raw.HeeftOndeliggendeKolommen
 		obj._isPTA = raw.IsPTAKolom
-		
+
 		# Those should be filled in later by Course::grades(...)
 		obj._level = null # I have no idea...
 		obj._description = ""
