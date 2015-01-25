@@ -26,7 +26,7 @@ class @App
 				bookSub = Meteor.subscribe "books", null, ->
 					magisterResult "classes", (e, r) ->
 						magisterClasses.set r unless e?
-						
+
 						WoordjesLeren.getAllClasses (result) ->
 							for c in r then do (c) ->
 								engine = new Bloodhound
@@ -79,7 +79,7 @@ class @App
 					confirmButtonText: "Rondleiding"
 					cancelButtonText: "Afsluiten"
 					onSuccess: -> App.runTour()
-	
+
 	@runTour: ->
 		Router.go "app"
 
@@ -167,7 +167,7 @@ class @App
 
 		_.defer ->
 			$("div.backdrop").one "click", tour.cancel
-			
+
 			Mousetrap.bind "escape", tour.cancel
 			Mousetrap.bind "left", ->
 				if tour.currentStep.id is "step-0" then tour.cancel()
@@ -189,7 +189,7 @@ class @App
 		App._currentCount++
 
 		itemName = _.find _.keys(App._setupPathItems), (k) -> not App._setupPathItems[k].done
-		
+
 		item = App._setupPathItems[itemName]
 		item.func App._currentCount, App._fullCount
 		item.done = yes
@@ -621,7 +621,7 @@ Template.app.rendered = ->
 				.done ->
 					Meteor.users.update Meteor.userId(), $set: hasGravatar: yes
 					Meteor.call "removeMagisterPicture"
-	
+
 	notify("Je hebt je account nog niet geverifiëerd!", "warning") unless Meteor.user().emails[0].verified
 
 	assignmentNotification = null
