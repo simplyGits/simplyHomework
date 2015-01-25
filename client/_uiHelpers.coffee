@@ -138,18 +138,33 @@ class @NotificationsManager
 						delete NotificationsManager._notifications[@id]
 					), 2000
 					NotificationsManager._updatePositions()
-			
+
 			height: -> unless @_htmlNotification? then @element().outerHeight(yes) else 0
-			
+
 			content: (content, html = false) ->
-				return if @_htmlNotification?
+				if @_htmlNotification?
+					@_htmlNotification.close()
+
+					text = if html then body.trim().replace(/(<[^>]*>)|(&nbsp;)/g, "").replace("<br>", "\n") else body.trim()
+					x = new Notification text.split("\n")[0], body: text.split("\n")[1..].join("\n"), tag: notId, icon: image
+					notHandle._htmlNotification = x
+					x.onclick = ->
+						window.focus()
+						onClick?()
+						notHandle.hide()
+					x.onclose = ->
+						onDismissed?()
+						notHandle.hide()
+
+					return
+
 				if content?
 					$(".notification##{notId} div").html (if html then body else _.escape body).replace /\n/g, "<br>"
 					NotificationsManager._updatePositions()
 					return content
 				else
 					return $(".notification##{notId} div")[if html then "html" else "text"]()
-					
+
 			element: -> $(".notification##{notId}")
 
 		if document.hasFocus() or not allowDesktopNotifications or not Session.get "allowNotifications"
@@ -194,7 +209,7 @@ class @NotificationsManager
 
 				callback = callbacks[i] ? (->)
 				do (callback) -> btn[0].onclick = (event) -> callback event, notHandle
-				
+
 				d.append btn
 
 			unless time is -1 # Handles that sick timeout, yo.
