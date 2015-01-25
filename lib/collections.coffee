@@ -67,8 +67,10 @@ Schemas.Projects = new SimpleSchema
 		index: 1
 	magisterId:
 		type: Number
+		optional: yes
 	classId:
 		type: Meteor.Collection.ObjectID
+		optional: yes
 	ownerId:
 		type: String
 		autoValue: ->
