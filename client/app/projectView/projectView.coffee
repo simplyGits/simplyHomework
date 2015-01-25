@@ -192,6 +192,16 @@ Template.addParticipantModal.rendered = ->
 	).on "typeahead:selected", (obj, datum) -> Session.set "currentSelectedPersonDatum", datum
 
 addUser = ->
+	# Handle cases where the user didn't select an autocomplete
+	if Session.get("currentSelectedPersonDatum").fullName.toLowerCase().indexOf($("#personNameInput").val().toLowerCase()) is -1
+		if (val = _.find getOthers(), (p) -> p.fullName.toLowerCase().indexOf($("#personNameInput").val().toLowerCase()) is 0)?
+			Session.set "currentSelectedPersonDatum", val
+		else
+			$("#addParticipantModal").addClass "animated shake"
+			$('#addParticipantModal').one 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', ->
+				$("#addParticipantModal").removeClass "animated shake"
+			return
+
 	Projects.update currentProject()._id, $push: participants: Session.get("currentSelectedPersonDatum")._id
 	$("#addParticipantModal").modal "hide"
 	notify Locals["nl-NL"].ProjectPersonAddedNotice(Session.get("currentSelectedPersonDatum").profile.firstName), "notice"
