@@ -3,7 +3,7 @@
 		<div class="background" style="background-color: {{backColor}}; border-color: {{borderColor}}"></div>
 		{{#if sameUser}}
 			<a href="http://en.gravatar.com/emails/" target="_blank">
-				<img class="personPicture" style="pointer-events: initial; border-color: {{borderColor}}" src="{{gravatar this 200}}" width="150" height="150"/>
+				<img class="personPicture" style="pointer-events: initial; border-color: {{borderColor}}" src="{{gravatar this 200}}" width="150" height="150" data-toggle="tooltip" title="Klik hier om je foto aan te passen"/>
 			</a>
 		{{else}}
 			<img class="personPicture" style="border-color: {{borderColor}}" src="{{gravatar this 200}}" width="150" height="150"/>
@@ -11,7 +11,7 @@
 		<div class="personName robotoHeader">
 			<b>{{profile.firstName}}</b> {{profile.lastName}}
 		</div>
-		
+
 		{{#unless sameUser}}
 			<button type="button" class="btn btn-trans">chat</button>
 		{{/unless}}
