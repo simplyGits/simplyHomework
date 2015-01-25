@@ -63,6 +63,11 @@ Template.projectView.rendered = ->
 
 				_.remove loading, r.id
 
+	Mousetrap.bind "a p", (e) ->
+		e.preventDefault()
+		$("#addParticipantModal").modal backdrop: no
+		$("#personNameInput").focus()
+
 Template.projectView.helpers
 	files: ->
 		_(cachedProjectFiles.get())
