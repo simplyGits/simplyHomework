@@ -68,14 +68,16 @@
 						{{#linkTo route="personView" data=currentUser}}
 							{{> selfRow}}
 						{{/linkTo}}
-						<div class="itemContainerSmallDivider"></div>
-						{{#each persons}}
-							{{> personRow}}
+						{{#if persons}}
+							<div class="itemContainerSmallDivider"></div>
+							{{#each persons}}
+								{{> personRow}}
 
-							{{#unless last persons}}
-								<div class="itemContainerSmallDivider"></div>
-							{{/unless}}
-						{{/each}}
+								{{#unless last persons}}
+									<div class="itemContainerSmallDivider"></div>
+								{{/unless}}
+							{{/each}}
+						{{/if}}
 					</div>
 				</div>
 			</div>
