@@ -712,7 +712,9 @@ Template.app.rendered = ->
 			studyGuide.parts = _.sortBy ( { id: x.id(), description: x.description(), fileSizes: (z.size() for z in x._files) } for x in r ), "id"
 			push studyGuide
 
-	if (val = Meteor.user().profile.birthDate?.date()) is Date.today() and not amplify.store("congratulated")?
+	val = Meteor.user().profile.birthDate
+	now = new Date()
+	if val?.getMonth() is now.getMonth() and val?.getDate() is now.getDate() and not amplify.store("congratulated")?
 		swalert title: "Gefeliciteerd!", text: "Gefeliciteerd met je #{moment().diff(val, "years")}e verjaardag!"
 		amplify.store "congratulated", yes, expires: 172800000
 
