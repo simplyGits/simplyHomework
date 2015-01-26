@@ -112,6 +112,3 @@ Meteor.methods
 	getUsersCount: ->
 		@unblock()
 		return Meteor.users.find().count()
-
-	congratulate: ->
-		return unless @userId? and Meteor.users.findOne(@userId).profile.birthDate.date() is Date.today()

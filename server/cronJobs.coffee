@@ -17,3 +17,21 @@ SyncedCron.add
 		result = "Warned #{usersWarned.length} inactive users and removed #{amountUsersRemoved} users."
 		console.log result
 		return result
+
+SyncedCron.add
+	name: "Congratulate users"
+	schedule: (parser) -> parser.recur().on(5).hour()
+	job: ->
+		users = Meteor.users.find("this.profile.birthDate.getMonth() === now.getMonth() && this.profile.birthDate.getDate() === now.getDate()").fetch()
+
+		for user in users
+			m = "Hey #{user.profile.firstName}!\n\n" +
+
+			"Wij wensen je een fijne verjaardag! :D\n" +
+			"Je #{moment().diff user.profile.birthDate, "years"}e was het toch?"
+
+			sendMail user, "simplyHomework | Gefeliciteerd!", m
+
+		result = "Congratulated #{users.length} users."
+		console.log result
+		return result
