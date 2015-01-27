@@ -24,12 +24,6 @@ setHardCacheAppointments = (data) ->
 	_.remove hardCachedAppointments, (x) -> x.end() < new Date().addDays(-7) or x.begin() > new Date().addDays(14)
 	amplify.store "hardCachedAppointments_#{Meteor.userId()}", JSON.decycle(hardCachedAppointments), expires: 432000000
 
-Meteor.setInterval ( ->
-	if Meteor.status().connected
-		cachedAppointments[Session.get("currentDateRange")] = undefined
-		$(".calendar").fullCalendar "refetchEvents"
-), 1800000
-
 appointmentToEvent = (appointment) ->
 	type = null
 	type = "quiz" if /\b((so)|((luister ?)?toets)|(schriftelijke overhoring))/i.test(appointment.content()?.split(" ")?[0] ? "")
@@ -54,7 +48,7 @@ appointmentToEvent = (appointment) ->
 			when 1 then "#32A8CE"
 			when 2, 3 then "#FF4136"
 			when 4, 5 then "#FF851B"
-			
+
 			else "#3a87ad"
 	clickable: not appointment.scrapped()
 	open: no
@@ -107,40 +101,35 @@ Template.calendar.rendered = ->
 			month: "ddd"
 			week: "ddd D-M"
 			day: "dddd"
+
 		events: (start, end, timezone, callback) ->
 			start = start.toDate(); end = end.toDate()
 
-			Session.set "currentDateRange", "#{start.getTime()}#{end.getTime()}"
+			Session.set "currentDateRange", [start, end]
 			calendarItems = CalendarItems.find({}, transform: calendarItemToEvent).fetch()
 
-			if (val = cachedAppointments["#{start.getTime()}#{end.getTime()}"])?
-				callback val.concat calendarItems
-			else
-				unless (val = getHardCacheAppointments(start, end)).length is 0
-					callback (appointmentToEvent x for x in val).concat calendarItems
-					updateNeeded = yes
-
-				unless root.magister?
-					setTimeout (-> $(".calendar").fullCalendar "refetchEvents"), 250
+			allCached = magisterAppointment start, end, no, yes, (error, result, fromCache) ->
+				unless fromCache
+					$(".calendar").fullCalendar "refetchEvents" # Needed to get a new callback since we already used the current one for the hard cached appointments.
 					return
 
-				root.magister.ready -> @appointments start, end, no, (error, result) ->
-					setHardCacheAppointments result
-					result.map (appointment) ->
-						return appointment unless appointment.scrapped()
-						a = _.find getHardCacheAppointments(start, end), (a) -> "#{appointment.begin().getTime()}#{appointment.end().getTime()}" is "#{a.begin().getTime()}#{a.end().getTime()}"
-						if a?
-							appointment._description = a._description
-							appointment._location = a._location
-							appointment._begin = a._begin
-							appointment._end = a._end
-						return appointment
-					
-					events = (appointmentToEvent x for x in result)
+				result.map (appointment) ->
+					return appointment unless appointment.scrapped()
+					a = _.find getHardCacheAppointments(start, end), (a) -> "#{appointment.begin().getTime()}#{appointment.end().getTime()}" is "#{a.begin().getTime()}#{a.end().getTime()}"
+					if a?
+						appointment._description = a._description
+						appointment._location = a._location
+						appointment._begin = a._begin
+						appointment._end = a._end
+					return appointment
 
-					cachedAppointments["#{start.getTime()}#{end.getTime()}"] = events
-					if updateNeeded then $(".calendar").fullCalendar "refetchEvents"
-					else callback events.concat calendarItems
+				events = (appointmentToEvent x for x in result)
+
+				callback events.concat calendarItems
+
+			unless allCached
+				callback (appointmentToEvent x for x in getHardCacheAppointments(start, end)).concat calendarItems
+
 		dayClick: (date, event, view) ->
 			clearTimeout dblDateResetHandle
 			date = date.toDate()
@@ -207,6 +196,11 @@ Template.calendar.rendered = ->
 			return if $("input, textarea").is(":focus") or $("body").hasClass "shepherd-active"
 			$(".calendar").fullCalendar if event.which is 39 then "next" else if event.which is 37 then "prev"
 
+	@autorun (c) -> # Keep the current view updated.
+		if Meteor.status().connected and not c.firstRun
+			updatedAppointments Session.get("currentDateRange")...
+			$(".calendar").fullCalendar "refetchEvents"
+
 open = ->
 	$("div.addAppointmentForm").addClass "transformIn"
 	$("div.backdrop").addClass "dimmed"
@@ -228,7 +222,7 @@ infos = [
 	[/volgende (\w+) les/i, 1, "lesson", 1]
 	[/volgende les (\w+)/i, 1, "lesson", 1]
 	[/(\w+) volgende les/i, 1, "lesson", 1]
-	
+
 	[/vorige (\w+) les/i, -1, "lesson", 1]
 	[/vorige les (\w+)/i, -1, "lesson", 1]
 	[/(\w+) vorige les/i, -1, "lesson", 1]

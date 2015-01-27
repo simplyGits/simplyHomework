@@ -1,10 +1,9 @@
 currentDate = new ReactiveVar
-beginDate = null
 @cachedAppointments = cachedAppointments = ReactiveVar {}
 
 fetch = (date = currentDate().get()) =>
 	return if cachedAppointments.get()["#{date.getTime()}"]?
-	@magister.ready -> @appointments date.addDays(-14, yes), no, (error, result) ->
+	@magisterObj (m) -> m.ready -> @appointments date, no, (error, result) ->
 		x = cachedAppointments.get()
 		x["#{date.getTime()}"] = _.map result, ((appointment) -> _.extend appointment,
 			__colorType: (

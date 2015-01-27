@@ -667,7 +667,7 @@ Template.app.rendered = ->
 			else
 				recentGradesNotification = NotificationsManager.notify body: s, type: "warning", time: -1, html: yes, onDismissed: -> Meteor.users.update(Meteor.userId(), $set: gradeNotificationDismissTime: new Date)
 
-	magisterResult "appointments this week", (e, r) ->
+	magisterAppointment new Date(), new Date().addDays(7), (e, r) ->
 		unless _.isArray Meteor.user().profile.groupInfos
 			Meteor.users.update Meteor.userId(), $set: "profile.groupInfos": []
 

@@ -62,7 +62,7 @@ Template.taskRow.events
 		t = $ event.target
 		checked = t.is(":checked")
 		taskId = t.attr "taskid"
-		
+
 		@isDone checked
 		homeworkItems.dep.changed()
 
@@ -101,13 +101,13 @@ Template.appOverview.events
 
 Template.appOverview.rendered = ->
 	template = @
-	magisterResult "appointments tomorrow", (e, r) ->
+	magisterAppointment new Date().addDays(1), (e, r) ->
 		return if e?
 
 		appointmentsTommorow.set magisterAppointmentTransform _.filter r, (a) -> not a.fullDay() and a.classes().length > 0 and _.contains [5..19], a.begin().getHours()
 
 	updateInterval = null
-	magisterResult "appointments today", (e, r) ->
+	magisterAppointment new Date(), (e, r) ->
 		return if e?
 
 		template.autorun ->
@@ -119,7 +119,7 @@ Template.appOverview.rendered = ->
 	$("#currentDate > span").tooltip placement: "bottom", html: true, title: "<h4>Week: #{moment().week()}</h4>"
 
 	unless Get.schedular()?.biasToday() is 0
-		magisterResult "appointments this week", (error, result) ->
+		magisterAppointment new Date().addDays(-1), new Date().addDays(7), (error, result) ->
 			return if error?
 
 			date = switch Helpers.weekDay new Date()
