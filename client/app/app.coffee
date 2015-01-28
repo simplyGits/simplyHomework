@@ -756,34 +756,6 @@ setSwipe = ->
 	@closeSidebar = -> snapper.close()
 
 setShortcuts = ->
-	prevRouteData = null
-	nextRouteData = null
-	Tracker.autorun ->
-		switch Router.current().route.getName()
-			when "app"
-				prevRouteData = ["app"]
-				nextRouteData = ["calendar"]
-
-			when "calendar"
-				prevRouteData = ["app"]
-				nextRouteData = ["classView", classId: Classes.findOne({}, sort: "name": 1)._id.toHexString()]
-
-			when "classView"
-				x = classes().fetch()
-				currentClass = _.find x, (c) -> EJSON.equals c._id, Router.current().data()._id
-				currentClassIndex = x.indexOf(currentClass)
-
-				if currentClassIndex is 0 then prevRouteData = ["calendar"]
-				else prevRouteData = ["classView", classId: classes().fetch()[currentClassIndex - 1]?._id.toHexString()]
-
-				nextClassId = classes().fetch()[currentClassIndex + 1]?._id.toHexString()
-				if nextClassId? then  nextRouteData = ["classView", classId: nextClassId]
-				else nextRouteData = ["classView", classId: currentClass._id.toHexString()]
-
-			else
-				prevRouteData = ["calendar"]
-				nextRouteData = ["calendar"]
-
 	Mousetrap.bind ["a", "c"], ->
 		Router.go "calendar"
 		return no
@@ -792,12 +764,23 @@ setShortcuts = ->
 		Router.go "app"
 		return no
 
+	buttonGoto = (delta) ->
+		buttons = $(".sidebarButton").get()
+		oldIndex = buttons.indexOf $(".sidebarButton.selected").get()[0]
+		index = (oldIndex + delta) % buttons.length
+
+		id = buttons[if index is -1 then buttons.length - 1 else index].id
+		switch id
+			when "overview" then Router.go "app"
+			when "calendar" then Router.go "calendar"
+			else Router.go "classView", classId: id
+
 	Mousetrap.bind ["shift+up", "shift+k"], ->
-		Router.go prevRouteData...
+		buttonGoto -1
 		return no
 
 	Mousetrap.bind ["shift+down", "shift+j"], ->
-		Router.go nextRouteData...
+		buttonGoto 1
 		return no
 
 	Mousetrap.bind ["ctrl+/", "command+/", "ctrl+?", "command+?"], ->
