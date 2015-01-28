@@ -319,6 +319,7 @@ class @Magister
 	# @param [amount=50] {Number} The amount of Assignments to fetch from the server.
 	# @param [skip=0] {Number} The amount of Assignments to skip.
 	# @param [fillPersons=true] {Boolean} Whether or not to download the full user objects from the server.
+	# @param [fillClass=true] {Boolean} Whether or not to download the full class objects from the server. If this is false Assignment.class() will return null.
 	# @param callback {Function} A standard callback.
 	# 	@param [callback.error] {Object} The error, if it exists.
 	# 	@param [callback.result] {Assignment[]} An array containing Assignments.
@@ -327,20 +328,23 @@ class @Magister
 		@_forceReady()
 
 		[amount, skip] = _.filter arguments, (a) -> _.isNumber a
-		download = _.find arguments, (a) -> _.isBoolean a
+		[fillPersons, fillClass] = _.filter arguments, (a) -> _.isBoolean a
 		callback = _.find arguments, (a) -> _.isFunction a
 
 		return unless callback?
-		download ?= yes
+		fillPersons ?= yes
+		fillClass ?= yes
 		amount ?= 50
 		skip ?= 0
 
-		@courses (e, r) ->
-			if r? and r.length isnt 0
-				r[0].classes (e, r) ->
-					if r? and r.length isnt 0 then cb r
-					else cb()
-			else cb()
+		if fillClass
+			@courses (e, r) ->
+				if r? and r.length isnt 0
+					r[0].classes (e, r) ->
+						if r? and r.length isnt 0 then cb r
+						else cb()
+				else cb()
+		else cb()
 		cb = (classes) =>
 			@http.get "#{@_personUrl}/opdrachten?skip=#{skip}&top=#{amount}&status=alle", {}, (error, result) =>
 				if error? then callback error, null
@@ -353,8 +357,9 @@ class @Magister
 							assignment = Assignment._convertRaw @, EJSON.parse(result.content)
 
 							if classes? then assignment._class = _.find classes, (c) -> c.abbreviation() is assignment._class
+							else if not fillClass then assignment._class = null
 
-							if download
+							if fillPersons
 								teachers = assignment.teachers() ? []
 
 								@fillPersons teachers, ((e, r) ->
