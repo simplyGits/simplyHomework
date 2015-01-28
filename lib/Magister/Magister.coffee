@@ -236,7 +236,7 @@ class @Magister
 				callback null, []
 				return undefined
 			pushResult = _helpers.asyncResultWaiter persons.length, (r) -> callback null, r
-			
+
 			for p in persons
 				try
 					@getPersons _.last(p.fullName().split " "), (p._type ? overwriteType), (e, r) ->
@@ -300,6 +300,7 @@ class @Magister
 	#
 	# @method studyGuides
 	# @async
+	# @param [fillClass=true] {Boolean} Whether or not to download the full class objects from the server. If this is false StudyGuide.class() will return null.
 	# @param callback {Function} A standard callback.
 	# 	@param [callback.error] {Object} The error, if it exists.
 	# 	@param [callback.result] {StudyGuide[]} An array containing StudyGuides.
@@ -307,9 +308,28 @@ class @Magister
 	studyGuides: (callback) ->
 		@_forceReady()
 
-		@http.get "#{@_pupilUrl}/studiewijzers?peildatum=#{_helpers.urlDateConvert new Date}", {}, (error, result) =>
-			if error? then callback error, null
-			else callback null, ( StudyGuide._convertRaw @, s for s in EJSON.parse(result.content).Items )
+		fillClass = _.find(arguments, (a) -> _.isBoolean a) ? yes
+		callback = _.find arguments, (a) -> _.isFunction a
+
+		if fillClass
+			@courses (e, r) ->
+				if r? and r.length isnt 0
+					r[0].classes (e, r) ->
+						if r? and r.length isnt 0 then cb r
+						else cb()
+				else cb()
+		else cb()
+		cb = (classes) =>
+			@http.get "#{@_pupilUrl}/studiewijzers?peildatum=#{_helpers.urlDateConvert new Date}", {}, (error, result) =>
+				if error? then callback error, null
+				else
+					result = ( StudyGuide._convertRaw @, s for s in EJSON.parse(result.content).Items )
+
+					for studyGuide in result then do (studyGuide) ->
+						if classes? then studyGuide._class = _.find classes, (c) -> c.abbreviation() is studyGuide._class
+						else studyGuide._class = null
+
+					callback null, result
 
 	###*
 	# Gets the Assignments for the current user.
@@ -357,7 +377,7 @@ class @Magister
 							assignment = Assignment._convertRaw @, EJSON.parse(result.content)
 
 							if classes? then assignment._class = _.find classes, (c) -> c.abbreviation() is assignment._class
-							else if not fillClass then assignment._class = null
+							else assignment._class = null
 
 							if fillPersons
 								teachers = assignment.teachers() ? []
@@ -396,7 +416,7 @@ class @Magister
 			if r? and r.length isnt 0
 				_.last(r).classes (e, r) ->
 					classes = r if r? and r.length isnt 0
-			
+
 			@http.get url, {}, (error, result) =>
 				if error? then callback error, null
 				else
@@ -419,7 +439,7 @@ class @Magister
 	###
 	profileInfo: (callback) ->
 		@_forceReady()
-		
+
 		callback? null, @_profileInfo
 		return @_profileInfo
 
