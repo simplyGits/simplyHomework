@@ -176,7 +176,7 @@ class @Course
 						for g in _.filter(r, (g) -> g.class().id() is c.id())
 							g._class = c
 
-					callback null, r
+					callback null, _.sortBy r, (g) -> g.dateFilledIn()
 
 				for g in result
 					do (g) =>
