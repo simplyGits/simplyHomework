@@ -741,9 +741,7 @@ Template.app.rendered = ->
 			amplify.store "allowCookies", yes
 			$(".cookiesContainer").velocity { bottom: "-500px" }, 2400, "easeOutExpo", -> $(@).remove()
 
-	Mousetrap.bind ["ctrl+/", "command+/", "ctrl+?", "command+?"], ->
-		App.runTour()
-		return no
+	setShortcuts()
 
 setSwipe = ->
 	snapper = new Snap
@@ -758,3 +756,52 @@ setSwipe = ->
 	snapper.on "animated", -> Session.set "sidebarOpen", snapper.state().state is "left"
 
 	@closeSidebar = -> snapper.close()
+
+setShortcuts = ->
+	prevRouteData = null
+	nextRouteData = null
+	Tracker.autorun ->
+		switch Router.current().route.getName()
+			when "app"
+				prevRouteData = ["app"]
+				nextRouteData = ["calendar"]
+
+			when "calendar"
+				prevRouteData = ["app"]
+				nextRouteData = ["classView", classId: Classes.findOne({}, sort: "name": 1)._id.toHexString()]
+
+			when "classView"
+				x = classes().fetch()
+				currentClass = _.find x, (c) -> EJSON.equals c._id, Router.current().data()._id
+				currentClassIndex = x.indexOf(currentClass)
+
+				if currentClassIndex is 0 then prevRouteData = ["calendar"]
+				else prevRouteData = ["classView", classId: classes().fetch()[currentClassIndex - 1]?._id.toHexString()]
+
+				nextClassId = classes().fetch()[currentClassIndex + 1]?._id.toHexString()
+				if nextClassId? then  nextRouteData = ["classView", classId: nextClassId]
+				else nextRouteData = ["classView", classId: currentClass._id.toHexString()]
+
+			else
+				prevRouteData = ["calendar"]
+				nextRouteData = ["calendar"]
+
+	Mousetrap.bind ["a", "c"], ->
+		Router.go "calendar"
+		return no
+
+	Mousetrap.bind "o", ->
+		Router.go "app"
+		return no
+
+	Mousetrap.bind ["shift+up", "shift+k"], ->
+		Router.go prevRouteData...
+		return no
+
+	Mousetrap.bind ["shift+down", "shift+j"], ->
+		Router.go nextRouteData...
+		return no
+
+	Mousetrap.bind ["ctrl+/", "command+/", "ctrl+?", "command+?"], ->
+		App.runTour()
+		return no
