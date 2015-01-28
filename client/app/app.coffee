@@ -617,10 +617,8 @@ Template.app.rendered = ->
 
 	Deps.autorun (c) ->
 		if Meteor.user()? and Meteor.status().connected and not Meteor.user().hasGravatar
-			$.get "#{Meteor.user().gravatarUrl}&s=1&d=404"
-				.done ->
-					Meteor.users.update Meteor.userId(), $set: hasGravatar: yes
-					Meteor.call "removeMagisterPicture"
+			$.get("#{Meteor.user().gravatarUrl}&s=1&d=404").done ->
+				Meteor.users.update Meteor.userId(), $set: hasGravatar: yes
 
 	notify("Je hebt je account nog niet geverifiëerd!", "warning") unless Meteor.user().emails[0].verified
 
