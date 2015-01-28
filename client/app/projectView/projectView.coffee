@@ -7,6 +7,7 @@ cachedProjectFiles = new ReactiveVar {}
 	for participant, i in Meteor.users.find({_id: $in: currentProject().participants ? []}, sort: "profile.firstName": 1).fetch()
 		tmp.push _.extend participant,
 			__statusColor: if participant.status.idle then "#FF851B" else if participant.status.online then "#2ECC40" else "#FF4136"
+			__isOwner: Router.current().data().ownerId is Meteor.userId()
 	return tmp
 
 @getOthers = ->
@@ -77,6 +78,7 @@ Template.projectView.helpers
 			.reverse()
 			.value()
 	persons: -> _.reject getParticipants(), (p) -> EJSON.equals p._id, Meteor.userId()
+	isOwner: -> Router.current().data().ownerId is Meteor.userId()
 
 	showRightHeader: -> if (currentProject().participants ? []).length is 1 then false else true
 	friendlyDeadline: ->

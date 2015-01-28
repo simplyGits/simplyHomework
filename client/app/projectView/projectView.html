@@ -60,7 +60,9 @@
 			<div class="col-sm-6">
 				<div class="projectViewItemContainer" style="height: calc(100vh - {{heightOffset}}px)">
 					<span class="robotoThin itemContainerHeader">
-						<span class="fa fa-plus" id="addPersonIcon" onmouseover="$(this).velocity({ opacity: 1 }, 100);" onmouseleave="$(this).velocity({ opacity: .5 }, 100);"></span>
+						{{#if isOwner}}
+							<span class="fa fa-plus" id="addPersonIcon" onmouseover="$(this).velocity({ opacity: 1 }, 100);" onmouseleave="$(this).velocity({ opacity: .5 }, 100);"></span>
+						{{/if}}
 						Mensen
 					</span>
 					<div class="itemContainerDivider"></div>
@@ -105,7 +107,9 @@
 	<div class="personRow">
 		<img src="{{gravatar this 100}}" width="50" height="50" class="personImage" style="border-color: {{__statusColor}}">
 		<span class="personName"><span style="color: black">{{profile.firstName}}</span> {{profile.lastName}}</span>
-		<span class="removePersonButton">&times;</span>
+		{{#if __isOwner}}
+			<span class="removePersonButton">&times;</span>
+		{{/if}}
 	</div>
 </template>
 
