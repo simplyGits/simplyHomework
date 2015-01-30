@@ -1,5 +1,6 @@
 @import "jeet"
 @import "axis"
+@import "../main"
 
 div.notification
 	z-index: 98765
@@ -36,7 +37,7 @@ div.notification.error
 
 div.notification.notice
 	flash("notice")
-	
+
 div.notification.success
 	flash("success")
 
@@ -47,24 +48,57 @@ div.notification.transformIn
 	opacity: 1
 	transform: translateY(0px)
 
+// // Item Container
+div.itemContainer
+	width: 100%
+	margin-top: 10px
+	border: 1px lightgray solid
+	border-radius: 15px
+	padding-top: 50px
+
+	+mobile()
+		height: initial
+
+div.itemContainerDivider
+	display: inline-table
+	width: calc(100% - 31px)
+	border: 0px lightgray solid
+	border-top-width: 1px
+	position: absolute
+	top: 65px
+
+div.itemContainerContent
+	text-rendering: optimizeLegibility
+	roboto(600)
+
+	position: relative
+	height: 95%
+	min-height: 250px
+	margin-top: 10px
+	overflow-y: auto
+
+	a
+		text-decoration: none !important
+// \\ Item Container
+
 div.classRemoveRow
 	font-size: 15px
 
 span#checkboxLabel
 	font-weight: initial
-	
+
 .modal#settingsModal > .modal-dialog
 	center(300px)
-	
+
 	.modal-title
 		text-align: center
-		
+
 	button
 		width: 100%
-		
+
 	button:not(:last-child)
 		margin-bottom: 5px
-		
+
 #addProjectModal .modal-body
 	h3:first-child
 		margin-top: 0
@@ -72,34 +106,34 @@ span#checkboxLabel
 	h3
 		text-align: center
 		text-rendering: optimizeLegibility
-		
+
 	.assignmentRow
 		height: 40px
 		line-height: 2
-		
+
 		.className
 			col(1/8)
-			
+
 		.assignmentName
 			col(1/1.6)
-			
+
 		button
 			text-align: center !important
 			col(1/4)
-	
+
 #getMagisterClassesModalBody
 	text-align: center
-	
+
 	div.modal-body
 		scroll-y: auto
-	
+
 	#spinner
 		height: 60px
-	
+
 #magisterClassesResult
 	margin-top: 15px
 	width: 100%
-		
+
 #magisterClassesResult > div
 	width: 100%
 	height: 30px
@@ -112,7 +146,7 @@ span#checkboxLabel
 		float: left
 		margin-right: 10px
 		margin-top: 3px
-		
+
 	i.fa-times:hover
 		opacity: 1
 
@@ -124,7 +158,7 @@ span#checkboxLabel
 		display: inline-block
 		margin-right: 10px
 		height: 25px
-		
+
 		i
 			margin-left: -8px
 			margin-top: -3px
@@ -135,11 +169,11 @@ span#checkboxLabel
 		float: left
 		max-width: 300px
 		white-space: nowrap
-		
+
 	input#method
 		float: right
 		width: auto
-	
+
 div.backdrop
 	absolute: top bottom left right
 	opacity: 0
@@ -156,10 +190,10 @@ div.backdrop.dimmed
 
 body.shepherd-active > div.backdrop
 	@extend div.backdrop.dimmed
-		
+
 body.shepherd-active > .shepherd-step
 	z-index: 9999
-	
+
 .tour-current-active
 	z-index: 9999
 	position: relative

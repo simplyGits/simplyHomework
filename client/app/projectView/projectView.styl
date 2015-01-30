@@ -74,31 +74,15 @@ span#addPersonIcon, span#addFileIcon
 	cursor: pointer
 	opacity: .5
 	-moz-padding-end: 30px
-	
+
 span.projectTitle
 	absolute: left 40px right 35px
 	overflow-x: hidden
 	text-overflow: ellipsis
 
 div.projectViewItemContainer
-	width: 100%
-	height: calc(100vh - 350px)
-	margin-top: 10px
-	border: 1px lightgray solid
-	border-radius: 15px
-	padding-top: 50px
-	min-height: 50px
-	
 	div.itemContainerContent
-		text-rendering: optimizeLegibility
-		roboto(600)
-		margin-top: 10px
-		height: 95%
-		overflow-y: auto
 		font-size: 35px
-		
-		a
-			text-decoration: none !important
 
 div.itemContainerSmallDivider
 	center(85%)
@@ -135,13 +119,13 @@ span.removePersonButton, span.removeFileButton
 	pointer-events: initial
 
 	transition: opacity .1s ease-in-out
-	
+
 	+mobile()
 		opacity: .4
 
 div.fileRow:hover, div.personRow:hover
 	background-color: lightgray
-	
+
 	span.removePersonButton, span.removeFileButton
 		opacity: .4
 
@@ -165,7 +149,7 @@ div.fileRow:hover, div.personRow:hover
 
 .personSuggestionName
 	margin-left: 15px
-	
+
 span#changeProjectIcon
 	color: lightgray
 	vertical-align: middle
@@ -209,7 +193,7 @@ button#leaveProjectButton
 
 	div.itemContainerContent
 		margin-top: 20px
-		
+
 	span.personName
 		width: calc(100% - 110px)
 		display: inline-block
