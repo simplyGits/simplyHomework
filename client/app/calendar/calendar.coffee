@@ -5,10 +5,6 @@ dblDate = null
 dblDateResetHandle = null
 keydownSet = no
 
-cachedAppointments = {}
-
-Deps.autorun => if Meteor.user()? then @hardCachedAppointments = amplify.store("hardCachedAppointments_#{Meteor.userId()}") ? []
-
 getHardCacheAppointments = (begin, end) ->
 	x = _.filter (Appointment._convertStored root.magister, a for a in hardCachedAppointments), (x) -> x.begin() >= begin and x.end() <= end
 	return _.reject x, (a) -> a.id() isnt -1 and _.any(x, (z) -> z isnt a and z.begin() is a.begin() and z.end() is a.end() and z.description() is a.description())
