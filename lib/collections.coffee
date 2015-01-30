@@ -1,15 +1,15 @@
 @Schemas         = {}
-@GoaledSchedules = new Meteor.Collection "goaledSchedules"
-@Classes         = new Meteor.Collection "classes"
-@Books           = new Meteor.Collection "books"
-@Schools         = new Meteor.Collection "schools"
-@Schedules       = new Meteor.Collection "schedules"
-@Votes           = new Meteor.Collection "votes"
-@Utils           = new Meteor.Collection "utils"
-@Tickets         = new Meteor.Collection "tickets"
-@Projects        = new Meteor.Collection "projects"
-@CalendarItems   = new Meteor.Collection "calendarItems"
-@ChatMessages    = new Meteor.Collection "chatMessages"
+@GoaledSchedules = new Ground.Collection "goaledSchedules"
+@Classes         = new Ground.Collection "classes"
+@Books           = new Ground.Collection "books"
+@Schools         = new Ground.Collection "schools"
+@Schedules       = new Ground.Collection "schedules"
+@Votes           = new Ground.Collection "votes"
+@Utils           = new Ground.Collection "utils"
+@Tickets         = new Ground.Collection "tickets"
+@Projects        = new Ground.Collection "projects"
+@CalendarItems   = new Ground.Collection "calendarItems"
+@ChatMessages    = new Ground.Collection "chatMessages"
 
 Schemas.Classes = new SimpleSchema
 	name:
