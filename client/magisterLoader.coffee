@@ -68,6 +68,7 @@ setHardCacheAppointments = (data) ->
 		unless disallowHardCache
 			callback null, getHardCacheAppointments dates[0], _.last(dates)
 
+		NProgress.start()
 		magisterObj (m) -> m.appointments dates[0], _.last(dates), download, (e, r) ->
 			if e?
 				callback e, null, yes
@@ -106,6 +107,7 @@ setHardCacheAppointments = (data) ->
 			result.pushMore r
 			setHardCacheAppointments result
 			callback null, result
+			NProgress.done()
 
 	return dates.length is prefetchedAppointmentInfos.length # Returns true if all asked appointments are in cache.
 

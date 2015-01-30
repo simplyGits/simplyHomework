@@ -144,16 +144,17 @@ Template.calendar.rendered = ->
 			dblDate = date
 
 			dblDateResetHandle = _.delay ( -> dblDate = dblDateResetHandle = null ), 500
+
 		eventClick: (calendarEvent, event) ->
 			unless calendarEvent.open
 				calendarEvent.open = yes
 			else
 				calendarEvent.open = no
-		loading: (isLoading) -> if isLoading then NProgress.start() else NProgress.done()
 		eventAfterRender: (event, element) ->
 			event.element = element
 			if event.appointment?
 				element.popover content: event.appointment.content(), placement: "auto top", animation: yes, delay: {show: 750}, trigger: "hover", container: ".content"
+
 			return unless event.clickable
 			
 			element = $(element)
