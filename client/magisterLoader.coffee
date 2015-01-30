@@ -22,7 +22,7 @@ setHardCacheAppointments = (data) ->
 
 		hardCachedAppointments.push appointment._makeStorable()
 
-	_.remove hardCachedAppointments, (x) -> x.end() < new Date().addDays(-7) or x.begin() > new Date().addDays(14)
+	_.remove hardCachedAppointments, (x) -> x._end < new Date().addDays(-7) or x._begin > new Date().addDays(14)
 	amplify.store "hardCachedAppointments_#{Meteor.userId()}", JSON.decycle(hardCachedAppointments), expires: 432000000
 
 ###*
