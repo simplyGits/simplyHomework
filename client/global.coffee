@@ -56,7 +56,7 @@ Meteor.startup ->
 		ga "send", "event", "reject",  "old-browser", "" + version
 	else if "ActiveXObject" of window # Some css fixes for IE
 		$("head").append "<style>.vCenter { position: relative !important } span#addProjectIcon { padding-right: 30px !important } div.backdrop { display: none; }</style>"
-	
+
 	# Some css fixes for Windows
 	if navigator.appVersion.indexOf("Win") isnt -1
 		$("head").append '<style>.robotoThin, .btn-trans { font-weight: 300 !important } * { -webkit-font-smoothing: initial !important }</style>'
@@ -78,7 +78,7 @@ Meteor.startup ->
 				initializeMagister yes if Meteor.status().connected
 			), 1200000
 		else
-			for key in _.keys amplify.store() when key.substring(0, 22) is "hardCachedAppointments"
+			for key in _.keys amplify.store() when key.indexOf("hardCachedAppointments") is 0
 				amplify.store key, null
 
 			resetMagister()
