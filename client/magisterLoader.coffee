@@ -227,12 +227,20 @@ pushResult = (name, result) ->
 				r[0].grades no, (error, result) -> pushResult "grades", { error, result }
 				pushResult "course", { error: null, result: r[0] }
 
-		@assignments no, (error, result) ->
+		@assignments no, yes, (error, result) ->
 			pushResult "assignments", { error, result }
 			if error? then pushResult "assignments soon", { error, result: null }
 			else pushResult "assignments soon", error: null, result: _.filter(result, (a) -> a.deadline().date() < Date.today().addDays(7) and not a.finished() and new Date() < a.deadline())
 
 		@studyGuides (error, result) ->
-			pushResult "studyGuides", { error, result }
+			if error? then pushResult "studyGuides", { error, result: null }
+			else
+				left = result.length
+				push = -> if --left is 0 then pushResult "studyGuides", { error: null, result }
+
+				for studyGuide in result then do (studyGuide) ->
+					studyGuide.parts (e, r) ->
+						studyGuide.parts = r ? []
+						push()
 
 	return "dit geeft echt niets nuttig terug ofzo, als je dat denkt."

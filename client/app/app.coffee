@@ -682,33 +682,29 @@ Template.app.rendered = ->
 	magisterResult "studyGuides", (e, r) ->
 		studyGuidesHashes = {}
 		oldStudyGuideHashes = Meteor.user().studyGuidesHashes
-		left = r.length
-		push = (result) ->
-			studyGuidesHashes[result.id()] = md5(EJSON.stringify result.parts).substring 0, 6
 
-			if --left is 0
-				return if EJSON.equals studyGuidesHashes, oldStudyGuideHashes
-				if _.isEmpty(oldStudyGuideHashes)
-					Meteor.users.update Meteor.userId(), $set: { studyGuidesHashes }
-					return
+		for studyGuide in r then do (studyGuide) ->
+			parts = _.sortBy ( { id: x.id(), description: x.description(), fileSizes: (z.size() for z in x.files()) } for x in studyGuide.parts ), "id"
+			studyGuidesHashes[studyGuide.id()] = md5(EJSON.stringify parts).substring 0, 6
 
-				s = "Studiewijzers die veranderd zijn:\n\n"
-				x = _(studyGuidesHashes)
-					.keys()
-					.filter((s) -> studyGuidesHashes[s] isnt oldStudyGuideHashes[s])
-					.map((id) -> _.find(r, (sg) -> sg.id() is +id))
-					.sortBy((sg) -> sg.classCodes()[0])
+		return if EJSON.equals studyGuidesHashes, oldStudyGuideHashes
+		if _.isEmpty(oldStudyGuideHashes)
+			Meteor.users.update Meteor.userId(), $set: { studyGuidesHashes }
+			return
 
-				s += "<b>#{studyGuide.classCodes()[0]}</b> - #{studyGuide.name()}\n" for studyGuide in x.value()
+		s = "Studiewijzers die veranderd zijn:\n\n"
+		x = _(studyGuidesHashes)
+			.keys()
+			.filter((s) -> studyGuidesHashes[s] isnt oldStudyGuideHashes[s])
+			.map((id) -> _.find(r, (sg) -> sg.id() is +id))
+			.sortBy((sg) -> sg.classCodes()[0])
 
-				if studyGuideChangeNotification?
-					studyGuideChangeNotification.content s, yes
-				else
-					assignmentNotification = NotificationsManager.notify body: s, type: "warning", time: -1, html: yes, onDismissed: -> Meteor.users.update Meteor.userId(), $set: { studyGuidesHashes }
+		s += "<b>#{studyGuide.classCodes()[0]}</b> - #{studyGuide.name()}\n" for studyGuide in x.value()
 
-		for studyGuide in r then do (studyGuide) -> studyGuide.parts (e, r) ->
-			studyGuide.parts = _.sortBy ( { id: x.id(), description: x.description(), fileSizes: (z.size() for z in x._files) } for x in r ), "id"
-			push studyGuide
+		if studyGuideChangeNotification?
+			studyGuideChangeNotification.content s, yes
+		else
+			assignmentNotification = NotificationsManager.notify body: s, type: "warning", time: -1, html: yes, onDismissed: -> Meteor.users.update Meteor.userId(), $set: { studyGuidesHashes }
 
 	val = Meteor.user().profile.birthDate
 	now = new Date()
