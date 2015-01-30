@@ -262,8 +262,8 @@ class @NotificationsManager
 	if user.hasGravatar or _.isEmpty(user.profile.magisterPicture) then "#{user.gravatarUrl}&s=#{size}" else user.profile.magisterPicture
 
 @slide = (id) ->
-	$("div.selectedBorder.selected").removeClass "selected"
-	$("div.sidebarButton##{id} > div.selectedBorder").addClass "selected"
+	$("div.sidebarButton.selected").removeClass "selected"
+	$("div.sidebarButton##{id}").addClass "selected"
 
 	closeSidebar?()
 

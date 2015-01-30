@@ -6,18 +6,20 @@
 	height: 100vh
 	cursor: default
 
-	div.selectedBorder
-		position: absolute
-		left: 0
-		height: 37px
-		border-left: 2px simplyBlue solid
-		
-		opacity: 0
-		transition: .5s opacity ease
-		
-	div.selectedBorder.selected
-		opacity: 1
-		
+	div.sidebarButton
+		div.selectedBorder
+			position: absolute
+			left: 0
+			height: 37px
+			border-left: 2px simplyBlue solid
+
+			opacity: 0
+			transition: .5s opacity ease
+
+	div.sidebarButton.selected
+		div.selectedBorder
+			opacity: 1
+
 	a
 		text-decoration: none !important
 
