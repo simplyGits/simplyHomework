@@ -304,6 +304,7 @@ Template.getMagisterClassesModal.events
 				color: color
 				magisterId: c.id()
 				magisterDescription: c.description()
+				magisterAbbreviation: c.abbreviation()
 				bookId: book?._id ? null
 
 		$("#getMagisterClassesModal").modal "hide"
