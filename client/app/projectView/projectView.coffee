@@ -60,7 +60,7 @@ Template.projectView.rendered = ->
 		for driveFileId in fileIds
 			loading.push driveFileId
 			gapi.client.drive.files.get(fileId: driveFileId).execute (r) ->
-				push _.extend r, fileTypes[_(fileTypes).keys().find((s) -> r.mimeType.indexOf(s) is 0)]
+				push _.extend r, fileTypes[_(fileTypes).keys().find((s) -> r.mimeType.indexOf(s) is 0)] ? { fileTypeIconClass: "question-circle", fileTypeColor: "#001f3f" }
 
 				_.remove loading, r.id
 
