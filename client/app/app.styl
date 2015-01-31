@@ -57,7 +57,7 @@ div.itemContainer
 	padding-top: 50px
 
 	+mobile()
-		height: initial
+		height: initial !important
 
 div.itemContainerDivider
 	display: inline-table
@@ -72,8 +72,8 @@ div.itemContainerContent
 	roboto(600)
 
 	position: relative
-	height: 95%
-	min-height: 250px
+	height: calc(100% - 15px)
+	min-height: 50px
 	margin-top: 10px
 	overflow-y: auto
 

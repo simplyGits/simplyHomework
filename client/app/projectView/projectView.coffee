@@ -95,7 +95,7 @@ Template.projectView.helpers
 			when 2 then "Overmorgen"
 			when 3, 4, 5, 6 then "Aanstaande #{day}"
 			else "#{Helpers.cap day} #{DateToDutch(currentProject().deadline, no)}") + " " + time
-	heightOffset: -> if has("noAds") then 260 else 350
+	heightOffset: -> if has("noAds") then 260 else 315
 
 Template.projectView.events
 	"mouseenter .projectHeader": -> unless Session.get "isPhone" then $("#changeProjectIcon").velocity { opacity: 1 }, 100
