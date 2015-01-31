@@ -121,7 +121,7 @@ Template.projectView.events
 							Kadira.trackError "Drive-client", r.error.message, stacks: EJSON.stringify r
 						else cb()
 
-			if r.docs[0].type isnt "document" or _(fileTypes).keys().contains(r.docs[0].mimeType) then setPermissions()
+			if (r.docs[0].type isnt "document" and r.docs[0].mimeType.indexOf("openxmlformats") is -1) or _(fileTypes).keys().contains(r.docs[0].mimeType) then setPermissions()
 			else
 				gapi.client.drive.files.copy(
 					fileId: r.docs[0].id
