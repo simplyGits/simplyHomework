@@ -21,10 +21,10 @@ fileTypes =
 	"application/vnd.google-apps.document":
 		fileTypeIconClass: "file-text-o"
 		fileTypeColor: "#32A8CE"
-	"application/vnd.google-apps.spreadsheet":
+	"application/vnd.google-apps.presentation":
 		fileTypeIconClass: "file-powerpoint-o"
 		fileTypeColor: "#F4B400"
-	"application/vnd.google-apps.presentation":
+	"application/vnd.google-apps.spreadsheet":
 		fileTypeIconClass: "file-excel-o"
 		fileTypeColor: "#0F9D58"
 	"application/pdf":
