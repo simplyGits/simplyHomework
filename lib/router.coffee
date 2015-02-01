@@ -156,7 +156,7 @@ Router.map ->
 	@route "mobileCalendar",
 		fastRender: yes
 		layoutTemplate: "app"
-		path: "/app/mobileCalendar/:date?"
+		path: "/app/mobileCalendar"
 
 		subscriptions: ->
 			NProgress?.start()
@@ -178,8 +178,6 @@ Router.map ->
 				$("meta[name='theme-color']").attr "content", "#32A8CE"
 			document.title = "simplyHomework | Agenda"
 			NProgress?.done()
-
-		data: -> if @params.date? then new Date(@params.date).date() else Date.today()
 
 	@route "personView",
 		fastRender: yes

@@ -1,10 +1,11 @@
 @import "../../main"
+@import "jeet"
 
 div.mobileCalendarTopBar
 	font-size: 30px
 	fixed: top 0 right 0 left 0
 	height: 50px
-	
+
 	i#newAppointmentButton
 		margin-right: 15px
 		margin-top: 10px
@@ -12,35 +13,63 @@ div.mobileCalendarTopBar
 	span.currentDate
 		roboto(300)
 		absolute: left 5px top 3px
+		transition: .2s color linear
+	span.currentDate.today
+		color: darkred
 
 div.mobileCalendar
 	fixed: left 0 right 0 bottom 0 top 50px
 	position: fixed !important // Seperate just so that we can apply `!important` to it.
-	
-#swipeview-slider 
-	height: calc(100% + 50px)
+
+	.hour
+		width: 100%
+		position: relative
+		margin-bottom: 5px
+
+		.hourIndicator
+			line-height: 1.1
+			position: relative
+			height: 50px
+			width: 50px
+			background-color: #6AA4C1
+
+			color: white
+			font-size: 35px
+			text-align: center
+			display: inline-block
+
+			.classTime
+				absolute: top 40px
+				font-size: 9px
+				margin-bottom: 50px
+
+		.hourIndicator.scrapped
+			background-color: #9F9F9F
+
+		.hourIndicator.homework
+			background-color: #05cdf8
+
+		.hourIndicator.quiz
+			background-color: #05cdf8
+
+		.hourIndicator.test
+			background-color: #05cdf8
+
+		.hourContent
+			font-size: 20px
+			absolute: top 20px left 60px
+			white-space: nowrap
+
+		.classLocation
+			absolute: top 0 left 60px
+			font-size: 15px
+			opacity: .5
 
 #swipeview-slider > div
 	position: relative
-	display: -webkit-box
-	display: -moz-box
-	display: -ms-box
-	display: -o-box
 	display: box
-	-webkit-box-orient: vertical
-	-moz-box-orient: vertical
-	-ms-box-orient: vertical
-	-o-box-orient: vertical
 	box-orient: vertical
-	-webkit-box-pack: center
-	-moz-box-pack: center
-	-ms-box-pack: center
-	-o-box-pack: center
 	box-pack: center
-	-webkit-box-align: center
-	-mox-box-align: center
-	-ms-box-align: center
-	-o-box-align: center
 	box-align: center
 	overflow: hidden
 
@@ -54,7 +83,7 @@ div.mobileCalendar
 	font-size: 20px
 	text-align: center
 	text-shadow: 0 1px 0 #000
-	
+
 	transition: .5s opacity linear
 	opacity: 0
 
@@ -68,60 +97,4 @@ div.mobileCalendar
 
 #swipeview-slider .swipeview-active span
 	opacity: 1
-	trasnition: .5s opacity linear
-
-#roosterlist
-	width: 100%
-	padding-left: 10px
-	padding-right: 10px
-	padding-bottom: 20px
-	overflow: hidden
-	height: calc(100% + 50px)
-
-.uur
-	height: 75px
-	background-color: white
-	width: 100%
-	margin-bottom: 5px
-
-	.icon
-		width: 75px
-		height: 75px
-		color: white
-		font-size: 50px
-		text-align: center
-		display: inline-block
-		background-color: lightgray
-
-	.content
-		width: 100px
-		height: 75px
-		display: inline-block
-
-	.content h4
-		display: inline-block
-		vertical-align: center
-		font-size: 30px
-		position: relative
-		top: 40px
-		font-weight: 300
-
-	.content p
-		margin-left: 10px
-		vertical-align: center
-		margin-top: 0px
-
-.uur
-	background-color: #05cdf8
-
-.uur.scrapped
-	background-color: #d60000
-	
-.uur.homework
-	background-color: #05cdf8
-
-.uur.test
-	background-color: #05cdf8
-
-.uur.test
-	background-color: #05cdf8
+	transition: .5s opacity linear
