@@ -158,7 +158,7 @@ class @App
 
 			swalert
 				title: "Dit was de tour!"
-				text: "Veel success! Als je hulp nodig hebt kun je altijd ctrl+? indrukken."
+				text: "Veel success! Als je hulp nodig hebt kun je altijd via de instellingen deze tour opnieuw doen."
 				type: "success"
 
 			Mousetrap.unbind ["escape", "left", "right"]
@@ -781,5 +781,5 @@ setShortcuts = ->
 		return no
 
 	Mousetrap.bind ["ctrl+/", "command+/", "ctrl+?", "command+?"], ->
-		App.runTour()
+		alertModal "Toetsenbord shortcuts", Locals["nl-NL"].KeyboardShortcuts(), DialogButtons.Ok, { main: "Sluiten" }, { main: "btn-primary" }
 		return no
