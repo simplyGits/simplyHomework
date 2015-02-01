@@ -1,27 +1,72 @@
+bookSub = null
+
+grades = new ReactiveVar []
+loadingGrades = new ReactiveVar yes
+selectedGrade = new ReactiveVar null
+
+studyGuides = new ReactiveVar []
+loadingStudyGuides = new ReactiveVar yes
+
 currentClass = -> Router.current().data()
 tasksAmount = -> Helpers.getTotal _.reject(GoaledSchedules.find(_homework: { $exists: true }, ownerId: Meteor.userId()).fetch(), (gS) -> !EJSON.equals(gS.classId(), currentClass()._id)), (gS) -> gS.tasksForToday().length
 
 Template.classView.helpers
 	currentClass: currentClass
-	tasksAmount: tasksAmount
+	tasksAmount: -> currentClass().__taskAmount
 	tasksWord: -> if tasksAmount() is 1 then "taak" else "taken"
 	classColor: -> currentClass().__color
 	textAlign: -> if Session.get "isPhone" then "left" else "right"
 
-	# recentGrades: ->
-	# 	grades = _.filter magisterResult("grades").result, (g) -> g.class().id is currentClass().__classInfo.magisterId
-	# 	return _.filter grades, (g) -> new Date(g.dateFilledIn()) > Date.today().addDays(-7) and g.type().type() is 1
+	gradeGroups: ->
+		return _(grades.get())
+			.uniq (g) -> g.gradePeriod().name()
+			.reject (g) -> g.type().type() is 2 or g.type().type() is 4
+			.map (g) ->
+				name: g.gradePeriod().name()
+				grades: _.filter grades.get(), (x) -> x.gradePeriod().name() is g.gradePeriod().name() and x.type().type() isnt 2
+			.filter (gp) -> gp.grades.length isnt 0
+			.value()
+	studyGuides: -> studyGuides.get()
 
-	# endGrade: ->
-	# 	grades = _.filter magisterResult("grades").result, (g) -> g.class().id is currentClass().__classInfo.magisterId
+	loadingGrades: -> loadingGrades.get()
+	loadingStudyGuides: -> loadingStudyGuides.get()
+	hasGrades: -> grades.get().length > 0
 
-	# 	endGrade = _.find r, (g) -> g.type().header()?.toLowerCase() is "eind"
-	# 	if endGrade.length is 0
-	# 		endGrade = _.find r, (g) -> g.type().header()?.toLowerCase() is "e-jr"
-	# 	if endGrade.length is 0
-	# 		endGrade = _.uniq _.find(r, (g) -> g.type().type() is 2), "_class"
+	selectedGrade: -> selectedGrade.get()
 
-	# 	return endGrade
+	endGrade: ->
+		endGrade  = _.find grades.get(), (g) -> g.type().header()?.toLowerCase() is "e-jr"
+		endGrade ?= _.find grades.get(), (g) -> g.type().header()?.toLowerCase() is "eind"
+		endGrade ?= _.find grades.get(), (g) -> g.type().type() is 2
+
+		return endGrade
+
+Template.classView.rendered = ->
+	fetchedGrades = new ReactiveVar []
+	fetchedStudyGuides = new ReactiveVar []
+
+	magisterResult "grades", (e, r) ->
+		return unless Router.current().route.getName() is "classView"
+		fetchedGrades.set r ? []
+		loadingGrades.set no
+
+	magisterResult "studyGuides", (e, r) ->
+		return unless Router.current().route.getName() is "classView"
+		fetchedStudyGuides.set r ? []
+		loadingStudyGuides.set no
+
+	@autorun ->
+		return if _.contains(grades.get(), selectedGrade.get())
+		selectedGrade.set grades.get()[0]
+
+	@autorun ->
+		grades.set(_(fetchedGrades.get())
+			.filter((g) -> g.class().id() is currentClass().__classInfo.magisterId and g.grade()?)
+			.forEach((g) -> g.__insufficient = if +g.grade().replace(",", ".").replace(/[^\d\.]/g, "") < 5.5 then "insufficient" else "")
+			.value()
+		)
+
+	@autorun -> studyGuides.set _.filter fetchedStudyGuides.get(), (s) -> s.class()? and s.class().id() is currentClass().__classInfo.magisterId
 
 Template.classView.events
 	"mouseenter #classHeader": -> unless Session.get "isPhone" then $("#changeClassIcon").velocity { opacity: 1 }, 100
@@ -83,3 +128,7 @@ Template.changeClassModal.events
 				Meteor.users.update Meteor.userId(), { $pull: { classInfos: { id: currentClass()._id }}}
 			second: -> return
 		)
+
+Template.gradeRow.events "click .gradeRow": -> selectedGrade.set @
+
+Template.gradeRow.helpers selected: -> if selectedGrade.get() is @ then "selected" else ""

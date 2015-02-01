@@ -14,27 +14,81 @@
 			<div class="robotoHeader overviewHeader" style="position: absolute; top: 0; right: 10px; text-align: right">{{tasksAmount}} <span class="robotoThin" style="margin-left: 5px">{{tasksWord}}</span></div>
 		</div>
 		<div class="divider" style="border-color: {{classColor}}"></div>
-		<div class="gradeContainer">
-			<div class="gradeContainerRecentGrades">
-				{{#with recentGrades}}
-					{{#if empty}}
-						<div style="width: 100%; text-align: center; opacity: .7">
-							Recent geen cijfers behaald.
-						</div>
+		<div class="gradeInfoContainer">
+			{{#if loadingGrades}}
+				<div style="width: 100%; text-align: center; opacity: .7; position: absolute; top: 50%; transform: translateY(-50%); word-break: break-word">
+					Cijfers laden...
+				</div>
+			{{else}}
+				{{#if hasGrades}}
+					{{#with endGrade}}
+						{{> endGradeTemplate}}
 					{{else}}
-						{{#each recentGrades}}
-							{{> recentGradeRow}}
+						<div class="gradeContainerEndGrade">
+							<div class="gradeSquare">?</div>
+							<div class="endGradeHint">Gemiddelde</div>
+						</div>
+					{{/with}}
+					<div class="gradeContainer">
+						{{#each gradeGroups}}
+							{{> gradeGroup}}
 						{{/each}}
-					{{/if}}
-				{{/with}}
+					</div>
+					{{#with selectedGrade}}
+						{{> gradeDetail}}
+					{{/with}}
+				{{else}}
+					<div style="width: 100%; text-align: center; opacity: .7; position: absolute; top: 50%; transform: translateY(-50%); word-break: break-word">
+						Geen cijfers gevonden.
+					</div>
+				{{/if}}
+			{{/if}}
+		</div>
 			</div>
 		</div>
 	</div>
 </template>
 
-<template name="recentGradeRow">
-	<div class="recentGradeRow">
-		{{description}} - <span style="color: {{__gradeColor}}">{{grade}}</span>
+<template name="gradeGroup">
+	<div class="gradeGroup">
+		<div class="gradeGroupName"><span>{{name}}</span></div><div class="gradeGroupDivider"></div>
+		{{#each grades}}
+			{{> gradeRow}}
+		{{/each}}
+	</div>
+</template>
+
+<template name="gradeRow">
+	<div class="gradeRow {{selected}} {{__insufficient}}">
+		<span id="grade">{{grade}}</span> <span id="weight">{{weight}}</span>
+	</div>
+</template>
+
+<template name="gradeDetail">
+	<div class="gradeContainerGradeDetail">
+		<div class="gradeSquare {{__insufficient}}">{{grade}}</div>
+		<div class="gradeInfoRow"><div>Beschrijving</div> {{description}}</div>
+		<div class="gradeInfoRow"><div>Gewicht</div> {{weight}}</div>
+	</div>
+</template>
+
+<template name="endGradeTemplate">
+	<div class="gradeContainerEndGrade {{__insufficient}}">
+		<div class="gradeSquare {{__insufficient}}">{{grade}}</div>
+		<div class="endGradeHint">Gemiddelde</div>
+	</div>
+</template>
+
+<template name="studyGuide">
+	<div class="studyGuide">
+		<div class="studyGuideName">
+			<span>{{name}}</span>
+		</div>
+		{{#each parts}}
+			<div class="studyGuidePart">
+				{{name}}
+			</div>
+		{{/each}}
 	</div>
 </template>
 
