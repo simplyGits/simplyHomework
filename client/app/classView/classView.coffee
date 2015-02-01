@@ -74,19 +74,19 @@ Template.classView.events
 
 	"click #changeClassIcon": ->
 		ga "send", "event", "button", "click", "classInfoChange"
+		bookSub = Meteor.subscribe "books", new Meteor.Collection.ObjectID(@params.classId), ->
+			name = if _.contains ["Natuurkunde", "Scheikunde"], (val = currentClass().name) then "Natuur- en scheikunde" else val
+			WoordjesLeren.getAllBooks name, (result) ->
+				result.pushMore ({name} for name in _.reject Books.find(classId: currentClass()._id).fetch().map((b) -> b.title), (b) -> _.any result, (x) -> x is b)
 
-		name = if _.contains ["Natuurkunde", "Scheikunde"], (val = currentClass().name) then "Natuur- en scheikunde" else val
-		WoordjesLeren.getAllBooks name, (result) ->
-			result.pushMore ({name} for name in _.reject Books.find(classId: currentClass()._id).fetch().map((b) -> b.title), (b) -> _.any result, (x) -> x is b)
+				bookEngine.clear()
+				bookEngine.add result
 
-			bookEngine.clear()
-			bookEngine.add result
+			$("#changeColorInput").colorpicker "destroy"
+			$("#changeColorInput").colorpicker color: currentClass().__color
+			$("#changeColorLabel").css color: currentClass().__color
 
-		$("#changeColorInput").colorpicker "destroy"
-		$("#changeColorInput").colorpicker color: currentClass().__color
-		$("#changeColorLabel").css color: currentClass().__color
-
-		$("#changeClassModal").modal backdrop: false
+			$("#changeClassModal").modal backdrop: false
 
 Template.changeClassModal.rendered = ->
 	$("#changeColorInput").colorpicker color: currentClass().__color
@@ -114,6 +114,7 @@ Template.changeClassModal.events
 
 		$("meta[name='theme-color']").attr "content", color
 		$("#changeClassModal").modal "hide"
+		bookSub.stop()
 
 	"click #deleteClassButton": ->
 		$("#changeClassModal").modal "hide"
