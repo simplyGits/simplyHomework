@@ -52,7 +52,7 @@ Meteor.startup ->
 				"Als je dit niet was heb je 2 opties:\n"+
 				"- Rondjes rennen.\n" +
 				"- Emailtje terug sturen (<a href=\"mailto:hello@simplyApps.nl\">hello@simplyApps.nl</a>)"
-				
+
 				subject = (
 					if passChanged and mailChanged then "Wachtwoord en Mail Adres Veranderd"
 					else if passChanged and not mailChanged then "Wachtwoord Veranderd"
@@ -62,7 +62,7 @@ Meteor.startup ->
 				sendMail user, "simplyHomework | #{subject}", message
 
 			unless EJSON.equals old.classInfos, newDoc.classInfos
-				Projects.update { participants: newDoc._id, classId: $nin: (x.id for x in old.classInfos) }, { $pull: participants: newDoc._id }, multi: yes
+				Projects.update { participants: newDoc._id, classId: $exists: 1, $nin: (x.id for x in newDoc.classInfos) }, { $pull: participants: newDoc._id }, multi: yes
 
 	Projects.find().observe
 		changed: (newDoc, oldDoc) ->
