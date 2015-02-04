@@ -176,7 +176,7 @@ Template.changeProjectModal.events
 
 		Projects.update currentProject()._id, $set: { name, description, deadline, magisterId: currentProject().magisterId, classId }
 
-		$("#addProjectModal").modal "hide"
+		$("#changeProjectModal").modal "hide"
 
 	"click #leaveProjectButton": ->
 		id = currentProject()._id
