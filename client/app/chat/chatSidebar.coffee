@@ -3,7 +3,7 @@ searchTerm = new ReactiveVar ""
 Template.chatSidebar.events
 	"keyup input": (event) ->
 		if event.which is 27
-			searchTerm.set event.target.value = ""
+			$("div.searchBox > input").blur()
 			return
 		else if event.which is 13
 			searchTerm.set event.target.value = ""
