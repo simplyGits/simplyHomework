@@ -472,7 +472,7 @@ Template.settingsModal.events
 		$("#accountInfoModal").modal()
 	"click #clearInfoButton": ->
 		$("#settingsModal").modal "hide"
-		alertModal "Hey!", Locals["nl-NL"].ClearInfoWarning(), DialogButtons.OkCancel, { main: "Zeker weten" }, { main: "btn-danger" }, main: ->
+		alertModal "Hey!", Locals["nl-NL"].ClearInfoWarning(), DialogButtons.OkCancel, { main: "zeker weten" }, { main: "btn-danger" }, main: ->
 			Meteor.users.update Meteor.userId(), $set:
 				classInfos: null
 				"profile.schoolId": null
