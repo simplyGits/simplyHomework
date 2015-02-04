@@ -607,6 +607,7 @@ Template.sidebar.events
 
 Template.app.helpers
 	contentOffsetLeft: -> if Session.get "isPhone" then "0" else "200px"
+	contentOffsetRight: -> if Session.get "isPhone" then "0" else "50px"
 
 Template.app.rendered = ->
 	if "#{Math.random()}"[2] is "2" and "#{Math.random()}"[4] is "2"
@@ -724,7 +725,8 @@ Template.app.rendered = ->
 					swalert title: "Adblock :c", html: 'Om simplyHomework gratis beschikbaar te kunnen houden zijn we afhankelijk van reclame-inkomsten.\nOm simplyHomework te kunnen gebruiken, moet je daarom je AdBlocker uitzetten.\nWil je toch simplyHomework zonder reclame gebruiken, dan kan je <a href="/">premium</a> nemen.', type: "error"
 			), 3000
 
-	setSwipe() if Session.get "isPhone"
+	if Session.get("isPhone") then setMobile()
+	else setShortcuts()
 
 	if !amplify.store("allowCookies") and $(".cookiesContainer").length is 0
 		Blaze.render Template.cookies, $("body").get()[0]
@@ -736,19 +738,28 @@ Template.app.rendered = ->
 			amplify.store "allowCookies", yes
 			$(".cookiesContainer").velocity { bottom: "-500px" }, 2400, "easeOutExpo", -> $(@).remove()
 
-	setShortcuts()
-
-setSwipe = ->
+setMobile = ->
 	snapper = new Snap
 		element: $(".content")[0]
 		maxPosition: 200
 		flickThreshold: 45
-		minPosition: 0
+		minPosition: -200
 		resistance: .9
-		disable: "right"
 
-	snapper.on "end", -> Session.set "sidebarOpen", snapper.state().state is "left"
-	snapper.on "animated", -> Session.set "sidebarOpen", snapper.state().state is "left"
+	set = ->
+		Session.set "sidebarOpen", snapper.state().state is "left"
+
+		if snapper.state().state is "right"
+			$("body")
+				.addClass "chatSidebarOpen"
+				.trigger "chatSidebarStateChanged", isOpen: yes
+		else
+			$("body")
+				.removeClass "chatSidebarOpen"
+				.trigger "chatSidebarStateChanged", isOpen: no
+
+	snapper.on "end", set
+	snapper.on "animated", set
 
 	@closeSidebar = -> snapper.close()
 
