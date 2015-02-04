@@ -86,6 +86,41 @@ Schemas.Projects = new SimpleSchema
 	driveFileIds:
 		type: [String]
 
+Schemas.ChatMessages = new SimpleSchema
+	content:
+		type: String
+		denyUpdate: yes # Denying updates for now, later we can allow these with some UI implementations. (See the `isChanged` property)
+	creatorId:
+		type: String
+		index: 1
+		autoValue: -> if not @isFromTrustedCode and @isInsert then @userId
+		denyUpdate: yes
+	time:
+		type: Date
+		index: -1
+		autoValue: -> if @isInsert then new Date()
+		denyUpdate: yes
+	projectId:
+		type: Meteor.Collection.ObjectID
+		index: 1
+		optional: yes
+	groupId:
+		type: Meteor.Collection.ObjectID
+		index: 1
+		optional: yes
+	to:
+		type: String
+		index: 1
+	readBy:
+		type: [String]
+	attachments:
+		type: [String]
+	isChanged:
+		type: Boolean
+		autoValue: ->
+			if not @isFromTrustedCode and @isInsert then no
+			else if not @isFromTrustedCode and @isUpdate then yes # Force it to yes when updating, we want to clearly show that an user changed a message.
+
 @[key].attachSchema Schemas[key] for key of Schemas
 
 @classTransform = (tmpClass) ->

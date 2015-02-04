@@ -1,0 +1,94 @@
+@import "../../main"
+
+div.chatSidebar
+	fixed: right top bottom
+	width: 200px
+	transition: .25s transform, .25s box-shadow, .25s border-color linear
+	background-color: white
+	z-index: 200
+	border-left: 1px lightgray solid
+	overflow-x: hidden
+
+	transform: translateX(150px)
+
+	div.searchBox
+		position: relative
+
+		i.fa
+			absolute: top 5px left 5px
+
+		input[type="text"]
+			underlineInput()
+			width: 100%
+			font-size: 17px
+
+			padding-left: 25px
+
+	div.chats
+		padding = 5px
+		padding-top: padding
+		padding-left: padding
+
+		overflow-y: auto
+
+		div.chatSidebarItem
+			position: relative
+			height: 50px
+			overflow: hidden
+			cursor: pointer
+			transition: .2s all linear
+
+			div.icon
+				dimension = 40px
+				width: dimension
+				height: dimension
+				overflow: hidden
+
+				display: inline-block
+
+				border: 1px black solid
+				background-color: gray
+				position: relative
+
+				div.notificationBadge
+					absolute: left bottom top right
+
+					padding: 1px
+					background-color: rgba(50, 168, 206, 0.63)
+					line-height: 1.1
+					font-size: 30px
+					text-align: center
+					color: white
+					transition: .25s opacity ease
+
+				div.notificationBadge.online
+					background-color: rgba(0, 150, 30, 0.63)
+				div.notificationBadge.inactive
+					background-color: rgba(195, 90, 1, 0.63)
+				div.notificationBadge.offline
+					background-color: rgba(150, 0, 30, 0.63)
+
+			div.name
+				absolute: top 8px
+				display: inline-block
+				white-space: nowrap
+				margin-left: 5px
+				font-size: 17px
+
+		div.chatSidebarItem:hover
+			opacity: .7
+
+			div.notificationBadge
+				opacity: 0
+
+	+mobile()
+		z-index: 0
+
+body.chatSidebarOpen div.chatSidebar // Default on mobile
+	transform: translateX(0px)
+	border-left-color: transparent
+
+	box-shadow: 0px 0px 90px 2px rgba(25, 25, 25, 1);
+
+	+mobile()
+		box-shadow: none

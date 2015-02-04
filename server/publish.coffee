@@ -13,27 +13,37 @@
 # 		profile: 1
 # 		gravatarUrl: 1
 
-# WARNING: PUSH ALL DATA
-Meteor.publish "usersData", (ids) ->
+# WARNING: PUSHES ALL DATA
+Meteor.publish "usersData", (ids, chatLimit) ->
 	@unblock()
 
 	if ids? and ids.length is 1 and ids[0] is @userId
 		@ready()
 		return
 
-	query = if ids? then { _id: $in: _.reject(ids, (s) -> s is @userId) } else { _id: $ne: @userId }
-	Meteor.users.find query, fields:
+	fields =
 		"status.online": 1
 		"status.idle": 1
 		profile: 1
 		gravatarUrl: 1
 		hasGravatar: 1
 
+	if ids?
+		return [
+			Meteor.users.find { _id: $in: _.reject ids, @userId }, fields: fields
+			ChatMessages.find({
+				to: [ @userId ].concat(ids)
+				from: $in: [ @userId ].concat(ids)
+			}, { limit: chatLimit }, sort: "time": -1)
+		]
+	else
+		return Meteor.users.find { _id: $ne: @userId }, fields: fields
+
 Meteor.publish null, ->
 	unless @userId?
 		@ready()
 		return
-	
+
 	@unblock()
 
 	return [
@@ -49,6 +59,9 @@ Meteor.publish null, ->
 			gradeNotificationDismissTime: 1
 			profile: 1)
 		Schools.find _id: Meteor.users.findOne(@userId).profile.schoolId
+
+		# All unread chatMessages.
+		ChatMessages.find({$or: [{ to: @userId }, { creatorId: @userId }], readBy: $ne: @userId}, sort: "time": -1)
 	]
 
 Meteor.publish "classes", ->
@@ -72,10 +85,13 @@ Meteor.publish "calendarItems", ->
 	return CalendarItems.find ownerId: @userId
 
 Meteor.publish "goaledSchedules", -> GoaledSchedules.find { ownerId: @userId }
-Meteor.publish "projects", (id) ->
+Meteor.publish "projects", (id, chatLimit) ->
 	@unblock()
 	if id?
-		Projects.find _id: id, participants: @userId
+		[
+			Projects.find _id: id, participants: @userId
+			ChatMessages.find { projectId: id }, limit: chatLimit, sort: "time": -1
+		]
 	else
 		Projects.find { participants: @userId }, fields:
 			name: 1

@@ -30,6 +30,7 @@ Router.map ->
 			NProgress?.start()
 			return [
 				Meteor.subscribe("classes")
+				Meteor.subscribe("usersData")
 			]
 
 		onBeforeAction: ->
@@ -61,6 +62,7 @@ Router.map ->
 			NProgress?.start()
 			return [
 				Meteor.subscribe("classes")
+				Meteor.subscribe("usersData")
 			]
 
 		onBeforeAction: ->
@@ -97,6 +99,7 @@ Router.map ->
 			NProgress?.start()
 			return [
 				Meteor.subscribe("classes")
+				Meteor.subscribe("usersData")
 				subs.subscribe("projects", new Meteor.Collection.ObjectID @params.projectId)
 			]
 
@@ -135,8 +138,9 @@ Router.map ->
 		subscriptions: ->
 			NProgress?.start()
 			return [
-				subs.subscribe("usersData")
+				# subs.subscribe("usersData")
 				Meteor.subscribe("classes")
+				Meteor.subscribe("usersData")
 				subs.subscribe("calendarItems")
 			]
 
@@ -161,8 +165,9 @@ Router.map ->
 		subscriptions: ->
 			NProgress?.start()
 			return [
-				subs.subscribe("usersData")
+				# subs.subscribe("usersData")
 				Meteor.subscribe("classes")
+				Meteor.subscribe("usersData")
 				subs.subscribe("calendarItems")
 			]
 
@@ -189,6 +194,7 @@ Router.map ->
 			return [
 				subs.subscribe("usersData", [@params._id])
 				Meteor.subscribe("classes")
+				Meteor.subscribe("usersData")
 			]
 
 		onBeforeAction: ->

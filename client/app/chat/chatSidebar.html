@@ -1,0 +1,34 @@
+<template name="chatSidebar">
+	<div class="chatSidebar">
+		<div class="searchBox">
+			<i class="fa fa-search"></i>
+			<input type="text" placeholder="zoeken...">
+		</div>
+		<div class="chats">
+			{{#each chats}}
+				{{> chatSidebarItem}}
+			{{/each}}
+		</div>
+	</div>
+</template>
+
+<template name="chatSidebarItem">
+	<div class="chatSidebarItem">
+		<div class="icon">
+			{{#if __unreadMessagesCount}}
+				<div class="notificationBadge">{{__unreadMessagesCount}}</div>
+			{{/if}}
+
+			{{#if __sidebarIcon}}
+				<img src="{{__sidebarIcon}}" width="40" height="40" onerror='this.style.display = "none"'/>
+			{{else}}
+				<div class="iconInitial">
+					{{__initial}}
+				</div>
+			{{/if}}
+		</div>
+		<div class="name">
+			{{__friendlyName}}
+		</div>
+	</div>
+</template>
