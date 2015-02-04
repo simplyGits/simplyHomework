@@ -50,31 +50,30 @@ Meteor.methods
 
 	setMagisterInfo: (info) ->
 		@unblock()
+		fut = new Future()
+
 		userId = @userId
 		{ username, password } = info.magisterCredentials
-		try
-			HTTP.post "#{info.school.url}/api/sessie",
-				data:
-					"Gebruikersnaam": username
-					"Wachtwoord": password
-					"IngelogdBlijven": no
-				headers:
-					"Content-Type": "application/json;charset=UTF-8"
 
-			new Magister(info.school, username, password, no).ready ->
-				url = @profileInfo().profilePicture(200, 200, yes)
+		new Magister(info.school, username, password, no).ready (e) ->
+			if e?
+				fut.return no
+				return
 
-				request.get { url, encoding: null, headers: cookie: @http._cookie }, Meteor.bindEnvironment (error, response, body) =>
-					Meteor.users.update userId,
-						$set:
-							"magisterCredentials": info.magisterCredentials
-							"profile.schoolId": info.schoolId
-							"profile.magisterPicture": if body? then "data:image/jpg;base64,#{body.toString "base64"}" else ""
-							"profile.birthDate": @profileInfo().birthDate()
-							"gavePermission": yes
-			return yes
-		catch
-			return no
+			url = @profileInfo().profilePicture(200, 200, yes)
+
+			request.get { url, encoding: null, headers: cookie: @http._cookie }, Meteor.bindEnvironment (error, response, body) =>
+				Meteor.users.update userId,
+					$set:
+						"magisterCredentials": info.magisterCredentials
+						"profile.schoolId": info.schoolId
+						"profile.magisterPicture": if body? then "data:image/jpg;base64,#{body.toString "base64"}" else ""
+						"profile.birthDate": @profileInfo().birthDate()
+						"gavePermission": yes
+
+				fut.return yes
+
+		fut.wait()
 
 	clearMagisterInfo: -> Meteor.users.update @userId, $set: magisterCredentials: null
 
