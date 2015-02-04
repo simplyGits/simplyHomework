@@ -772,6 +772,10 @@ setShortcuts = ->
 		Router.go "app"
 		return no
 
+	Mousetrap.bind ["/", "?"], ->
+		$("div.searchBox > input").focus()
+		return no
+
 	buttonGoto = (delta) ->
 		buttons = $(".sidebarButton").get()
 		oldIndex = buttons.indexOf $(".sidebarButton.selected").get()[0]
