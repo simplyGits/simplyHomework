@@ -41,7 +41,7 @@ Template.chatSidebar.helpers
 				__messages: -> ChatMessages.find({ $or: [ { to: u._id }, { creatorId: u._id } ] }, sort: "time": -1).fetch()
 		).fetch()
 
-		projects = Projects.find({ participants: Meteor.userId() }, sort: { "deadline": 1 }, transform: (p) ->
+		projects = Projects.find({}, sort: { "deadline": 1, "name": 1 }, transform: (p) ->
 			return _.extend p,
 				__initial: p.name[0].toUpperCase()
 				__sidebarIcon: null
@@ -60,7 +60,17 @@ Template.chatSidebar.helpers
 
 		return _(users.concat(projects).concat(groups))
 			.filter (chat) -> searchTerm.get().trim() is "" or calcDistance(chat.__friendlyName) < 2 or Helpers.contains chat.__friendlyName, searchTerm.get(), caseInsensitive
-			.sortBy (chat) -> if searchTerm.get().trim() is "" then chat.__lastInteraction else DamerauLevenshtein()(searchTerm.get().trim().toLowerCase(), chat.__friendlyName.trim().toLowerCase())
+			.sortBy (chat) ->
+				if searchTerm.get().trim() is ""
+					return chat.__lastInteraction
+				else
+					distance = DamerauLevenshtein()(searchTerm.get().trim().toLowerCase(), chat.__friendlyName.trim().toLowerCase())
+
+					trimmed = chat.__friendlyName.trim().toLowerCase()
+					# If the name contains a word beginning with the query; lower distance a substensional amount.
+					if (index = trimmed.indexOf searchTerm.get().trim().toLowerCase()) is 0 or trimmed[index - 1] is " " then distance -= 10
+
+					return distance
 			.value()
 
 Template.chatSidebar.rendered = ->
