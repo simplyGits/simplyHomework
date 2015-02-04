@@ -27,6 +27,11 @@ Template.chatSidebar.helpers
 				__initial: null
 				__sidebarIcon: gravatar u
 
+				__status: (
+					if u.status.idle then "inactive"
+					else if u.status.online then "online"
+					else "offline"
+				)
 				__friendlyName: "#{u.profile.firstName} #{u.profile.lastName}"
 
 				__unreadMessagesCount: -> ChatMessages.find({ creatorId: u._id, to: Meteor.userId(), readBy: $ne: Meteor.userId() }).count()
@@ -41,6 +46,7 @@ Template.chatSidebar.helpers
 				__initial: p.name[0].toUpperCase()
 				__sidebarIcon: null
 
+				__status: ""
 				__friendlyName: p.name
 
 				__unreadMessagesCount: -> ChatMessages.find({ creatorId: { $ne: Meteor.userId() }, projectId: p._id, readBy: $ne: Meteor.userId() }).count()

@@ -16,7 +16,7 @@
 	<div class="chatSidebarItem">
 		<div class="icon">
 			{{#if __unreadMessagesCount}}
-				<div class="notificationBadge">{{__unreadMessagesCount}}</div>
+				<div class="notificationBadge {{__status}}">{{__unreadMessagesCount}}</div>
 			{{/if}}
 
 			{{#if __sidebarIcon}}
