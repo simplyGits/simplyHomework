@@ -6,6 +6,7 @@ callbacks = {}
 currentlyFetching = []
 magisterWaiters = []
 appointmentPool = []
+magisterLoaded = no
 @magister = null
 
 Deps.autorun => if Meteor.user()? then @hardCachedAppointments = amplify.store("hardCachedAppointments_#{Meteor.userId()}") ? []
@@ -186,7 +187,7 @@ pushResult = (name, result) ->
 	@magister = null
 
 @magisterObj = (cb) ->
-	if magister? then cb magister
+	if magisterLoaded then cb magister
 	else magisterWaiters.push cb
 
 @initializeMagister = (force = no) ->
@@ -213,13 +214,12 @@ pushResult = (name, result) ->
 
 	{ username, password } = Meteor.user().magisterCredentials
 
-	root = @
-	new Magister(school, username, password, no).ready (err) ->
+	(@magister = new Magister(school, username, password, no)).ready (err) ->
 		if err?
 			notify("Kan niet met Magister verbinden.", "error", -1, yes, 9)
 			return
 
-		root.magister = @
+		magisterLoaded = yes
 		cb @ for cb in magisterWaiters
 		magisterWaiters = []
 
