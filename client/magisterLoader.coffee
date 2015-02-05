@@ -128,7 +128,7 @@ setHardCacheAppointments = (data) ->
 
 	res = new ReactiveVar []
 	magisterAppointment from, to, download, (e, r) ->
-		if e? then callback e, null
+		if e? then console.err "Error while fetching appointments for updatedAppointments."
 		else res.set r
 
 	dates = []
