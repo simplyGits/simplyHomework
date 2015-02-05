@@ -4,7 +4,7 @@
 
 div.notification
 	z-index: 98765
-	fixed: top 15px right 10px
+	fixed: top 15px right 60px
 	position: fixed !important
 	font-weight: normal !important
 	max-width: 300px
@@ -25,6 +25,12 @@ div.notification
 
 	div
 		margin-bottom: -15px
+
+	+mobile()
+		right: 10px !important
+
+body.chatSidebarOpen > div.notification
+	right: 210px
 
 div.notification:not(.ui-draggable-dragging)
 	transition: all 1.5s ease-out-expo

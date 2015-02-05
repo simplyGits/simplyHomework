@@ -741,25 +741,15 @@ Template.app.rendered = ->
 setMobile = ->
 	snapper = new Snap
 		element: $(".content")[0]
+		minPosition: -200
 		maxPosition: 200
 		flickThreshold: 45
-		minPosition: -200
 		resistance: .9
 
-	set = ->
-		Session.set "sidebarOpen", snapper.state().state is "left"
+	$("body").addClass "chatSidebarOpen"
 
-		if snapper.state().state is "right"
-			$("body")
-				.addClass "chatSidebarOpen"
-				.trigger "chatSidebarStateChanged", isOpen: yes
-		else
-			$("body")
-				.removeClass "chatSidebarOpen"
-				.trigger "chatSidebarStateChanged", isOpen: no
-
-	snapper.on "end", set
-	snapper.on "animated", set
+	snapper.on "end", Session.set "sidebarOpen", snapper.state().state is "left"
+	snapper.on "animated", Session.set "sidebarOpen", snapper.state().state is "left"
 
 	@closeSidebar = -> snapper.close()
 
