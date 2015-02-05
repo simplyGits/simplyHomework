@@ -74,26 +74,29 @@ Template.chatSidebar.helpers
 			.value()
 
 Template.chatSidebar.rendered = ->
-	stayOpen = no
+	unless Session.get "isPhone"
+		stayOpen = no
 
-	# Attach classes to body on chatSidebar hover / blur
-	$("div.chatSidebar").hover (->
-		$("body").addClass "chatSidebarOpen"
-	), (->
-		return if stayOpen
-		$("body").removeClass "chatSidebarOpen"
-
-		searchTerm.set ""
-		$("div.searchBox > input").val ""
-	)
-
-	$("div.searchBox > input") # ChatSidebar fix handeling for searchBox.
-		.focus ->
-			stayOpen = yes
+		# Attach classes to body on chatSidebar hover / blur
+		$("div.chatSidebar").hover (->
 			$("body").addClass "chatSidebarOpen"
-		.blur ->
-			stayOpen = no
+		), (->
+			return if stayOpen
 			$("body").removeClass "chatSidebarOpen"
+			$("div.chatSidebar > div.chats").animate scrollTop: 0
 
 			searchTerm.set ""
 			$("div.searchBox > input").val ""
+		)
+
+		$("div.searchBox > input") # ChatSidebar fix handeling for searchBox.
+			.focus ->
+				stayOpen = yes
+				$("body").addClass "chatSidebarOpen"
+			.blur ->
+				stayOpen = no
+				$("body").removeClass "chatSidebarOpen"
+				$("div.chatSidebar > div.chats").animate scrollTop: 0
+
+				searchTerm.set ""
+				$("div.searchBox > input").val ""
