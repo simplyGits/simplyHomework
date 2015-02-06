@@ -587,7 +587,6 @@ Template.addProjectModal.rendered = ->
 
 Template.sidebar.helpers
 	"classes": -> classes()
-	"sidebarOverflow": -> if Session.get "sidebarOpen" then "auto" else "hidden"
 
 Template.sidebar.events
 	"click .bigSidebarButton": (event) -> slide $(event.target).attr "id"
@@ -747,9 +746,6 @@ setMobile = ->
 		resistance: .9
 
 	$("body").addClass "chatSidebarOpen"
-
-	snapper.on "end", Session.set "sidebarOpen", snapper.state().state is "left"
-	snapper.on "animated", Session.set "sidebarOpen", snapper.state().state is "left"
 
 	@closeSidebar = -> snapper.close()
 
