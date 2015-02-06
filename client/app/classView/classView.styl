@@ -1,21 +1,30 @@
 @import "jeet"
 @import "../../main"
 
-span#changeClassIcon
-	color: lightgray
-	vertical-align: middle
-	font-size: 20px
-	cursor: pointer
-
 .overviewHeader#classHeader
 	width: calc(100% - 120px)
 	white-space: nowrap
 	text-overflow: ellipsis
 	overflow: hidden
 
+span#changeClassIcon
+	color: lightgray
+	vertical-align: middle
+	font-size: 20px
+	cursor: pointer
+
+	opacity: 0
+	transition: 100ms opacity ease
+
+.overviewHeader#classHeader:hover span#changeClassIcon
+	opacity: 1
+
 +mobile()
 	.overviewHeader
 		font-size: 30px !important
+
+		span#changeClassIcon
+			opacity: 1 !important
 
 button#deleteClassButton
 	col(10/12)

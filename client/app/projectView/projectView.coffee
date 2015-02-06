@@ -98,9 +98,6 @@ Template.projectView.helpers
 	heightOffset: -> if has("noAds") then 260 else 315
 
 Template.projectView.events
-	"mouseenter .projectHeader": -> unless Session.get "isPhone" then $("#changeProjectIcon").velocity { opacity: 1 }, 100
-	"mouseleave .projectHeader": -> unless Session.get "isPhone" then $("#changeProjectIcon").velocity { opacity: 0 }, 100
-
 	"click #addFileIcon": ->
 		onPickerResult (r) ->
 			return unless r.action is "picked"

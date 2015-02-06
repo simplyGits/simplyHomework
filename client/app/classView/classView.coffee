@@ -97,9 +97,6 @@ Template.classView.rendered = ->
 	@autorun -> studyGuides.set _.filter fetchedStudyGuides.get(), (s) -> s.class()? and s.class().id() is currentClass().__classInfo.magisterId
 
 Template.classView.events
-	"mouseenter #classHeader": -> unless Session.get "isPhone" then $("#changeClassIcon").velocity { opacity: 1 }, 100
-	"mouseleave #classHeader": -> unless Session.get "isPhone" then $("#changeClassIcon").velocity { opacity: 0 }, 100
-
 	"click #changeClassIcon": ->
 		ga "send", "event", "button", "click", "classInfoChange"
 		bookSub = Meteor.subscribe "books", new Meteor.Collection.ObjectID(@params.classId), ->

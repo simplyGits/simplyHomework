@@ -156,6 +156,16 @@ span#changeProjectIcon
 	font-size: 20px
 	cursor: pointer
 
+	opacity: 0
+	transition: 100ms opacity ease
+
+div.projectHeader:hover span#changeProjectIcon
+	opacity: 1
+
++mobile()
+	span#changeProjectIcon
+		opacity: 1 !important
+
 button#leaveProjectButton
 	col(10/12)
 	shift(2/12)
