@@ -229,8 +229,10 @@ pushResult = (name, result) ->
 		magisterWaiters = []
 
 		@courses (e, r) ->
-			if e? pushResult "course", { error: e, result: null }
-			else pushResult "course", { error: null, result: r[0] }
+			if e? then pushResult "course", { error: e, result: null }
+			else
+				r[0].grades no, yes, yes, (error, result) -> pushResult "recent grades", { error, result }
+				pushResult "course", { error: null, result: r[0] }
 
 		@assignments no, yes, (error, result) ->
 			pushResult "assignments", { error, result }

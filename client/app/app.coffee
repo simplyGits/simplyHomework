@@ -642,18 +642,11 @@ Template.app.rendered = ->
 		else
 			assignmentNotification = NotificationsManager.notify body: s, type: "warning", time: -1, html: yes, onClick: -> $("#addProjectModal").modal()
 
-	magisterResult "grades", (e, r) ->
+	magisterResult "recent grades", (e, r) ->
 		return if e? or r.length is 0
 		gradeNotificationDismissTime = Meteor.user().gradeNotificationDismissTime
 
-		endGrades = _.filter r, (g) -> g.type().header()?.toLowerCase() is "eind"
-		if endGrades.length is 0
-			endGrades = _.filter r, (g) -> g.type().header()?.toLowerCase() is "e-jr"
-		if endGrades.length is 0
-			endGrades = _.uniq _.filter(r, (g) -> g.type().type() is 2), "_class"
-
-		recentGrades = _.filter r, (g) -> new Date(g.dateFilledIn()) > Date.today().addDays(-7) and g.type().type() is 1
-		recentGrades = _.reject recentGrades, (g) -> gradeNotificationDismissTime > new Date(g.dateFilledIn())
+		recentGrades = _.reject r, (g) -> gradeNotificationDismissTime > new Date(g.dateFilledIn())
 		unless recentGrades.length is 0
 			s = "Recent ontvangen cijfers:\n\n"
 
