@@ -149,6 +149,11 @@ loaders =
 			if e? then cb e, null
 			else r.classes (error, result) -> cb error, result
 
+	"grades": (m, cb) ->
+		magisterResult "course", (e, r) ->
+			if e? then cb e, null
+			else r.grades no, no, (error, result) -> cb error, result
+
 pushResult = (name, result) ->
 	check name, String
 
@@ -224,12 +229,8 @@ pushResult = (name, result) ->
 		magisterWaiters = []
 
 		@courses (e, r) ->
-			if e?
-				pushResult "course", { error: e, result: null }
-				pushResult "grades", { error: e, result: null }
-			else
-				r[0].grades no, (error, result) -> pushResult "grades", { error, result }
-				pushResult "course", { error: null, result: r[0] }
+			if e? pushResult "course", { error: e, result: null }
+			else pushResult "course", { error: null, result: r[0] }
 
 		@assignments no, yes, (error, result) ->
 			pushResult "assignments", { error, result }

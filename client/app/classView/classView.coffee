@@ -87,12 +87,17 @@ Template.classView.rendered = ->
 		return if _.contains(grades.get(), selectedGrade.get())
 		selectedGrade.set grades.get()[0]
 
-	@autorun ->
+	@autorun (c) ->
 		grades.set(_(fetchedGrades.get())
 			.filter((g) -> g.class().id() is currentClass().__classInfo.magisterId and g.grade()?)
 			.forEach((g) -> g.__insufficient = if gradeConverter(g.grade()) < 5.5 then "insufficient" else "")
 			.value()
 		)
+
+		Tracker.nonreactive ->
+			p = _helpers.asyncResultWaiter grades.get().length, -> grades.dep.changed()
+			for grade in grades.get() when not grade._filled
+				grade.fillGrade p
 
 	@autorun -> studyGuides.set _.filter fetchedStudyGuides.get(), (s) -> s.class()? and s.class().id() is currentClass().__classInfo.magisterId
 
