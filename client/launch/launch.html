@@ -1,6 +1,6 @@
 <template name="launchPage">
 	{{> signupModal}}
-	<div id="page1" class="unselectable"> 
+	<div id="page1" class="unselectable">
 		{{> page1}}
 	</div>
 	<div id="page2">
@@ -74,6 +74,14 @@
 					Wij vinden dat iedereen van onze service gebruik moet kunnen maken! Daarom zijn alle functies gratis! Als je de functies wilt uibreiden betaal je hier kleine bedragen per functie voor. Zo betaal je nooit teveel.
 				</p>
 			</div>
+		</div>
+	</div>
+	<div id="page2footer">
+		2015 simplyApps
+		<div class="pull-right">
+			{{#linkTo route="privacy"}}
+				Privacybeleid
+			{{/linkTo}}
 		</div>
 	</div>
 </template>

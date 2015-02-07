@@ -4,13 +4,13 @@
 div.signUpForm
 	opacity: 0
 	visibility: hidden
-	
+
 	transition: .75s all ease-out-expo
-	
+
 	roboto(100)
 	color: white
 	font-size: 50px
-	
+
 	position: fixed
 	top: 44%
 	left: 50%
@@ -20,43 +20,58 @@ div.signUpForm
 	input
 		underlineInput(white)
 		width: 100%
-		
+
 div.signUpForm.active
 	opacity: 1
 	transform: translate(-50%, -50%) scale(1)
-	
+
+div#page2footer
+	absolute: left bottom right
+	padding: 5px
+	padding-left: 10px
+	padding-right: 10px
+
+	border-top: 1px lightgray solid
+	color: white
+
+	opacity: .8
+
+	a
+		text-decoration: underline
+		color: white
+
 .bigCard
 	margin-left: 2.5%
 	margin-top: 20px
 	margin-right: 2.5%
 	padding: 20px
 	background-color: #f9f9f9
-	
+
 	center(80%)
 	roboto(300)
 	font-size: 40px
-	
+
 	text-align: center
 	color: black
-	
+
 	+mobile()
 		center(75%)
-	
+
 div.Center
 	opacity: 1
 	transform: translate(-50%, -50%) scale(1)
-	
+
 	position: fixed
 	top: 40%
 	left: 50%
-	
+
 	transition: .75s all ease-out-expo
-	
+
 	div#quickLoginhint
 		text-align: center
 		color: white
 		opacity: .5
-		
+
 		fixed: left 0 right 0 bottom -80px
 
 div.Center.active
