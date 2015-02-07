@@ -158,19 +158,21 @@ class @Course
 	# @async
 	# @param [fillPersons=true] {Boolean} Whether or not to download the full user objects from the server.
 	# @param [fillGrade=true] {Boolean} Whether or not to download the full grade info should be downloaded from the server. If this is set to false some properties will be not be set or have incorrect values.
+	# @param [onlyRecent=false] {Boolean} If true this method will only fetch the grades filled in between 7 days ago and now.
 	# @param callback {Function} A standard callback.
 	# 	@param [callback.error] {Object} The error, if it exists.
 	# 	@param [callback.result] {Grade[]} An array containing the Grades.
 	###
 	grades: ->
-		[fillPersons, fillGrade] = _.filter arguments, (a) -> _.isBoolean a
+		[fillPersons, fillGrade, onlyRecent] = _.filter arguments, (a) -> _.isBoolean a
 		callback = _.find(arguments, (a) -> _.isFunction a)
 		throw new Error "Callback can't be null" unless callback?
 
 		fillPersons ?= yes
 		fillGrade ?= yes
+		onlyRecent ?= no
 
-		@_magisterObj.http.get @_gradesUrl, {}, (error, result) =>
+		@_magisterObj.http.get (if onlyRecent then @_gradesUrlPrefix else @_gradesUrl), {}, (error, result) =>
 			if error?
 				callback error, null
 			else
@@ -185,17 +187,17 @@ class @Course
 				for raw in result
 					do (raw) =>
 						g = Grade._convertRaw @_magisterObj, raw
-						g._columnUrl = @_columnUrlPrefix + raw.CijferKolom.Id
+						g._columnUrl = @_columnUrlPrefix + raw.CijferKolom?.Id
 
 						push = _helpers.asyncResultWaiter 2, -> pushResult g
 
-						if fillPersons
+						if fillPersons and not onlyRecent
 							@_magisterObj.getPersons g.Docent, 3, (e, r) ->
 								unless e? or !r[0]? then g._teacher = r[0]
 								push()
 						else push()
 
-						if fillGrade
+						if fillGrade and not onlyRecent
 							g.fillGrade (e, r) ->
 								if e? then callback e, null
 								else push()
