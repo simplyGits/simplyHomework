@@ -218,6 +218,11 @@ Router.map ->
 			catch
 				return null
 
+	@route "privacy",
+		fastRender: yes
+		layoutTemplate: "privacy"
+		onAfterAction: -> document.title = "simplyHomework | Privacy"
+
 	@route "press",
 		fastRender: yes
 		layoutTemplate: "press"
