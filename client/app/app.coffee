@@ -7,22 +7,22 @@ class @App
 	@_setupPathItems:
 		tutorial:
 			done: yes
-			func: (current, length) ->
+			func: ->
 				alertModal "Hey!", Locals["nl-NL"].GreetingMessage(), DialogButtons.Ok, { main: "verder" }, { main: "btn-primary" }, {main: ->
 					App.step()
 				}, no
 		magisterInfo:
 			done: no
-			func: (current, length) ->
+			func: ->
 				schoolSub = Meteor.subscribe "schools", -> $("#setMagisterInfoModal").modal backdrop: "static", keyboard: no
 		plannerPrefs:
 			done: no
-			func: (current, length) ->
+			func: ->
 				$("#plannerPrefsModal").modal backdrop: "static", keyboard: no
 				$("#plannerPrefsModal .modal-header button").remove()
 		getMagisterClasses:
 			done: no
-			func: (current, length) ->
+			func: ->
 				bookSub = Meteor.subscribe "books", null, ->
 					magisterResult "classes", (e, r) ->
 						magisterClasses.set r unless e?
@@ -67,11 +67,11 @@ class @App
 
 		newSchoolYear:
 			done: no
-			func: (current, length) ->
+			func: ->
 				alertModal "Hey!", Locals["nl-NL"].NewSchoolYear(), DialogButtons.Ok, { main: "verder" }, { main: "btn-primary" }, { main: -> return }, no
 		final:
 			done: yes
-			func: (current, length) ->
+			func: ->
 				swalert
 					type: "success"
 					title: "Klaar!"
@@ -174,8 +174,7 @@ class @App
 				else tour.back()
 			Mousetrap.bind "right", tour.next
 
-	@_fullCount: null
-	@_currentCount: 0
+	@_fullCount: 0
 	@_running: no
 
 	###*
@@ -185,21 +184,16 @@ class @App
 	# @return {Object} Object that gives information about the progress of the setup path.
 	###
 	@step = ->
-		return unless App._fullCount? and App._fullCount isnt 0
-		App._currentCount++
+		return if @_fullCount is 0
 
-		itemName = _.find _.keys(App._setupPathItems), (k) -> not App._setupPathItems[k].done
-
-		item = App._setupPathItems[itemName]
-		item.func App._currentCount, App._fullCount
-		item.done = yes
-
-		if App._currentCount + 1 is App._fullCount
-			App._currentCount = 0
-			App._fullCount = null
+		item = _.find @_setupPathItems, (i) -> not i.done
+		unless item?
+			@_fullCount = 0
 			@_running = no
+			return
 
-		return { currentPosition: App._currentCount, length: App._fullCount, current: itemName }
+		item.func()
+		item.done = yes
 
 	###*
 	# Initializes and starts the setup path.
@@ -207,16 +201,16 @@ class @App
 	# @method followSetupPath
 	###
 	@followSetupPath: ->
-		return if App._running
-		App._setupPathItems.plannerPrefs.done = App._setupPathItems.magisterInfo.done = Meteor.user().magisterCredentials?
-		App._setupPathItems.getMagisterClasses.done = Meteor.user().classInfos? and Meteor.user().classInfos.length > 0
-		App._setupPathItems.newSchoolYear.done = Meteor.user().profile.courseInfo?
+		return if @_running
+		@_setupPathItems.plannerPrefs.done = @_setupPathItems.magisterInfo.done = Meteor.user().magisterCredentials?
+		@_setupPathItems.getMagisterClasses.done = Meteor.user().classInfos? and Meteor.user().classInfos.length > 0
+		@_setupPathItems.newSchoolYear.done = Meteor.user().profile.courseInfo?
 
-		App._fullCount = _.filter(App._setupPathItems, (x) -> not x.done).length
-		App._setupPathItems.tutorial.done = App._setupPathItems.final.done = App._fullCount is 0
-		App._running = yes
+		@_fullCount = _.filter(@_setupPathItems, (x) -> not x.done).length
+		@_setupPathItems.tutorial.done = @_setupPathItems.final.done = @_fullCount is 0
+		@_running = yes
 
-		App.step()
+		@step()
 
 # == Bloodhounds ==
 
