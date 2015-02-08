@@ -523,7 +523,7 @@ Template.addProjectModal.helpers
 			.filter((a) -> a.deadline() > new Date())
 			.map((a) -> _.extend a,
 				project: Projects.findOne magisterId: a.id()
-				__class: Classes.findOne Meteor.user().classInfos.smartFind(a.class().id(), (z) -> z.magisterId).id
+				__class: Classes.findOne _.find(Meteor.user().classInfos, (z) -> z.magisterId is a.class().id()).id
 			)
 			.sortBy((a) -> a.deadline()).sortBy((a) -> a.class().abbreviation())
 			.value()
