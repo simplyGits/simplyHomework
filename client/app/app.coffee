@@ -654,17 +654,18 @@ Template.app.rendered = ->
 				recentGradesNotification = NotificationsManager.notify body: s, type: "warning", time: -1, html: yes, onDismissed: -> Meteor.users.update(Meteor.userId(), $set: gradeNotificationDismissTime: new Date)
 
 	magisterAppointment new Date(), new Date().addDays(7), (e, r) ->
-		unless _.isArray Meteor.user().profile.groupInfos
-			Meteor.users.update Meteor.userId(), $set: "profile.groupInfos": []
+		tmpGroupInfos = Meteor.user().profile.groupInfos ? []
 
 		for classInfo in (Meteor.user().classInfos ? [])
 			magisterGroup = _.find(r, (a) -> a.classes()[0] is classInfo.magisterDescription)?.description()
-			groupInfo = _.find Meteor.user().profile.groupInfos, (gi) -> gi.id is classInfo.id
+			groupInfo = _.find tmpGroupInfos, (gi) -> gi.id is classInfo.id
 
 			continue if groupInfo?.group is magisterGroup or not magisterGroup?
 
-			Meteor.users.update Meteor.userId(), $pull: "profile.groupInfos": id: classInfo.id
-			Meteor.users.update Meteor.userId(), $push: "profile.groupInfos": _.extend id: classInfo.id, group: magisterGroup
+			_.remove tmpGroupInfos, id: classInfo.id
+			tmpGroupInfos.push _.extend id: classInfo.id, group: magisterGroup
+
+		Meteor.users.update Meteor.userId(), $set: "profile.groupInfos": tmpGroupInfos
 
 	studyGuideChangeNotification = null
 	magisterResult "studyGuides", (e, r) ->
