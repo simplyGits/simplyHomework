@@ -79,9 +79,9 @@ Meteor.methods
 
 	changeMail: (mail) ->
 		Meteor.users.update @userId, $set: { "emails": [ { address: mail, verified: no } ] }
-		Meteor.call "verifyMail"
+		Meteor.call "callMailVerification"
 
-	verifyMail: (address) ->
+	callMailVerification: (address) ->
 		user = if address? then Meteor.users.findOne { "emails": $elemMatch: { address }} else Meteor.users.findOne @userId
 
 		if user.emails[0].verified

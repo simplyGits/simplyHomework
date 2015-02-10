@@ -19,12 +19,19 @@ login = ->
 					$("#emailGroup").addClass("has-error").tooltip(placement: "bottom", title: "Ongeldig email adres").tooltip("show")
 					okay = false
 				if okay
-					Accounts.createUser
+					Accounts.createUser {
 						password: $("#passwordInput").val()
 						email: $("#emailInput").val().toLowerCase()
 						profile:
 							firstName: Helpers.cap $("#firstNameInput").val().trim()
 							lastName: Helpers.cap $("#lastNameInput").val().trim()
+					}, (e, r) ->
+						if e?
+							$("#signupModal").addClass "animated shake"
+							$("#signupModal").one "webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend", ->
+								$("#signupModal").removeClass "animated shake"
+
+						else Meteor.call "callMailVerification"
 
 	Router.go "app" if Meteor.user()? or Meteor.loggingIn()
 
