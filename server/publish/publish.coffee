@@ -29,15 +29,39 @@ Meteor.publish "usersData", (ids, chatLimit) ->
 		hasGravatar: 1
 
 	if ids?
-		return [
-			Meteor.users.find { _id: $in: _.reject ids, @userId }, fields: fields
-			ChatMessages.find({
-				to: [ @userId ].concat(ids)
-				from: $in: [ @userId ].concat(ids)
-			}, { limit: chatLimit }, sort: "time": -1)
-		]
+		return Meteor.users.find { _id: $in: _.reject ids, @userId }, fields: fields
 	else
 		return Meteor.users.find { _id: $ne: @userId }, fields: fields
+
+Meteor.publish "chatMessages", (data, limit) ->
+	@unblock()
+
+	unless @userId?
+		@ready()
+		return
+
+	if data.userId?
+		ChatMessages.find({
+			$or: [
+				{
+					creatorId: data.userId
+					to: @userId
+				}
+				{
+					creatorId: @userId
+					to: data.userId
+				}
+			]
+		}, { limit, sort: "time": -1 } )
+	else
+		# Check if the user is inside the permission #veiligheidje
+		if Projects.find(_id: data.projectId, participants: @userId).count() is 0
+			@ready()
+			return
+
+		ChatMessages.find({
+			projectId: data.projectId
+		})
 
 Meteor.publish null, ->
 	unless @userId?
@@ -59,6 +83,12 @@ Meteor.publish null, ->
 			gradeNotificationDismissTime: 1
 			profile: 1)
 		Schools.find _id: Meteor.users.findOne(@userId).profile.schoolId
+
+		Projects.find { participants: @userId }, fields:
+			name: 1
+			magisterId: 1
+			classId: 1
+			deadline: 1
 
 		# All unread chatMessages.
 		ChatMessages.find({$or: [{ to: @userId }, { creatorId: @userId }], readBy: $ne: @userId}, sort: "time": -1)
@@ -85,19 +115,17 @@ Meteor.publish "calendarItems", ->
 	return CalendarItems.find ownerId: @userId
 
 Meteor.publish "goaledSchedules", -> GoaledSchedules.find { ownerId: @userId }
-Meteor.publish "projects", (id, chatLimit) ->
+Meteor.publish "projects", (id) ->
 	@unblock()
-	if id?
-		[
-			Projects.find _id: id, participants: @userId
-			ChatMessages.find { projectId: id }, limit: chatLimit, sort: "time": -1
-		]
-	else
-		Projects.find { participants: @userId }, fields:
-			name: 1
-			magisterId: 1
-			classId: 1
-			deadline: 1
+
+	if Projects.find(_id: id, participants: @userId).count() is 0
+		@ready()
+		return
+
+	return [
+		Projects.find _id: id, participants: @userId
+		ChatMessages.find { projectId: id }, limit: 1, sort: "time": -1 # Just the last message to show on the projectView.
+	]
 
 Meteor.publish "books", (classId) ->
 	@unblock()
