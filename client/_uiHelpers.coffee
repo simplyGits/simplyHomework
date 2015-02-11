@@ -142,7 +142,7 @@ class @NotificationsManager
 			height: -> unless @_htmlNotification? then @element().outerHeight(yes) else 0
 
 			content: (content, html = false) ->
-				if @_htmlNotification?
+				if @_htmlNotification? # We can't change the contents of a HTML notification, just rebuild it.
 					@_htmlNotification.close()
 
 					text = if html then body.trim().replace(/(<[^>]*>)|(&nbsp;)/g, "").replace("<br>", "\n") else body.trim()
