@@ -76,11 +76,7 @@ Meteor.startup ->
 				initializeMagister yes if Meteor.status().connected
 			), 1200000
 		else
-			clearKeys = [
-				"hardCachedAppointments"
-				"superStronkCache"
-			]
-			for key in _(amplify.store()).keys().filter((key) -> _.any(clearKeys, (ck) -> key.indexOf(ck) is 0)).value()
+			for key in _.keys amplify.store() when key.indexOf("hardCachedAppointments") is 0
 				amplify.store key, null
 
 			resetMagister()

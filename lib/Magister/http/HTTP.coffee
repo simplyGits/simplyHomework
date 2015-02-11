@@ -1,12 +1,3 @@
-_superStronkCache = amplify?.store?("superStronkCache_#{Meteor.userId()}") ? {}
-
-superStronkCache = (key, value) ->
-	if value?
-		_superStronkCache[key] = value
-		amplify?.store? "superStronkCache_#{Meteor.userId()}", _superStronkCache, expires: 259200000
-
-	return _superStronkCache[key]
-
 class @MagisterHttp
 	###
 	# HTTP CLASS
@@ -35,38 +26,16 @@ class @MagisterHttp
 	#  METEOR IMPLEMENTATION
 	# =======================
 	###
-	get: (url, options = {}, callback) ->
-		if not Meteor.status? or Meteor.status().connected
-			Meteor.call "http", "GET", url, @_cookieInserter(options), (e, r) -> callback(e, r); superStronkCache(url, r) unless e?
-		else callback null, superStronkCache url
+	get: (url, options = {}, callback) -> Meteor.call "http", "GET", url, @_cookieInserter(options), callback
 
-	delete: (url, options = {}, callback) ->
-		if not Meteor.status? or Meteor.status().connected
-			Meteor.call "http", "DELETE", url, @_cookieInserter(options), (e, r) -> callback(e, r); superStronkCache(url, r) unless e?
-		else callback null, superStronkCache url
+	delete: (url, options = {}, callback) -> Meteor.call "http", "DELETE", url, @_cookieInserter(options), callback
 
-	post: (url, data, options = {}, callback) ->
-		if not Meteor.status? or Meteor.status().connected
-			Meteor.call "http", "POST", url, @_cookieInserter(_.extend({data}, options)), (e, r) -> callback(e, r); superStronkCache(url, r) unless e?
-		else callback null, superStronkCache url
+	post: (url, data, options = {}, callback) -> Meteor.call "http", "POST", url, @_cookieInserter(_.extend({data}, options)), callback
 
-	put: (url, data, options = {}, callback) ->
-		if not Meteor.status? or Meteor.status().connected
-			Meteor.call "http", "PUT", url, @_cookieInserter(_.extend({data}, options)), (e, r) -> callback(e, r); superStronkCache(url, r) unless e?
-		else callback null, superStronkCache url
+	put: (url, data, options = {}, callback) -> Meteor.call "http", "PUT", url, @_cookieInserter(_.extend({data}, options)), callback
 
 	_cookie: ""
 	_cookieInserter: (original) ->
 		original ?= {}
 		original.headers = if @_cookie isnt "" then _.extend (original.headers ? {}), { cookie: @_cookie } else original.headers ? {}
 		return original
-###
-	================
-	 jQuery Example
-	================
-
-	get: (url, options = {}, callback) ->
-		$
-			.get url, options, (r) -> callback null, { content: r }
-			.fail (e) -> callback e, null
-###
