@@ -36,22 +36,22 @@ class @MagisterHttp
 	# =======================
 	###
 	get: (url, options = {}, callback) ->
-		if Meteor.status().connected
+		if not Meteor.status? or Meteor.status().connected
 			Meteor.call "http", "GET", url, @_cookieInserter(options), (e, r) -> callback(e, r); superStronkCache(url, r) unless e?
 		else callback null, superStronkCache url
 
 	delete: (url, options = {}, callback) ->
-		if Meteor.status().connected
+		if not Meteor.status? or Meteor.status().connected
 			Meteor.call "http", "DELETE", url, @_cookieInserter(options), (e, r) -> callback(e, r); superStronkCache(url, r) unless e?
 		else callback null, superStronkCache url
 
 	post: (url, data, options = {}, callback) ->
-		if Meteor.status().connected
+		if not Meteor.status? or Meteor.status().connected
 			Meteor.call "http", "POST", url, @_cookieInserter(_.extend({data}, options)), (e, r) -> callback(e, r); superStronkCache(url, r) unless e?
 		else callback null, superStronkCache url
 
 	put: (url, data, options = {}, callback) ->
-		if Meteor.status().connected
+		if not Meteor.status? or Meteor.status().connected
 			Meteor.call "http", "PUT", url, @_cookieInserter(_.extend({data}, options)), (e, r) -> callback(e, r); superStronkCache(url, r) unless e?
 		else callback null, superStronkCache url
 
