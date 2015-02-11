@@ -11,6 +11,11 @@
 @CalendarItems   = new Ground.Collection "calendarItems"
 @ChatMessages    = new Ground.Collection "chatMessages"
 
+@MagisterAppointments = new Ground.Collection "magisterAppointments", transform: (a) -> _.extend new Appointment(), a
+@MagisterStudyGuides = new Ground.Collection "magisterStudyGuides", transform: (s) ->
+	s.parts = ( _.extend(new StudyGuidePart(), part) for part in s.parts )
+	return _.extend new StudyGuide(), s
+
 Schemas.Classes = new SimpleSchema
 	name:
 		type: String
