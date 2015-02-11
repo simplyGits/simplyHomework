@@ -196,9 +196,7 @@ addUser = ->
 		if (val = _.find getOthers(), (p) -> p.fullName.toLowerCase().indexOf($("#personNameInput").val().toLowerCase()) is 0)?
 			Session.set "currentSelectedPersonDatum", val
 		else
-			$("#addParticipantModal").addClass "animated shake"
-			$('#addParticipantModal').one 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', ->
-				$("#addParticipantModal").removeClass "animated shake"
+			shake "#addParticipantModal"
 			return
 
 	Projects.update currentProject()._id, $push: participants: Session.get("currentSelectedPersonDatum")._id

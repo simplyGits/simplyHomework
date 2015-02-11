@@ -1,8 +1,6 @@
 send = ->
 	if not correctMail($("#mailInput").val()) or BetaPeople.find(hash: md5 $("#mailInput").val().toLowerCase()).count() isnt 0
-		$("input").addClass "animated shake"
-		$('input').one 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', ->
-			$(this).removeClass "animated shake"
+		shake "input"
 
 		$("#mailInput").tooltip(placement: "bottom", html: "<h2>Je hebt je al aangemeld</h2>").tooltip "show"
 	else

@@ -26,11 +26,7 @@ login = ->
 							firstName: Helpers.cap $("#firstNameInput").val().trim()
 							lastName: Helpers.cap $("#lastNameInput").val().trim()
 					}, (e, r) ->
-						if e?
-							$("#signupModal").addClass "animated shake"
-							$("#signupModal").one "webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend", ->
-								$("#signupModal").removeClass "animated shake"
-
+						if e? then shake "#signupModal"
 						else Meteor.call "callMailVerification"
 
 	Router.go "app" if Meteor.user()? or Meteor.loggingIn()
@@ -72,13 +68,9 @@ Template.page1.events
 
 		Meteor.loginWithPassword $("input#username").val().toLowerCase(), $("input#password").val(), (error) ->
 			if error? and error.reason is "Incorrect password"
-				$("input#password").addClass "animated shake"
-				$('input#password').one 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', ->
-					$("input#password").removeClass "animated shake"
+				shake "input#password"
 			else if error?
-				$("input").addClass "animated shake"
-				$('input').one 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', ->
-					$("input").removeClass "animated shake"
+				shake "input"
 
 			else Router.go "app"
 

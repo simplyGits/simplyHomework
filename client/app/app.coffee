@@ -316,13 +316,8 @@ Template.setMagisterInfoModal.events
 		school = Schools.findOne { name: schoolName }
 		school ?= New.school schoolName, s.url, new Location()
 
-		shake = ->
-			$("#setMagisterInfoModal").addClass "animated shake"
-			$('#setMagisterInfoModal').one 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', ->
-				$("#setMagisterInfoModal").removeClass "animated shake"
-
 		unless $("#allowGroup input").is ":checked"
-			shake()
+			shake "#setMagisterInfoModal"
 			return
 
 		Meteor.call "setMagisterInfo", { school, schoolId: school._id, magisterCredentials: { username, password }}, (e, success) ->
@@ -331,7 +326,7 @@ Template.setMagisterInfoModal.events
 				App.step()
 				initializeMagister yes
 				schoolSub.stop()
-			else shake()
+			else shake "#setMagisterInfoModal"
 
 Template.setMagisterInfoModal.rendered = ->
 	$("#schoolNameInput").typeahead({
@@ -548,9 +543,7 @@ Template.addProjectModal.events
 		return if name is ""
 
 		if $("#projectClassNameInput").val().trim() isnt "" and not classId?
-			$("#addProjectModal").addClass "animated shake"
-			$('#addProjectModal').one 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', ->
-				$("#addProjectModal").removeClass "animated shake"
+			shake "#addProjectModal"
 			return
 
 		New.project name, description, deadline, null, classId, Meteor.userId()
