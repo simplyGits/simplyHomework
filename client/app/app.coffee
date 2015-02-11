@@ -687,13 +687,22 @@ Template.app.rendered = ->
 			.filter((s) -> studyGuidesHashes[s] isnt oldStudyGuideHashes[s])
 			.map((id) -> _.find(r, (sg) -> sg.id() is +id))
 			.sortBy((sg) -> sg.classCodes()[0])
+			.value()
 
-		s += "<b>#{studyGuide.classCodes()[0]}</b> - #{studyGuide.name()}\n" for studyGuide in x.value()
+		s += "<b>#{studyGuide.classCodes()[0]}</b> - #{studyGuide.name()}\n" for studyGuide in x
 
 		if studyGuideChangeNotification?
 			studyGuideChangeNotification.content s, yes
 		else
-			assignmentNotification = NotificationsManager.notify body: s, type: "warning", time: -1, html: yes, onDismissed: -> Meteor.users.update Meteor.userId(), $set: { studyGuidesHashes }
+			studyGuideChangeNotification = NotificationsManager.notify
+				body: s
+				type: "warning"
+				time: -1
+				html: yes
+				onDismissed: -> Meteor.users.update Meteor.userId(), $set: { studyGuidesHashes }
+				onClick: ->
+					return unless _.uniq(x, "_class").length is 1
+					Router.go "classView", classId: Classes.findOne _.find(Meteor.user().classInfos, (z) -> z.magisterId is x[0].class().id()).id.toHexString()
 
 	val = Meteor.user().profile.birthDate
 	now = new Date()
