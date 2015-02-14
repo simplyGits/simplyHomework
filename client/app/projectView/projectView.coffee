@@ -101,7 +101,12 @@ Template.projectView.events
 	"click #addFileIcon": ->
 		onPickerResult (r) ->
 			return unless r.action is "picked"
-			cb = -> Projects.update currentProject()._id, $push: driveFileIds: r.docs[0].id
+			cb = ->
+				Projects.update currentProject()._id, $push: driveFileIds: r.docs[0].id, (e) ->
+					if e?
+						notify "Bestand kan niet worden toegevoegd", "error"
+						Kadira.trackError "Remove-add-file", e.message, stacks: e.stack
+					else notify "#{r.docs[0].title} toegevoegd.", "notice"
 
 			setPermissions = ->
 				if _.any(r.docs[0].permissions, (p) -> p.type is "anyone" and p.role is "writer") then cb()
