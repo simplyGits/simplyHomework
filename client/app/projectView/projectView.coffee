@@ -81,6 +81,7 @@ Template.projectView.helpers
 	isOwner: -> Router.current().data().ownerId is Meteor.userId()
 
 	showRightHeader: -> if (currentProject().participants ? []).length is 1 then false else true
+	overDue: -> if not currentProject().deadline? or currentProject().deadline > new Date() then "initial" else "darkred"
 	friendlyDeadline: ->
 		return "" unless currentProject().deadline?
 		day = DayToDutch Helpers.weekDay currentProject().deadline
