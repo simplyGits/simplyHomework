@@ -176,7 +176,9 @@ class @NotificationsManager
 			if onClick?
 				d.click ->
 					if $(@).hasClass("noclick") then $(@).removeClass "noclick"
-					else onClick arguments...
+					else
+						onClick arguments...
+						notHandle.hide()
 				d.css cursor: "pointer"
 
 			if dismissable
