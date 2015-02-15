@@ -103,7 +103,3 @@ Meteor.methods
 				}
 			}
 		).count() isnt 0
-
-	getUsersCount: ->
-		@unblock()
-		return Meteor.users.find().count()

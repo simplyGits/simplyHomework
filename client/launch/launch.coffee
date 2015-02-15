@@ -32,7 +32,6 @@ login = ->
 	Router.go "app" if Meteor.user()? or Meteor.loggingIn()
 
 Template.page1.helpers showQuickLoginhint: -> amplify.store("allowCookies")?
-Template.launchPage.rendered = -> $("#simplyLogoIntro").attr "src", "images/simplyLogo.gif"
 
 Template.signupModal.helpers creatingAccount: -> Session.get "creatingAccount"
 
@@ -81,9 +80,13 @@ Template.page2.helpers
 Template.launchPage.events
 	'click #page1': -> if $("#page2").hasClass("topShadow") then $("body").stop().animate {scrollTop: 0}, 600, "easeOutExpo"
 
-Meteor.startup ->
-	l = -> if Router.current()?.route?.getName() is "launchPage" then Meteor.call "getUsersCount", (e, r) -> usersCount.set r unless e?
-	l(); setInterval l, 5000
+coll = new Meteor.Collection "userCount"
+Template.launchPage.rendered = ->
+	$("#simplyLogoIntro").attr "src", "images/simplyLogo.gif"
+
+	@autorun ->
+		Meteor.subscribe "userCount"
+		usersCount.set coll.findOne()?.count
 
 	$("body").keypress (event) ->
 		return if event.which is 13 or $("input").is ":focus"
@@ -110,11 +113,3 @@ Meteor.startup ->
 			$("#page2").addClass("topShadow")
 		else
 			$("#page2").removeClass("topShadow")
-
-		# unless Session.get "isPhone"
-		# 	scrollDelta = ($("#page2").offset().top - scroll) / $("#page2").offset().top
-		# 	opacity = 1 - scrollDelta
-		# 	marginTop = 20 + 280 * scrollDelta
-		# 	$(".card").css
-		# 		opacity: opacity
-		# 		marginTop: "#{marginTop}px"

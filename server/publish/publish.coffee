@@ -142,3 +142,26 @@ Meteor.publish "books", (classId) ->
 		return Books.find _id: $in: (x.bookId for x in (Meteor.users.findOne(@userId).classInfos ? []))
 
 Meteor.publish "roles", -> @unblock(); Meteor.users.find(@userId, fields: roles: 1)
+
+id = new Meteor.Collection.ObjectID()
+Meteor.publish "userCount", ->
+	@unblock()
+	count = 0
+	loaded = no
+
+	pub = @
+	handle = Meteor.users.find().observeChanges
+		added: ->
+			count++
+			if loaded then pub.changed "userCount", id, count: count
+
+		removed: ->
+			count--
+			if loaded then pub.changed "userCount", id, count: count
+
+	loaded = yes
+	@added "userCount", id, count: count
+	@ready()
+
+	@onStop ->
+		handle.stop()
