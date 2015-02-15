@@ -60,12 +60,12 @@ class @Class
 	@_convertRaw: (magisterObj, raw) ->
 		obj = new Class magisterObj
 
-		obj._id = raw.id
+		obj._id = raw.id ? raw.Id
 		obj._beginDate = new Date Date.parse raw.begindatum
 		obj._endDate = new Date Date.parse raw.einddatum
-		obj._abbreviation = raw.afkorting
-		obj._description = raw.omschrijving
-		obj._number = raw.volgnr
+		obj._abbreviation = raw.afkorting ? raw.Afkorting
+		obj._description = raw.omschrijving ? raw.Omschrijving
+		obj._number = raw.volgnr ? raw.Volgnr
 		obj._teacher = Person._convertRaw magisterObj, Docentcode: raw.docent
 		obj._classExemption = raw.VakDispensatie or raw.VakVrijstelling
 
