@@ -303,18 +303,6 @@ Meteor.startup ->
 
 	Session.set "isPhone", window.matchMedia("only screen and (max-width: 760px)").matches
 
-	# Fix inconsistent modal backdrop by using custom one (eg. fixes backdrop scrolling with the modal).
-	$("body").on "shown.bs.modal", ".modal", ->
-		customBackdrop = $("body > .backdrop")
-		unless customBackdrop.length is 0
-			$(".modal-backdrop").remove()
-			customBackdrop.addClass "dimmed"
-
-	$("body").on "hidden.bs.modal", ".modal", ->
-		$("body > .backdrop").removeClass "dimmed"
-
-	$("body").on "click", "body > .backdrop", -> $(".modal.in").modal "hide"
-
 	UI.registerHelper "isPhone", -> Session.get "isPhone"
 	UI.registerHelper "empty", -> return @ is 0
 	UI.registerHelper "first", (arr) -> EJSON.equals @, _.first arr
