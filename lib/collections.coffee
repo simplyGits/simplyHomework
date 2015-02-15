@@ -133,9 +133,9 @@ Schemas.ChatMessages = new SimpleSchema
 	groupInfo = _.find Meteor.user().profile.groupInfos, (gI) -> EJSON.equals gI.id, tmpClass._id
 
 	return _.extend tmpClass,
-		__taskAmount: _.filter(homeworkItems.get(), (a) -> groupInfo.group is a.description() and not a.isDone()).length
-		__book: Books.findOne classInfo.bookId
-		__color: classInfo.color
+		__taskAmount: _.filter(homeworkItems.get(), (a) -> groupInfo?.group is a.description() and not a.isDone()).length
+		__book: Books.findOne classInfo?.bookId
+		__color: classInfo?.color
 		__sidebarName: Helpers.cap if (val = tmpClass.name).length > 14 then tmpClass.course else val
 		__showBadge: not _.contains [11..14], tmpClass.name.length
 

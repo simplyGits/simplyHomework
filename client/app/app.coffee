@@ -468,6 +468,7 @@ Template.settingsModal.events
 				"profile.magisterPicture": null
 				"profile.groupInfos": null
 			Meteor.call "clearMagisterInfo"
+			document.location.reload()
 
 	"click #startTourButton": ->
 		$("#settingsModal").modal "hide"
