@@ -2,13 +2,14 @@
 
 AccountController = RouteController.extend
 	verifyMail: -> Accounts.verifyEmail @params.token, ->
+		@next()
 		Router.go "app"
 		notify "Email geverifiëerd", "success"
 
 Router.configure
 	onStop: ->
-		$("body").removeClass "modal-open"
-		$(".modal-backdrop").remove()
+		$(".modal.in").modal "hide"
+		$(".backdrop.dimmed").removeClass "dimmed"
 	trackPageView: true
 	notFoundTemplate: "notFound"
 
