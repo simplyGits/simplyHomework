@@ -89,10 +89,10 @@ class @Helpers
 	# Adds a zero in front of the original number if it doesn't yet.
 	#
 	# @method addZero
-	# @param original {Number} The number to add a zero in front to.
+	# @param original {Number|String} The number to add a zero in front to.
 	# @return {String} The number as string with a zero in front of it.
 	###
-	@addZero: (original) -> return if original < 10 then "0#{original}" else original.toString()
+	@addZero: (original) -> return if +original < 10 then "0#{original}" else original.toString()
 
 	###*
 	# Checks if the given original string contains the given query string.
