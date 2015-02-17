@@ -164,3 +164,21 @@ Schemas.ChatMessages = new SimpleSchema
 @projectTransform = (p) ->
 	return _.extend p,
 		__class: Classes.findOne p.classId, transform: classTransform
+		__borderColor: (
+			if p.deadline < new Date then "#FF4136"
+		)
+		__friendlyDeadline: (
+			if p.deadline?
+				day = DayToDutch Helpers.weekDay p.deadline
+				time = "#{Helpers.addZero p.deadline.getHours()}:#{Helpers.addZero p.deadline.getMinutes()}"
+
+				(switch Helpers.daysRange new Date(), p.deadline
+					when -6, -5, -4, -3 then "Afgelopen #{day}"
+					when -2 then "Eergisteren"
+					when -1 then "Gisteren"
+					when 0 then "Vandaag"
+					when 1 then "Morgen"
+					when 2 then "Overmorgen"
+					when 3, 4, 5, 6 then "Aanstaande #{day}"
+					else "#{Helpers.cap day} #{DateToDutch(p.deadline, no)}") + " " + time
+		)

@@ -82,20 +82,6 @@ Template.projectView.helpers
 
 	showRightHeader: -> if (currentProject().participants ? []).length is 1 then false else true
 	overDue: -> if not currentProject().deadline? or currentProject().deadline > new Date() then "initial" else "darkred"
-	friendlyDeadline: ->
-		return "" unless currentProject().deadline?
-		day = DayToDutch Helpers.weekDay currentProject().deadline
-		time = "#{Helpers.addZero currentProject().deadline.getHours()}:#{Helpers.addZero currentProject().deadline.getMinutes()}"
-
-		return (switch Helpers.daysRange new Date(), currentProject().deadline
-			when -6, -5, -4, -3 then "Afgelopen #{day}"
-			when -2 then "Eergisteren"
-			when -1 then "Gisteren"
-			when 0 then "Vandaag"
-			when 1 then "Morgen"
-			when 2 then "Overmorgen"
-			when 3, 4, 5, 6 then "Aanstaande #{day}"
-			else "#{Helpers.cap day} #{DateToDutch(currentProject().deadline, no)}") + " " + time
 	heightOffset: -> if has("noAds") then 260 else 315
 
 Template.projectView.events
