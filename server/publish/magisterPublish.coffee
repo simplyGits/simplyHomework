@@ -16,14 +16,19 @@ _cachedMagisterObjects = {}
 # @param userId {String} The ID of the user to get the magisterObject for.
 # @return {Magister} A Magister object for the given userId.
 ###
-magisterObj = (userId) ->
+@magisterObj = (userId) ->
 	user = Meteor.users.findOne userId
+	unless user? and user.magisterCredentials? and user.profile.schoolId?
+		return undefined
+
 	school = Schools.findOne user.profile.schoolId
 	{ username, password } = user.magisterCredentials
 
-	val = _cachedMagisterObjects[userId]?
+	val = _cachedMagisterObjects[userId]
 
-	unless val? and val.invalidationTime < new Date().getTime()
+	if val? and val.invalidationTime > new Date().getTime()
+		return val.magister
+	else
 		magister = new Magister school, username, password, null
 		_cachedMagisterObjects[userId] =
 			magister: magister
@@ -31,22 +36,46 @@ magisterObj = (userId) ->
 
 		return magister
 
-	else return val.magister
-
 Meteor.publish "magisterAppointments", (from, to) ->
 	@unblock() # AWW YESSSS
+	user = Meteor.users.findOne @userId
 	magister = magisterObj @userId
+	unless magister?
+		@ready()
+		return
 
 	pub = @
 	magister.ready (err) ->
-		unless err? then @appointments from, to, no, (e, r) ->
-			for a in r then pub.added "magisterAppointments", a.id(), JSON.decycle a
+		if err? then pub.ready()
+		else @appointments from, to, no, (e, r) ->
+			for a in r
+				a = JSON.decycle a
 
-	@ready()
+				delete a._magisterObj
+
+				a.__id = "#{a._id}"
+				a.__className = Helpers.cap(a.classes()[0]) if a.classes()[0]?
+
+				# Find URLs and place them in an anchor tag.
+				a.__description = a.content().replace(/&amp;/ig, "&").replace /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b((\/|\?)[-a-zA-Z0-9@:%_\+.~#?&//=]+)?\b/ig, (match) ->
+					if /^https?:\/\/.+/i.test match
+						return "<a target=\"_blank\" href=\"#{match}\">#{match}</a>"
+					else
+						return "<a target=\"_blank\" href=\"http://#{match}\">#{match}</a>"
+				a.__taskDescription = a.__description.replace /\n/g, "; "
+
+				pub.added "magisterAppointments", a.id(), a
+
+			pub.ready()
+
+	return undefined
 
 Meteor.publish "magisterStudyGuides", ->
 	@unblock()
 	magister = magisterObj @userId
+	unless magister?
+		@ready()
+		return
 
 	pub = @
 	magister.ready (err) ->
@@ -56,20 +85,33 @@ Meteor.publish "magisterStudyGuides", ->
 			for studyGuide in r then do (studyGuide) ->
 				studyGuide.parts (e, r) ->
 					studyGuide.parts = r ? []
-					pub.added "magisterStudyGuides", studyGuide.id(), JSON.decycle studyGuide
+
+					studyGuide = JSON.decycle studyGuide
+					delete studyGuide._magisterObj
+					pub.added "magisterStudyGuides", studyGuide.id(), studyGuide
 
 	@ready()
 
 Meteor.publish "magisterAssignments", ->
 	@unblock()
 	magister = magisterObj @userId
+	unless magister?
+		@ready()
+		return
 
 	pub = @
 	magister.ready (err) ->
-		unless err? then @assignments no, yes, (e, r) ->
-			for a in r then pub.added "magisterAssignments", a.id(), JSON.decycle a
+		if err? then pub.ready()
+		else @assignments no, yes, (e, r) ->
+			for a in r
+				a = JSON.decycle a
+				delete a._magisterObj
+				pub.added "magisterAssignments", a.id(), a
 
-	@ready()
+			pub.ready()
+
+	return undefined
+
 Meteor.publish "magisterDigitalSchoolUtilties", (classDescription) ->
 	@unblock()
 	magister = magisterObj @userId
