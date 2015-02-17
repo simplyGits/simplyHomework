@@ -70,3 +70,27 @@ Meteor.publish "magisterAssignments", ->
 			for a in r then pub.added "magisterAssignments", a.id(), JSON.decycle a
 
 	@ready()
+Meteor.publish "magisterDigitalSchoolUtilties", (classDescription) ->
+	@unblock()
+	magister = magisterObj @userId
+	unless magister?
+		@ready()
+		return
+
+	pub = @
+	magister.ready (err) ->
+		if err? then pub.ready()
+		#							 / == Say no to filling classes!
+		#							 ||
+		#							 \/
+		else @digitalSchoolUtilities no, (e, r) ->
+			if classDescription? then r = _.filter r, (du) -> du.class()?.description() is classDescription
+
+			for du in r
+				du = JSON.decycle du
+				delete du._magisterObj
+				pub.added "magisterDigitalSchoolUtilties", du.id(), du
+
+			pub.ready()
+
+	return undefined

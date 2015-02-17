@@ -5,7 +5,7 @@ loadingGrades = new ReactiveVar yes
 selectedGrade = new ReactiveVar null
 
 studyGuides = new ReactiveVar []
-loadingStudyGuides = new ReactiveVar yes
+digitalSchoolUtilities = new ReactiveVar []
 
 currentClass = -> Router.current().data()
 tasksAmount = -> Helpers.getTotal _.reject(GoaledSchedules.find(_homework: { $exists: true }, ownerId: Meteor.userId()).fetch(), (gS) -> !EJSON.equals(gS.classId(), currentClass()._id)), (gS) -> gS.tasksForToday().length
@@ -55,6 +55,7 @@ Template.classView.helpers
 			.filter (gp) -> gp.grades.length isnt 0
 			.value()
 	studyGuides: -> studyGuides.get()
+	digitalSchoolUtilities: -> digitalSchoolUtilities.get()
 
 	loadingGrades: -> loadingGrades.get()
 	loadingStudyGuides: -> loadingStudyGuides.get()
@@ -100,6 +101,12 @@ Template.classView.rendered = ->
 				grade.fillGrade p
 
 	@autorun -> studyGuides.set _.filter fetchedStudyGuides.get(), (s) -> s.class()? and s.class().id() is currentClass().__classInfo.magisterId
+	@autorun ->
+		Meteor.subscribe "magisterDigitalSchoolUtilties", currentClass().__classInfo.magisterDescription
+		digitalSchoolUtilities.set MagisterDigitalSchoolUtilties.find(
+			_class: $exists: yes
+			"_class._description": currentClass().__classInfo.magisterDescription
+		).fetch()
 
 Template.classView.events
 	"click #changeClassIcon": ->
