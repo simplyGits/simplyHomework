@@ -48,15 +48,12 @@
 					</span>
 					<div class="itemContainerDivider"></div>
 					<div class="itemContainerContent">
-						{{#if loadingStudyGuides}}
-							<div style="width: 100%; text-align: center; opacity: .7; position: absolute; top: 50%; transform: translateY(-50%); word-break: break-word; font-weight: normal; font-family: sans-serif">
-								Studiewijzers laden...
-							</div>
-						{{else}}
-							{{#each studyGuides}}
-								{{> studyGuide}}
-							{{/each}}
-						{{/if}}
+						{{#each studyGuides}}
+							{{> studyGuide}}
+						{{/each}}
+					</div>
+				</div>
+			</div>
 			<div class="col-sm-6">
 				<div class="itemContainer digitalSchoolUtilities">
 					<span class="robotoThin itemContainerHeader">
@@ -112,6 +109,14 @@
 		{{#each parts}}
 			<div class="studyGuidePart">
 				{{name}}
+				<div class="studyGuidePartDescription">{{description}}</div>
+				{{#each _files}}
+					<a href="{{uri}}" target="_blank">
+						<div class="studyGuidePartFile">
+							{{name}}
+						</div>
+					</a>
+				{{/each}}
 			</div>
 		{{/each}}
 	</div>
