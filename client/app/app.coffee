@@ -727,10 +727,10 @@ Template.app.rendered = ->
 				type: "warning"
 				time: -1
 				html: yes
-				onDismissed: -> Meteor.users.update Meteor.userId(), $set: { studyGuidesHashes }
+				onHide: -> Meteor.users.update Meteor.userId(), $set: { studyGuidesHashes }
 				onClick: ->
 					return unless _.uniq(x, "_class").length is 1
-					Router.go "classView", classId: Classes.findOne _.find(Meteor.user().classInfos, (z) -> z.magisterId is x[0].class().id()).id.toHexString()
+					Router.go "classView", classId: _.find(Meteor.user().classInfos, (z) -> z.magisterId is x[0].class()._id).id.toHexString()
 
 	val = Meteor.user().profile.birthDate
 	now = new Date()

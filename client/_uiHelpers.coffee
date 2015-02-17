@@ -151,9 +151,11 @@ class @NotificationsManager
 					x.onclick = ->
 						window.focus()
 						onClick?()
+						onHide?()
 						notHandle.hide()
 					x.onclose = ->
 						onDismissed?()
+						onHide?()
 						notHandle.hide()
 
 					return
@@ -178,6 +180,7 @@ class @NotificationsManager
 					if $(@).hasClass("noclick") then $(@).removeClass "noclick"
 					else
 						onClick arguments...
+						onHide?()
 						notHandle.hide()
 				d.css cursor: "pointer"
 
@@ -201,6 +204,7 @@ class @NotificationsManager
 							$(@).velocity opacity: 0
 							notHandle.hide()
 							onDismissed?()
+							onHide?()
 					drag: (event, helper) ->
 						$(@).css opacity: 1 - ((pos - $(@).position().left) / 250)
 					revert: -> $(@).position().left - pos > MIN
@@ -232,9 +236,11 @@ class @NotificationsManager
 			x.onclick = ->
 				window.focus()
 				onClick?()
+				onHide?()
 				notHandle.hide()
 			x.onclose = ->
 				onDismissed?()
+				onHide?()
 				notHandle.hide()
 
 			unless time is -1 then notHandle._delayHandle = _.delay (-> notHandle.hide()), time + 500
