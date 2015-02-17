@@ -79,11 +79,6 @@ Template.classView.rendered = ->
 		fetchedGrades.set r ? []
 		loadingGrades.set no
 
-	magisterResult "studyGuides", (e, r) ->
-		return unless Router.current().route.getName() is "classView"
-		fetchedStudyGuides.set r ? []
-		loadingStudyGuides.set no
-
 	@autorun ->
 		return if _.contains(grades.get(), selectedGrade.get())
 		selectedGrade.set grades.get()[0]
@@ -100,7 +95,12 @@ Template.classView.rendered = ->
 			for grade in grades.get() when not grade._filled
 				grade.fillGrade p
 
-	@autorun -> studyGuides.set _.filter fetchedStudyGuides.get(), (s) -> s.class()? and s.class().id() is currentClass().__classInfo.magisterId
+	@autorun ->
+		studyGuides.set MagisterStudyGuides.find(
+			_class: $exists: yes
+			"_class._id": currentClass().__classInfo.magisterId
+		).fetch()
+
 	@autorun ->
 		Meteor.subscribe "magisterDigitalSchoolUtilties", currentClass().__classInfo.magisterDescription
 		digitalSchoolUtilities.set MagisterDigitalSchoolUtilties.find(

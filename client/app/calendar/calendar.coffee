@@ -1,24 +1,13 @@
 height = -> $(".content").height() - if has("noAds") then 10 else 100
 root = @
 
+currentEvents = []
+
 dblDate = null
 dblDateResetHandle = null
 keydownSet = no
 
-getHardCacheAppointments = (begin, end) ->
-	x = _.filter (Appointment._convertStored root.magister, a for a in hardCachedAppointments), (x) -> x.begin() >= begin and x.end() <= end
-	return _.reject x, (a) -> a.id() isnt -1 and _.any(x, (z) -> z isnt a and z.begin() is a.begin() and z.end() is a.end() and z.description() is a.description())
-
-setHardCacheAppointments = (data) ->
-	for appointment in data
-		_.remove hardCachedAppointments, (x) ->
-			x = Appointment._convertStored(root.magister, x)
-			return "#{x.begin().getTime()}#{x.end().getTime()}" is "#{appointment.begin().getTime()}#{appointment.end().getTime()}"
-
-		hardCachedAppointments.push appointment._makeStorable()
-
-	_.remove hardCachedAppointments, (x) -> x.end() < new Date().addDays(-7) or x.begin() > new Date().addDays(14)
-	amplify.store "hardCachedAppointments_#{Meteor.userId()}", JSON.decycle(hardCachedAppointments), expires: 432000000
+prevDrop = null # Used to only have one event drop open at a time.
 
 appointmentToEvent = (appointment) ->
 	type = null
@@ -100,31 +89,8 @@ Template.calendar.rendered = ->
 
 		events: (start, end, timezone, callback) ->
 			start = start.toDate(); end = end.toDate()
-
 			Session.set "currentDateRange", [start, end]
-			calendarItems = CalendarItems.find({}, transform: calendarItemToEvent).fetch()
-
-			allCached = magisterAppointment start, end, no, yes, (error, result, fromCache) ->
-				unless fromCache
-					$(".calendar").fullCalendar "refetchEvents" # Needed to get a new callback since we already used the current one for the hard cached appointments.
-					return
-
-				result.map (appointment) ->
-					return appointment unless appointment.scrapped()
-					a = _.find getHardCacheAppointments(start, end), (a) -> "#{appointment.begin().getTime()}#{appointment.end().getTime()}" is "#{a.begin().getTime()}#{a.end().getTime()}"
-					if a?
-						appointment._description = a._description
-						appointment._location = a._location
-						appointment._begin = a._begin
-						appointment._end = a._end
-					return appointment
-
-				events = (appointmentToEvent x for x in result)
-
-				callback events.concat calendarItems
-
-			unless allCached
-				callback (appointmentToEvent x for x in getHardCacheAppointments(start, end)).concat calendarItems
+			callback currentEvents
 
 		dayClick: (date, event, view) ->
 			clearTimeout dblDateResetHandle
@@ -193,10 +159,33 @@ Template.calendar.rendered = ->
 			return if $("input, textarea").is(":focus") or $("body").hasClass "shepherd-active"
 			$(".calendar").fullCalendar if event.which is 39 then "next" else if event.which is 37 then "prev"
 
-	@autorun (c) -> # Keep the current view updated.
-		if Meteor.status().connected and not c.firstRun
-			updatedAppointments Session.get("currentDateRange")...
-			$(".calendar").fullCalendar "refetchEvents"
+	@autorun (c) -> # swagger nagger reactivity for FullCalendar.
+		currentEvents = []
+		[start, end] = Session.get("currentDateRange")
+
+		currentEvents.pushMore updatedAppointments(start, end).map appointmentToEvent
+
+		currentEvents.pushMore CalendarItems.find({ $or: [
+			{
+				startDate: $gte: start
+				endDate: $lte: end
+			}
+			{
+				$where: ->
+					targetDate = new Date @startDate.getTime() + @repeatInterval * 1000
+					targetDate = new Date(
+						targetDate.getUTCFullYear(),
+						targetDate.getMonth(),
+						targetDate.getDate()
+					)
+
+					return targetDate >= start and targetDate <= end
+			}
+		] }).map calendarItemToEvent
+
+		### bla bla tasks bla bla ###
+
+		$(".calendar").fullCalendar "refetchEvents"
 
 open = ->
 	$("div.addAppointmentForm").addClass "transformIn"

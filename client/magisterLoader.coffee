@@ -12,39 +12,38 @@ magisterLoaded = no
 Deps.autorun => if Meteor.user()? then @hardCachedAppointments = amplify.store("hardCachedAppointments_#{Meteor.userId()}") ? []
 
 @getHardCacheAppointments = (begin, end) ->
-	x = _.filter (Appointment._convertStored @magister, a for a in hardCachedAppointments), (x) -> x.begin().date() >= begin.date() and x.end().date() <= end.date()
+	return unless @hardCachedAppointments?
+	x = _.filter (Appointment._convertStored @magister, a for a in @hardCachedAppointments), (x) -> x.begin().date() >= begin.date() and x.end().date() <= end.date()
 	return _.reject x, (a) -> a.id() isnt -1 and _.any(x, (z) -> z isnt a and z.begin() is a.begin() and z.end() is a.end() and z.description() is a.description())
 
 setHardCacheAppointments = (data) ->
+	return unless @hardCachedAppointments?
 	for appointment in data
-		_.remove hardCachedAppointments, (x) ->
+		_.remove @hardCachedAppointments, (x) ->
 			x = Appointment._convertStored(@magister, x)
 			return "#{x.begin().getTime()}#{x.end().getTime()}" is "#{appointment.begin().getTime()}#{appointment.end().getTime()}"
 
-		hardCachedAppointments.push appointment._makeStorable()
+		@hardCachedAppointments.push appointment._makeStorable()
 
-	_.remove hardCachedAppointments, (x) -> x._end < new Date().addDays(-7) or x._begin > new Date().addDays(14)
-	amplify.store "hardCachedAppointments_#{Meteor.userId()}", JSON.decycle(hardCachedAppointments), expires: 432000000
+	_.remove @hardCachedAppointments, (x) -> x._end < new Date().addDays(-7) or x._begin > new Date().addDays(14)
+	amplify.store "hardCachedAppointments_#{Meteor.userId()}", JSON.decycle(@hardCachedAppointments), expires: 432000000
 
 ###*
 # Returns appointments withing the given date range. Using caching systems.
+# Should be run in an reactive enviroment, otherwise it's posible this method
+# will return an empty array.
 #
 # @method magisterAppointment
 # @param from {Date} The start date for the Appointments, you won't get appointments from before this date.
 # @param [to] {Date} The end date for the Appointments, you won't get appointments from after this date.
 # @param [download=yes] {Boolean} Whether or not to download the full user objects from the server.
-# @param [disallowHardCache=yes] {Boolean} If true the hardcache will not be used (use this to prevent your callback being called 2 times in rapid fashion).
-# @param callback {Function} A standard callback.
-# 	@param [callback.error] {Object} The error, if it exists.
-# 	@param [callback.result] {Appointment[]} An array containing the Appointments.
-# @return {Boolean} Returns true if all asked appointments are in cache.
+# @return {Array} The appointments as array.
 ###
 @magisterAppointment = ->
-	callback = _.find arguments, (a) -> _.isFunction a
-	[download, disallowHardCache] = _.filter(arguments, (a) -> _.isBoolean a)
+	[download] = _.filter(arguments, (a) -> _.isBoolean a)
 	[from, to] = _.where arguments, (a) -> _.isDate a
 
-	download ?= no; disallowHardCache ?= no
+	download ?= no
 
 	dates = []
 	if to is from or not _.isDate to
@@ -54,94 +53,49 @@ setHardCacheAppointments = (data) ->
 	dates = (d.date() for d in dates)
 
 	result = []
+	count = 0
 
-	prefetchedAppointmentInfos = _.filter appointmentPool, (x) -> (_.now() - x.setTime) < APPOINTMENT_INVALIDATION_TIME_MS and _.any dates, (d) -> EJSON.equals x.date, d
-	for ai in prefetchedAppointmentInfos
-		_.remove dates, (d) -> EJSON.equals ai.date, d
+	for date in dates
+		ai = appointmentPool["#{date.getTime()}"]
 
-		result.pushMore ai.appointments
+		if not ai?
+			appointmentPool["#{date.getTime()}"] = ai =
+				appointments: new ReactiveVar []
+				invalidationTime: _.now() + APPOINTMENT_INVALIDATION_TIME_MS
 
-	if dates.length is 0
-		callback null, result, yes
-		return
+			result.pushMore getHardCacheAppointments date, date
 
-	_.defer ->
-		unless disallowHardCache
-			callback null, getHardCacheAppointments dates[0], _.last(dates)
+		else if ai.invalidationTime > _.now() then count++
 
-		NProgress.start()
+		# When there was an `ai` found but it was invalidated we should just
+		# download the appointments but not create a whole new pool item for it.
+		# When we do that we still show the old info but update it shortly.
+
+		result.pushMore ai.appointments.get()
+
+	unless count is dates.length then _.defer ->
 		magisterObj (m) -> m.appointments dates[0], _.last(dates), download, (e, r) ->
-			if e?
-				callback e, null, yes
-				return
-
 			for date in dates
-				oldAi = _.find((ai) -> EJSON.equals ai.date, date)
+				appointmentPool["#{date.getTime()}"].appointments.set _.filter r, (a) -> EJSON.equals a.begin().date(), date
 
-				clearInterval oldAi?._interval
-				oldAi?._invalidationComputation.stop?()
+			setHardCacheAppointments r
 
-				invalidationDependency = oldAi?.invalidationDependency
-				invalidationDependency ?= new Tracker.Dependency
-
-				_.remove appointmentPool, (ai) -> EJSON.equals ai.date, date
-				appointmentPool.push ai = {
-					_interval: null
-					_invalidationComputation: null
-
-					appointments: _.filter r, (a) -> EJSON.equals a.begin().date(), date
-					setTime: _.now()
-					invalidationDependency: invalidationDependency
-					date
-				}
-
-				ai._invalidationComputation = Tracker.autorun -> # Recall any dependents if we have an connection.
-					if (_.now() - ai.setTime) >= APPOINTMENT_FORCED_UPDATE_TIME_MS and Meteor.status().connected
-						invalidationDependency.changed()
-
-				ai._interval = setInterval (->
-					ai._invalidationComputation.invalidate()
-				), APPOINTMENT_FORCED_UPDATE_TIME_MS # Invalidate the computatation.
-
-				_.remove result, (a) -> EJSON.equals a.begin().date(), date # Clear already cached data put in result.
-
-			result.pushMore r
-			setHardCacheAppointments result
-			callback null, result
-			NProgress.done()
-
-	return dates.length is prefetchedAppointmentInfos.length # Returns true if all asked appointments are in cache.
+	return magisterAppointmentTransform result
 
 ###*
-# Returns appointments withing the given date range. Using caching systems.
+# Returns appointments within the given date range. Using caching systems.
 # This function will also keep the appointments updated each 30 minutes.
 #
 # @method updateAppointments
 # @param from {Date} The start date for the Appointments, you won't get appointments from before this date.
 # @param [to] {Date} The end date for the Appointments, you won't get appointments from after this date.
 # @param [download=yes] {Boolean} Whether or not to download the full user objects from the server.
-# @return {ReactiveVar} A ReactiveVar containg an array with the appointments in the given date range.
+# @return {Array} An array containing the appointments.
 ###
 @updatedAppointments = ->
-	download = _.find(arguments, (a) -> _.isBoolean a) ? no
-	[from, to] = _.where arguments, (a) -> _.isDate a
-
-	res = new ReactiveVar []
-	magisterAppointment from, to, download, (e, r) ->
-		if e? then console.err "Error while fetching appointments for updatedAppointments."
-		else res.set r
-
-	dates = []
-	if to is from or not _.isDate to
-		dates = [from]
-	else for i in [0..moment(to).diff from, "days"]
-		dates.push moment(from).add(i, "days").toDate()
-
-	appointmentInfos = _.filter appointmentPool, (x) -> _.any dates, (d) -> EJSON.equals x.date, d.date()
-	for ai in appointmentInfos
-		ai.invalidationDependency.depend()
-
-	return res
+	comp = Tracker.currentComputation
+	setTimeout (-> comp.invalidate()), APPOINTMENT_FORCED_UPDATE_TIME_MS
+	return magisterAppointment arguments...
 
 loaders =
 	"classes": (m, cb) ->
@@ -233,21 +187,5 @@ pushResult = (name, result) ->
 			else
 				r[0].grades no, yes, yes, (error, result) -> pushResult "recent grades", { error, result }
 				pushResult "course", { error: null, result: r[0] }
-
-		@assignments no, yes, (error, result) ->
-			pushResult "assignments", { error, result }
-			if error? then pushResult "assignments soon", { error, result: null }
-			else pushResult "assignments soon", error: null, result: _.filter(result, (a) -> a.deadline().date() < Date.today().addDays(7) and not a.finished() and new Date() < a.deadline())
-
-		@studyGuides (error, result) ->
-			if error? then pushResult "studyGuides", { error, result: null }
-			else
-				left = result.length
-				push = -> if --left is 0 then pushResult "studyGuides", { error: null, result }
-
-				for studyGuide in result then do (studyGuide) ->
-					studyGuide.parts (e, r) ->
-						studyGuide.parts = r ? []
-						push()
 
 	return "dit geeft echt niets nuttig terug ofzo, als je dat denkt."

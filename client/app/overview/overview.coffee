@@ -12,12 +12,7 @@ getTasks = -> # Also mix homework for tommorow and homework for days where the d
 			__taskDescription: "leer"
 			#__chapter: Classes.findOne(task._parent.classId()).
 
-	for homework in homeworkItems.get() then do (homework) ->
-		tmp.push _.extend homework,
-			__id: "#{homework.id()}"
-			__name: Helpers.cap homework.classes()[0]
-			__taskDescription: homework.content().replace(/\n/g, "; ")
-			__className: if (val = homework.classes()[0])[0] is val[0].toUpperCase() then val else Helpers.cap val
+	tmp.pushMore homeworkItems.get()
 
 	for calendarItem in CalendarItems.find(_ownerId: Meteor.userId()).fetch()
 		tmp.push _.extend calendarItem,
@@ -100,27 +95,22 @@ Template.appOverview.events
 		$("#addProjectModal").modal()
 
 Template.appOverview.rendered = ->
-	template = @
-	magisterAppointment new Date().addDays(1), (e, r) ->
-		return if e?
+	@autorun ->
+		minuteTracker.depend()
 
-		appointmentsTommorow.set magisterAppointmentTransform _.filter r, (a) -> not a.fullDay() and a.classes().length > 0 and _.contains [5..19], a.begin().getHours()
+		today = magisterAppointment new Date()
+		tommorow = magisterAppointment new Date().addDays 1
 
-	updateInterval = null
-	magisterAppointment new Date(), (e, r) ->
-		return if e?
+		appointmentsTommorow.set _.filter tommorow, (a) -> not a.fullDay() and a.classes().length > 0 and _.contains [5..19], a.begin().getHours()
 
-		template.autorun ->
-			minuteTracker.depend()
+		nextAppointmentToday.set _.find today, (a) -> not a.fullDay() and new Date() < a.begin() and a.classes().length > 0
+		currentAppointment.set _.find today, (a) -> not a.fullDay() and new Date() > a.begin() and new Date() < a.end() and a.classes().length > 0
 
-			nextAppointmentToday.set magisterAppointmentTransform _.find r, (a) -> not a.fullDay() and new Date() < a.begin() and a.classes().length > 0
-			currentAppointment.set magisterAppointmentTransform _.find r, (a) -> not a.fullDay() and new Date() > a.begin() and new Date() < a.end() and a.classes().length > 0
+		$("#currentDate > span").tooltip placement: "bottom", html: true, title: "<h4>Week: #{moment().week()}</h4>"
 
-	$("#currentDate > span").tooltip placement: "bottom", html: true, title: "<h4>Week: #{moment().week()}</h4>"
-
-	unless Get.schedular()?.biasToday() is 0
-		magisterAppointment new Date().addDays(-1), new Date().addDays(7), (error, result) ->
-			return if error?
+	@autorun ->
+		unless Get.schedular()?.biasToday() is 0
+			appointments = magisterAppointment new Date().addDays(-1), new Date().addDays(7)
 
 			date = switch Helpers.weekDay new Date()
 				when 4 then Date.today().addDays(3)
@@ -129,5 +119,5 @@ Template.appOverview.rendered = ->
 
 			if new Date().getHours() < 4 and Helpers.weekDay(date) isnt 0 then date.addDays(-1)
 
-			homework = _.where result, (a) -> a.content()? and a.content() isnt "" and a.begin().getTime() > new Date().getTime() and _.contains([1..5], a.infoType()) and a.classes().length > 0
+			homework = _.where appointments, (a) -> a.content()? and a.content() isnt "" and a.begin().getTime() > new Date().getTime() and _.contains([1..5], a.infoType()) and a.classes().length > 0
 			homeworkItems.set _.where homework, (h) -> EJSON.equals(date, h.begin().date()) or Get.schedular().schedularPrefs().bias(h.begin().addDays(-1, yes).date()) is 0

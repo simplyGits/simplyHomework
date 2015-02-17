@@ -11,10 +11,30 @@
 @CalendarItems   = new Ground.Collection "calendarItems"
 @ChatMessages    = new Ground.Collection "chatMessages"
 
-@MagisterAppointments = new Ground.Collection "magisterAppointments", transform: (a) -> _.extend new Appointment(), a
+@MagisterAppointments = new Ground.Collection "magisterAppointments",
+	transform: (a) ->
+		a._magisterObj = magister if magister?
+		a._teachers = (_.extend(new Person, t) for t in a._teachers)
+
+		a.__groupInfo = _.find Meteor.user()?.profile.groupInfos, (gi) -> gi.group is a._description
+		a.__class = a.__groupInfo?.id
+		a.__classInfo = _.find Meteor.user()?.classInfos, (ci) -> EJSON.equals ci.id, a.__class
+
+		a._magisterObj = null
+		return _.extend new Appointment, a
+	sort: "_begin": 1
+
 @MagisterStudyGuides = new Ground.Collection "magisterStudyGuides", transform: (s) ->
-	s.parts = ( _.extend(new StudyGuidePart(), part) for part in s.parts )
-	return _.extend new StudyGuide(), s
+	s.parts = ( _.extend(new StudyGuidePart, part) for part in s.parts )
+	p._files = (_.extend(new File, f) for f in p._files) for p in s.parts
+
+	return _.extend new StudyGuide, s
+
+@MagisterAssignments = new Ground.Collection "magisterAssignments", transform: (a) ->
+	return _.extend new Assignment, a
+
+@MagisterDigitalSchoolUtilties = new Ground.Collection "magisterDigitalSchoolUtilties", transform: (du) ->
+	return _.extend new DigitalSchoolUtility, du
 
 Schemas.Classes = new SimpleSchema
 	name:

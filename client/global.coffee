@@ -11,16 +11,35 @@
 			"deadline": 1
 			"name": 1
 
-@magisterAppointmentTransform = (appointment) ->
-	return appointment unless _.isObject appointment
-	return ( @magisterAppointmentTransform a for a in appointment ) if _.isArray appointment
+###*
+# Fetches event like objects from various places and converts them in an FullCalendar supporting manner.
+# CANIDATE FOR NOT FINISHING. ;)
+#
+# @method events
+# @return {ReactiveVar} A ReactiveVar containing an event[].
+###
+@events = null
 
-	return _.extend appointment,
-		__id: "#{appointment.id()}"
-		__name: Helpers.cap appointment.classes()[0]
-		__taskDescription: appointment.content().replace(/\n/g, "; ")
-		__className: if (val = appointment.classes()[0])[0] is val[0].toUpperCase() then val else Helpers.cap val
-		__class: _.find(Meteor.user().profile.groupInfos, (gi) -> gi.group is appointment.description())?.id
+@magisterAppointmentTransform = (a) ->
+	return a unless _.isObject a
+	return ( @magisterAppointmentTransform x for x in a ) if _.isArray a
+
+	a.__id = "#{a.id()}"
+	a.__className = Helpers.cap(a.classes()[0]) if a.classes()[0]?
+
+	# Find URLs and place them in an anchor tag.
+	a.__description = a.content().replace(/&amp;/ig, "&").replace /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b((\/|\?)[-a-zA-Z0-9@:%_\+.~#?&//=]+)?\b/ig, (match) ->
+		if /^https?:\/\/.+/i.test match
+			return "<a target=\"_blank\" href=\"#{match}\">#{match}</a>"
+		else
+			return "<a target=\"_blank\" href=\"http://#{match}\">#{match}</a>"
+	a.__taskDescription = a.__description.replace /\n/g, "; "
+
+	a.__groupInfo = _.find Meteor.user()?.profile.groupInfos, (gi) -> gi.group is a._description
+	a.__class = a.__groupInfo?.id
+	a.__classInfo = _.find Meteor.user()?.classInfos, (ci) -> EJSON.equals ci.id, a.__class
+
+	return a
 
 @kaas = ->
 	unless Meteor.user()?

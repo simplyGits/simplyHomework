@@ -2,7 +2,6 @@ schoolSub = null
 bookSub = null
 @snapper = null
 magisterClasses = new ReactiveVar null
-magisterAssignments = new ReactiveVar []
 class @App
 	@_setupPathItems:
 		tutorial:
@@ -515,14 +514,15 @@ Template.accountInfoModal.events
 
 Template.addProjectModal.helpers
 	assignments: ->
-		_(magisterAssignments.get())
-			.filter((a) -> a.deadline() > new Date())
-			.map((a) -> _.extend a,
-				project: Projects.findOne magisterId: a.id()
-				__class: Classes.findOne _.find(Meteor.user().classInfos, (z) -> z.magisterId is a.class().id()).id
-			)
-			.sortBy((a) -> a.deadline()).sortBy((a) -> a.class().abbreviation())
-			.value()
+		MagisterAssignments.find({
+			_deadline: $gte: new Date
+		}, {
+			sort:
+				"_deadline": 1
+				"_abbreviation": 1
+		}).map (a) -> _.extend a,
+			project: Projects.findOne magisterId: a.id()
+			__class: Classes.findOne _.find(Meteor.user().classInfos, (z) -> z.magisterId is a.class()._id).id
 
 Template.addProjectModal.events
 	"click #createButton": ->
@@ -552,8 +552,6 @@ Template.addProjectModal.events
 		$("#addProjectModal").modal "hide"
 
 Template.addProjectModal.rendered = ->
-	magisterResult "assignments", (e, r) -> magisterAssignments.set r unless e?
-
 	ownClassesEngine = new Bloodhound
 		name: "ownClasses"
 		datumTokenizer: (d) -> Bloodhound.tokenizers.whitespace d.name
@@ -609,43 +607,72 @@ Template.app.rendered = ->
 			$.get("#{Meteor.user().gravatarUrl}&s=1&d=404").done ->
 				Meteor.users.update Meteor.userId(), $set: hasGravatar: yes
 
-	notify("Je hebt je account nog niet geverifiëerd!", "warning") unless Meteor.user().emails[0].verified
+	if Meteor.user()? and not Meteor.user().emails[0].verified
+		notify "Je hebt je account nog niet geverifiëerd!", "warning"
 
 	assignmentNotification = null
 	recentGradesNotification = null
 
-	magisterResult "assignments soon", (e, r) ->
-		return if e? or r.length is 0
-		s = "Projecten en opdrachten met deadline binnenkort:\nKlik voor meer info.\n\n"
-		_(r).reject((a) -> Projects.find(magisterId: a.id()).count()).forEach (assignment) ->
-			d = if (d = assignment.deadline()).getHours() is 0 and d.getMinutes() is 0 then d.addDays(-1) else d
-			s += "<b>#{assignment.class().abbreviation()}</b> #{assignment.name()} - #{DayToDutch(Helpers.weekDay(d))}\n"
+	@autorun ->
+		return unless Meteor.subscribe("magisterAssignments").ready()
+		assignments = MagisterAssignments.find({
+			_deadline:
+				$gte: new Date
+				$lte: Date.today().addDays 7
+			_finished: no
+		}, {
+			sort: "_deadline": 1
+		}).fetch()
 
-		Projects.find({deadline: $gt: new Date(), $lt: Date.today().addDays(7)}, transform: projectTransform, sort: "deadline": 1).forEach (project) ->
+		projects = Projects.find({
+			deadline:
+				$gte: new Date
+				$lte: Date.today().addDays 7
+		}, {
+			transform: projectTransform
+			sort: "deadline": 1
+		}).fetch()
+
+		return if assignments.length is 0 and projects.length is 0
+
+		s = "Projecten en opdrachten met deadline binnenkort:\nKlik voor meer info.\n\n"
+		for assignment in assignments when not _.find(projects, (p) -> p.magisterId is assignment.id())?
+			d = if (d = assignment.deadline()).getHours() is 0 and d.getMinutes() is 0 then d.addDays(-1) else d
+			s += "<b>#{assignment.class()._abbreviation}</b> #{assignment.name()} - #{DayToDutch(Helpers.weekDay(d))}\n"
+
+		for project in projects
 			d = if (d = project.deadline).getHours() is 0 and d.getMinutes() is 0 then d.addDays(-1) else d
-			s += "<b>#{project.__class.course}</b> #{project.name} - #{DayToDutch(Helpers.weekDay(d))}\n"
+			if project.__class?
+				s += "<b>#{project.__class.course}</b> #{project.name} - #{DayToDutch(Helpers.weekDay(d))}\n"
+			else
+				s += "#{project.name} - #{DayToDutch(Helpers.weekDay(d))}\n"
 
 		if assignmentNotification?
 			assignmentNotification.content s, yes
 		else
 			assignmentNotification = NotificationsManager.notify body: s, type: "warning", time: -1, html: yes, onClick: -> $("#addProjectModal").modal()
 
+	recentGrades = new ReactiveVar []
 	magisterResult "recent grades", (e, r) ->
 		return if e? or r.length is 0
+		recentGrades.set r
+
+	@autorun ->
+		r = recentGrades.get()
 		gradeNotificationDismissTime = Meteor.user().gradeNotificationDismissTime
 
-		recentGrades = _.reject r, (g) -> gradeNotificationDismissTime > new Date(g.dateFilledIn())
-		unless recentGrades.length is 0
+		recentGradesFiltered = _.reject r, (g) -> gradeNotificationDismissTime > new Date(g.dateFilledIn())
+		unless recentGradesFiltered.length is 0
 			s = "Recent ontvangen cijfers:\n\n"
 
-			for c in (z.class() for z in _.uniq recentGrades, "_class")
-				grades = _.filter recentGrades, (g) -> g.class() is c
+			for c in (z.class() for z in _.uniq recentGradesFiltered, "_class")
+				grades = _.filter recentGradesFiltered, (g) -> g.class() is c
 				s += "<b>#{c.abbreviation()}</b> - #{grades.map((z) -> if Number(z.grade().replace(",", ".")) < 5.5 then "<b style=\"color: red\">#{z.grade()}</b>" else z.grade()).join ' & '}\n"
 
 			if recentGradesNotification?
 				recentGradesNotification.content s, yes
 			else
-				recentGradesNotification = NotificationsManager.notify body: s, type: "warning", time: -1, html: yes, onDismissed: -> Meteor.users.update(Meteor.userId(), $set: gradeNotificationDismissTime: new Date)
+				recentGradesNotification = NotificationsManager.notify body: s, type: "warning", time: -1, html: yes, onHide: -> Meteor.users.update(Meteor.userId(), $set: gradeNotificationDismissTime: new Date)
 
 	magisterAppointment new Date(), new Date().addDays(7), (e, r) ->
 		tmpGroupInfos = Meteor.user().profile.groupInfos ? []
@@ -662,15 +689,22 @@ Template.app.rendered = ->
 		Meteor.users.update Meteor.userId(), $set: "profile.groupInfos": tmpGroupInfos
 
 	studyGuideChangeNotification = null
-	magisterResult "studyGuides", (e, r) ->
+	@autorun (c) ->
+		return unless Meteor.subscribe("magisterStudyGuides").ready() # Wait till the subscription is ready.
+		Meteor.setInterval c.invalidate, 1200000 # Make sure to rerun this computation after 20 minutes.
+
+		studyGuides = MagisterStudyGuides.find().fetch()
 		studyGuidesHashes = {}
 		oldStudyGuideHashes = Meteor.user().studyGuidesHashes
 
-		for studyGuide in r then do (studyGuide) ->
+		for studyGuide in studyGuides then do (studyGuide) ->
 			parts = _.sortBy ( { id: x.id(), description: x.description(), fileSizes: (z.size() for z in x.files()) } for x in studyGuide.parts ), "id"
 			studyGuidesHashes[studyGuide.id()] = md5(EJSON.stringify parts).substring 0, 6
 
-		return if EJSON.equals studyGuidesHashes, oldStudyGuideHashes
+		if EJSON.equals studyGuidesHashes, oldStudyGuideHashes
+			studyGuideChangeNotification?.hide()
+			return
+
 		if _.isEmpty(oldStudyGuideHashes)
 			Meteor.users.update Meteor.userId(), $set: { studyGuidesHashes }
 			return
@@ -679,7 +713,7 @@ Template.app.rendered = ->
 		x = _(studyGuidesHashes)
 			.keys()
 			.filter((s) -> studyGuidesHashes[s] isnt oldStudyGuideHashes[s])
-			.map((id) -> _.find(r, (sg) -> sg.id() is +id))
+			.map((id) -> _.find(studyGuides, (sg) -> sg.id() is +id))
 			.sortBy((sg) -> sg.classCodes()[0])
 			.value()
 
