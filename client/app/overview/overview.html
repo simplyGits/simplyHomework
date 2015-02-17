@@ -78,6 +78,9 @@
 <template name="projectRow">
 	{{#linkTo route="projectView" projectId=this._id.toHexString}}
 		<div class="projectRow">
+			<div class="projectRowBorder" style="background-color: {{__borderColor}}">
+				<span>{{__friendlyDeadline}}</span>
+			</div>
 			<span>{{name}}</span> {{__class.name}}
 		</div>
 	{{/linkTo}}
