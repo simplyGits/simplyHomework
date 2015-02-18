@@ -175,7 +175,7 @@ class @Schedular
 				biasDifferenceForCurrentDay -= p.biasPenalty
 
 			biasDifferenceForCurrentDay -= timeHolder.getset(currentDate).biasPenalty
-			
+
 			# We can't plan in something that's already due.
 			if currentParasPosition is leftParas.length then break
 			else if Helpers.daysRange(currentDate, leftParas[currentParasPosition].deadline) <= 0

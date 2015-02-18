@@ -77,9 +77,11 @@ Router.map ->
 				Meteor.defer -> slide "overview"
 				swalert title: "Niet gevonden", text: "Jij hebt dit vak waarschijnlijk niet.", confirmButtonText: "o.", type: "error"
 				return
+
 			Meteor.defer =>
 				slide @data()._id.toHexString()
 				$("meta[name='theme-color']").attr "content", @data().__color
+
 			document.title = "simplyHomework | #{@data().name}"
 			NProgress?.done()
 
@@ -120,6 +122,7 @@ Router.map ->
 			if @data().__class? then Meteor.defer =>
 				slide @data().__class._id.toHexString()
 				$("meta[name='theme-color']").attr "content", @data().__class.__color
+
 			document.title = "simplyHomework | #{@data().name}"
 			NProgress?.done()
 
@@ -155,6 +158,7 @@ Router.map ->
 			Meteor.defer ->
 				slide "calendar"
 				$("meta[name='theme-color']").attr "content", "#32A8CE"
+
 			document.title = "simplyHomework | Agenda"
 			NProgress?.done()
 
@@ -182,6 +186,7 @@ Router.map ->
 			Meteor.defer ->
 				slide "calendar"
 				$("meta[name='theme-color']").attr "content", "#32A8CE"
+
 			document.title = "simplyHomework | Agenda"
 			NProgress?.done()
 
@@ -205,6 +210,7 @@ Router.map ->
 			@next()
 		onAfterAction: ->
 			Meteor.defer -> slide "overview"
+
 			if !@data()? and @ready()
 				@redirect "app"
 				swalert title: "Niet gevonden", text: "Dit persoon is niet gevonden.", type: "error"

@@ -2,11 +2,11 @@ root = @
 class @SchoolClass
 	constructor: (name, course, @year, schoolVariant) ->
 		@_id = new Meteor.Collection.ObjectID()
-		
+
 		@course = course?.toLowerCase()
 		@schoolVariant = schoolVariant?.toLowerCase()
 		@name = Helpers.cap name if name?
-		
+
 		@schedules = [] # Contains schedule ID's.
 
 	###*
