@@ -36,6 +36,8 @@
 @MagisterDigitalSchoolUtilties = new Ground.Collection "magisterDigitalSchoolUtilties", transform: (du) ->
 	return _.extend new DigitalSchoolUtility, du
 
+@ScholierenClasses = new Ground.Collection "scholieren.com"
+
 Schemas.Classes = new SimpleSchema
 	name:
 		type: String
@@ -60,7 +62,7 @@ Schemas.Books = new SimpleSchema
 	publisher:
 		type: String
 		optional: yes
-	woordjesLerenBookId:
+	scholierenBookId:
 		type: Number
 		optional: yes
 	release:

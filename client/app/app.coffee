@@ -1,5 +1,5 @@
 schoolSub = null
-bookSub = null
+magisterClassesComp = null
 @snapper = null
 magisterClasses = new ReactiveVar null
 class @App
@@ -22,45 +22,42 @@ class @App
 		getMagisterClasses:
 			done: no
 			func: ->
-				bookSub = Meteor.subscribe "books", null, ->
-					magisterResult "classes", (e, r) ->
-						magisterClasses.set r unless e?
+				magisterClassesComp = Tracker.autorun -> # Subscribes should be stopped when this computation is stopped later.
+					Meteor.subscribe "scholieren.com"
+					year = schoolVariant = null
+					Tracker.nonreactive -> { year, schoolVariant } = Meteor.user().profile.courseInfo
 
-						WoordjesLeren.getAllClasses (result) ->
-							for c in r then do (c) ->
-								engine = new Bloodhound
-									name: "books"
-									datumTokenizer: (d) -> Bloodhound.tokenizers.whitespace d.name
-									queryTokenizer: Bloodhound.tokenizers.whitespace
-									local: []
+					magisterClasses.set classes = magisterResult("classes").result ? []
 
-								val = _.find(result, (x) -> c.description().toLowerCase().indexOf(x.toLowerCase()) > -1) ? Helpers.cap c.description()
+					for c in classes
+						scholierenClass = ScholierenClasses.findOne -> c.description().toLowerCase().indexOf(@name.toLowerCase()) > -1
+						classId = Classes.findOne(name: scholierenClass?.name ? Helpers.cap(c.description()), schoolVariant: schoolVariant, year: year)?._id
 
-								if /(Natuurkunde)|(Scheikunde)/i.test val
-									val = "Natuur- en scheikunde"
-								else if /(Wiskunde( (a|b|c|d))?)|(Rekenen)/i.test val
-									val = "Wiskunde / Rekenen"
-								else if /levensbeschouwing/i.test val
-									val = "Godsdienst en levensbeschouwing"
+						Meteor.subscribe("books", classId) if classId?
 
-								{ year, schoolVariant } = Meteor.user().profile.courseInfo
-								classId = Classes.findOne({_name: val, schoolVariant: schoolVariant, year: year})?._id
-								books = Books.find({classId}).fetch() if classId?
-								engine.add ({name} for name in _(books).map("title").reject((b) -> _.any result, (x) -> x is b).value())
+						books = scholierenClass?.books ? []
+						books.pushMore Books.find({ classId }).fetch()
 
-								do (engine) -> WoordjesLeren.getAllBooks val, (result) -> engine.add result
+						engine = new Bloodhound
+							name: "books"
+							datumTokenizer: (d) -> Bloodhound.tokenizers.whitespace d.title
+							queryTokenizer: Bloodhound.tokenizers.whitespace
+							local: _.uniq books, "title"
 
-								Meteor.defer do (engine, c) -> return ->
-									$("#magisterClassesResult > div##{c.id()} > input").typeahead(null,
-										source: engine.ttAdapter()
-										displayKey: "name"
-									).on "typeahead:selected", (obj, datum) -> Session.set "currentSelectedBookDatum", datum
+						engine.initialize()
 
-						Meteor.defer ->
-							for x in $("#magisterClassesResult > div").colorpicker(input: null)
-								$(x)
-									.on "changeColor", (e) -> $(@).attr "colorHex", e.color.toHex()
-									.colorpicker "setValue", "##{("00000" + (Math.random() * (1 << 24) | 0).toString(16)).slice -6}"
+						Meteor.defer do (engine, c) -> return ->
+							$("#magisterClassesResult > div##{c.id()} > input")
+								.typeahead null,
+									source: engine.ttAdapter()
+									displayKey: "title"
+								.on "typeahead:selected", (obj, datum) -> c.__method = datum
+
+					Meteor.defer ->
+						for x in $("#magisterClassesResult > div").colorpicker(input: null)
+							$(x)
+								.on "changeColor", (e) -> $(@).attr "colorHex", e.color.toHex()
+								.colorpicker "setValue", "##{("00000" + (Math.random() * (1 << 24) | 0).toString(16)).slice -6}"
 
 					$("#getMagisterClassesModal").modal backdrop: "static", keyboard: no
 
@@ -271,10 +268,9 @@ Template.getMagisterClassesModal.rendered = ->
 Template.getMagisterClassesModal.events
 	"click .fa-times": (event) -> magisterClasses.set _.reject magisterClasses.get(), @
 	"keyup #method": (event) ->
-		@__method = Session.get "currentSelectedBookDatum"
-		unless event.target.value is @__method?.name and not _.isEmpty event.target.value
+		unless event.target.value is @__method?.title and not _.isEmpty event.target.value
 			@__method =
-				name: Helpers.cap event.target.value
+				title: Helpers.cap event.target.value
 				id: null
 
 	"click #goButton": ->
@@ -284,24 +280,32 @@ Template.getMagisterClassesModal.events
 
 		for c in magisterClasses.get()
 			color = $("#magisterClassesResult > div##{c.id()}").attr "colorHex"
-			_class = Classes.findOne $or: [{ $where: "\"#{c.description().toLowerCase()}\".indexOf(this.name.toLowerCase()) > -1" }, { course: c.abbreviation().toLowerCase() }], schoolVariant: schoolVariant, year: year
+			_class = Classes.findOne
+				$or: [
+					{ $where: -> c.description().toLowerCase().indexOf(@name.toLowerCase()) > -1}
+					{ course: c.abbreviation().toLowerCase() }
+				]
+				schoolVariant: schoolVariant
+				year: year
+
 			_class ?= New.class c.description(), c.abbreviation(), year, schoolVariant
 
-			if c.__method?
-				book = Books.findOne title: c.__method.name
-				unless book? or c.__method.name.trim() is ""
-					book = New.book c.__method.name, undefined, c.__method.id, undefined, _class._id
+			if (val = c.__method)?
+				book = Books.findOne title: val.title
+				unless book? or val.title.trim() is ""
+					book = New.book val.title, undefined, val.id, undefined, _class._id
 
 			Meteor.users.update Meteor.userId(), $push: classInfos:
 				id: _class._id
 				color: color
 				magisterId: c.id()
+				scholierenId: val.classId
 				magisterDescription: c.description()
 				magisterAbbreviation: c.abbreviation()
 				bookId: book?._id ? null
 
 		$("#getMagisterClassesModal").modal "hide"
-		bookSub.stop()
+		magisterClassesComp.stop()
 		App.step()
 
 Template.setMagisterInfoModal.events

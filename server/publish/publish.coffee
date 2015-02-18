@@ -165,3 +165,8 @@ Meteor.publish "userCount", ->
 
 	@onStop ->
 		handle.stop()
+
+Meteor.publish "scholieren.com", ->
+	@unblock()
+	@added("scholieren.com", c.id, c) for c in ScholierenClasses.get()
+	@ready()

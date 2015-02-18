@@ -16,7 +16,11 @@ class @Scholieren
 				"by_item": optionsKey ? ""
 				"by_data": options[optionsKey] ? ""
 
-		}, (e, r) -> if e? then callback(e, null) else callback null, JSON.parse(r.content).subjects
+		}, (e, r) ->
+			if e?
+				callback(e, null)
+			else
+				callback null, JSON.parse(r.content).subjects
 
 	@getBooks: ->
 		options = _.find(arguments, (a) -> _.isObject a) ? { name: null, id: null, classId: null }
@@ -36,4 +40,8 @@ class @Scholieren
 				"by_item": optionsKey ? ""
 				"by_data": options[optionsKey] ? ""
 
-		}, (e, r) -> if e? then callback(e, null) else callback null, ({ id: x.id, classId: x.vakid, name: x.name } for x in JSON.parse(r.content).methods)
+		}, (e, r) ->
+			if e?
+				callback(e, null)
+			else
+				callback null, (id: x.id, classId: x.vakid, title: x.name for x in JSON.parse(r.content).methods)
