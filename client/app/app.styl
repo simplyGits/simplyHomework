@@ -164,6 +164,9 @@ span#checkboxLabel
 	.twitter-typeahead
 		display: initial !important
 
+		.tt-dropdown-menu
+			width: 175px
+
 	.input-group-addon
 		float: left
 		display: inline-block
@@ -178,12 +181,27 @@ span#checkboxLabel
 		text-transform: lowercase
 		font-size: 15px
 		float: left
-		max-width: 300px
+		max-width: calc(100% - 240px)
 		white-space: nowrap
+		overflow: hidden
+		text-overflow: ellipsis
 
-	input#method
+	input#method, .twitter-typeahead
 		float: right
 		width: auto
+
+	+mobile()
+		height: 75px
+		border-bottom: 1px lightgray solid
+		margin-bottom: 15px
+
+		div#classTitle
+			max-width: calc(100% - 60px)
+
+		input#method
+			width: 100%
+			margin-top: 10px
+			margin-bottom: 10px
 
 div.backdrop
 	absolute: top bottom left right
