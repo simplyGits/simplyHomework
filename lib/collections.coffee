@@ -10,6 +10,7 @@
 @Projects        = new Ground.Collection "projects"
 @CalendarItems   = new Ground.Collection "calendarItems"
 @ChatMessages    = new Ground.Collection "chatMessages"
+new Ground.Collection Meteor.users
 
 @MagisterAppointments = new Ground.Collection "magisterAppointments",
 	transform: (a) ->

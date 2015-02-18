@@ -8,6 +8,13 @@ Meteor.startup ->
 			ScholierenClasses.set classes
 	getClasses(); Meteor.setInterval getClasses, 3600000
 
+#	Meteor.AppCache.config
+#		onlineOnly: [
+#			"/videos/"
+#			"/audio/"
+#			"/images/blu.jpg"
+#		]
+
 	Accounts.urls.verifyEmail = (token) -> Meteor.absoluteUrl "verify/#{token}"
 	Accounts.urls.resetPassword = (token) -> Meteor.absoluteUrl "reset/#{token}"
 
