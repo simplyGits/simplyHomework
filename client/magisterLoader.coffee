@@ -73,10 +73,12 @@ setHardCacheAppointments = (data) ->
 
 		result.pushMore ai.appointments.get()
 
-	unless count is dates.length then _.defer ->
+	unless count is dates.length and Meteor.status().connected then _.defer ->
 		magisterObj (m) -> m.appointments dates[0], _.last(dates), download, (e, r) ->
 			for date in dates
-				appointmentPool["#{date.getTime()}"].appointments.set _.filter r, (a) -> EJSON.equals a.begin().date(), date
+				ai = appointmentPool["#{date.getTime()}"]
+				ai.appointments.set _.filter r, (a) -> EJSON.equals a.begin().date(), date
+				ai.invalidationTime = _.now() + APPOINTMENT_INVALIDATION_TIME_MS
 
 			setHardCacheAppointments r
 
