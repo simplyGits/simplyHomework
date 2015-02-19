@@ -654,9 +654,7 @@ Template.app.rendered = ->
 		if assignmentNotification?
 			assignmentNotification.content s, yes
 		else
-			assignmentNotification = NotificationsManager.notify body: s, type: "warning", time: -1, html: yes, onClick: ->
-				Router.go "app"
-				$("#addProjectModal").modal()
+			assignmentNotification = NotificationsManager.notify body: s, type: "warning", time: -1, html: yes, onClick: -> $("#addProjectModal").modal()
 
 	recentGrades = new ReactiveVar []
 	magisterResult "recent grades", (e, r) ->
