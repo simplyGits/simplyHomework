@@ -188,4 +188,4 @@ Template.gradeRow.events "click .gradeRow": -> selectedGrade.set @
 Template.gradeRow.helpers selected: -> if selectedGrade.get() is @ then "selected" else ""
 
 Template.studyGuide.events
-	"click .studyGuidePartFile": (event) -> @download()
+	"click .studyGuidePartFile": (event) -> notify "Te werken of niet te werken; hint: het werkt niet.", "error"
