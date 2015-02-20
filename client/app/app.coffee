@@ -1,5 +1,6 @@
 schoolSub = null
 magisterClassesComp = null
+addClassComp = null
 @snapper = null
 magisterClasses = new ReactiveVar null
 class @App
@@ -210,15 +211,15 @@ class @App
 
 # == Bloodhounds ==
 
-@bookEngine = new Bloodhound
+bookEngine = new Bloodhound
 	name: "books"
-	datumTokenizer: (d) -> Bloodhound.tokenizers.whitespace d.name
+	datumTokenizer: (d) -> Bloodhound.tokenizers.whitespace d.title
 	queryTokenizer: Bloodhound.tokenizers.whitespace
 	local: []
 
 classEngine = new Bloodhound
 	name: "classes"
-	datumTokenizer: (d) -> Bloodhound.tokenizers.whitespace d.val
+	datumTokenizer: (d) -> Bloodhound.tokenizers.whitespace d.name
 	queryTokenizer: Bloodhound.tokenizers.whitespace
 	local: []
 
@@ -403,57 +404,41 @@ Template.addClassModal.events
 
 		book = Books.findOne title: bookName
 		unless book? or bookName.trim() is ""
-			book = New.book bookName, undefined, Session.get("currentSelectedBookDatum")?.id, undefined, _class._id
+			book = New.book bookName, undefined, @id, undefined, _class._id
 
 		Meteor.users.update Meteor.userId(), $push: { classInfos: { id: _class._id, color, bookId: book._id }}
 		$("#addClassModal").modal "hide"
+		addClassComp.stop()
 
 	"keyup #classNameInput, #courseInput": (event) ->
 		val = Helpers.cap $("#classNameInput").val()
 
 		{ year, schoolVariant } = Meteor.user().profile.courseInfo
 		classId = Classes.findOne({_name: val, schoolVariant: schoolVariant, year: year})?._id
-		books = Books.find({classId}).fetch() if classId?
 
-		if /(Natuurkunde)|(Scheikunde)/i.test val
-			val = "Natuur- en scheikunde"
-		else if /(Wiskunde( (a|b|c|d))?)|(Rekenen)/i.test val
-			val = "Wiskunde / Rekenen"
-		else if /levensbeschouwing/i.test val
-			val = "Godsdienst en levensbeschouwing"
+		books = Books.find({ classId }).fetch()
 
-		WoordjesLeren.getAllBooks val, (result) ->
-			result.pushMore ({name} for name in _(books).map("title").reject((b) -> _.any result, (x) -> x is b).value())
+		scholierenClass = ScholierenClasses.findOne -> @name.toLowerCase().indexOf(val.toLowerCase()) > -1
+		books.pushMore _.filter scholierenClass?.books, (b) -> not _.contains ( x.title for x in books ), b.title
 
-			bookEngine.clear()
-			bookEngine.add result
+		bookEngine.clear()
+		bookEngine.add books
 
 Template.addClassModal.rendered = ->
 	$("#colorInput").colorpicker color: "#333"
 	$("#colorInput").on "changeColor", -> $("#colorLabel").css color: $("#colorInput").val()
-
-	WoordjesLeren.getAllClasses (result) ->
-		m = DamerauLevenshtein()
-		classes = extraClassList.pushMore(result)
-		classes.pushMore _.reject Classes.find().map((c) -> c.name), (c) -> _.any classes, (x) -> m(c, x) < 2 or c.length > 4 and x.length > 4 and (( x.toLowerCase().indexOf(c.toLowerCase()) > -1 ) or ( c.toLowerCase().indexOf(x.toLowerCase()) > -1 ))
-		classEngine.add ( { val: s } for s in classes when !_.contains ["Overige talen",
-			"Overige vakken",
-			"Eigen methodes",
-			"Wiskunde / Rekenen",
-			"Natuur- en scheikunde",
-			"Godsdienst en levensbeschouwing"], s )
 
 	bookEngine.initialize()
 	classEngine.initialize()
 
 	$("#bookInput").typeahead(null,
 		source: bookEngine.ttAdapter()
-		displayKey: "name"
-	).on "typeahead:selected", (obj, datum) -> Session.set "currentSelectedBookDatum", datum
+		displayKey: "title"
+	).on "typeahead:selected", (obj, datum) -> obj.__method = datum
 
 	$("#classNameInput").typeahead null,
 		source: classEngine.ttAdapter()
-		displayKey: "val"
+		displayKey: "name"
 
 Template.settingsModal.events
 	"click #schedularPrefsButton": ->
@@ -591,6 +576,13 @@ Template.sidebar.events
 
 		subs.subscribe "books", null
 		$("#addClassModal").modal()
+
+		addClassComp = Tracker.autorun ->
+			Meteor.subscribe "scholieren.com"
+			Meteor.subscribe "books"
+
+			classEngine.clear()
+			classEngine.add ScholierenClasses.find().fetch()
 
 # == End Sidebar ==
 

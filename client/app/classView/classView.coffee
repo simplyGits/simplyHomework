@@ -1,4 +1,4 @@
-bookSub = null
+bookComputation = null
 
 grades = new ReactiveVar []
 loadingGrades = new ReactiveVar yes
@@ -37,6 +37,12 @@ gradeConverter = (grade) ->
 		return englishGradeMap[grade.toUpperCase()]
 
 	return NaN
+
+bookEngine = new Bloodhound
+	name: "books"
+	datumTokenizer: (d) -> Bloodhound.tokenizers.whitespace d.title
+	queryTokenizer: Bloodhound.tokenizers.whitespace
+	local: []
 
 Template.classView.helpers
 	currentClass: currentClass
@@ -111,19 +117,25 @@ Template.classView.rendered = ->
 Template.classView.events
 	"click #changeClassIcon": ->
 		ga "send", "event", "button", "click", "classInfoChange"
-		bookSub = Meteor.subscribe "books", new Meteor.Collection.ObjectID(@params.classId), ->
-			name = if _.contains ["Natuurkunde", "Scheikunde"], (val = currentClass().name) then "Natuur- en scheikunde" else val
-			WoordjesLeren.getAllBooks name, (result) ->
-				result.pushMore ({name} for name in _.reject Books.find(classId: currentClass()._id).fetch().map((b) -> b.title), (b) -> _.any result, (x) -> x is b)
+		bookComputation = Tracker.autorun ->
+			Meteor.subscribe "scholieren.com"
+			Meteor.subscribe "books", currentClass()._id
 
-				bookEngine.clear()
-				bookEngine.add result
+			books = Books.find(classId: currentClass()._id).fetch()
 
-			$("#changeColorInput").colorpicker "destroy"
-			$("#changeColorInput").colorpicker color: currentClass().__color
-			$("#changeColorLabel").css color: currentClass().__color
+			scholierenClass = ScholierenClasses.findOne id: currentClass().__classInfo.scholierenId
+			books.pushMore _.filter scholierenClass?.books, (b) -> not _.contains (x.title for x in books), b.title
 
-			$("#changeClassModal").modal backdrop: false
+			bookEngine.clear()
+			bookEngine.add books
+
+		$("#changeColorInput")
+			.colorpicker "destroy"
+			.colorpicker color: currentClass().__color
+
+		$("#changeColorLabel").css color: currentClass().__color
+
+		$("#changeClassModal").modal backdrop: false
 
 Template.changeClassModal.rendered = ->
 	$("#changeColorInput").colorpicker color: currentClass().__color
@@ -132,7 +144,7 @@ Template.changeClassModal.rendered = ->
 
 	$("#changeBookInput").typeahead(null,
 		source: bookEngine.ttAdapter()
-		displayKey: "name"
+		displayKey: "title"
 	).on "typeahead:selected", (obj, datum) -> Session.set "currentSelectedBookDatum", datum
 
 Template.changeClassModal.events
@@ -151,7 +163,7 @@ Template.changeClassModal.events
 
 		$("meta[name='theme-color']").attr "content", color
 		$("#changeClassModal").modal "hide"
-		bookSub.stop()
+		bookComputation.stop()
 
 	"click #deleteClassButton": ->
 		$("#changeClassModal").modal "hide"
