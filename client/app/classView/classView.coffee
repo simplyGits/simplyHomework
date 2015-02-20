@@ -92,7 +92,11 @@ Template.classView.rendered = ->
 	@autorun (c) ->
 		grades.set(_(fetchedGrades.get())
 			.filter((g) -> g.class().id() is currentClass().__classInfo.magisterId and g.grade()?)
-			.forEach((g) -> g.__insufficient = if gradeConverter(g.grade()) < 5.5 then "insufficient" else "")
+			.forEach (g) ->
+				converted = gradeConverter g.grade()
+
+				g.__insufficient = if converted < 5.5 then "insufficient" else ""
+				if converted is 10 then g._grade = "10" # A '10,0' is such an high grade it exceeds the amount the container can comprehend.
 			.value()
 		)
 
