@@ -22,7 +22,7 @@ gradeConverter = (grade) ->
 	# Normal dutch grades
 	val = grade.replace(",", ".").replace(/[^\d\.]/g, "")
 	unless val.length is 0 or _.isNaN(+val)
-		return val
+		return +val
 
 	# English grades
 	englishGradeMap =
