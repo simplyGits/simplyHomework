@@ -103,6 +103,8 @@ Meteor.startup ->
 
 			NotificationsManager.hideAll()
 
+	$(window).unload -> NotificationsManager.hideAll()
+
 	prevTime = _.now()
 	Meteor.setInterval (->
 		x = _.now()
