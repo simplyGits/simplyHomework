@@ -104,6 +104,7 @@ spiderable@1.0.6
 srp@1.0.2
 standard-app-packages@1.0.4
 stevezhu:lodash@1.0.2
+tail:core@0.9.5
 templating@1.0.11
 tracker@1.0.5
 tsega:bootstrap3-datetimepicker@0.4.0
