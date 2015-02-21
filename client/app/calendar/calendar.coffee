@@ -50,7 +50,7 @@ calendarItemToEvent = (calendarItem) ->
 		else if calendarItem.description.length > 12 then "#{calendarItem.description.substring(0, 9)}..."
 		else calendarItem.description
 	)
-	allDay: calendarItem.startDate.getHours() is 0 and moment(calendarItem.endDate).diff(calendarItem.beginDate, "hours") is 24
+	allDay: calendarItem.startDate.getHours() is 0 and moment(calendarItem.endDate).diff(calendarItem.startDate, "hours") is 24
 	start: calendarItem.startDate
 	end: calendarItem.endDate
 	color:
