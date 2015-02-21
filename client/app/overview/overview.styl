@@ -24,46 +24,43 @@ div.overviewImportantContainer
 	border-radius: 5px
 
 	div.overviewTimeIndicator
+		span(1/5)
+
 		font-weight: 100
 		font-size: 60px
-		margin-left: 15px
-		display: inline-block
+		text-align: center
 
 		span
 			font-weight: 300
 
 		+mobile()
-			text-align: center
-			display: block
-			margin: 0
+			stack()
+
+	div.overviewClassLocation
+		span(1/5)
+		margin-top: 12px
+
+		font-size: 40px
+		font-weight: 100
+		text-align: center
+
+		+mobile()
+			stack()
 
 	div.overviewClassDescription
+		span(3/5)
+		margin-top: 11px
+
 		font-size: 40px
 		font-weight: 300
-		margin-left: 90px
-		display: inline-block
-		position: absolute
-		margin-top: 14px
-		width: calc(100% - 185px)
 
 		text-overflow: ellipsis
 		overflow-x: hidden
 		white-space: nowrap
 
 		+mobile()
+			stack()
 			text-align: center
-			position: relative
-			margin: 0
-			width: 100%
-
-	div.overviewClassLocation
-		font-size: 25px
-		font-weight: 100
-
-		display: inline-block
-		position: absolute
-		margin-top: 25px
-		margin-left: 15px
 
 	div.overviewPersons
 		absolute: right 0 left 20% bottom 0
