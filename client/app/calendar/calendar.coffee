@@ -60,6 +60,7 @@ calendarItemToEvent = (calendarItem) ->
 	clickable: yes
 	open: no
 	calendarItem: calendarItem
+	editable: yes
 
 Template.calendar.rendered = ->
 	$(".calendar").fullCalendar
@@ -144,6 +145,12 @@ Template.calendar.rendered = ->
 			_.defer ->
 				return if $(".fc-left h2").text().indexOf("week") isnt -1
 				$(".fc-left h2").html "#{$(".fc-left h2").text()} <small>week: #{date.week()}</small>"
+		eventDrop: (event) ->
+			if event.allDay
+				CalendarItems.update event.calendarItem._id, $set: startDate: event.start.toDate().date(), endDate: event.start.toDate().date().addDays 1
+			else
+				CalendarItems.update event.calendarItem._id, $set: startDate: event.start.toDate(), endDate: event.end.toDate()
+		eventResize: (event) -> CalendarItems.update event.calendarItem._id, $set: startDate: event.start.toDate(), endDate: event.end.toDate()
 
 	$("div.addAppointmentForm").detach().prependTo "body"
 	$("button.fc-button").removeClass("fc-button fc-state-default").addClass "btn btn-default"
