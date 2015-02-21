@@ -10,6 +10,7 @@ Router.configure
 	onStop: ->
 		$(".modal.in").modal "hide"
 		$(".backdrop.dimmed").removeClass "dimmed"
+		$(".tooltip").tooltip("destroy")
 	trackPageView: true
 	notFoundTemplate: "notFound"
 
