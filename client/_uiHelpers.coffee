@@ -113,7 +113,7 @@ class @NotificationsManager
 	@notify = (options) ->
 		throw new ArgumentException "options", "Can't be null" unless options?
 		_.defaults options, { type: "default", time: 4000, dismissable: yes, labels: [], styles: [], callbacks: [], html: no, priority: 0, allowDesktopNotifications: yes, image: "" }
-		{ body, type, time, dismissable, labels, styles, callbacks, html, onClick, priority, onDismissed, allowDesktopNotifications, image } = options
+		{ body, type, time, dismissable, labels, styles, callbacks, html, onClick, priority, onDismissed, allowDesktopNotifications, image, onHide } = options
 
 		check time, Match.Where (t) -> _.isNumber(t) and ( t is -1 or t > 0 )
 		check priority, Number
