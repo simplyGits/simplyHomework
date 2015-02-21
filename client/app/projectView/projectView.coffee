@@ -156,6 +156,8 @@ Template.projectView.events
 
 		$("#changeProjectModal").modal backdrop: false
 
+	"click .projectInfoChatQuoteContainer": -> ChatManager.openProjectChat @
+
 Template.changeProjectModal.events
 	"click #goButton": ->
 		name = $("#changeNameInput").val().trim()

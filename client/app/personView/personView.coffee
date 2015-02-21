@@ -17,6 +17,9 @@ Template.personView.helpers
 	borderColor: -> status().borderColor
 	sameUser: sameUser
 
+Template.personView.events
+	"click button.chatButton": -> ChatManager.openUserChat @
+
 Template.personView.rendered = ->
 	@autorun ->
 		Router.current()._paramsDep.depend()
