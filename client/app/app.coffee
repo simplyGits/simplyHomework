@@ -687,7 +687,7 @@ Template.app.rendered = ->
 	studyGuideChangeNotification = null
 	@autorun (c) ->
 		return unless Meteor.subscribe("magisterStudyGuides").ready() # Wait till the subscription is ready.
-		Meteor.setInterval c.invalidate, 1200000 # Make sure to rerun this computation after 20 minutes.
+		Meteor.setInterval (-> c.invalidate()), 1200000 # Make sure to rerun this computation after 20 minutes.
 
 		studyGuides = MagisterStudyGuides.find().fetch()
 		studyGuidesHashes = {}
