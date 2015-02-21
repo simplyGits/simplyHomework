@@ -1,4 +1,10 @@
 <template name="chatSidebar">
+	<div class="chatWindows">
+		{{#each openChats}}
+			{{> chatWindow}}
+		{{/each}}
+	</div>
+
 	<div class="chatSidebar">
 		<div class="searchBox">
 			<i class="fa fa-search"></i>

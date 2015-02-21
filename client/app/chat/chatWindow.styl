@@ -1,0 +1,85 @@
+div.chatWindow
+	z-index: 9999
+
+	width: 450px
+	height: 300px
+	margin-top: 15px
+
+	position: relative
+
+	background-color: white
+	border: 1px lightgray solid
+	border-radius: 5px
+	overflow: hidden
+
+	div.header
+		position: relative
+		height: 40px
+		padding: 3px
+		font-size: 15px
+		border-bottom: 1px lightgray solid
+
+		img
+			absolute: left top bottom
+			height: 39px
+			width: 39px
+
+			pointer-events: all
+			cursor: pointer
+
+		div.name
+			display: inline-block
+			margin-left: 45px
+			line-height: 2.3
+
+			cursor: pointer
+
+		i.fa
+			absolute: right 10px top 8px
+			cursor: pointer
+
+			font-size: 20px
+			text-align: center
+
+	div.messages
+		absolute: top 40px bottom 30px left right
+		overflow: hidden
+		overflow-y: scroll
+
+		div.message
+			padding: 5px
+			font-size: 15px
+
+			img
+				border-radius: 50%
+				pointer-events: all
+
+			div.messageContent
+				display: inline-flex
+				width: calc(100% - 35px)
+				margin-left: 5px
+
+				text-align: justify
+
+		div.message.own
+			img
+				float: right
+
+			div.messageContent
+				margin-left: 0
+				margin-right: 5px
+
+	div.footer
+		absolute: left bottom right
+		height: 30px
+
+		input[type="text"]
+			width: 100%
+			height: 100%
+			padding: 5px
+			font-size: 17px
+
+			border: none
+			outline: none
+			border-top: 1px lightgray solid
+			background-color: transparent
