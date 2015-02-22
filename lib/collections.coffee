@@ -50,7 +50,7 @@ Schemas.Classes = new SimpleSchema
 	course:
 		type: String
 		label: "Vakafkorting"
-		regEx: /^[a-z]+$/
+		regEx: /^[a-z]*$/
 	year:
 		type: Number
 	schoolVariant:

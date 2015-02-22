@@ -10,7 +10,7 @@ class @SchoolClass
 
 		@_id = new Meteor.Collection.ObjectID()
 
-		@course = course?.toLowerCase()
+		@course = course?.toLowerCase() ? ""
 		@schoolVariant = schoolVariant?.toLowerCase()
 		@name = Helpers.cap name if name?
 
