@@ -203,7 +203,7 @@ class @App
 		return if @_running
 		@_setupPathItems.plannerPrefs.done = @_setupPathItems.magisterInfo.done = Meteor.user().magisterCredentials?
 		@_setupPathItems.getMagisterClasses.done = Meteor.user().classInfos? and Meteor.user().classInfos.length > 0
-		@_setupPathItems.newSchoolYear.done = Meteor.user().profile.courseInfo?
+		@_setupPathItems.newSchoolYear.done = yes
 
 		@_fullCount = _.filter(@_setupPathItems, (x) -> not x.done).length
 		@_setupPathItems.tutorial.done = @_setupPathItems.final.done = @_fullCount is 0
