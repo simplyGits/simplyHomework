@@ -58,3 +58,8 @@ ChatMessages.allow
 	insert: -> yes
 	update: -> no # Not yet. We don't have have GUI to change it or to show it. (which is really important).
 	remove: -> no # Never I guess.
+
+GoaledSchedules.allow
+	insert: -> yes
+	update: (userId, doc) -> doc.ownerId is userId
+	remove: -> no
