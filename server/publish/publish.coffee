@@ -100,6 +100,10 @@ Meteor.publish null, ->
 
 		# All unread chatMessages.
 		ChatMessages.find({$or: [{ to: @userId }, { creatorId: @userId }], readBy: $ne: @userId}, sort: "time": -1)
+
+		# Pilot shit.
+		GoaledSchedules.find { ownerId: @userId }
+		SavedHomework.find(userId: @userId)
 	]
 
 Meteor.publish "classes", ->

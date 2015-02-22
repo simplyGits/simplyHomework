@@ -4,7 +4,10 @@ nextAppointmentToday = new ReactiveVar null
 currentAppointment = new ReactiveVar null
 
 getTasks = -> # Also mix homework for tommorow and homework for days where the day before has no time. Unless today has no time.
-	tasks = _.flatten (gS.tasksForToday() for gS in GoaledSchedules.find(_homework: { $exists: true }, ownerId: Meteor.userId()).fetch())
+	tasks = []
+	for gS in GoaledSchedules.find(dueDate: $gte: new Date).fetch()
+		tasks.pushMore _.filter gS.tasks, (t) -> EJSON.equals t.plannedDate.date(), Date.today()
+
 	tmp = []
 	for task in tasks
 		tmp.push _.extend task,
@@ -109,15 +112,45 @@ Template.appOverview.rendered = ->
 		$("#currentDate > span").tooltip placement: "bottom", html: true, title: "<h4>Week: #{moment().week()}</h4>"
 
 	@autorun ->
-		unless Get.schedular()?.biasToday() is 0
-			appointments = magisterAppointment new Date().addDays(-1), new Date().addDays(7)
+		return if Get.schedular()?.biasToday() is 0
+		grades = magisterResult("grades").result ? []
 
-			date = switch Helpers.weekDay new Date()
-				when 4 then Date.today().addDays(3)
-				when 5 then Date.today().addDays(2)
-				else Date.today().addDays(1)
+		date = switch Helpers.currentDay()
+			when 4 then Date.today().addDays 3
+			when 5 then Date.today().addDays 2
+			else Date.today().addDays 1
 
-			if new Date().getHours() < 4 and Helpers.weekDay(date) isnt 0 then date.addDays(-1)
+		appointments = magisterAppointment new Date(), new Date().addDays(7)
+		homework = _.filter appointments, (a) -> a.infoTypeString() is "homework" and a.content().length > 0 and a.classes().length > 0
 
-			homework = _.where appointments, (a) -> a.content()? and a.content() isnt "" and a.begin().getTime() > new Date().getTime() and _.contains([1..5], a.infoType()) and a.classes().length > 0
-			homeworkItems.set _.where homework, (h) -> EJSON.equals(date, h.begin().date()) or Get.schedular().schedularPrefs().bias(h.begin().addDays(-1, yes).date()) is 0
+		homeworkItems.set _.filter homework, (h) ->
+			nextSchoolDay = EJSON.equals h.begin().date(), date
+			noTimeDayInfront = no
+			try noTimeDayInfront = Get.schedular().schedularPrefs.bias(h.begin().addDays(-1, yes).date()) is 0
+
+			if nextSchoolDay or noTimeDayInfront then return yes
+			else # now. For the real stuff...
+				magisterId = h.__classInfo?.magisterId
+
+				gradesCurrentClass = _(grades)
+					.filter (g) -> g.class().id() is magisterId
+					.forEach (g) -> g._grade = gradeConverter g._grade
+					.value()
+
+				endGrade = _.find gradesCurrentClass, (g) -> g.type().header()?.toLowerCase() is "e-jr"
+				endGrade ?= _.find gradesCurrentClass, (g) -> g.type().header()?.toLowerCase() is "eind"
+				endGrade ?= _.find gradesCurrentClass, (g) -> g.type().type() is 2
+
+				lastGrade = _(gradesCurrentClass)
+					.filter (g) -> g.type().type() isnt 2
+					.max "_dateFilledIn"
+
+				parsedData = Parser.parseDescription h.content()
+				exercises = _(parsedData.exerciseData)
+					.map (d) -> d.values
+					.flatten()
+					.value()
+
+				exerciseData = calculateExercisePriority endGrade, lastGrade, exercises.length
+
+				return _.now() > h.begin().date().addDays(-exerciseData.daysInfront).getTime()

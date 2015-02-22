@@ -696,6 +696,17 @@ Template.app.rendered = ->
 					id: a.id()
 					userId: Meteor.userId()
 
+	# Pilot quick and dirty goaledSchedule creating.
+	@autorun ->
+		appointments = magisterAppointment new Date, new Date().addDays 7
+		tests = _.filter appointments, (a) -> _.contains ["test", "quiz"], a.infoTypeString()
+
+		for a in tests
+			if GoaledSchedules.find(magisterAppoinmentId: a.id()).count() is 0
+				gs = new GoaledSchedule Meteor.userId(), Parser.parseDescription(a.content(), a.infoTypeString()), a.begin().date(), a.__class
+				gs.magisterAppoinmentId = a.id()
+				GoaledSchedules.insert gs
+
 	studyGuideChangeNotification = null
 	@autorun (c) ->
 		return unless Meteor.subscribe("magisterStudyGuides").ready() # Wait till the subscription is ready.
