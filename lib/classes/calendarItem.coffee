@@ -22,6 +22,32 @@ root = @
 ###
 class @CalendarItem
 	constructor: (@ownerId, @description, @startDate, @endDate, @classId) ->
-		@_id = new Meteor.Collection.ObjectID()
 		@isDone = no
 		@endDate ?= moment(@startDate).add(1, "hour").toDate()
+
+		###*
+		# The interval for repeating in seconds.
+		# If null, this CalendarItem doesn't repeat.
+		# Warning: This method only supports 'dumb' repeats,
+		# not something like: "every 20th day of the moth".
+		#
+		# The start of timing the interval is @startDate.
+		# The end is set by @endDate.
+		#
+		# @property repeatInterval
+		# @type Number
+		# @default null
+		###
+		@repeatInterval = null
+
+		###*
+		# If this calendarItem is linked to an appointment
+		# (eg for giving up homework that isn't filled in
+		# into Magister, `appointmentId` will contain the
+		# ID of the appointment this calendarItem is linked to.
+		#
+		# @property appointmentId
+		# @type Number
+		# @default null
+		###
+		@appointmentId = null
