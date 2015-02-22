@@ -63,3 +63,8 @@ GoaledSchedules.allow
 	insert: -> yes
 	update: (userId, doc) -> doc.ownerId is userId
 	remove: -> no
+
+SavedHomework.allow
+	insert: -> yes
+	update: -> no
+	remove: -> no
