@@ -196,7 +196,8 @@ Template.chatSidebar.rendered = ->
 			$("div.searchBox > input").val ""
 
 	loadingObserve = yes
-	audio = null
+
+	audio = new Audio; audio.src = "/audio/chatNotification.ogg"
 	ChatMessages.find(
 		creatorId: $ne: Meteor.userId()
 		readBy: $ne: Meteor.userId()
@@ -204,9 +205,7 @@ Template.chatSidebar.rendered = ->
 		added: (doc) ->
 			return if loadingObserve
 
-			audio?.pause()
-			audio = new Audio
-			audio.src = "/audio/chatNotification.ogg"
+			audio.pause()
 			audio.play()
 
 			unless document.hasFocus() or not Session.get "allowNotifications"
