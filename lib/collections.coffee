@@ -43,7 +43,8 @@ Schemas.Classes = new SimpleSchema
 	name:
 		type: String
 		label: "Vaknaam"
-		regEx: /^[A-Z][a-z]+$/
+		trim: yes
+		regEx: /^[a-z ]+$/i
 		index: 1
 	course:
 		type: String
@@ -139,6 +140,7 @@ Schemas.ChatMessages = new SimpleSchema
 	to:
 		type: String
 		index: 1
+		optional: yes
 	readBy:
 		type: [String]
 	attachments:
