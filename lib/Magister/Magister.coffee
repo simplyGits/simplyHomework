@@ -396,6 +396,7 @@ class @Magister
 	#
 	# @method digitalSchoolUtilities
 	# @async
+	# @param [fillClass=true] {Boolean} Whether or not to download the full class objects from the server. If this is false .class() will return a limited class object.
 	# @fixme /NOT WORKING/ (Weird ID mismatch) @param [class] {Class|Number} The class or ID of a class to get the Digital school utitlities for. If none is given it will return every DigitalSchoolUtility.
 	# @param callback {Function} A standard callback.
 	# 	@param [callback.error] {Object} The error, if it exists.
@@ -404,8 +405,8 @@ class @Magister
 	digitalSchoolUtilities: ->
 		@_forceReady()
 
+		fillClass = _.find(arguments, (a) -> _.isBoolean a) ? yes
 		#_class = _.find arguments, (a) -> _.isNumber a or _.isObject a
-
 		callback = _.find arguments, (a) -> _.isFunction a
 		return unless callback?
 
