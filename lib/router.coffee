@@ -3,10 +3,13 @@
 	expireIn: 10
 
 AccountController = RouteController.extend
-	verifyMail: -> Accounts.verifyEmail @params.token, ->
-		@next()
-		Router.go "app"
-		notify "Email geverifiëerd", "success"
+	verifyMail: ->
+		route = @
+
+		Accounts.verifyEmail @params.token, ->
+			Router.go "app"
+			notify "Email geverifiëerd", "success"
+			route.next()
 
 Router.configure
 	onStop: ->
