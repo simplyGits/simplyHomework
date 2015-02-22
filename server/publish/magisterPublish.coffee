@@ -57,7 +57,7 @@ Meteor.publish "magisterAppointments", (from, to) ->
 				a.__className = Helpers.cap(a.classes()[0]) if a.classes()[0]?
 
 				# Find URLs and place them in an anchor tag.
-				a.__description = a.content().replace(/&amp;/ig, "&").replace /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b((\/|\?)[-a-zA-Z0-9@:%_\+.~#?&//=]+)?\b/ig, (match) ->
+				a.__description = a.content().replace /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b((\/|\?)[-a-zA-Z0-9@:%_\+.~#?&//=]+)?\b/ig, (match) ->
 					if /^https?:\/\/.+/i.test match
 						return "<a target=\"_blank\" href=\"#{match}\">#{match}</a>"
 					else
