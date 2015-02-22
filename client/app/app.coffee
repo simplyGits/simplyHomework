@@ -737,6 +737,7 @@ Template.app.rendered = ->
 	ChatHeads.initialize()
 
 	Deps.autorun ->
+		return
 		if Meteor.user()? and not has("noAds") and Meteor.status().connected
 			setTimeout (-> Meteor.defer ->
 				if !Session.get "adsAllowed"
