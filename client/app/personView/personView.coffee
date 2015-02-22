@@ -40,8 +40,7 @@ Template.personSharedHours.helpers
 
 Template.personSharedHours.rendered = ->
 	@autorun ->
-		# appointments = magisterAppointment new Date(), new Date().addDays(7)
-		appointments = magisterAppointment new Date().addDays(-14), new Date().addDays(-7)
+		appointments = magisterAppointment new Date(), new Date().addDays(7)
 
 		sharedHours.set _.filter appointments, (a) ->
 			currentUserHasHour = a.__groupInfo?
