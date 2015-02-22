@@ -234,7 +234,7 @@ Template.getMagisterClassesModal.helpers
 
 Template.getMagisterClassesModal.rendered = ->
 	magisterResult "course", (e, r) ->
-		return if e? or amplify.store "courseInfoSet"
+		return if e? or amplify.store "courseInfoSet_#{Meteor.userId()}"
 
 		schoolVariant = /[^\d\s]+/.exec(r.type().description)[0].trim().toLowerCase()
 		year = (Number) /\d+/.exec(r.type().description)[0].trim()
@@ -247,7 +247,7 @@ Template.getMagisterClassesModal.rendered = ->
 				year
 			}
 
-		amplify.store "courseInfoSet", yes, expires: 172800000 # We don't want to be spammed under, thank you.
+		amplify.store "courseInfoSet_#{Meteor.userId()}", yes, expires: 172800000 # We don't want to be spammed under, thank you.
 
 	opts =
 		lines: 17
