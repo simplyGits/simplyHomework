@@ -135,16 +135,39 @@ class @Helpers
 		return if ignoreCasing then original.toUpperCase().indexOf(query.toUpperCase()) >= 0 else original.indexOf(query) >= 0
 
 	###*
-	# Returns all the matches of the given RegEx tested on the given string.
+	# Returns all the matches of the given RegEx tested on the given string as strings.
 	#
 	# @method allMatches
 	# @param regex {Regexp} The RegEx to use.
 	# @param str {String} The string to test the RegEx on.
-	# @return {Array} An array containing all the matches found. (example: ["hoofdstuk 4", "hoofdstuk 10"])
+	# @return {String[]} An array containing all the matches found as strings. (example: ["hoofdstuk 4", "hoofdstuk 10"])
 	###
 	@allMatches: (regex, str) ->
+		# If no global flag is set there's only one result.
+		# Without this the while loop will be an infinite loop.
+		return [regex.exec(str)?[0]] unless regex.global
+
 		tmp = []
-		tmp.push item[0] while (item = regex.exec str) isnt null
+		tmp.push item[0] while (item = regex.exec str)?
+		return tmp
+
+	###*
+	# Returns all the matches of the given RegEx tested on the given string with the details.
+	#
+	# @method allMatchesDetailed
+	# @param regex {Regexp} The RegEx to use.
+	# @param str {String} The string to test the RegEx on.
+	# @return {RegExpResult[]} An array containing all the matches found. As an addition it also contains `lastIndex: number`
+	###
+	@allMatchesDetailed: (regex, str) ->
+		# If no global flag is set there's only one result.
+		# Without this the while loop will be an infinite loop.
+		return [regex.exec(str)] unless regex.global
+
+		tmp = []
+
+		while (item = regex.exec str)? then tmp.push _.extend item, lastIndex: item.index + item[0].length
+
 		return tmp
 
 	@getTotal: (arr, mapper) ->
@@ -160,7 +183,7 @@ class @Helpers
 	# @param mapper {Function} Optional. The function to map the values in the array to before counting it to the average.
 	# @return {Number} The average of the given values.
 	###
-	@getAverage: (arr, mapper) -> return root.Helpers.getTotal(arr, mapper) / arr.length
+	@getAverage: (arr, mapper) -> return @getTotal(arr, mapper) / arr.length
 
 	@cap: (string, amount = 1) -> string[0...amount].toUpperCase() + string[amount..].toLowerCase()
 
