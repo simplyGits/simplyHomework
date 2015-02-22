@@ -10,34 +10,6 @@ digitalSchoolUtilities = new ReactiveVar []
 currentClass = -> Router.current().data()
 tasksAmount = -> Helpers.getTotal _.reject(GoaledSchedules.find(_homework: { $exists: true }, ownerId: Meteor.userId()).fetch(), (gS) -> !EJSON.equals(gS.classId(), currentClass()._id)), (gS) -> gS.tasksForToday().length
 
-###*
-# Converts a grade to a number, can be Dutch grade style or English. More can be added.
-# If the `grade` can't be converted it will return NaN.
-#
-# @method gradeConverter
-# @param grade {String} The grade to convert.
-# @return {Number} `grade` converted to a number. Defaults to NaN.
-###
-gradeConverter = (grade) ->
-	# Normal dutch grades
-	val = grade.replace(",", ".").replace(/[^\d\.]/g, "")
-	unless val.length is 0 or _.isNaN(+val)
-		return +val
-
-	# English grades
-	englishGradeMap =
-		"F": 1.7
-		"E": 3.3
-		"D": 5.0
-		"C": 6.7
-		"B": 8.3
-		"A": 10.0
-
-	if _(englishGradeMap).keys().contains(grade.toUpperCase())
-		return englishGradeMap[grade.toUpperCase()]
-
-	return NaN
-
 bookEngine = new Bloodhound
 	name: "books"
 	datumTokenizer: (d) -> Bloodhound.tokenizers.whitespace d.title

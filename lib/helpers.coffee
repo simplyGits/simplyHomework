@@ -41,6 +41,34 @@ Array::pushMore = (items) -> [].push.apply @, items; return @
 
 @correctMail = (mail) -> /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/i.test mail
 
+###*
+# Converts a grade to a number, can be Dutch grade style or English. More can be added.
+# If the `grade` can't be converted it will return NaN.
+#
+# @method gradeConverter
+# @param grade {String} The grade to convert.
+# @return {Number} `grade` converted to a number. Defaults to NaN.
+###
+@gradeConverter = (grade) ->
+	# Normal dutch grades
+	val = grade.replace(",", ".").replace(/[^\d\.]/g, "")
+	unless val.length is 0 or _.isNaN(+val)
+		return +val
+
+	# English grades
+	englishGradeMap =
+		"F": 1.7
+		"E": 3.3
+		"D": 5.0
+		"C": 6.7
+		"B": 8.3
+		"A": 10.0
+
+	if _(englishGradeMap).keys().contains(grade.toUpperCase())
+		return englishGradeMap[grade.toUpperCase()]
+
+	return NaN
+
 ###
 # Static class containing helper methods.
 #
