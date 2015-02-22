@@ -53,3 +53,8 @@ Projects.allow
 	insert: (userId, doc) -> doc.ownerId is userId and _.contains doc.participants, userId
 	update: (userId, doc, fields, modifier) -> _.contains(doc.participants, userId) and ( !_.any(["ownerId", "participants"], (x) -> _.contains(fields, x)) or userId is doc.ownerId or EJSON.equals modifier, { $pull: participants: userId } )
 	remove: -> no
+
+ChatMessages.allow
+	insert: -> yes
+	update: -> no # Not yet. We don't have have GUI to change it or to show it. (which is really important).
+	remove: -> no # Never I guess.
