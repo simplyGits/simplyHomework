@@ -96,6 +96,11 @@
 			{{#linkTo route="personView" data=this}}
 				<img src="{{gravatar this 50}}" width="25" height="25" data-toggle="tooltip" title="{{profile.firstName}} {{profile.lastName}}"/>
 			{{/linkTo}}
+		{{else}}
+			<div style="text-align: center; opacity: .7">
+				Morgen heb je met geen ander simplyHomework lid les. :(<br>
+				Misschien kun je ze <a href="mailto:?to=&subject=Zie%20deze%20hippe%20app">uitnodigen</a>?
+			</div>
 		{{/each}}
 	</div>
 </template>
