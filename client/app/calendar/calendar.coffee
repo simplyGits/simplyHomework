@@ -171,24 +171,25 @@ Template.calendar.rendered = ->
 		[start, end] = Session.get("currentDateRange")
 
 		currentEvents.pushMore updatedAppointments(start, end).map appointmentToEvent
+		currentEvents.pushMore CalendarItems.find().map calendarItemToEvent
 
-		currentEvents.pushMore CalendarItems.find({ $or: [
-			{
-				startDate: $gte: start
-				endDate: $lte: end
-			}
-			{
-				$where: ->
-					targetDate = new Date @startDate.getTime() + @repeatInterval * 1000
-					targetDate = new Date(
-						targetDate.getUTCFullYear(),
-						targetDate.getMonth(),
-						targetDate.getDate()
-					)
-
-					return targetDate >= start and targetDate <= end
-			}
-		] }).map calendarItemToEvent
+#		currentEvents.pushMore CalendarItems.find({ $or: [
+#			{
+#				startDate: $gte: start
+#				endDate: $lte: end
+#			}
+#			{
+#				$where: ->
+#					targetDate = new Date @startDate.getTime() + @repeatInterval * 1000
+#					targetDate = new Date(
+#						targetDate.getUTCFullYear(),
+#						targetDate.getMonth(),
+#						targetDate.getDate()
+#					)
+#
+#					return targetDate >= start and targetDate <= end
+#			}
+#		] }).map calendarItemToEvent
 
 		### bla bla tasks bla bla ###
 
