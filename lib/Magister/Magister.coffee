@@ -311,14 +311,6 @@ class @Magister
 		fillClass = _.find(arguments, (a) -> _.isBoolean a) ? yes
 		callback = _.find arguments, (a) -> _.isFunction a
 
-		if fillClass
-			@courses (e, r) ->
-				if r? and r.length isnt 0
-					r[0].classes (e, r) ->
-						if r? and r.length isnt 0 then cb r
-						else cb()
-				else cb()
-		else cb()
 		cb = (classes) =>
 			@http.get "#{@_pupilUrl}/studiewijzers?peildatum=#{_helpers.urlDateConvert new Date}", {}, (error, result) =>
 				if error? then callback error, null
@@ -330,6 +322,15 @@ class @Magister
 						else studyGuide._class = null
 
 					callback null, result
+
+		if fillClass
+			@courses (e, r) ->
+				if r? and r.length isnt 0
+					r[0].classes (e, r) ->
+						if r? and r.length isnt 0 then cb r
+						else cb()
+				else cb()
+		else cb()
 
 	###*
 	# Gets the Assignments for the current user.
@@ -357,14 +358,6 @@ class @Magister
 		amount ?= 50
 		skip ?= 0
 
-		if fillClass
-			@courses (e, r) ->
-				if r? and r.length isnt 0
-					r[0].classes (e, r) ->
-						if r? and r.length isnt 0 then cb r
-						else cb()
-				else cb()
-		else cb()
 		cb = (classes) =>
 			@http.get "#{@_personUrl}/opdrachten?skip=#{skip}&top=#{amount}&status=alle", {}, (error, result) =>
 				if error? then callback error, null
@@ -389,6 +382,15 @@ class @Magister
 
 							else pushResult assignment
 
+		if fillClass
+			@courses (e, r) ->
+				if r? and r.length isnt 0
+					r[0].classes (e, r) ->
+						if r? and r.length isnt 0 then cb r
+						else cb()
+				else cb()
+		else cb()
+
 	###*
 	# Gets the Digital school utilities for the current user.
 	#
@@ -411,12 +413,7 @@ class @Magister
 
 		url = if _class? then "#{@_personUrl}/lesmateriaal?vakken=#{_class}" else "#{@_personUrl}/lesmateriaal"
 
-		classes = null
-		@courses (e, r) =>
-			if r? and r.length isnt 0
-				_.last(r).classes (e, r) ->
-					classes = r if r? and r.length isnt 0
-
+		cb = (classes) =>
 			@http.get url, {}, (error, result) =>
 				if error? then callback error, null
 				else
@@ -426,7 +423,17 @@ class @Magister
 						do (u) ->
 							u._class = _.find classes, (c) -> c.abbreviation() is u._class.Afkorting and c.description() is u._class.Omschrijving
 
+					else for u in utilities
+						do (u) => u._class = Class._convertRaw @, u._class
+
 					callback null, utilities
+
+		if fillClass
+			@courses (e, r) ->
+				if r? and r.length isnt 0
+					_.last(r).classes (e, r) ->
+						cb r
+		else cb()
 
 	###*
 	# Returns the profile for the current logged in user.
