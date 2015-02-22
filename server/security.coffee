@@ -64,6 +64,11 @@ GoaledSchedules.allow
 	update: (userId, doc) -> doc.ownerId is userId
 	remove: -> no
 
+Schools.allow
+	insert: -> yes
+	update: -> no # maybe later?
+	remove: -> no
+
 SavedHomework.allow
 	insert: -> yes
 	update: -> no
