@@ -226,12 +226,16 @@ Router.map ->
 	@route "privacy",
 		fastRender: yes
 		layoutTemplate: "privacy"
-		onAfterAction: -> document.title = "simplyHomework | Privacy"
+		onAfterAction: ->
+			document.title = "simplyHomework | Privacy"
+			$("body").scrollTop 0
 
 	@route "press",
 		fastRender: yes
 		layoutTemplate: "press"
-		onAfterAction: -> document.title = "simplyHomework | Pers"
+		onAfterAction: ->
+			document.title = "simplyHomework | Pers"
+			$("body").scrollTop 0
 
 	@route "verifyMail",
 		fastRender: yes
