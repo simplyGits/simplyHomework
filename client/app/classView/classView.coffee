@@ -151,7 +151,7 @@ Template.changeClassModal.events
 			{ main: "btn-danger" },
 			main: ->
 				Router.go "app"
-				Meteor.users.update Meteor.userId(), { $pull: { classInfos: { id: currentClass()._id }}}
+				Meteor.users.update Meteor.userId(), $pull: classInfos: id: currentClass()._id
 			second: -> return
 		)
 
