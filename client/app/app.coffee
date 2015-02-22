@@ -5,7 +5,7 @@ addClassComp = null
 magisterClasses = new ReactiveVar null
 class @App
 	@_setupPathItems:
-		tutorial:
+		welcome:
 			done: yes
 			func: ->
 				alertModal "Hey!", Locals["nl-NL"].GreetingMessage(), DialogButtons.Ok, { main: "verder" }, { main: "btn-primary" }, {main: ->
@@ -206,7 +206,7 @@ class @App
 		@_setupPathItems.newSchoolYear.done = yes
 
 		@_fullCount = _.filter(@_setupPathItems, (x) -> not x.done).length
-		@_setupPathItems.tutorial.done = @_setupPathItems.final.done = @_fullCount is 0
+		@_setupPathItems.welcome.done = @_setupPathItems.final.done = @_fullCount is 0
 		@_running = yes
 
 		@step()
