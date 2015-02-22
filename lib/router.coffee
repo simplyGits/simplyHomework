@@ -91,7 +91,7 @@ Router.map ->
 				id = new Meteor.Collection.ObjectID @params.classId
 				return Classes.findOne id, transform: classTransform
 			catch e
-				Meteor.call "log", "log", "Error while searching for the given class. #{e.message} | stack: #{e.stack}"
+				Kadira.trackError "Class-Search-Error", e.message, stacks: e.stack
 				return null
 
 	@route "projectView",
@@ -131,7 +131,7 @@ Router.map ->
 				id = new Meteor.Collection.ObjectID @params.projectId
 				return Projects.findOne id, transform: projectTransform
 			catch e
-				Meteor.call "log", "log", "Error while searching for the given project. #{e.message} | stack: #{e.stack}"
+				Kadira.trackError "Project-Search-Error", e.message, stacks: e.stack
 				return null
 
 	@route "calendar",
