@@ -313,24 +313,25 @@ Template.setMagisterInfoModal.events
 	"click #goButton": ->
 		schoolName = Helpers.cap $("#schoolNameInput").val()
 		s = Session.get("currentSelectedSchoolDatum")
-		s ?= { url: "" }
-		username = $("#magisterUsernameInput").val().trim()
-		password = $("#magisterPasswordInput").val()
+		MagisterSchool.getSchools schoolName, (e, r) ->
+			s ?= ( r ? [] )[0]
+			username = $("#magisterUsernameInput").val().trim()
+			password = $("#magisterPasswordInput").val()
 
-		school = Schools.findOne { name: schoolName }
-		school ?= New.school schoolName, s.url, new Location()
+			school = Schools.findOne { name: schoolName }
+			school ?= New.school schoolName, s.url, new Location()
 
-		unless $("#allowGroup input").is ":checked"
-			shake "#setMagisterInfoModal"
-			return
+			unless $("#allowGroup input").is ":checked"
+				shake "#setMagisterInfoModal"
+				return
 
-		Meteor.call "setMagisterInfo", { school, schoolId: school._id, magisterCredentials: { username, password }}, (e, success) ->
-			if not e? and success
-				$("#setMagisterInfoModal").modal "hide"
-				App.step()
-				initializeMagister yes
-				schoolSub.stop()
-			else shake "#setMagisterInfoModal"
+			Meteor.call "setMagisterInfo", { school, schoolId: school._id, magisterCredentials: { username, password }}, (e, success) ->
+				if not e? and success
+					$("#setMagisterInfoModal").modal "hide"
+					App.step()
+					initializeMagister yes
+					schoolSub.stop()
+				else shake "#setMagisterInfoModal"
 
 Template.setMagisterInfoModal.rendered = ->
 	$("#schoolNameInput").typeahead({
