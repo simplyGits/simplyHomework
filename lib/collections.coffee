@@ -187,3 +187,9 @@ Schemas.ChatMessages = new SimpleSchema
 					when 3, 4, 5, 6 then "Aanstaande #{day}"
 					else "#{Helpers.cap day} #{DateToDutch(p.deadline, no)}") + " " + time
 		)
+
+@chatMessageTransform = (cm) ->
+	return _.extend cm,
+		__sender: Meteor.users.findOne cm.creatorId
+		__own: if Meteor.userId() is cm.creatorId then "own" else ""
+		__time: moment(cm.time).format "HH:mm"
