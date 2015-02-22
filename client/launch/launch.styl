@@ -64,15 +64,28 @@ div.Center
 	position: fixed
 	top: 40%
 	left: 50%
+	text-align: center
 
 	transition: .75s all ease-out-expo
+
+	div.vCenter
+		text-align: center
 
 	div#quickLoginhint
 		text-align: center
 		color: white
 		opacity: .5
 
-		fixed: left 0 right 0 bottom -80px
+		fixed: left 0 right 0 bottom -30px
+
+	+mobile()
+		img#simplyLogoIntro
+			size = 150px
+			height: size
+			width: size
+
+		div.vCenter
+			margin-top: 10px
 
 div.Center.active
 	opacity: .5
