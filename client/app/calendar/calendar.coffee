@@ -102,7 +102,7 @@ Template.calendar.rendered = ->
 				open()
 				$("textarea#appointmentInput")
 					.val(
-						if date.getHours() is 2 and date.getMinutes() is 0
+						if date.getHours() is 1 and date.getMinutes() is 0
 							"#{DateToDutch date, !sameYear} hele dag "
 						else
 							"#{DateToDutch date, !sameYear} #{Helpers.addZero date.getHours()}:#{Helpers.addZero date.getMinutes()} "
