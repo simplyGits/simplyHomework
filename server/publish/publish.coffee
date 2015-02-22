@@ -14,7 +14,7 @@
 # 		gravatarUrl: 1
 
 # WARNING: PUSHES ALL DATA
-Meteor.publish "usersData", (ids, chatLimit) ->
+Meteor.publish "usersData", (ids) ->
 	@unblock()
 
 	if ids? and ids.length is 1 and ids[0] is @userId
@@ -40,6 +40,14 @@ Meteor.publish "chatMessages", (data, limit) ->
 		@ready()
 		return
 
+	# Makes sure we're getting a number in a base of of 10.
+	#
+	# This shouldn't be needed since the client only increments
+	# the limit by ten, but we want to make sure it is server
+	# side too, we limit it to a power of ten to minimize the
+	# amount of unique cursors.
+	limit = limit + 10 - limit % 10
+
 	if data.userId?
 		ChatMessages.find({
 			$or: [
@@ -54,7 +62,7 @@ Meteor.publish "chatMessages", (data, limit) ->
 			]
 		}, { limit, sort: "time": -1 } )
 	else
-		# Check if the user is inside the permission #veiligheidje
+		# Check if the user is inside the project. #veiligheidje
 		if Projects.find(_id: data.projectId, participants: @userId).count() is 0
 			@ready()
 			return
