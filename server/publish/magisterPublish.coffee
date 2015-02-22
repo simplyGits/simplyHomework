@@ -36,6 +36,8 @@ _cachedMagisterObjects = {}
 
 		return magister
 
+# Magister Appointments from da server coast.
+# Isn't currently used because it's too slow.
 Meteor.publish "magisterAppointments", (from, to) ->
 	@unblock() # AWW YESSSS
 	user = Meteor.users.findOne @userId
