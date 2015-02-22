@@ -40,6 +40,7 @@ Template.personSharedHours.helpers
 
 Template.personSharedHours.rendered = ->
 	@autorun ->
+		return if sameUser()
 		appointments = magisterAppointment new Date(), new Date().addDays(7)
 
 		sharedHours.set _.filter appointments, (a) ->
