@@ -23,5 +23,6 @@
 
 			"<b>Overzicht</b>: <code>o</code>\n" +
 			"<b>Agenda</b>: <code>c</code> of <code>a</code>\n" +
+			"<b>Chatbalk zoeken</b>: <code>/</code> of <code>?</code>\n" +
 			"<b>Vorige zijbalk item</b>: <code>shift+pijltje boven</code>\n" +
 			"<b>Volgende zijbalk item</b>: <code>shift+pijltje beneden</code>"
