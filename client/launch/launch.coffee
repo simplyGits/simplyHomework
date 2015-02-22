@@ -27,7 +27,7 @@ login = ->
 							lastName: Helpers.cap $("#lastNameInput").val().trim()
 					}, (e, r) ->
 						if e? then shake "#signupModal"
-						else Meteor.call "callMailVerification"
+						else Meteor.call "callMailVerification", -> Router.go "app"
 
 	Router.go "app" if Meteor.user()? or Meteor.loggingIn()
 
