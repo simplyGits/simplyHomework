@@ -113,34 +113,33 @@ Template.calendar.rendered = ->
 			dblDateResetHandle = _.delay ( -> dblDate = dblDateResetHandle = null ), 500
 
 		eventClick: (calendarEvent, event) ->
-			unless calendarEvent.open
-				calendarEvent.open = yes
-			else
-				calendarEvent.open = no
+			prevDrop?.close()
+			$(event.target).popover "hide"
+
+			calendarEvent.drop.toggle()
+			calendarEvent.open = calendarEvent.drop.isOpened()
+			prevDrop = calendarEvent.drop
+
 		eventAfterRender: (event, element) ->
 			event.element = element
 			if event.appointment?
 				element.popover content: event.appointment.content(), placement: "auto top", animation: yes, delay: {show: 750}, trigger: "hover", container: ".content"
 
 			return unless event.clickable
-			
-			element = $(element)
+
 			element.css cursor: "pointer"
-			return #sometime
-		
-			d = $ document.createElement "div"
-			d.addClass "eventInfo"
-			d.attr "id", event.id
-			
-			left = element.offset().left - 150 - element.width()
-			top = element.offset().top - 100 - element.height()
 
-			console.log "#{left} | #{element.position().left} | width of D: 150 | Target: 272"
-			console.log "#{top} | #{element.position().top} | height of D: 100 | Target: 406"
+			event.drop = new Drop
+				target: element
+				position: "bottom middle"
+				openOn: null # Only open when called done explicity.
 
-			d.css top: "#{top}px", left: "#{left}px"
+			Blaze.renderWithData Template.eventDetailsTooltip, (->
+				x = event.appointment
+				x ?= event.calendarItem
+				return x
+			), event.drop.content
 
-			element.parent(".fc-event-container").append d
 		dayRender: (date, cell) ->
 			_.defer ->
 				return if $(".fc-left h2").text().indexOf("week") isnt -1
