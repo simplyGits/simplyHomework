@@ -1,5 +1,3 @@
-root = @
-
 ###
 # A GoaledSchedule has a goal. e.g. Learning chapter 4 for German for a coming test.
 # A GoaledSchedule leads the user to the goal and makes creates a ScheduleItem for every day.
@@ -12,73 +10,44 @@ class @GoaledSchedule
 	# Constructor of the GoaledSchedule class.
 	#
 	# @method constructor
-	# @param _parent {Object} The creator of this object.
 	# @param ownerId {String} The user ID of the owner.
-	# @param _homework {Homework}  The homework instance this schedule is made for.
+	# @param parsedData {ParsedData} The parsed homework data.
+	# @param dueDate {Date} The date of the end of this goaledSchedule.
+	# @param classId {ObjectID} The ID of the class this goaledSchedule is for.
 	###
-	constructor: (@_parent, @ownerId, @_homework) ->
-		@_className = "GoaledSchedule"
-		@createTime = Date.now()
-		@_scheduledItems = [] # holds scheduleItems, similar to Day.unplannedItems
-
+	constructor: (@ownerId, @parsedData, @dueDate, @classId) ->
 		@_id = new Meteor.Collection.ObjectID()
 
-		@dependency = new Deps.Dependency
+		@createTime = Date.now()
+		@tasks = []
 
-		@items = root.getset "_scheduledItems", [root.ScheduleItem._match], no
-		@homework = root.getset "_homework", root.Homework._match
+		###*
+		# The ID of the Magister appointment this GoaledSchedule is for.
+		# If this is set `calendarItemId` should be null.
+		#
+		# @property magisterAppoinmentId
+		# @type Number
+		# @default null
+		###
+		@magisterAppoinmentId = null
 
-	classId: -> @homework().classId()
-	dueDate: -> @homework().dueDate()
-		
-	###*
-	# Checks if the current Schedule is due for today
-	#
-	# @method isDue
-	# @return {Boolean} If the current Schedule is due for today.
-	###
-	isDue: -> return EJSON.equals Date.today(), @dueDate()
+		###*
+		# The ID of the CalendarItem this GoaledSchedule is for.
+		# If this is set `magisterAppoinmentId` should be null.
+		#
+		# @property calendarItemId
+		# @type ObjectID
+		# @default null
+		###
+		@calendarItemId = null
 
-	###*
-	# Returns the tasks that has to be done today.
-	#
-	# @method tasksForToday
-	# @return {Array} Array containing the ScheduleItems that should be done today.
-	###
-	tasksForToday: -> return @_filterItems (item) -> return item.daysAway() is 0
-	
-	###*
-	# Returns the tasks that has to be done on the given Date.
-	#
-	# @method tasksForDate
-	# @param date {Date} The date to get the ScheduleItems for.
-	# @return {Array} Array containing the ScheduleItems that should be done on the given Date.
-	###
-	tasksForDate: (date) -> return @_filterItems (item) -> return EJSON.equals item.plannedDate(), date
-	
-	###*
-	# Returns the tasks the user is ahead of.
-	#
-	# @method tasksAheadOf
-	# @return {Array} Array containing the ScheduleItems that the user is ahead of.
-	###
-	tasksAheadOf: -> return @_filterItems (item) -> return item.daysAway() > 0 and item.isDone()
-	
-	###*
-	# Returns the tasks the user is behind of.
-	#
-	# @method taskBehindOf
-	# @return {Array} Array containing the ScheduleItems that the user is behind of.
-	###
-	taskBehindOf: -> return @_filterItems (item) -> return item.daysAway() < 0 and !item.isDone()
-
-	###*
-	# Shortcut for _.filter
-	#
-	# @method _filterItems
-	# @param predicate {Function} The predicate to use for _.filter
-	# @return {Array} The filtered items.
-	###
-	_filterItems: (predicate) -> return _.filter @items(), predicate
-
-	class: -> @homework().class()
+		###*
+		# The weight of the coming test / quiz.
+		# If there's no weight available the value should be null.
+		# Used by schedular to caculate the priority.
+		#
+		# @property weight
+		# @type Number
+		# @default null
+		###
+		@weight = null

@@ -1,5 +1,3 @@
-root = @
-
 @HomeworkType =
 	"Unknown"     : 0
 	"Normal"      : 1
@@ -10,54 +8,26 @@ root = @
 	"Information" : 6
 
 ###*
-# Class for a homework item. Extends from the ScheduleItem class.
+# Class for a homework item.
 #
 # @class Homework
 ###
 class @Homework
-	constructor: (@_parent, @_description, @_dueDate, @_classId, @_homeworkType, @_addedManually, @_isPublic) ->
-		@_className = "Homework"
+	constructor: (@description, @dueDate, @classId, @homeworkType, @isPublic) ->
+		@_id = new Meteor.Collection.ObjectID
 
-		@description = root.getset "_description", String
-		@dueDate = root.getset "_dueDate", Date
-		@classId = root.getset "_classId", String
-		@homeworkType = root.getset "_homeworkType", Number
-		@addedManually = root.getset "_addedManually", Boolean
-		@ispublic = root.getset "_isPublic", Boolean
-		@weigth = root.getset "_weigth", (w) => _.contains [2..5], @homeworkType() and Match.test w, Number
-		@__parsedData = root.getset "_parsedData"
-		
-	###*
-	# Parses the current HomeworkInstance. Or, if it's already parsed, returns the cached parsed ParsedData instance.
-	#
-	# @method parsedHomework
-	# @return {ParsedData} The data parsed as a ParsedData instance.
-	###
-	parsedHomework: -> return @__parsedData() ? (@__parsedData Parser.parseHomework @)
+		###
+		# If this homework instance wasn't added manually, the ID of the Magister appointment.
+		#
+		# @property appointmentId
+		# @default null
+		###
+		@appointmentId = null
 
-	getParsedParagraphs: (book) ->
-		paras = []
-		for paragraphData in @parsedHomework().paragraphData
-			for chapter in _.filter(book.chapters(), (c) -> _.contains(paragraphData.parentChapter.values, c.number()))
-				for para in _.filter(chapter.paragraphs(), (p) -> _.contains(paragraphData.values, p.number()))
-					paras.push para
-		return paras
-
-	###*
-	# Checks if the given item is a valid Homework item.
-	#
-	# @method isValidHomework
-	# @param object {Object} The object to test.
-	###
-	@isValidHomework: (object) -> return root.Homework._match object
-
-	###*
-	# Checks if the given array is a valid homework array.
-	#
-	# @method isValidHomeworkArray
-	# @param array {Array} The array to check.
-	# @return {Boolean} Whether the given array is a valid Homework array.
-	###
-	@isValidHomeworkArray: (array) -> return Match.test array, [root.Homework._match]
-
-	class: -> Classes.findOne @classId()
+		###
+		# If this homework instance was added manually, the ID of the CalendarItem.
+		#
+		# @property calendarItemId
+		# @default null
+		###
+		@calendarItemId = null

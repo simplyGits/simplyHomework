@@ -16,9 +16,6 @@ class @School
 	constructor: (@name, @url) ->
 		@_id = new Meteor.Collection.ObjectID()
 
-		@books = []   # books by ID
-		@utils = []   # utils by ID.
-
 	###*
 	# Return a cursor pointing to the books that this school uses.
 	#
