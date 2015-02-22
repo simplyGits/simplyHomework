@@ -149,7 +149,7 @@ Template.calendar.rendered = ->
 			if event.allDay
 				CalendarItems.update event.calendarItem._id, $set: startDate: event.start.toDate().date(), endDate: event.start.toDate().date().addDays 1
 			else
-				CalendarItems.update event.calendarItem._id, $set: startDate: event.start.toDate(), endDate: event.end.toDate()
+				CalendarItems.update event.calendarItem._id, $set: startDate: event.start.toDate(), endDate: event.end?.toDate() ? event.start.add(1, "hour").toDate()
 		eventResize: (event) -> CalendarItems.update event.calendarItem._id, $set: startDate: event.start.toDate(), endDate: event.end.toDate()
 
 	$("div.addAppointmentForm").detach().prependTo "body"
