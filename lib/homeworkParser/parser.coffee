@@ -59,7 +59,7 @@ class @Parser
 
 					return isBeforeParagraph and isClose
 
-				extractedData.parentChapter = _.last parentChapter.values
+				extractedData.parentChapter = _.last parentChapter?.values ? []
 
 		words = _words[..] # restore unaltered copy since we need the locations of the paragraphs still in tact.
 		for extractedData in exerciseData # totally not a copy paste. ;)
@@ -85,8 +85,19 @@ class @Parser
 
 					return isBeforeExercise and isClose
 
-				extractedData.parentParagraph = _.last parentParagraph.values
-				extractedData.parentChapter = parentParagraph.parentChapter
+				extractedData.parentParagraph = _.last parentParagraph?.values ? []
+				extractedData.parentChapter = parentParagraph?.parentChapter
+
+				unless extractedData.parentChapter?
+					parentChapter = _.findLast chapterData, (data) ->
+						isBeforeParagraph = words[..firstWordIndex].join(" ").indexOf(data.origin) > -1
+
+						# Gets the last word of the chapter info and checks if its close (5 indexes away).
+						isClose = firstWordIndex - _.lastIndexOf(words, _.last(data.origin.split(" "))) <= 5
+
+						return isBeforeParagraph and isClose
+
+					extractedData.parentChapter = _.last parentChapter?.values ? []
 
 		return new ParsedData description, chapterData, paragraphData, exerciseData, type
 
