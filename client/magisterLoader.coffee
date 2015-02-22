@@ -35,7 +35,7 @@ setHardCacheAppointments = (data) ->
 #
 # @method magisterAppointment
 # @param from {Date} The start date for the Appointments, you won't get appointments from before this date.
-# @param [to] {Date} The end date for the Appointments, you won't get appointments from after this date.
+# @param [to=from] {Date} The end date for the Appointments, you won't get appointments from after this date.
 # @param [download=yes] {Boolean} Whether or not to download the full user objects from the server.
 # @return {Array} The appointments as array.
 ###
@@ -96,7 +96,9 @@ setHardCacheAppointments = (data) ->
 ###
 @updatedAppointments = ->
 	comp = Tracker.currentComputation
-	setTimeout (-> comp.invalidate()), APPOINTMENT_FORCED_UPDATE_TIME_MS
+	handle = setTimeout (-> comp.invalidate()), APPOINTMENT_FORCED_UPDATE_TIME_MS
+	comp.onInvalidate -> clearTimeout handle
+
 	return magisterAppointment arguments...
 
 loaders =
