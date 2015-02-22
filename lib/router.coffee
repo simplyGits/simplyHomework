@@ -42,7 +42,6 @@ Router.map ->
 				@redirect "launchPage"
 				return
 			subs.subscribe("calendarItems")
-			subs.subscribe("projects")
 			@next()
 		onAfterAction: ->
 			Meteor.defer ->
@@ -77,7 +76,6 @@ Router.map ->
 		onAfterAction: ->
 			if !@data()? and @ready()
 				@redirect "app"
-				Meteor.defer -> slide "overview"
 				swalert title: "Niet gevonden", text: "Jij hebt dit vak waarschijnlijk niet.", confirmButtonText: "o.", type: "error"
 				return
 
@@ -118,7 +116,6 @@ Router.map ->
 		onAfterAction: ->
 			if !@data()? and @ready()
 				@redirect "app"
-				Meteor.defer -> slide "overview"
 				swalert title: "Niet gevonden", text: "Dit project is niet gevonden.", type: "error"
 				return
 
@@ -145,7 +142,6 @@ Router.map ->
 		subscriptions: ->
 			NProgress?.start()
 			return [
-				# subs.subscribe("usersData")
 				Meteor.subscribe("classes")
 				Meteor.subscribe("usersData")
 				subs.subscribe("calendarItems")
@@ -173,7 +169,6 @@ Router.map ->
 		subscriptions: ->
 			NProgress?.start()
 			return [
-				# subs.subscribe("usersData")
 				Meteor.subscribe("classes")
 				Meteor.subscribe("usersData")
 				subs.subscribe("calendarItems")
@@ -201,7 +196,7 @@ Router.map ->
 		subscriptions: ->
 			NProgress?.start()
 			return [
-				subs.subscribe("usersData", [@params._id])
+				subs.subscribe("usersData", [ @params._id ])
 				Meteor.subscribe("classes")
 				Meteor.subscribe("usersData")
 			]
