@@ -1,0 +1,14 @@
+{
+	"public": {
+		"ga": {
+			"id": "UA-52373748-1",
+			"require": {
+				"displayfeatures": null
+			}
+		},
+		"kadira": {
+			"appId": "EkKhbLvn5zD6ksYep",
+			"appSecret": "8f122814-954d-4c41-b771-a050f0e21354"
+		}
+	}
+}
