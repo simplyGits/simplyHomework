@@ -28,10 +28,12 @@ class @App
 					year = schoolVariant = null
 					Tracker.nonreactive -> { year, schoolVariant } = Meteor.user().profile.courseInfo
 
-					magisterClasses.set classes = magisterResult("classes").result ? []
+					classes = magisterResult("classes").result ? []
+					c.__scholierenClass = ScholierenClasses.findOne(-> c.description().toLowerCase().indexOf(@name.toLowerCase()) > -1) for c in classes
+					magisterClasses.set classes
 
 					for c in classes
-						scholierenClass = ScholierenClasses.findOne -> c.description().toLowerCase().indexOf(@name.toLowerCase()) > -1
+						scholierenClass = c.__scholierenClass
 						classId = Classes.findOne(name: scholierenClass?.name ? Helpers.cap(c.description()), schoolVariant: schoolVariant, year: year)?._id
 
 						Meteor.subscribe("books", classId) if classId?
@@ -289,7 +291,7 @@ Template.getMagisterClassesModal.events
 				schoolVariant: schoolVariant
 				year: year
 
-			_class ?= New.class c.description(), c.abbreviation(), year, schoolVariant
+			_class ?= New.class c.description(), c.abbreviation(), year, schoolVariant, c.__scholierenClass?.id
 
 			if (val = c.__method)?
 				book = Books.findOne title: val.title
@@ -300,7 +302,6 @@ Template.getMagisterClassesModal.events
 				id: _class._id
 				color: color
 				magisterId: c.id()
-				scholierenId: val.classId
 				magisterDescription: c.description()
 				magisterAbbreviation: c.abbreviation()
 				bookId: book?._id ? null
@@ -401,13 +402,17 @@ Template.addClassModal.events
 		{ year, schoolVariant } = Meteor.user().profile.courseInfo
 
 		_class = Classes.findOne { $or: [{ name: name }, { course: course }], schoolVariant: schoolVariant, year: year}
-		_class ?= New.class name, course, year, schoolVariant
+		_class ?= New.class name, course, year, schoolVariant, ScholierenClasses.findOne(-> @name.toLowerCase().indexOf(val.toLowerCase()) > -1).id
 
 		book = Books.findOne title: bookName
 		unless book? or bookName.trim() is ""
 			book = New.book bookName, undefined, @id, undefined, _class._id
 
-		Meteor.users.update Meteor.userId(), $push: { classInfos: { id: _class._id, color, bookId: book._id }}
+		Meteor.users.update Meteor.userId(), $push: classInfos:
+			id: _class._id
+			color: color
+			bookId: book._id
+
 		$("#addClassModal").modal "hide"
 		addClassComp.stop()
 
