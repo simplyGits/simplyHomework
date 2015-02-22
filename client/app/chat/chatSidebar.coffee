@@ -2,7 +2,7 @@ stayOpen = no
 searchTerm = new ReactiveVar ""
 
 userChatTransform = (u) ->
-	Meteor.subscribe "chatMessages", { userId: u._id }, 10
+	subs.subscribe "chatMessages", { userId: u._id }, 10
 
 	return _.extend u,
 		__initial: null
@@ -26,7 +26,7 @@ userChatTransform = (u) ->
 		__fetchNextPage: ->
 			return if @_fetching
 			@_fetching = yes
-			Meteor.subscribe "chatMessages", { userId: u._id }, @__topMessages += 10, => @_fetching = no
+			subs.subscribe "chatMessages", { userId: u._id }, @__topMessages += 10, => @_fetching = no
 		__messages: -> ChatMessages.find({
 			$or: [
 				{ creatorId: Meteor.userId(), to: u._id }
@@ -35,7 +35,7 @@ userChatTransform = (u) ->
 		}, transform: chatMessageTransform, sort: "time": 1).fetch()
 
 projectChatTransform = (p) ->
-	Meteor.subscribe "chatMessages", { projectId: p._id }, 10
+	subs.subscribe "chatMessages", { projectId: p._id }, 10
 
 	return _.extend p,
 		__initial: p.name[0].toUpperCase()
@@ -55,7 +55,7 @@ projectChatTransform = (p) ->
 		__fetchNextPage: ->
 			return if @_fetching
 			@_fetching = yes
-			Meteor.subscribe "chatMessages", { projectId: p._id }, @__topMessages += 10, => @_fetching = no
+			subs.subscribe "chatMessages", { projectId: p._id }, @__topMessages += 10, => @_fetching = no
 		__messages: -> ChatMessages.find({
 			projectId: p._id
 		}, transform: chatMessageTransform, sort: "time": 1).fetch()
