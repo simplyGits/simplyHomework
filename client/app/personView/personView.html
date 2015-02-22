@@ -16,4 +16,22 @@
 			<button type="button" class="btn btn-trans chatButton">chat</button>
 		{{/unless}}
 	</div>
+	{{> personSharedHours}}
+</template>
+
+<template name="personSharedHours">
+	<div class="personSharedHours">
+		<ul>
+			{{#each days}}
+				{{name}}:
+				<li>
+					<ul>
+						{{#each hours}}
+							<li><b>{{beginBySchoolHour}}</b>: {{__className}}</li>
+						{{/each}}
+					</ul>
+				</li>
+			{{/each}}
+		</ul>
+	</div>
 </template>
