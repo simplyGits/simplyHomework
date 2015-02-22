@@ -1,4 +1,6 @@
 @subs = new SubsManager
+	cacheLimit: 20
+	expireIn: 10
 
 AccountController = RouteController.extend
 	verifyMail: -> Accounts.verifyEmail @params.token, ->
