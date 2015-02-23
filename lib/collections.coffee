@@ -189,8 +189,18 @@ Schemas.ChatMessages = new SimpleSchema
 					else "#{Helpers.cap day} #{DateToDutch(p.deadline, no)}") + " " + time
 		)
 
+chatMessageReplaceMap = [
+	[/\(y\)/ig, ":thumbsup:"]
+	[/\(n\)/ig, ":thumbsdown:"]
+]
+
 @chatMessageTransform = (cm) ->
 	return _.extend cm,
 		__sender: Meteor.users.findOne cm.creatorId
 		__own: if Meteor.userId() is cm.creatorId then "own" else ""
 		__time: moment(cm.time).format "HH:mm"
+		content: (
+			s = cm.content
+			s = s.replace t[0], t[1] for t in chatMessageReplaceMap
+			s
+		)
