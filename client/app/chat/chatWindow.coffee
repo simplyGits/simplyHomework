@@ -23,6 +23,10 @@ Template.chatWindow.events
 
 		ChatMessages.insert cm
 		event.target.value = ""
+		_.defer -> # A lot of jQuery is pretty heavy, let's just defer it.
+			x = $(event.target).closest(".chatWindow").find(".messages")
+			x.addClass "sticky"
+			x.scrollTop x[0].scrollHeight
 
 	"scroll div.messages": (event) ->
 		t = $ event.target
