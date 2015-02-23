@@ -208,13 +208,6 @@ class @Helpers
 	###
 	@cap: (string, amount = 1) -> string[0...amount].toUpperCase() + string[amount..].toLowerCase()
 
-	@try: (func) ->
-		try
-			func()
-			return yes
-		catch
-			return no
-
 ###*
 # Checks if the given `user` is in the given `role`.
 # @method userIsInRole
