@@ -12,8 +12,8 @@ getTasks = -> # Also mix homework for tommorow and homework for days where the d
 	for task in tasks
 		tmp.push _.extend task,
 			__id: task._id.toHexString()
-			__taskDescription: "leer"
-			#__chapter: Classes.findOne(task._parent.classId()).
+			__taskDescription: task.content
+			__className: "" # Should be set correctly.
 
 	tmp.pushMore homeworkItems.get()
 
