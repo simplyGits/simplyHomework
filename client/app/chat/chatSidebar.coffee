@@ -17,7 +17,7 @@ userChatTransform = (u) ->
 		)
 		__friendlyName: "#{u.profile.firstName} #{u.profile.lastName}"
 
-		__markRead: -> Meteor.call "markChatMessagesRead", {$or: [ { to: u._id }, { creatorId: u._id } ], readBy: $ne: Meteor.userId() }
+		__markRead: -> Meteor.call "markChatMessagesRead", "direct", u._id
 		__unreadMessagesCount: -> ChatMessages.find({ creatorId: u._id, to: Meteor.userId(), readBy: $ne: Meteor.userId() }).count()
 		__close: -> ChatManager.closeChat u
 
@@ -46,7 +46,7 @@ projectChatTransform = (p) ->
 		__status: ""
 		__friendlyName: p.name
 
-		__markRead: -> Meteor.call "markChatMessagesRead", { projectId: p._id, readBy: $ne: Meteor.userId() }
+		__markRead: -> Meteor.call "markChatMessagesRead", "project", p._id
 		__unreadMessagesCount: -> ChatMessages.find({ creatorId: { $ne: Meteor.userId() }, projectId: p._id, readBy: $ne: Meteor.userId() }).count()
 		__close: -> ChatManager.closeChat p
 
