@@ -11,6 +11,7 @@ Meteor.startup -> # my eyes feel dizzy, i think. cant remember. please. help.
 	BrowserPolicy.content.allowImageOrigin "http://stats.g.doubleclick.net"
 	BrowserPolicy.content.allowImageOrigin "https://adelbert.magister.net/"
 	BrowserPolicy.content.allowImageOrigin "www.google-analytics.com"
+	BrowserPolicy.content.allowImageOrigin "http://cdn.jsdelivr.net/"
 
 	BrowserPolicy.content.allowMediaOrigin "www.ispeech.org"
 

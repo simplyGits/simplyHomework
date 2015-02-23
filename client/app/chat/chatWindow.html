@@ -21,6 +21,6 @@
 		{{#linkTo route="personView" data=__sender}}
 			<img class="senderImage" src="{{gravatar __sender 100}}" width="25" height="25" title="{{__time}}: {{__sender.profile.firstName}} {{__sender.profile.lastName}}" data-toggle="tooltip"/>
 		{{/linkTo}}
-		<div class="messageContent">{{#markdown}}{{content}}{{/markdown}}</div>
+		<div class="messageContent">{{#markdown}}{{#emojione}}{{content}}{{/emojione}}{{/markdown}}</div>
 	</div>
 </template>

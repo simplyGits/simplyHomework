@@ -83,6 +83,7 @@ ordered-dict@1.0.2
 percolate:paginated-subscription@0.2.4
 percolate:synced-cron@1.1.1
 percolate:velocityjs@1.2.1_1
+qnub:emojione@0.0.3
 raix:eventemitter@0.1.1
 raix:onetimeout@1.0.3
 raix:stubfence@1.0.1

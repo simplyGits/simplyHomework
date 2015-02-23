@@ -291,6 +291,7 @@ class @NotificationsManager
 
 Meteor.startup ->
 	moment.locale "nl"
+	emojione.ascii = yes # Convert ascii smileys (eg. :D) to emojis.
 
 	Session.set "allowNotifications", no
 
