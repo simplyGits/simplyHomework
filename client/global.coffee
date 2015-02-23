@@ -110,8 +110,8 @@ Meteor.startup ->
 			if x.value.trim().length isnt 0
 				name = $(x).closest(".chatWindow").find(".name").text().split(" ")[0]
 				return (
-					if name? then "Je was een chatberichtje naar #{name} aan het typen! D:\nWeet je wel zeker dat je weg wilt?"
-					else "Je was een chatberichtje aan het typen! D:\nWeet je wel zeker dat je weg wilt?"
+					if name? then "Je was een chatberichtje naar #{name} aan het typen! D:"
+					else "Je was een chatberichtje aan het typen! D:"
 				)
 
 	prevTime = _.now()
