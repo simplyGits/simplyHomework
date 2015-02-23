@@ -41,6 +41,10 @@
 
 	return a
 
+###*
+# smoke weed everyday.
+# @method kaas
+###
 @kaas = ->
 	unless Meteor.user()?
 		alertModal "swag", "420 blze it\nKaas FTW"
@@ -51,12 +55,23 @@
 	audio.play()
 	return "420 blaze cheese"
 
+###*
+# Checks if the current user (`Meteor.user()`) has the given
+# premium `feature`.
+# @method has
+# @param feature {String} The feature to check for.
+###
 @has = (feature) ->
 	try
 		return Meteor.user().premiumInfo[feature].deadline > new Date()
 	catch
 		return no
 
+###*
+# Checks if the current user's browser is an old IE.
+# @method isOldInternetExplorer
+# @return {Boolean} True is the user is using an older IE.
+###
 isOldInternetExplorer = ->
 	if navigator.appName is "Microsoft Internet Explorer"
 		version = parseFloat RegExp.$1 if /MSIE ([0-9]{1,}[\.0-9]{0,})/.exec(navigator.userAgent)?

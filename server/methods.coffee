@@ -2,6 +2,14 @@ request = Meteor.npmRequire "request"
 Future = Npm.require "fibers/future"
 
 Meteor.methods
+	###*
+	# Do a HTTP request.
+	# @method http
+	# @param method {String} The HTTP method to use.
+	# @param url {String} The URL to send the HTTP request to.
+	# @param options {Object} A request settings object.
+	# @return {Object} { content: String, headers: Object }
+	###
 	http: (method, url, options = {}) ->
 		@unblock()
 		headers = _.extend (options.headers ? {}), "User-Agent": "simplyHomework"
@@ -48,6 +56,13 @@ Meteor.methods
 
 	log: (type, message, elements...) -> console[type] message, elements...
 
+	###*
+	# Check if the given magisterData is correct and if so,
+	# insert it into the database.
+	# @method setMagisterInfo
+	# @param info {Object} The object containing the data.
+	# @return {Boolean} Whether or not the given info is correct.
+	###
 	setMagisterInfo: (info) ->
 		@unblock()
 		fut = new Future()
@@ -75,12 +90,22 @@ Meteor.methods
 
 		fut.wait()
 
+	###*
+	# Resets magisterCredentials for the current user.
+	# @method clearMagisterInfo
+	###
 	clearMagisterInfo: -> Meteor.users.update @userId, $set: magisterCredentials: null
 
 	changeMail: (mail) ->
 		Meteor.users.update @userId, $set: { "emails": [ { address: mail, verified: no } ] }
 		Meteor.call "callMailVerification"
 
+	###*
+	# Verifies an mail adress and sets the gravatar, if present.
+	#
+	# @method callMailVerification
+	# @param [adress] {String} The adress to verify, if this is omitted the first address of the current user (`this.userId`) will be used.
+	###
 	callMailVerification: (address) ->
 		user = if address? then Meteor.users.findOne { "emails": $elemMatch: { address }} else Meteor.users.findOne @userId
 
@@ -94,6 +119,12 @@ Meteor.methods
 					gravatarUrl: "https://www.gravatar.com/avatar/#{md5 user.emails[0].address}?d=identicon&r=PG"
 					hasGravatar: response.statusCode isnt 404
 
+	###*
+	# Checks if the given mail address exists in the database.
+	# @method mailExists
+	# @param mail {String} The address to check.
+	# @return {Boolean} Whether or not the given address exists.
+	###
 	mailExists: (mail) ->
 		@unblock()
 		Meteor.users.find(
