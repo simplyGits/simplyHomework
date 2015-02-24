@@ -761,8 +761,6 @@ Template.app.rendered = ->
 		swalert title: "Gefeliciteerd!", text: "Gefeliciteerd met je #{moment().diff(val, "years")}e verjaardag!"
 		amplify.store "congratulated", yes, expires: 172800000
 
-	ChatHeads.initialize()
-
 	Deps.autorun ->
 		return
 		if Meteor.user()? and not has("noAds") and Meteor.status().connected
