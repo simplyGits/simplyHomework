@@ -12,7 +12,7 @@ Template.chatWindow.events
 
 	"keyup input.messageInput": (event) ->
 		content = event.target.value
-		return unless event.which is 13 and _.trim(content).length > 0
+		return unless event.which is 13 and content.trim().length > 0
 
 		cm = switch @__type
 			when "private" then new ChatMessage content, Meteor.userId(), @_id
