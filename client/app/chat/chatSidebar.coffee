@@ -1,7 +1,7 @@
 stayOpen = no
 searchTerm = new ReactiveVar ""
 
-userChatTransform = (u) ->
+@userChatTransform = (u) ->
 	subs.subscribe "chatMessages", { userId: u._id }, 10
 
 	return _.extend u,
@@ -34,7 +34,7 @@ userChatTransform = (u) ->
 			]
 		}, transform: chatMessageTransform, sort: "time": 1).fetch()
 
-projectChatTransform = (p) ->
+@projectChatTransform = (p) ->
 	subs.subscribe "chatMessages", { projectId: p._id }, 10
 
 	return _.extend p,
@@ -95,10 +95,18 @@ class @ChatManager
 	# @param object {Object} The chatSidebar context object to create a chatWindow for.
 	###
 	@openChat: (object) ->
-		stayOpen = yes
-		$("body").addClass "chatSidebarOpen"
-		object.__markRead()
+		if Session.get "isPhone"
+			if object.__type is "private"
+				Router.go "mobileChatWindow", object
 
+			else if object.__type is "project"
+				Router.go "mobileChatWindow", _id: object._id.toHexString()
+
+		else
+			stayOpen = yes
+			$("body").addClass "chatSidebarOpen"
+
+		object.__markRead()
 		unless _.any(@openChats.get(), (c) -> EJSON.equals c._id, object._id)
 			@openChats.set @openChats.get().concat [object]
 

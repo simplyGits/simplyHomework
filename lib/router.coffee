@@ -181,7 +181,7 @@ Router.map ->
 			unless Meteor.loggingIn() or Meteor.user()?
 				@redirect "launchPage"
 				return
-			@redirect "calendar" if (val = Session.get "isPhone")? and not val
+			@redirect "calendar" unless Session.get "isPhone"
 			@next()
 		onAfterAction: ->
 			Meteor.defer ->
@@ -220,11 +220,43 @@ Router.map ->
 			document.title = "simplyHomework | #{@data().profile.firstName} #{@data().profile.lastName}"
 			NProgress?.done()
 
+		data: -> Meteor.users.findOne @params._id
+
+	@route "mobileChatWindow",
+		fastRender: yes
+		layoutTemplate: "app"
+		path: "/app/chat/:_id"
+
+		subscriptions: ->
+			NProgress?.start()
+			return [
+				subs.subscribe("usersData", [ @params._id ])
+				Meteor.subscribe("classes")
+				Meteor.subscribe("usersData")
+			]
+
+		onBeforeAction: ->
+			unless Meteor.loggingIn() or Meteor.user()?
+				@redirect "launchPage"
+				return
+			@redirect "app" unless Session.get "isPhone"
+			@next()
+
+		onAfterAction: ->
+			Meteor.defer -> slide "overview"
+
+			if !@data()? and @ready()
+				@redirect "app"
+				swalert title: "Niet gevonden", text: "Deze chat is niet gevonden.", type: "error"
+				return
+
+			document.title = "simplyHomework | #{@data().__friendlyName}"
+			NProgress?.done()
+
 		data: ->
-			try
-				return Meteor.users.findOne @params._id
-			catch
-				return null
+			x = Meteor.users.findOne { _id: @params._id }, transform: userChatTransform
+			x ?= Projects.findOne { _id: new Meteor.Collection.ObjectID @params._id }, transform: projectChatTransform
+			return x
 
 	@route "privacy",
 		fastRender: yes

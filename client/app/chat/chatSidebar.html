@@ -1,9 +1,11 @@
 <template name="chatSidebar">
-	<div class="chatWindows">
-		{{#each openChats}}
-			{{> chatWindow}}
-		{{/each}}
-	</div>
+	{{#unless isPhone}}
+		<div class="chatWindows">
+			{{#each openChats}}
+				{{> chatWindow}}
+			{{/each}}
+		</div>
+	{{/unless}}
 
 	<div class="chatSidebar">
 		<div class="searchBox">

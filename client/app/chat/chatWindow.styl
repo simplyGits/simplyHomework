@@ -12,6 +12,20 @@ div.chatWindow
 	border-radius: 5px
 	overflow: hidden
 
+div.mobileChatWindow
+	absolute: top left right bottom
+	border: 3px white solid
+	transition: 1s border-color ease
+
+// Swag™ style borders for activity of other person.
+div.mobileChatWindow.online
+	border-color: rgb(0, 150, 30)
+div.mobileChatWindow.inactive
+	border-color: rgb(195, 90, 1)
+div.mobileChatWindow.offline
+	border-color: rgb(150, 0, 30)
+
+div.chatWindow, div.mobileChatWindow
 	div.header
 		position: relative
 		height: 40px
