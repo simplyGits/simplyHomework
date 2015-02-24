@@ -70,13 +70,13 @@
 ###*
 # Checks if the current user's browser is an old IE.
 # @method isOldInternetExplorer
-# @return {Boolean} True is the user is using an older IE.
+# @return {Array} 0: {Boolean} Whether or not the IE is old, 1: {Number|Null} The version of the current IE, if the user is not on IE; null.
 ###
 isOldInternetExplorer = ->
 	if navigator.appName is "Microsoft Internet Explorer"
 		version = parseFloat RegExp.$1 if /MSIE ([0-9]{1,}[\.0-9]{0,})/.exec(navigator.userAgent)?
 		return [ version < 9.0, version ]
-	return false
+	return [false, null]
 
 @minuteTracker = new Tracker.Dependency
 Meteor.startup ->
