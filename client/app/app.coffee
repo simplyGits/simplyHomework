@@ -551,9 +551,13 @@ Template.addProjectModal.rendered = ->
 		name: "ownClasses"
 		datumTokenizer: (d) -> Bloodhound.tokenizers.whitespace d.name
 		queryTokenizer: Bloodhound.tokenizers.whitespace
-		local: classes().fetch()
+		local: []
 
 	ownClassesEngine.initialize()
+
+	@autorun (c) ->
+		ownClassesEngine.clear()
+		ownClassesEngine.add classes().fetch()
 
 	$("#projectClassNameInput").typeahead(null,
 		source: ownClassesEngine.ttAdapter()
