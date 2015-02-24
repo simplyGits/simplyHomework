@@ -198,7 +198,16 @@ chatMessageReplaceMap = [
 	return _.extend cm,
 		__sender: Meteor.users.findOne cm.creatorId
 		__own: if Meteor.userId() is cm.creatorId then "own" else ""
-		__time: moment(cm.time).format "HH:mm"
+		__time: (
+			m = moment cm.time
+
+			if m.year() isnt new Date().getUTCFullYear()
+				m.format "DD-MM-YYYY HH:mm"
+			else if m.toDate().date().getTime() isnt Date.today().getTime()
+				m.format "DD-MM HH:mm"
+			else
+				m.format "HH:mm"
+		)
 		content: (
 			s = cm.content
 			s = s.replace t[0], t[1] for t in chatMessageReplaceMap
