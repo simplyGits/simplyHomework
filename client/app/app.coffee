@@ -580,12 +580,10 @@ Template.sidebar.events
 		$("#bookInput").val("")
 		$("#colorInput").colorpicker 'setValue', "#333"
 
-		subs.subscribe "books", null
 		$("#addClassModal").modal()
 
 		addClassComp = Tracker.autorun ->
 			Meteor.subscribe "scholieren.com"
-			Meteor.subscribe "books"
 
 			classEngine.clear()
 			classEngine.add ScholierenClasses.find().fetch()
