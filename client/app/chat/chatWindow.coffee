@@ -11,8 +11,8 @@ Template.chatWindow.events
 	"click .fa-times": -> @__close()
 
 	"keyup input.messageInput": (event) ->
-		return unless event.which is 13
 		content = event.target.value
+		return unless event.which is 13 and _.trim(content).length > 0
 
 		cm = switch @__type
 			when "private" then new ChatMessage content, Meteor.userId(), @_id
@@ -23,6 +23,7 @@ Template.chatWindow.events
 
 		ChatMessages.insert cm
 		event.target.value = ""
+
 		_.defer -> # A lot of jQuery is pretty heavy, let's just defer it.
 			x = $(event.target).closest(".chatWindow").find(".messages")
 			x.addClass "sticky"
