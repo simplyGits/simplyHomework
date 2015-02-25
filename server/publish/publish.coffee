@@ -69,7 +69,7 @@ Meteor.publish "chatMessages", (data, limit) ->
 
 		ChatMessages.find({
 			projectId: data.projectId
-		})
+		}, { limit, sort: "time": -1 })
 
 Meteor.publish null, ->
 	unless @userId?
