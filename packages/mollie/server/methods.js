@@ -4,9 +4,11 @@ var client = null;
 
 var settings = Meteor.settings && Meteor.settings.mollie;
 if (settings == null || settings.apiKey == null) {
-	console.log(
-		"Settings (and settings.apiKey) is required!\n" +
-		"See GitHub repo for more info."
+	console.error(
+		"========================= meteor-mollie =======================\n" +
+		"\tSettings.mollie (and settings.mollie.apiKey) is required!\n" +
+		"\tSee GitHub repo for more info.\n" +
+		"==============================================================="
 	);
 } else {
 	client = new mollie.API.Client();

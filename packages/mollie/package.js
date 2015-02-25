@@ -7,6 +7,9 @@ Package.describe({
 Package.onUse(function (api) {
 	api.versionsFrom("METEOR@0.9.3");
 
+	api.addFiles("./server/methods.js", "server")
+	api.addFiles("./lib/mollie.js");
+
 	api.export("Mollie");
 });
 
