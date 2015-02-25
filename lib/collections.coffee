@@ -41,6 +41,8 @@
 @ScholierenClasses = new Ground.Collection "scholieren.com"
 
 Schemas.Classes = new SimpleSchema
+	_id:
+		type: Meteor.Collection.ObjectID
 	name:
 		type: String
 		label: "Vaknaam"
@@ -60,6 +62,8 @@ Schemas.Classes = new SimpleSchema
 		type: [Object]
 
 Schemas.Books = new SimpleSchema
+	_id:
+		type: Meteor.Collection.ObjectID
 	title:
 		type: String
 	publisher:
@@ -79,6 +83,8 @@ Schemas.Books = new SimpleSchema
 		type: [Object]
 
 Schemas.Schools = new SimpleSchema
+	_id:
+		type: Meteor.Collection.ObjectID
 	name:
 		type: String
 	url:
@@ -86,6 +92,8 @@ Schemas.Schools = new SimpleSchema
 		regEx: /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/
 
 Schemas.Projects = new SimpleSchema
+	_id:
+		type: Meteor.Collection.ObjectID
 	name:
 		type: String
 		index: 1
@@ -117,6 +125,8 @@ Schemas.Projects = new SimpleSchema
 		type: [String]
 
 Schemas.ChatMessages = new SimpleSchema
+	_id:
+		type: Meteor.Collection.ObjectID
 	content:
 		type: String
 		denyUpdate: yes # Denying updates for now, later we can allow these with some UI implementations. (See the `isChanged` property)
