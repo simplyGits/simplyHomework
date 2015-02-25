@@ -9,7 +9,7 @@ searchTerm = new ReactiveVar ""
 		__sidebarIcon: gravatar u
 		__type: "private"
 
-		__lastInteraction: -> ChatMessages.findOne({ $or: [ { to: u._id }, { creatorId: u._id } ] }, sort: "time": -1)?.time
+		__lastInteraction: ChatMessages.findOne({ $or: [ { to: u._id }, { creatorId: u._id } ] }, sort: "time": -1)?.time
 		__status: (
 			if u.status.idle then "inactive"
 			else if u.status.online then "online"
@@ -42,7 +42,7 @@ searchTerm = new ReactiveVar ""
 		__sidebarIcon: null
 		__type: "project"
 
-		__lastInteraction: -> ChatMessages.findOne({ projectId: p._id }, sort: "time": -1)?.time
+		__lastInteraction: ChatMessages.findOne({ projectId: p._id }, sort: "time": -1)?.time
 		__status: ""
 		__friendlyName: p.name
 
@@ -127,8 +127,6 @@ class @ChatManager
 # @return {Object[]} An array of ChatSidebar objects.
 ###
 chats = ->
-	comp = Tracker.currentComputation
-
 	dam = DamerauLevenshtein insert: 0
 	caseInsensitive = searchTerm.get() is searchTerm.get().toLowerCase()
 
@@ -147,13 +145,7 @@ chats = ->
 		.filter (chat) -> searchTerm.get().trim() is "" or calcDistance(chat.__friendlyName) < 2 or Helpers.contains chat.__friendlyName, searchTerm.get(), caseInsensitive
 		.sortBy (chat) ->
 			if searchTerm.get().trim() is ""
-				# Make search reactive
-				t = Tracker.autorun ->
-					chat.__lastInteraction()
-					comp.invalidate()
-				comp.onInvalidate -> t.stop()
-
-				return chat.__lastInteraction()
+				return chat.__lastInteraction
 			else
 				distance = DamerauLevenshtein()(searchTerm.get().trim().toLowerCase(), chat.__friendlyName.trim().toLowerCase())
 
