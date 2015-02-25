@@ -46,7 +46,7 @@ Meteor.publish "chatMessages", (data, limit) ->
 	# the limit by ten, but we want to make sure it is server
 	# side too, we limit it to a power of ten to minimize the
 	# amount of unique cursors.
-	limit = limit + 10 - limit % 10
+	limit = limit + 9 - (limit - 1) % 10
 
 	if data.userId?
 		ChatMessages.find({
