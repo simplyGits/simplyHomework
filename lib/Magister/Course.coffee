@@ -206,7 +206,7 @@ class @Course
 	@_convertRaw: (magisterObj, raw) ->
 		obj = new Course magisterObj
 
-		obj._classesUrl = magisterObj.magisterSchool.url + _.find(raw.Links, Rel: "Vakken").Href
+		obj._classesUrl = magisterObj._personUrl + "/aanmeldingen/#{raw.Id}/vakken"
 
 		obj._gradesUrlPrefix = magisterObj._personUrl + "/aanmeldingen/#{raw.Id}/cijfers"
 		obj._gradesUrl = obj._gradesUrlPrefix + "/cijferoverzichtvooraanmelding?actievePerioden=false&alleenBerekendeKolommen=false&alleenPTAKolommen=false"

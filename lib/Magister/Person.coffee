@@ -117,12 +117,12 @@ class @Person
 					when "project" then 8
 
 					else throw new Error "Invalid value: \"#{original}\"."
-		
+
 		else
 			switch original
 				when 1 then "group"
 				when 3 then "teacher"
 				when 4 then "pupil"
 				when 8 then "project"
-				
+
 				else undefined
