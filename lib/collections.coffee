@@ -10,7 +10,6 @@
 @Projects        = new Ground.Collection "projects"
 @CalendarItems   = new Meteor.Collection "calendarItems"
 @ChatMessages    = new Ground.Collection "chatMessages"
-@SavedHomework   = new Ground.Collection "SavedHomework"
 #new Ground.Collection Meteor.users
 
 @MagisterAppointments = new Ground.Collection "magisterAppointments",

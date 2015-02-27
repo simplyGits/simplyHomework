@@ -692,18 +692,6 @@ Template.app.rendered = ->
 
 		Meteor.users.update Meteor.userId(), $set: "profile.groupInfos": tmpGroupInfos
 
-	# Pilot homework data bulking.
-	@autorun (c) ->
-		appointments = magisterAppointment new Date(), new Date().addDays 7
-		homework = _.filter appointments, (a) -> _.contains [1..5], a.infoType()
-
-		for a in homework then do (a) ->
-			if SavedHomework.find(id: a.id()).count() is 0
-				SavedHomework.insert
-					obj: JSON.decycle a
-					id: a.id()
-					userId: Meteor.userId()
-
 	# Pilot quick and dirty goaledSchedule creating.
 	@autorun ->
 		appointments = magisterAppointment new Date, new Date().addDays 7

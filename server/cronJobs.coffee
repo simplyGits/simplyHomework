@@ -1,3 +1,5 @@
+SavedHomework = new Meteor.Collection "savedHomework"
+
 SyncedCron.add
 	name: "Clear inactive users"
 	schedule: (parser) -> parser.recur().on(3).hour()
@@ -39,3 +41,26 @@ SyncedCron.add
 		result = "Congratulated #{users.length} users."
 		console.log result
 		return result
+
+# Pilot homework data bulking.
+SyncedCron.add
+	name: "Pilot: Store homework"
+	schedule: (parser) -> parser.recur().on(4).hour()
+	job: ->
+		for user in Meteor.users.find({}).fetch() then do (user) ->
+			url = Schools.findOne(user.profile.schoolId)?.url
+			return unless url?
+			{username, passsword} = user.magisterCredentials
+
+			new Magister(url, username, password).ready (err) ->
+				return if err?
+
+				@appointments new Date, no, Meteor.bindEnvironment (e, r) ->
+					return if e?
+					homework = _.filter r, (a) -> _.contains [1..5], a.infoType()
+
+					for a in homework
+						if SavedHomework.find({ "obj._id": a.id() }).count() is 0
+							SavedHomework.insert
+								userId: user._id
+								obj: JSON.decycle a

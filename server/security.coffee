@@ -70,8 +70,3 @@ Schools.allow
 	insert: -> yes
 	update: -> no # maybe later?
 	remove: -> no
-
-SavedHomework.allow
-	insert: -> yes
-	update: -> no
-	remove: -> no

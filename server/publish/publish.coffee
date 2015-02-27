@@ -103,7 +103,6 @@ Meteor.publish null, ->
 
 		# Pilot shit.
 		GoaledSchedules.find { ownerId: @userId }
-		SavedHomework.find(userId: @userId)
 	]
 
 Meteor.publish "classes", ->
