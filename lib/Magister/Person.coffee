@@ -96,7 +96,7 @@ class @Person
 		obj._id = raw.Id
 		obj._namePrefix = raw.Tussenvoegsel
 		obj._fullName = raw.Naam
-		obj._description = raw.Omschrijving ? raw.Naam
+		obj._description = raw.Omschrijving ? raw.Naam ? raw.naam
 		obj._group = raw.Groep
 		obj._teacherCode = raw.Docentcode
 		obj._emailAddress = raw.Emailadres
