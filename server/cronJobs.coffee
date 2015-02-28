@@ -50,7 +50,7 @@ SyncedCron.add
 		for user in Meteor.users.find({}).fetch() then do (user) ->
 			url = Schools.findOne(user.profile.schoolId)?.url
 			return unless url?
-			{username, passsword} = user.magisterCredentials
+			{ username, password } = user.magisterCredentials
 
 			new Magister(url, username, password).ready (err) ->
 				return if err?
