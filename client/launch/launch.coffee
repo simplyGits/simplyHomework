@@ -12,6 +12,7 @@ login = ->
 				okay = true
 				if empty "emailInput", "emailGroup", "Email is leeg" then okay = false
 				if empty "passwordInput", "passwordGroup", "Wachtwoord is leeg" then okay = false
+				if empty "betaCodeInput", "betaCodeGroup", "Voornaam is leeg" then okay = false
 				if empty "firstNameInput", "firstNameGroup", "Voornaam is leeg" then okay = false
 				if empty "lastNameInput", "lastNameGroup", "Achternaam is leeg" then okay = false
 				unless correctMail $("#emailInput").val()
@@ -25,6 +26,7 @@ login = ->
 						profile:
 							firstName: Helpers.cap $("#firstNameInput").val().trim()
 							lastName: Helpers.cap $("#lastNameInput").val().trim()
+							code: $("#betaCodeInput").val().trim().toLowerCase()
 					}, (e, r) ->
 						if e? then shake "#signupModal"
 						else Meteor.call "callMailVerification", -> Router.go "app"
