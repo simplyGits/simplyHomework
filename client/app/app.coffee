@@ -3,6 +3,7 @@ magisterClassesComp = null
 addClassComp = null
 @snapper = null
 magisterClasses = new ReactiveVar null
+
 class @App
 	@_setupPathItems:
 		welcome:
@@ -678,11 +679,13 @@ Template.app.rendered = ->
 			else
 				recentGradesNotification = NotificationsManager.notify body: s, type: "warning", time: -1, html: yes, onHide: -> Meteor.users.update(Meteor.userId(), $set: gradeNotificationDismissTime: new Date)
 
-	magisterAppointment new Date(), new Date().addDays(7), (e, r) ->
-		tmpGroupInfos = Meteor.user().profile.groupInfos ? []
+	@autorun ->
+		appointments = magisterAppointment new Date(), new Date().addDays(7)
+		tmpGroupInfos = null
+		Tracker.nonreactive -> tmpGroupInfos = Meteor.user().profile.groupInfos ? []
 
 		for classInfo in (Meteor.user().classInfos ? [])
-			magisterGroup = _.find(r, (a) -> a.classes()[0] is classInfo.magisterDescription)?.description()
+			magisterGroup = _.find(appointments, (a) -> a.classes()[0] is classInfo.magisterDescription)?.description()
 			groupInfo = _.find tmpGroupInfos, (gi) -> gi.id is classInfo.id
 
 			continue if groupInfo?.group is magisterGroup or not magisterGroup?
