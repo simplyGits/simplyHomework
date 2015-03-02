@@ -681,19 +681,19 @@ Template.app.rendered = ->
 
 	@autorun ->
 		appointments = magisterAppointment new Date(), new Date().addDays(7)
-		tmpGroupInfos = null
-		Tracker.nonreactive -> tmpGroupInfos = Meteor.user().profile.groupInfos ? []
+		Tracker.nonreactive ->
+			tmpGroupInfos = Meteor.user().profile.groupInfos ? []
 
-		for classInfo in (Meteor.user().classInfos ? [])
-			magisterGroup = _.find(appointments, (a) -> a.classes()[0] is classInfo.magisterDescription)?.description()
-			groupInfo = _.find tmpGroupInfos, (gi) -> gi.id is classInfo.id
+			for classInfo in (Meteor.user().classInfos ? [])
+				magisterGroup = _.find(appointments, (a) -> a.classes()[0] is classInfo.magisterDescription)?.description()
+				groupInfo = _.find tmpGroupInfos, (gi) -> gi.id is classInfo.id
 
-			continue if groupInfo?.group is magisterGroup or not magisterGroup?
+				continue if groupInfo?.group is magisterGroup or not magisterGroup?
 
-			_.remove tmpGroupInfos, id: classInfo.id
-			tmpGroupInfos.push _.extend id: classInfo.id, group: magisterGroup
+				_.remove tmpGroupInfos, id: classInfo.id
+				tmpGroupInfos.push _.extend id: classInfo.id, group: magisterGroup
 
-		Meteor.users.update Meteor.userId(), $set: "profile.groupInfos": tmpGroupInfos
+			Meteor.users.update Meteor.userId(), $set: "profile.groupInfos": tmpGroupInfos
 
 	# Pilot quick and dirty goaledSchedule creating.
 	@autorun ->
