@@ -11,15 +11,6 @@
 			"deadline": 1
 			"name": 1
 
-###*
-# Fetches event like objects from various places and converts them in an FullCalendar supporting manner.
-# CANIDATE FOR NOT FINISHING. ;)
-#
-# @method events
-# @return {ReactiveVar} A ReactiveVar containing an event[].
-###
-@events = null
-
 @magisterAppointmentTransform = (a) ->
 	return a unless _.isObject a
 	return ( @magisterAppointmentTransform x for x in a ) if _.isArray a
