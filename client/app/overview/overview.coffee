@@ -153,4 +153,4 @@ Template.appOverview.rendered = ->
 
 				exerciseData = calculateExercisePriority endGrade, lastGrade, exercises.length
 
-				return _.now() > h.begin().date().addDays(-exerciseData.daysInfront).getTime()
+				return _.now() >= h.begin().date().addDays(-exerciseData.daysInfront).getTime() and h.begin().getTime() > _.now()
