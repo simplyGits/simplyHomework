@@ -100,6 +100,14 @@ class @Helpers
 	###
 	@currentDay: -> Helpers.weekDay new Date
 
+	###*
+	# Gets the weekday of the given `date`.
+	# Where 0 = monday and 6 = sunday
+	#
+	# @method weekDay
+	# @param date {Date} The Date object to get the weekday from.
+	# @return {Number} The weekday of `date`.
+	###
 	@weekDay: (date) -> if (date.getDay() - 1) >= 0 then date.getDay() - 1 else DayEnum.Sunday
 
 	###*
@@ -205,8 +213,24 @@ class @Helpers
 	# @method cap
 	# @param string {String} The string to cap.
 	# @param [amount=1] {Number} The amount of characters from index 0 of `string` to cap.
+	# @return {String} The capped `string`.
 	###
 	@cap: (string, amount = 1) -> string[0...amount].toUpperCase() + string[amount..].toLowerCase()
+
+	###*
+	# Find links in the given `string` and converts
+	# those into anchor tags.
+	#
+	# @method convertLinksToAnchor
+	# @param string {String} The string to convert.
+	# @return {String} An HTML string containing the converted `string`.
+	###
+	@convertLinksToAnchor: (string) ->
+		return string.replace /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b((\/|\?)[-a-zA-Z0-9@:%_\+.~#?&//=]+)?\b/ig, (match) ->
+			if /^https?:\/\/.+/i.test match
+				return "<a target=\"_blank\" href=\"#{match}\">#{match}</a>"
+			else
+				return "<a target=\"_blank\" href=\"http://#{match}\">#{match}</a>"
 
 ###*
 # Checks if the given `user` is in the given `role`.
