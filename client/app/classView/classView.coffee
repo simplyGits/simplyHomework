@@ -73,7 +73,10 @@ Template.classView.rendered = ->
 		)
 
 		Tracker.nonreactive ->
-			p = _helpers.asyncResultWaiter grades.get().length, -> grades.dep.changed()
+			p = _helpers.asyncResultWaiter grades.get().length, ->
+				grades.dep.changed()
+				selectedGrade.dep.changed()
+
 			for grade in grades.get() when not grade._filled
 				grade.fillGrade p
 
