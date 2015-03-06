@@ -97,7 +97,7 @@ Meteor.startup ->
 			longTimeIgnore.push user._id
 			Meteor.setTimeout (-> delete longTimeIgnore[user._id] ), 86400000
 
-		else unless recents[user._id]? and not _.contains longTimeIgnore, user._id
+		else unless recents[user._id]? or _.contains longTimeIgnore, user._id
 			recents[user._id] = times: 0
 			Meteor.setTimeout (-> delete recents[user._id] ), 300000
 
