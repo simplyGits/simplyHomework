@@ -7,8 +7,6 @@ dblDate = null
 dblDateResetHandle = null
 keydownSet = no
 
-prevDrop = null # Used to only have one event drop open at a time.
-
 appointmentToEvent = (appointment) ->
 	type = null
 	type = "quiz" if /\b((so)|((luister ?)?toets)|(schriftelijke overhoring))/i.test(appointment.content()?.split(" ")?[0] ? "")
@@ -113,12 +111,7 @@ Template.calendar.rendered = ->
 			dblDateResetHandle = _.delay ( -> dblDate = dblDateResetHandle = null ), 500
 
 		eventClick: (calendarEvent, event) ->
-			prevDrop?.close()
 			$(event.target).popover "hide"
-
-			calendarEvent.drop.toggle()
-			calendarEvent.open = calendarEvent.drop.isOpened()
-			prevDrop = calendarEvent.drop
 
 		eventAfterRender: (event, element) ->
 			event.element = element
@@ -128,17 +121,6 @@ Template.calendar.rendered = ->
 			return unless event.clickable
 
 			element.css cursor: "pointer"
-
-			event.drop = new Drop
-				target: element
-				position: "bottom middle"
-				openOn: null # Only open when called done explicity.
-
-			Blaze.renderWithData Template.eventDetailsTooltip, (->
-				x = event.appointment
-				x ?= event.calendarItem
-				return x
-			), event.drop.content
 
 		dayRender: (date, cell) ->
 			_.defer ->
