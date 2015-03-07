@@ -488,25 +488,69 @@ Template.accountInfoModal.helpers currentMail: -> Meteor.user().emails[0].addres
 Template.accountInfoModal.events
 	"click #goButton": ->
 		mail = $("#mailInput").val().toLowerCase()
+
+		firstName = Helpers.cap $("#firstNameInput").val()
+		lastName = Helpers.cap $("#lastNameInput").val()
+
 		oldPass = $("#oldPassInput").val()
 		newPass = $("#newPassInput").val()
-		newMail = mail isnt Meteor.user().emails[0].address
-		hasNewPass = oldPass isnt "" and newPass isnt ""
 
-		if newMail
-			Meteor.call "changeMail", mail
+		profile = Meteor.user().profile
+
+		###*
+		# Shows success / error message to the user.
+		# @method callback
+		# @param success {Boolean|null} If true show a success message, otherwise show an error message. If null, no message will be shown at all.
+		###
+		callback = (success) ->
+			if success
+				swalert
+					title: ":D"
+					text: "Je aanpassingen zijn successvol opgeslagen"
+					type: "success"
+			else if success is no # sounds like sombody who sucks at English.
+				swalert
+					title: "D:"
+					text: "Er is iets fout gegaan tijdens het opslaan van je instellingen.\nWe zijn op de hoogte gesteld."
+					type: "error"
+
 			$("#accountInfoModal").modal "hide"
-			unless hasNewPass then swalert title: "Mailadres aangepast", type: "success", text: "Je krijgt een mailtje op je nieuwe email adress voor verificatie"
 
-		if hasNewPass and oldPass isnt newPass
-			Accounts.changePassword oldPass, newPass, (error) ->
-				if error?.reason is "Incorrect password"
-					$("#oldPassInput").addClass("has-error").tooltip(placement: "bottom", title: "Verkeerd wachtwoord").tooltip("show")
-				else
-					$("#accountInfoModal").modal "hide"
-					swalert title: ":D", type: "success", text: "Wachtwoord aangepast! Voortaan kan je met je nieuwe wachtwoord inloggen." + (if newMail then "Je krijgt een mailtje op je nieuwe email adress voor verificatie" else "")
-		else if oldPass is newPass
-			$("#newPassInput").addClass("has-error").tooltip(placement: "bottom", title: "Nieuw wachtwoord is hetzelfde als je oude wachtwoord.").tooltip("show")
+		any = no # If this is false we will just close the modal later.
+		if mail isnt Meteor.user().emails[0].address
+			any = yes
+			Meteor.call "changeMail", mail, (e) -> callback not e?
+
+		if profile.firstName isnt firstName or profile.lastName isnt lastName
+			any = yes
+			Meteor.users.update Meteor.userId(), { $set: profile: { firstName, lastName }}, (e) -> callback not e?
+
+		if oldPass isnt "" and newPass isnt ""
+			any = yes
+
+			err = (query, content) ->
+				$(query)
+					.addClass "has-error"
+					.tooltip placement: "bottom", title: "Verkeerd wachtwoord"
+					.tooltip "show"
+
+			if oldPass isnt newPass
+				Accounts.changePassword oldPass, newPass, (error) ->
+					if error?
+						if error.reason is "Incorrect password"
+							err "#oldPassInput", "Verkeerd wachtwoord"
+							callback no
+						else callback no
+
+					else
+						$("#accountInfoModal").modal "hide"
+						callback yes
+
+			else
+				err "#newPassInput", "Nieuw wachtwoord is hetzelfde als je oude wachtwoord."
+				callback no
+
+		unless any then callback null
 
 Template.addProjectModal.helpers
 	assignments: ->

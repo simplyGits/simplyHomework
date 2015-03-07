@@ -238,7 +238,7 @@
 			</div>
 		</div>
 	</div>
-</template>	
+</template>
 
 <template name="accountInfoModal">
 	<div class="modal fade" id="accountInfoModal">
@@ -254,6 +254,18 @@
 							<label for="mailInput" class="col-sm-2 control-label" style="text-align: left">Email</label>
 							<div class="col-sm-10">
 								<input type="text" class="form-control" id="mailInput" placeholder="hello@simplyApps.nl" value="{{currentMail}}">
+							</div>
+						</div>
+						<div id="firstNameGroup" class="form-group">
+							<label for="firstNameInput" class="col-sm-2 control-label" style="text-align: left">Voornaam</label>
+							<div class="col-sm-10">
+								<input type="text" class="form-control" id="firstNameInput" placeholder="Henk" value="{{currentUser.profile.firstName}}">
+							</div>
+						</div>
+						<div id="lastNameGroup" class="form-group">
+							<label for="lastNameInput" class="col-sm-2 control-label" style="text-align: left">Achternaam</label>
+							<div class="col-sm-10">
+								<input type="text" class="form-control" id="lastNameInput" placeholder="Jansen" value="{{currentUser.profile.lastName}}">
 							</div>
 						</div>
 						<div id="oldPassGroup" class="form-group">
