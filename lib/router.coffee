@@ -287,7 +287,3 @@ Router.map ->
 		fastRender: yes
 		path: "/reset/:token"
 		layoutTemplate: "resetPass"
-
-	@route "full",
-		fastRender: yes
-		layoutTemplate: "full"
