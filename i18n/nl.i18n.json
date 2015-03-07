@@ -1,0 +1,12 @@
+{
+	"GreetingMessage": "simplyHomework is een automatische huiswerkplanner die je leven makkelijker maakt.\n\nHet haalt automatisch je huiswerk van magister, zoekt de juiste woordenlijsten bij het huiswerk, plant automatisch voor proefwerken en nog veel meer.\n\nVoordat we beginnen hebben we nog een paar vraagjes.",
+
+	"ProjectPersonRemovalMessage": "Je staat op het punt om <b>%s</b> te verwijderen.",
+	"ProjectPersonRemovedNotice": "%s verwijderd.",
+	"ProjectPersonAddedNotice": "%s toegevoegd.",
+
+	"GuiderGreeting_night": "Goedenacht, %s",
+	"GuiderGreeting_morning": "Goedemorgen, %s",
+	"GuiderGreeting_afternoon": "Goedemiddag, %s",
+	"GuiderGreeting_evening": "Goedeavond, %s"
+}
