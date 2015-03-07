@@ -681,10 +681,11 @@ Template.app.rendered = ->
 
 	@autorun ->
 		appointments = magisterAppointment new Date(), new Date().addDays(7)
+		classInfos = Meteor.user().classInfos ? []
 		Tracker.nonreactive ->
 			tmpGroupInfos = Meteor.user().profile.groupInfos ? []
 
-			for classInfo in (Meteor.user().classInfos ? [])
+			for classInfo in classInfos
 				magisterGroup = _.find(appointments, (a) -> a.classes()[0] is classInfo.magisterDescription)?.description()
 				groupInfo = _.find tmpGroupInfos, (gi) -> gi.id is classInfo.id
 
