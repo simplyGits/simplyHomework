@@ -161,6 +161,32 @@ Schemas.ChatMessages = new SimpleSchema
 			if not @isFromTrustedCode and @isInsert then no
 			else if not @isFromTrustedCode and @isUpdate then yes # Force it to yes when updating, we want to clearly show that an user changed a message.
 
+Schemas.GoaledSchedules = new SimpleSchema
+	_id:
+		type: Meteor.Collection.ObjectID
+	ownerId:
+		type: String
+		index: 1
+	dueDate:
+		type: Date
+	classId:
+		type: Meteor.Collection.ObjectID
+	createTime:
+		type: Date
+		autoValue: -> if @isInsert then new Date()
+		denyUpdate: yes
+	tasks:
+		type: [Object]
+	magisterAppointmentId:
+		type: Number
+		optional: yes
+	calendarItemId:
+		type: Meteor.Collection.ObjectID
+		optional: yes
+	weight:
+		type: Number
+		optional: yes
+
 @[key].attachSchema Schemas[key] for key of Schemas
 
 @classTransform = (tmpClass) ->
