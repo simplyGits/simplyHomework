@@ -679,21 +679,22 @@ Template.app.rendered = ->
 			else
 				recentGradesNotification = NotificationsManager.notify body: s, type: "warning", time: -1, html: yes, onHide: -> Meteor.users.update(Meteor.userId(), $set: gradeNotificationDismissTime: new Date)
 
-#	@autorun ->
-#		appointments = magisterAppointment new Date(), new Date().addDays(7)
-#		Tracker.nonreactive ->
-#			tmpGroupInfos = Meteor.user().profile.groupInfos ? []
-#
-#			for classInfo in (Meteor.user().classInfos ? [])
-#				magisterGroup = _.find(appointments, (a) -> a.classes()[0] is classInfo.magisterDescription)?.description()
-#				groupInfo = _.find tmpGroupInfos, (gi) -> gi.id is classInfo.id
-#
-#				continue if groupInfo?.group is magisterGroup or not magisterGroup?
-#
-#				_.remove tmpGroupInfos, id: classInfo.id
-#				tmpGroupInfos.push _.extend id: classInfo.id, group: magisterGroup
-#
-#			Meteor.users.update Meteor.userId(), $set: "profile.groupInfos": tmpGroupInfos
+	@autorun ->
+		appointments = magisterAppointment new Date(), new Date().addDays(7)
+		classInfos = Meteor.user().classInfos ? []
+		Tracker.nonreactive ->
+			tmpGroupInfos = Meteor.user().profile.groupInfos ? []
+
+			for classInfo in classInfos
+				magisterGroup = _.find(appointments, (a) -> a.classes()[0] is classInfo.magisterDescription)?.description()
+				groupInfo = _.find tmpGroupInfos, (gi) -> gi.id is classInfo.id
+
+				continue if groupInfo?.group is magisterGroup or not magisterGroup?
+
+				_.remove tmpGroupInfos, id: classInfo.id
+				tmpGroupInfos.push _.extend id: classInfo.id, group: magisterGroup
+
+			Meteor.users.update Meteor.userId(), $set: "profile.groupInfos": tmpGroupInfos
 
 	# Pilot quick and dirty goaledSchedule creating.
 	@autorun ->
