@@ -523,7 +523,11 @@ Template.accountInfoModal.events
 
 		if profile.firstName isnt firstName or profile.lastName isnt lastName
 			any = yes
-			Meteor.users.update Meteor.userId(), { $set: profile: { firstName, lastName }}, (e) -> callback not e?
+			Meteor.users.update Meteor.userId(), {
+				$set:
+					"profile.firstName": firstName
+					"profile.lastName": lastName
+			}, (e) -> callback not e?
 
 		if oldPass isnt "" and newPass isnt ""
 			any = yes
