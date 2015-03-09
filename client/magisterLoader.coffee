@@ -29,6 +29,8 @@ setHardCacheAppointments = (data) ->
 	amplify.store "hardCachedAppointments_#{Meteor.userId()}", JSON.decycle(@hardCachedAppointments), expires: 432000000
 
 ###*
+# [Reactive]
+#
 # Returns appointments withing the given date range. Using caching systems.
 # Should be run in an reactive enviroment, otherwise it's posible this method
 # will return an empty array.
@@ -53,7 +55,7 @@ setHardCacheAppointments = (data) ->
 	dates = (d.date() for d in dates)
 
 	result = []
-	count = 0
+	alreadyFetchingCount = 0
 
 	for date in dates
 		ai = appointmentPool["#{date.getTime()}"]
@@ -62,23 +64,27 @@ setHardCacheAppointments = (data) ->
 			appointmentPool["#{date.getTime()}"] = ai =
 				appointments: new ReactiveVar []
 				invalidationTime: _.now() + APPOINTMENT_INVALIDATION_TIME_MS
+				fetching: no
 
 			result.pushMore getHardCacheAppointments date, date
 
-		else if ai.invalidationTime > _.now() then count++
+		else if ai.fetching or ai.invalidationTime > _.now() then alreadyFetchingCount++
 
 		# When there was an `ai` found but it was invalidated we should just
 		# download the appointments but not create a whole new pool item for it.
 		# When we do that we still show the old info but update it shortly.
 
+		ai.fetching = yes
 		result.pushMore ai.appointments.get()
 
-	unless count is dates.length and Meteor.status().connected then _.defer ->
+	if alreadyFetchingCount isnt dates.length and Meteor.status().connected then _.defer ->
 		magisterObj (m) -> m.appointments dates[0], _.last(dates), download, (e, r) ->
 			for date in dates
 				ai = appointmentPool["#{date.getTime()}"]
-				ai.appointments.set _.filter r, (a) -> EJSON.equals a.begin().date(), date
+
 				ai.invalidationTime = _.now() + APPOINTMENT_INVALIDATION_TIME_MS
+				ai.fetching = no
+				ai.appointments.set _.filter r, (a) -> EJSON.equals a.begin().date(), date
 
 			setHardCacheAppointments r
 
