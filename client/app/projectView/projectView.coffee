@@ -120,7 +120,7 @@ Template.projectView.events
 							if (val = r.docs[0].name.replace(/[-_]/g, " ").split(".")).length is 1
 								val[0]
 							else
-								_.initial(val)[0]
+								_.initial(val)[0].join "."
 						)
 				).execute (res) ->
 					if res.error?
