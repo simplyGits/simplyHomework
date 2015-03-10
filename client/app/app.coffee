@@ -728,12 +728,11 @@ Template.app.rendered = ->
 				recentGradesNotification = NotificationsManager.notify body: s, type: "warning", time: -1, html: yes, onHide: -> Meteor.users.update(Meteor.userId(), $set: gradeNotificationDismissTime: new Date)
 
 	@autorun ->
-		appointments = magisterAppointment new Date(), new Date().addDays(7)
-		classInfos = Meteor.user().classInfos ? []
+		appointments = magisterAppointment new Date(), new Date().addDays(7), no, no
 		Tracker.nonreactive ->
 			tmpGroupInfos = Meteor.user().profile.groupInfos ? []
 
-			for classInfo in classInfos
+			for classInfo in Meteor.user().classInfos ? []
 				magisterGroup = _.find(appointments, (a) -> a.classes()[0] is classInfo.magisterDescription)?.description()
 				groupInfo = _.find tmpGroupInfos, (gi) -> gi.id is classInfo.id
 

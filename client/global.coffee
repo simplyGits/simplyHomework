@@ -15,16 +15,15 @@
 	return a unless _.isObject a
 	return ( @magisterAppointmentTransform x for x in a ) if _.isArray a
 
-	Tracker.nonreactive ->
-		a.__id = "#{a.id()}"
-		a.__className = Helpers.cap(a.classes()[0]) if a.classes()[0]?
+	a.__id = "#{a.id()}"
+	a.__className = Helpers.cap(a.classes()[0]) if a.classes()[0]?
 
-		a.__description = Helpers.convertLinksToAnchor a.content()
-		a.__taskDescription = a.__description.replace /\n/g, "; "
+	a.__description = Helpers.convertLinksToAnchor a.content()
+	a.__taskDescription = a.__description.replace /\n/g, "; "
 
-		a.__groupInfo = _.find Meteor.user()?.profile.groupInfos, (gi) -> gi.group is a._description
-		a.__class = a.__groupInfo?.id
-		a.__classInfo = _.find Meteor.user()?.classInfos, (ci) -> EJSON.equals ci.id, a.__class
+	a.__groupInfo = _.find Meteor.user()?.profile.groupInfos, (gi) -> gi.group is a._description
+	a.__class = a.__groupInfo?.id
+	a.__classInfo = _.find Meteor.user()?.classInfos, (ci) -> EJSON.equals ci.id, a.__class
 
 	return a
 

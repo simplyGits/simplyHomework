@@ -38,14 +38,15 @@ setHardCacheAppointments = (data) ->
 # @method magisterAppointment
 # @param from {Date} The start date for the Appointments, you won't get appointments from before this date.
 # @param [to=from] {Date} The end date for the Appointments, you won't get appointments from after this date.
-# @param [download=yes] {Boolean} Whether or not to download the full user objects from the server.
+# @param [download=no] {Boolean} Whether or not to download the full user objects from the server.
 # @return {Array} The appointments as array.
 ###
 @magisterAppointment = ->
-	[download] = _.filter(arguments, (a) -> _.isBoolean a)
+	[download, transform] = _.where arguments, (a) -> _.isBoolean a
 	[from, to] = _.where arguments, (a) -> _.isDate a
 
 	download ?= no
+	transform ?= yes
 
 	dates = []
 	if to is from or not _.isDate to
@@ -55,7 +56,7 @@ setHardCacheAppointments = (data) ->
 	dates = (d.date() for d in dates)
 
 	result = []
-	alreadyFetchingCount = 0
+	count = 0
 
 	for date in dates
 		ai = appointmentPool["#{date.getTime()}"]
@@ -68,7 +69,7 @@ setHardCacheAppointments = (data) ->
 
 			result.pushMore getHardCacheAppointments date, date
 
-		else if ai.fetching or ai.invalidationTime > _.now() then alreadyFetchingCount++
+		else if ai.fetching or ai.invalidationTime > _.now() then count++
 
 		# When there was an `ai` found but it was invalidated we should just
 		# download the appointments but not create a whole new pool item for it.
@@ -77,7 +78,7 @@ setHardCacheAppointments = (data) ->
 		ai.fetching = yes
 		result.pushMore ai.appointments.get()
 
-	if alreadyFetchingCount isnt dates.length and Meteor.status().connected then _.defer ->
+	if count isnt dates.length
 		magisterObj (m) -> m.appointments dates[0], _.last(dates), download, (e, r) ->
 			for date in dates
 				ai = appointmentPool["#{date.getTime()}"]
@@ -88,7 +89,7 @@ setHardCacheAppointments = (data) ->
 
 			setHardCacheAppointments r
 
-	return magisterAppointmentTransform result
+	return if transform then magisterAppointmentTransform(result) else result
 
 ###*
 # Returns appointments within the given date range. Using caching systems.
