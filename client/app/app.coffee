@@ -20,7 +20,7 @@ class @App
 			done: no
 			func: ->
 				$("#plannerPrefsModal").modal backdrop: "static", keyboard: no
-				$("#plannerPrefsModal .modal-header button").remove()
+				$("#plannerPrefsModal .modal-header button").remove() # Remove close button
 		getMagisterClasses:
 			done: no
 			func: ->
