@@ -730,6 +730,7 @@ Template.app.rendered = ->
 	@autorun ->
 		appointments = magisterAppointment new Date(), new Date().addDays(7), no, no
 		Tracker.nonreactive ->
+			return unless Meteor.user()? and Meteor.status().connected
 			tmpGroupInfos = Meteor.user().profile.groupInfos ? []
 
 			for classInfo in Meteor.user().classInfos ? []
