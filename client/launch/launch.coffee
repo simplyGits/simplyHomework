@@ -2,7 +2,7 @@ login = ->
 	if not Session.get "creatingAccount"
 		Meteor.loginWithPassword $("#emailInput").val().toLowerCase(), $("#passwordInput").val(), (error) ->
 			if error? and error.reason is "Incorrect password"
-				$("#passwordGroup").addClass("has-error").tooltip(placement: "bottom", title: "Wachtwoord is fout").tooltip("show")
+				$("#passwordGroup").addClass("has-error").tooltip(placement: "bottom", title: "Wachtwoord is fout", trigger: "manual").tooltip("show")
 	else
 		Meteor.call "mailExists", $("#emailInput").val().toLowerCase(), (error, result) ->
 			if result
@@ -17,7 +17,7 @@ login = ->
 				if empty "lastNameInput", "lastNameGroup", "Achternaam is leeg" then okay = false
 				unless correctMail $("#emailInput").val()
 					$("#emailGroup").removeClass("has-error").tooltip "destroy"
-					$("#emailGroup").addClass("has-error").tooltip(placement: "bottom", title: "Ongeldig email adres").tooltip("show")
+					$("#emailGroup").addClass("has-error").tooltip(placement: "bottom", title: "Ongeldig email adres", trigger: "manual").tooltip("show")
 					okay = false
 				if okay
 					Accounts.createUser {
