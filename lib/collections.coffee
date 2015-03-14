@@ -228,6 +228,9 @@ Schemas.GoaledSchedules = new SimpleSchema
 chatMessageReplaceMap = [
 	[/\(y\)/ig, ":thumbsup:"]
 	[/\(n\)/ig, ":thumbsdown:"]
+	[/\(a\)/ig, ":innocent:"]
+	[/\(h\)/ig, ":sunglasses:"]
+	[/\^\^'/ig, ":sweat_smile:"]
 ]
 
 @chatMessageTransform = (cm) ->
