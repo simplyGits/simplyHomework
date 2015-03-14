@@ -13,7 +13,7 @@
 	<div class="Center">
 		<img height=350 width=350 src="" id="simplyLogoIntro">
 		<div class="vCenter">
-			<button date-toggle="modal" id="signupButton" type="button" class="btn btn-trans"><span style="font-size: 150%; -webkit-font-smoothing: initial;">account maken</span></button>
+			<button type="button" class="btn btn-trans noFontSmoothing" data-toggle="modal" id="signupButton">account maken</button>
 		</div>
 
 		{{#if showQuickLoginhint}}
@@ -26,7 +26,7 @@
 	<div class="signUpForm">
 		<input type="text" id="username" autocomplete="off"/>
 		<input type="password" id="password" autocomplete="off"/>
-		<div class="robotoHeader" style="font-weight: 100; opacity: 0; text-align: center; margin-top: 10px; font-size: 30px">druk op enter om in te loggen</div>
+		<div class="enterHint robotoHeader">druk op enter om in te loggen</div>
 	</div>
 
 	<div class="launchpageMoreInfoBottom">info<br>\/</div>
