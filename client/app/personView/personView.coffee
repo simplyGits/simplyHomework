@@ -3,28 +3,32 @@ sharedHours = new ReactiveVar []
 
 status = ->
 	s = Router.current().data().status
+
 	res = null
 	if s.idle
-		res = backColor: "#FF9800", borderColor: "#E65100"
+		res = "#FF9800"
 	else if s.online
-		res = backColor: "#4CAF50", borderColor: "#1B5E20"
+		res = "#4CAF50"
 	else
-		res = backColor: "#EF5350", borderColor: "#B71C1C"
+		res = "#EF5350"
+
 	$("meta[name='theme-color']").attr "content", res.backColor
+
 	return res
 
 Template.personView.helpers
-	backColor: -> status().backColor
-	borderColor: -> status().borderColor
+	backColor: -> status()
 	sameUser: sameUser
 
 Template.personView.events
-	"click button.chatButton": -> ChatManager.openUserChat @
+	"click button#chatButton": -> ChatManager.openUserChat @
 
 Template.personView.rendered = ->
 	@autorun ->
 		Router.current()._paramsDep.depend()
-		Meteor.defer -> $('[data-toggle="tooltip"]').tooltip container: "body"
+		Meteor.defer -> $('[data-toggle="tooltip"]').tooltip
+			container: "body"
+			placement: "bottom"
 
 Template.personSharedHours.helpers
 	days: ->

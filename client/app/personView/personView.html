@@ -1,22 +1,22 @@
 <template name="personView">
-	<div class="personInfoTop">
-		<div class="background" style="background-color: {{backColor}}; border-color: {{borderColor}}"></div>
+	<div class="personInfo" style="background-color: {{backColor}}">
 		{{#if sameUser}}
 			<a href="http://en.gravatar.com/emails/" target="_blank">
-				<img class="personPicture" style="pointer-events: initial; border-color: {{borderColor}}" src="{{gravatar this 200}}" width="150" height="150" data-toggle="tooltip" title="Klik hier om je foto aan te passen"/>
+				<img class="personPicture" style="pointer-events: initial" src="{{gravatar this 250}}" width="250" height="250" data-toggle="tooltip" title="Klik hier om je foto aan te passen"/>
 			</a>
 		{{else}}
-			<img class="personPicture" style="border-color: {{borderColor}}" src="{{gravatar this 200}}" width="150" height="150"/>
+			<img class="personPicture" src="{{gravatar this 250}}" width="250" height="250"/>
 		{{/if}}
-		<div class="personName robotoHeader">
-			<b>{{profile.firstName}}</b> {{profile.lastName}}
-		</div>
+		<div class="course"><b>{{profile.courseInfo.year}}</b> {{profile.courseInfo.schoolVariant}}</div>
+		<div class="name">{{profile.firstName}} {{profile.lastName}}</div>
 
 		{{#unless sameUser}}
-			<button type="button" class="btn btn-trans chatButton">chat</button>
+			<button type="button" class="btn btn-trans noFontSmoothing" id="chatButton">chat</button>
 		{{/unless}}
 	</div>
-	{{> personSharedHours}}
+	<div class="personDetailsContainer">
+		{{> personSharedHours}}
+	</div>
 </template>
 
 <template name="personSharedHours">
