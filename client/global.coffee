@@ -100,7 +100,9 @@ Meteor.startup ->
 				amplify.store key, null
 
 			resetMagister()
+
 			Meteor.clearInterval interval
+			interval = null
 
 			NotificationsManager.hideAll()
 
