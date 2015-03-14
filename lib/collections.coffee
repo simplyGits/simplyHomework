@@ -129,6 +129,7 @@ Schemas.ChatMessages = new SimpleSchema
 	content:
 		type: String
 		denyUpdate: yes # Denying updates for now, later we can allow these with some UI implementations. (See the `isChanged` property)
+		autoValue: -> Helpers.convertLinksToAnchor @value
 	creatorId:
 		type: String
 		index: 1
