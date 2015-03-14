@@ -50,7 +50,14 @@ Router.map ->
 			Meteor.defer ->
 				slide "overview"
 				$("meta[name='theme-color']").attr "content", "#32A8CE"
-			document.title = "simplyHomework | #{Meteor.user().profile.firstName} #{Meteor.user().profile.lastName}"
+
+			document.title = (
+				# When we don't have magister info yet the name is empty.
+				unless _.isEmpty Meteor.user().profile.firstName
+					"simplyHomework | #{Meteor.user().profile.firstName} #{Meteor.user().profile.lastName}"
+				else
+					"simplyHomework"
+			)
 
 			App.followSetupPath() if @ready()
 

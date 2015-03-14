@@ -13,8 +13,6 @@ login = ->
 				if empty "emailInput", "emailGroup", "Email is leeg" then okay = false
 				if empty "passwordInput", "passwordGroup", "Wachtwoord is leeg" then okay = false
 				if empty "betaCodeInput", "betaCodeGroup", "Voornaam is leeg" then okay = false
-				if empty "firstNameInput", "firstNameGroup", "Voornaam is leeg" then okay = false
-				if empty "lastNameInput", "lastNameGroup", "Achternaam is leeg" then okay = false
 				unless correctMail $("#emailInput").val()
 					$("#emailGroup").removeClass("has-error").tooltip "destroy"
 					$("#emailGroup").addClass("has-error").tooltip(placement: "bottom", title: "Ongeldig email adres", trigger: "manual").tooltip("show")
@@ -24,8 +22,8 @@ login = ->
 						password: $("#passwordInput").val()
 						email: $("#emailInput").val().toLowerCase()
 						profile:
-							firstName: Helpers.cap $("#firstNameInput").val().trim()
-							lastName: Helpers.cap $("#lastNameInput").val().trim()
+							firstName: ""
+							lastName: ""
 							code: $("#betaCodeInput").val().trim().toLowerCase()
 					}, (e, r) ->
 						if e? then shake "#signupModal"
@@ -38,23 +36,24 @@ Template.page1.helpers showQuickLoginhint: -> amplify.store("allowCookies")?
 Template.signupModal.helpers creatingAccount: -> Session.get "creatingAccount"
 
 Template.signupModal.events
-	'keyup #emailInput': (evt) ->
-		value = evt.target.value
-		unless evt.which is 13
+	"keyup": (event) ->
+		value = event.target.value
+
+		unless event.which is 13
 			if correctMail $("#emailInput").val()
 				$("#emailGroup").removeClass "has-error"
 				$("#emailGroup").addClass "has-success"
 			else
 				$("#emailGroup").removeClass "has-success"
 				$("#emailGroup").addClass "has-error"
+
 			unless value.length < 4
 				Meteor.call "mailExists", $("#emailInput").val().toLowerCase(), (error, result) -> Session.set "creatingAccount", not result
 
 	'submit form': (event) ->
 		event.preventDefault()
 		login()
-	'click #createAccountButton': -> Session.set "creatingAccount", true
-	'keyup #passwordInput': (evt) -> login() if evt.which is 13 and !Session.get "creatingAccount"
+	'keyup #passwordInput': (event) -> login() if event.which is 13
 
 Template.page1.events
 	'click #signupButton': ->

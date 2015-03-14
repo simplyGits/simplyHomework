@@ -122,27 +122,12 @@
 										<input type="text" class="form-control" id="betaCodeInput">
 									</div>
 								</div>
-								<div id="firstNameGroup" class="form-group">
-									<label for="firstNameInput" class="col-sm-2 control-label" style="text-align: left">Voornaam</label>
-									<div class="col-sm-10">
-										<input type="text" class="form-control" id="firstNameInput" placeholder="Henk">
-									</div>
-								</div>
-								<div id="lastNameGroup" class="form-group">
-									<label for="lastNameInput" class="col-sm-2 control-label" style="text-align: left">Achternaam</label>
-									<div class="col-sm-10">
-										<input type="text" class="form-control" id="lastNameInput" placeholder="Jansen">
-									</div>
-								</div>
 							{{/if}}
 							<div class="form-group">
 								<a class="col-sm-offset-2 col-sm-10" href="{{pathFor 'forgotPass'}}">Wachtwoord vergeten</a>
 							</div>
 						</div>
 						<div class="modal-footer">
-							{{#unless creatingAccount}}
-								<button type="button" class="btn btn-success" id="createAccountButton">Account maken</button>
-							{{/unless}}
 							{{#if creatingAccount}}
 								<input type="submit" class="btn btn-primary" id="loginButton" value="Account maken"/>
 							{{else}}
