@@ -25,7 +25,7 @@ Router.map ->
 		path: "/"
 		layoutTemplate: "launchPage"
 		onBeforeAction: ->
-			Meteor.defer => @redirect "app" if Meteor.user()? or Meteor.loggingIn()
+			Meteor.defer => @redirect "app" if Meteor.userId()? or Meteor.loggingIn()
 			@next()
 		onAfterAction: ->
 			document.title = "simplyHomework"
@@ -41,7 +41,7 @@ Router.map ->
 			]
 
 		onBeforeAction: ->
-			unless Meteor.loggingIn() or Meteor.user()?
+			unless Meteor.loggingIn() or Meteor.userId()?
 				@redirect "launchPage"
 				return
 			subs.subscribe("calendarItems")
@@ -72,7 +72,7 @@ Router.map ->
 			]
 
 		onBeforeAction: ->
-			unless Meteor.loggingIn() or Meteor.user()?
+			unless Meteor.loggingIn() or Meteor.userId()?
 				@redirect "launchPage"
 				return
 			@next()
@@ -111,7 +111,7 @@ Router.map ->
 			]
 
 		onBeforeAction: ->
-			unless Meteor.loggingIn() or Meteor.user()?
+			unless Meteor.loggingIn() or Meteor.userId()?
 				@redirect "launchPage"
 				return
 			subs.subscribe("usersData", @data?()?.participants)
@@ -151,7 +151,7 @@ Router.map ->
 			]
 
 		onBeforeAction: ->
-			unless Meteor.loggingIn() or Meteor.user()?
+			unless Meteor.loggingIn() or Meteor.userId()?
 				@redirect "launchPage"
 				return
 			@redirect "mobileCalendar" if Session.get "isPhone"
@@ -178,7 +178,7 @@ Router.map ->
 			]
 
 		onBeforeAction: ->
-			unless Meteor.loggingIn() or Meteor.user()?
+			unless Meteor.loggingIn() or Meteor.userId()?
 				@redirect "launchPage"
 				return
 			@redirect "calendar" unless Session.get "isPhone"
@@ -205,7 +205,7 @@ Router.map ->
 			]
 
 		onBeforeAction: ->
-			unless Meteor.loggingIn() or Meteor.user()?
+			unless Meteor.loggingIn() or Meteor.userId()?
 				@redirect "launchPage"
 				return
 			@next()
@@ -236,7 +236,7 @@ Router.map ->
 			]
 
 		onBeforeAction: ->
-			unless Meteor.loggingIn() or Meteor.user()?
+			unless Meteor.loggingIn() or Meteor.userId()?
 				@redirect "launchPage"
 				return
 			@redirect "app" unless Session.get "isPhone"

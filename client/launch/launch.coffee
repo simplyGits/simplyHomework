@@ -31,7 +31,7 @@ login = ->
 						if e? then shake "#signupModal"
 						else Meteor.call "callMailVerification", -> Router.go "app"
 
-	Router.go "app" if Meteor.user()? or Meteor.loggingIn()
+	Router.go "app" if Meteor.userId()? or Meteor.loggingIn()
 
 Template.page1.helpers showQuickLoginhint: -> amplify.store("allowCookies")?
 

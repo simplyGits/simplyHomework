@@ -297,8 +297,8 @@ Meteor.startup ->
 	Session.set "allowNotifications", no
 
 	notification = null
-	Deps.autorun ->
-		if Meteor.user()? and htmlNotify.isSupported and !("ActiveXObject" of window)
+	Tracker.autorun ->
+		if Meteor.userId()? and htmlNotify.isSupported and !("ActiveXObject" of window)
 			switch htmlNotify.permissionLevel()
 				when "default"
 					notification ?= notify "Als je bureaublad meldingen toestaat kan je overal meldingen van simplyHomework zien, zelfs als je op een ander tabblad zit.", null, -1, no, 9

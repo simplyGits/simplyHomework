@@ -88,7 +88,7 @@ Meteor.startup ->
 
 	interval = null
 	Deps.autorun -> # User Login/Logout
-		if Meteor.user()?
+		if Meteor.userId()?
 			ga "set", "&uid", Meteor.userId()
 
 			# Automagically update Magister info.

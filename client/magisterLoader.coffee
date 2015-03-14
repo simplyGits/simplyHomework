@@ -9,7 +9,7 @@ appointmentPool = []
 magisterLoaded = no
 @magister = null
 
-Deps.autorun => if Meteor.user()? then @hardCachedAppointments = amplify.store("hardCachedAppointments_#{Meteor.userId()}") ? []
+Deps.autorun => if Meteor.userId()? then @hardCachedAppointments = amplify.store("hardCachedAppointments_#{Meteor.userId()}") ? []
 
 @getHardCacheAppointments = (begin, end) ->
 	return unless @hardCachedAppointments?

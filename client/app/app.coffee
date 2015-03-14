@@ -652,15 +652,16 @@ Template.app.rendered = ->
 		console.error "CRITICAL ERROR: UNEXPECTED KAAS"
 
 	Deps.autorun ->
-		if Meteor.user()?.magisterCredentials?
-			initializeMagister()
+		if Meteor.userId()? then Tracker.nonreactive ->
+			if Meteor.user()?.magisterCredentials?
+				initializeMagister()
 
 	Deps.autorun (c) ->
 		if Meteor.user()? and Meteor.status().connected and not Meteor.user().hasGravatar
 			$.get("#{Meteor.user().gravatarUrl}&s=1&d=404").done ->
 				Meteor.users.update Meteor.userId(), $set: hasGravatar: yes
 
-	if Meteor.user()? and not Meteor.user().emails[0].verified
+	if Meteor.userId()? and not Meteor.user().emails[0].verified
 		notify "Je hebt je account nog niet geverifiëerd!", "warning"
 
 	assignmentNotification = null
@@ -730,7 +731,7 @@ Template.app.rendered = ->
 	@autorun ->
 		appointments = magisterAppointment new Date(), new Date().addDays(7), no, no
 		Tracker.nonreactive ->
-			return unless Meteor.user()? and Meteor.status().connected
+			return unless Meteor.userId()? and Meteor.status().connected
 			tmpGroupInfos = Meteor.user().profile.groupInfos ? []
 
 			for classInfo in Meteor.user().classInfos ? []
@@ -796,7 +797,7 @@ Template.app.rendered = ->
 
 	Deps.autorun ->
 		return
-		if Meteor.user()? and not has("noAds") and Meteor.status().connected
+		if Meteor.userId()? and not has("noAds") and Meteor.status().connected
 			setTimeout (-> Meteor.defer ->
 				if !Session.get "adsAllowed"
 					Router.go "launchPage"
