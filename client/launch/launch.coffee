@@ -83,8 +83,6 @@ Template.launchPage.events
 
 coll = new Meteor.Collection "userCount"
 Template.launchPage.rendered = ->
-	$("#simplyLogoIntro").attr "src", "images/simplyLogo.gif"
-
 	@autorun ->
 		Meteor.subscribe "userCount"
 		usersCount.set coll.findOne()?.count
