@@ -17,7 +17,6 @@ Router.configure
 		$(".backdrop.dimmed").removeClass "dimmed"
 		$(".tooltip").tooltip("destroy")
 	trackPageView: true
-	notFoundTemplate: "notFound"
 
 Router.map ->
 	@route "launchPage",
@@ -294,3 +293,8 @@ Router.map ->
 		fastRender: yes
 		path: "/reset/:token"
 		layoutTemplate: "resetPass"
+
+Router.route "/(.*)", ->
+	if @ready()
+		document.title = "simplyHomework | Niet gevonden"
+		@render "notFound"
