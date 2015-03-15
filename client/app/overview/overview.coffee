@@ -144,6 +144,8 @@ Template.appOverview.rendered = ->
 				lastGrade = _(gradesCurrentClass)
 					.filter (g) -> g.type().type() isnt 2
 					.max "_dateFilledIn"
+					.value()
+				lastGrade = null if lastGrade is -Infinity # rip lodash beheviour.
 
 				parsedData = Parser.parseDescription h.content()
 				exercises = _(parsedData.exerciseData)
@@ -151,6 +153,9 @@ Template.appOverview.rendered = ->
 					.flatten()
 					.value()
 
+				endGrade = gradeConverter endGrade?.grade()
+				lastGrade = gradeConverter lastGrade?.grade()
+
 				exerciseData = calculateExercisePriority endGrade, lastGrade, exercises.length
 
-				return _.now() >= h.begin().date().addDays(-exerciseData.daysInfront).getTime() and h.begin().getTime() > _.now()
+				return Date.today() >= h.begin().date().addDays(-exerciseData.daysInfront) and h.begin().date() > Date.today()
