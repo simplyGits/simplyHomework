@@ -57,7 +57,9 @@ Array::pushMore = (items) -> [].push.apply @, items; return @
 # @return {Number} `grade` converted to a number. Defaults to NaN.
 ###
 @gradeConverter = (grade) ->
+	return undefined unless grade?
 	return grade if _.isNumber grade
+
 	# Normal dutch grades
 	val = grade.replace(",", ".").replace(/[^\d\.]/g, "")
 	unless val.length is 0 or _.isNaN(+val)
