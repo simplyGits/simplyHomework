@@ -13,6 +13,7 @@
 # Regular Expressions to detect an exercise
 @ExerciseExps = [
 	/^[\d]+(( ?t[\/\\]?m ?\d+)|( ?[-+,] ?[0-9]+)|( ?(ook|plus|tevens|en|tot (en met)?) ?[0-9]+))*$/img
+	/\bmaken [\d]+(( ?t[\/\\]?m ?\d+)|( ?[-+,] ?[0-9]+)|( ?(ook|plus|tevens|en|tot (en met)?) ?[0-9]+))*/ig
 	/(((\bOP?D?R?A?C?H?T?[\.:]?)|(\bO[PDRACHT]{7,8}\b)) ?[\d]+(( ?t[\/\\]?m ?\d+)|( ?[-+,] ?[0-9]+)|( ?(ook|plus|tevens|en|tot (en met)?) ?[0-9]+))*)|(\b[0-9]{1,2}d?e \bOP?D?R?A?C?H?T?\b\.?)/ig
 	/(((\bOP?G?A?V?E?[\.:]?)|(\bO[PGAVE]{5,6}\b)) ?[\d]+(( ?t[\/\\]?m ?\d+)|( ?[-+,] ?[0-9]+)|( ?(ook|plus|tevens|en|tot (en met)?) ?[0-9]+))*)|(\b[0-9]{1,2}d?e \bOP?G?A?V?E?\b\.?)/ig
 ]
