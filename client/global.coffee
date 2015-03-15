@@ -1,9 +1,19 @@
+###*
+# Get the classes for the current user, converted and sorted.
+# @method classes
+# @return {Cursor} A cursor pointing to the classes.
+###
 @classes = ->
 	homeworkItems.dep.depend()
 	return Classes.find {_id: { $in: (cI.id for cI in (Meteor.user().classInfos ? [])) }},
 		transform: classTransform
 		sort: "name": 1
 
+###*
+# Get the projects for the current user, converted and sorted.
+# @method projects
+# @return {Cursor} A cursor pointing to the projects.
+###
 @projects = ->
 	return Projects.find {},
 		transform: projectTransform
@@ -11,6 +21,14 @@
 			"deadline": 1
 			"name": 1
 
+###*
+# Converts the given appointment(s) to a globally used format
+# with extra info (such as classId) added.
+#
+# @method magisterAppointmentTransform
+# @param a {Appointment|Appointment[]} The appointment(s) to convert.
+# @return {Appointment|Appointments[]} The appointment(s) converted.
+###
 @magisterAppointmentTransform = (a) ->
 	return a unless _.isObject a
 	return ( @magisterAppointmentTransform x for x in a ) if _.isArray a

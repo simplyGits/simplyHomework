@@ -12,11 +12,12 @@ root = @
 Date.today = -> new Date().date()
 
 ###*
-# Adds the given ammount of days to the current Date object.
+# Adds the given ammount of days to the current/new Date object.
 #
 # @method addDays
 # @param days {Number} The amount of days to add.
-# @return {Date} The current Date object with the given ammount of days added.
+# @param newDate {Boolean} Whether or not to create a new Object.
+# @return {Date} A Date object with the given ammount of days added.
 ###
 Date::addDays = (days, newDate = false) ->
 	check days, Number
@@ -190,7 +191,7 @@ class @Helpers
 	#
 	# @method getTotal
 	# @param arr {Array} The array to get the sum of.
-	# @param mapper {Function} Optional. The function to map the values in the array to before counting it to the sum.
+	# @param [mapper] {Function} The function to map the values in the array to before counting it to the sum.
 	# @return {Number} The sum of the given values.
 	###
 	@getTotal: (arr, mapper) ->
@@ -203,7 +204,7 @@ class @Helpers
 	#
 	# @method getAverage
 	# @param arr {Array} The array to get the average of.
-	# @param mapper {Function} Optional. The function to map the values in the array to before counting it to the average.
+	# @param [mapper] {Function} The function to map the values in the array to before counting it to the average.
 	# @return {Number} The average of the given values.
 	###
 	@getAverage: (arr, mapper) -> return @getTotal(arr, mapper) / arr.length

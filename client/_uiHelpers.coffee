@@ -89,6 +89,12 @@ http://tomsmeding.nl/
 		return true
 	return false
 
+###*
+# Force Beatrix to speak out the given `text`.
+#
+# @method speak
+# @param text {String} The string to speak out.
+###
 @speak = (text) ->
 	audio = new Audio
 	audio.src = "http://www.ispeech.org/p/generic/getaudio?text=#{text}%2C&voice=eurdutchfemale&speed=0&action=convert"
@@ -107,6 +113,11 @@ _text = null
 		strikeThrough node, index + 1
 	), 5
 
+###*
+# The manager for notificafions.
+# @class NotificationsManager
+# @static
+###
 class @NotificationsManager
 	@_notifications: []
 
@@ -263,12 +274,33 @@ class @NotificationsManager
 
 		return undefined
 
+###*
+# Shortcut for basic NotificationManager.notify(...).
+# @method notify
+# @param body {String} The body of the notification.
+# @param [type="default"] {String} The type of notification, could be "warning", "error", "notice", "success" and "default".
+# @param [time=4000] {Number} The time in ms for how long the notification must at max stay, if -1 the notification doesnt hide.
+# @param [dismissable=true] {Boolean} Whether or not this notification is dismissable.
+# @param [priority=0] {Number} The priority of the notification.
+###
 @notify = (body, type = "default", time = 4000, dismissable = yes, priority = 0) -> NotificationsManager.notify { body: "<b>#{_.escape body}</b>", type, time, dismissable, priority, html: yes, allowDesktopNotifications: no }
 
+###*
+# Gets the gravatar url of the given `userId`.
+# @method gravatar
+# @param [userId=Meteor.userId()] {User|ObjectID} The object or ID of the user to get the gravatar from.
+# @param [size=100] {Number} The size in pixels that the gravatar shall be.
+# @return {String} A string containing the URL of the gravatar.
+###
 @gravatar = (userId = Meteor.userId(), size = 100) ->
 	user = if _.isString(userId) then Meteor.users.findOne(userId) else userId
 	if user.hasGravatar or _.isEmpty(user.profile.magisterPicture) then "#{user.gravatarUrl}&s=#{size}" else user.profile.magisterPicture
 
+###*
+# 'Slides' the slider to the given destanation.
+# @method slide
+# @param id {String} The ID of the `.sidebarButton` to slide to.
+###
 @slide = (id) ->
 	$("div.sidebarButton.selected").removeClass "selected"
 	$("div.sidebarButton##{id}").addClass "selected"
