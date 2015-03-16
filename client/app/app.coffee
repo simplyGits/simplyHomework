@@ -470,7 +470,6 @@ Template.settingsModal.events
 		App.runTour()
 
 	"click #logOutButton": ->
-		Router.go "launchPage"
 		Meteor.logout()
 
 Template.newSchoolYearModal.helpers classes: -> classes()
