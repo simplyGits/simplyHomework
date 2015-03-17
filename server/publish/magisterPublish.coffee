@@ -1,3 +1,5 @@
+request = Meteor.npmRequire "request"
+
 ###*
 # Magister objects cached per userId.
 # Key: userId, value: { invalidationTime: Number, magister: Magister }.
@@ -85,6 +87,16 @@ Meteor.publish "magisterStudyGuides", ->
 
 					studyGuide = JSON.decycle studyGuide
 					delete studyGuide._magisterObj
+
+					for part in studyGuide.parts
+						for file in part.files()
+							downloadUrl = (
+								if file._downloadUrl?
+									"/magisterDownload/#{new Buffer(file._downloadUrl).toString "base64"}"
+								else null
+							)
+							file.url = file.uri() ? downloadUrl
+
 					pub.added "magisterStudyGuides", studyGuide.id(), studyGuide
 
 	@ready()
@@ -133,3 +145,27 @@ Meteor.publish "magisterDigitalSchoolUtilties", (classDescription) ->
 			pub.ready()
 
 	return undefined
+
+Router.route "/magisterDownload/:url", (->
+	url = new Buffer(@params.url, "base64").toString "utf8"
+
+	token = @request.cookies["meteor_login_token"]
+	hashedToken = Accounts._hashLoginToken(token) if token?
+	userId = Meteor.users.findOne({
+		"services.resume.loginTokens.hashedToken": hashedToken
+	}, { fields: _id: 1 })?._id
+
+	unless userId?
+		@response.writeHead 403, "Content-Type": "text/plain"
+		@response.end "No login token provided. BEN JE WEL INGELOGD?!\n"
+		return
+
+	magister = magisterObj userId
+
+	request({
+		method: "GET"
+		url
+		headers:
+			cookie: magister.http._cookie
+	}).pipe @response
+), where: "server"
