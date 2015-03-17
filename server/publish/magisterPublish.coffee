@@ -19,7 +19,10 @@ _cachedMagisterObjects = {}
 # @return {Magister} A Magister object for the given userId.
 ###
 @magisterObj = (userId) ->
-	user = Meteor.users.findOne userId
+	user = Meteor.users.findOne userId, fields:
+		magisterCredentials: 1
+		profile: 1
+
 	unless user? and user.magisterCredentials? and user.profile.schoolId?
 		return undefined
 
