@@ -294,7 +294,7 @@ Router.map ->
 		path: "/reset/:token"
 		layoutTemplate: "resetPass"
 
-Router.route "/(.*)", ->
+Router.route "/(.*)", -> # 404 route.
 	if @ready()
 		document.title = "simplyHomework | Niet gevonden"
 		@render "notFound"
