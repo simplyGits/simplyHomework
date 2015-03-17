@@ -4,7 +4,6 @@ grades = new ReactiveVar []
 loadingGrades = new ReactiveVar yes
 selectedGrade = new ReactiveVar null
 
-studyGuides = new ReactiveVar []
 digitalSchoolUtilities = new ReactiveVar []
 
 currentClass = -> Router.current().data()
@@ -32,11 +31,18 @@ Template.classView.helpers
 				grades: _.filter grades.get(), (x) -> x.gradePeriod().name() is g.gradePeriod().name() and x.type().type() isnt 2
 			.filter (gp) -> gp.grades.length isnt 0
 			.value()
-	studyGuides: -> studyGuides.get()
+
+	studyGuides: ->
+		return MagisterStudyGuides
+			.find {
+				_class: $exists: yes
+				"_class._id": currentClass().__classInfo.magisterId
+			}
+			.fetch()
+
 	digitalSchoolUtilities: -> digitalSchoolUtilities.get()
 
 	loadingGrades: -> loadingGrades.get()
-	loadingStudyGuides: -> loadingStudyGuides.get()
 	hasGrades: -> grades.get().length > 0
 
 	selectedGrade: -> selectedGrade.get()
@@ -50,7 +56,6 @@ Template.classView.helpers
 
 Template.classView.rendered = ->
 	fetchedGrades = new ReactiveVar []
-	fetchedStudyGuides = new ReactiveVar []
 
 	magisterResult "grades", (e, r) ->
 		return unless Router.current().route.getName() is "classView"
@@ -79,12 +84,6 @@ Template.classView.rendered = ->
 
 			for grade in grades.get() when not grade._filled
 				grade.fillGrade p
-
-	@autorun ->
-		studyGuides.set MagisterStudyGuides.find(
-			_class: $exists: yes
-			"_class._id": currentClass().__classInfo.magisterId
-		).fetch()
 
 	@autorun ->
 		Meteor.subscribe "magisterDigitalSchoolUtilties", currentClass().__classInfo.magisterDescription
