@@ -81,6 +81,21 @@ div.Center
 		button#signupButton
 			font-size: 150%
 
+			position: relative
+			width: 220px
+			height: 35px
+			overflow: hidden
+
+			span
+				absolute: left top
+				width: 100%
+				text-align: center
+			span:first-child
+				animation: switchButtonFirst 7s ease-out-expo 2.5s infinite
+			span:last-child
+				opacity: 0
+				animation: switchButtonLast 7s ease-out-expo 2.5s infinite
+
 	div#quickLoginhint
 		text-align: center
 		color: white
@@ -102,3 +117,32 @@ div.Center.active
 	top: 45%
 	transform: translate(-50%, -50%) scale(.75)
 	pointer-events: none
+
+@keyframes switchButtonFirst {
+	0% {
+		opacity: 1
+		transform: none
+	}
+	50% {
+		opacity: 0
+		transform: translateY(-1em)
+	}
+	100% {
+		opacity: 1
+		transform: none
+	}
+}
+@keyframes switchButtonLast {
+	0% {
+		opacity: 0
+		transform: translateY(1em)
+	}
+	50% {
+		opacity: 1
+		transform: none
+	}
+	100% {
+		opacity: 0
+		transform: translateY(1em)
+	}
+}
