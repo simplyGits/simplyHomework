@@ -13,12 +13,10 @@ spiderable
 browser-policy
 coffeescript
 meteorhacks:kadira
-mizzao:bootstrap-3
 mrt:nprogress
 stevezhu:lodash
 rosh93:dataset-filter
 iron:router
-mizzao:bootboxjs
 meteorhacks:fast-render
 reywood:iron-router-ga
 natestrauser:animate-css
@@ -44,3 +42,6 @@ markdown
 tail:core
 qnub:emojione
 appcache
+twbs:bootstrap-noglyph
+mizzao:bootboxjs
+fortawesome:fontawesome
