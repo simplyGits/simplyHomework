@@ -488,8 +488,8 @@ Template.accountInfoModal.events
 	"click #goButton": ->
 		mail = $("#mailInput").val().toLowerCase()
 
-		firstName = Helpers.cap $("#firstNameInput").val()
-		lastName = Helpers.cap $("#lastNameInput").val()
+		firstName = Helpers.nameCap $("#firstNameInput").val()
+		lastName = Helpers.nameCap $("#lastNameInput").val()
 
 		oldPass = $("#oldPassInput").val()
 		newPass = $("#newPassInput").val()

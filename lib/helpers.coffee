@@ -221,6 +221,31 @@ class @Helpers
 	@cap: (string, amount = 1) -> string[0...amount].toUpperCase() + string[amount..].toLowerCase()
 
 	###*
+	# Caps the given string, respecting name conventions.
+	# @method nameCap
+	# @param name {String} The name to cap.
+	# @return {String} The capped `name`.
+	###
+	@nameCap: (name) ->
+		words = name.toLowerCase().split /[\s-&]/g
+		nonCapped = [
+			"van"
+			"vanden"
+			"in"
+			"uit"
+			"der"
+			"den"
+			"de"
+			"en"
+			"of"
+			"o'"
+		]
+
+		_(words)
+			.map (word) => if _.contains(nonCapped, word) then word else @cap word
+			.join " "
+
+	###*
 	# Find links in the given `string` and converts
 	# those into anchor tags.
 	#
