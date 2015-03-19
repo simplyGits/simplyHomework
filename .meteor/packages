@@ -39,9 +39,9 @@ percolate:paginated-subscription
 aldeed:collection2
 ground:db
 markdown
-tail:core
 qnub:emojione
 appcache
+meteor-analytics
 twbs:bootstrap-noglyph
 mizzao:bootboxjs
 fortawesome:fontawesome

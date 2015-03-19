@@ -54,6 +54,7 @@ logging@1.0.7
 markdown@1.0.4
 mdg:reload-on-resume@1.0.4
 meteor@1.1.5
+meteor-analytics@0.9.5
 meteor-platform@1.2.2
 meteorhacks:async@1.0.0
 meteorhacks:fast-render@2.3.1
