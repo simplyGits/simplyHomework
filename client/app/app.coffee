@@ -728,9 +728,10 @@ Template.app.rendered = ->
 				recentGradesNotification = NotificationsManager.notify body: s, type: "warning", time: -1, html: yes, onHide: -> Meteor.users.update(Meteor.userId(), $set: gradeNotificationDismissTime: new Date)
 
 	@autorun ->
+		return unless Meteor.userId()? and Meteor.status().connected
 		appointments = magisterAppointment new Date(), new Date().addDays(7), no, no
+
 		Tracker.nonreactive ->
-			return unless Meteor.userId()? and Meteor.status().connected
 			tmpGroupInfos = Meteor.user().profile.groupInfos ? []
 
 			for classInfo in Meteor.user().classInfos ? []

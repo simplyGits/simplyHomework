@@ -163,7 +163,7 @@ Template.changeProjectModal.events
 		name = $("#changeNameInput").val().trim()
 		description = $("#changeDescriptionInput").val().trim()
 		deadline = $("#changeDeadlineInput").data("DateTimePicker").getDate().toDate()
-		classId = Session.get("currentSelectedClassDatum")?._id ? currentProject().__class?._id
+		classId = Session.get("currentSelectedClassDatum")?._id ? currentProject().__class()?._id
 
 		Projects.update currentProject()._id, $set: { name, description, deadline, magisterId: currentProject().magisterId, classId }
 

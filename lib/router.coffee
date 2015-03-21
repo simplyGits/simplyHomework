@@ -90,7 +90,7 @@ Router.map ->
 
 			Meteor.defer =>
 				slide @data()._id.toHexString()
-				$("meta[name='theme-color']").attr "content", @data().__color
+				$("meta[name='theme-color']").attr "content", @data().__color()
 
 			document.title = "simplyHomework | #{@data().name}"
 			NProgress?.done()
@@ -130,7 +130,7 @@ Router.map ->
 
 			if @data().__class? then Meteor.defer =>
 				slide @data().__class._id.toHexString()
-				$("meta[name='theme-color']").attr "content", @data().__class.__color
+				$("meta[name='theme-color']").attr "content", @data().__class.__color()
 
 			document.title = "simplyHomework | #{@data().name}"
 			NProgress?.done()

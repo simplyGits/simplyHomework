@@ -42,11 +42,10 @@ setHardCacheAppointments = (data) ->
 # @return {Array} The appointments as array.
 ###
 @magisterAppointment = ->
-	[download, transform] = _.where arguments, (a) -> _.isBoolean a
+	download = _.find arguments, (a) -> _.isBoolean a
 	[from, to] = _.where arguments, (a) -> _.isDate a
 
 	download ?= no
-	transform ?= yes
 
 	dates = []
 	if to is from or not _.isDate to
@@ -89,7 +88,7 @@ setHardCacheAppointments = (data) ->
 
 			setHardCacheAppointments r
 
-	return if transform then magisterAppointmentTransform(result) else result
+	return magisterAppointmentTransform result
 
 ###*
 # Returns appointments within the given date range. Using caching systems.

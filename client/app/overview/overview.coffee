@@ -130,7 +130,7 @@ Template.appOverview.rendered = ->
 
 			if nextSchoolDay or noTimeDayInfront then return yes
 			else # now. For the real stuff...
-				magisterId = h.__classInfo?.magisterId
+				magisterId = h.__classInfo()?.magisterId
 
 				gradesCurrentClass = _(grades)
 					.filter (g) -> g.class().id() is magisterId

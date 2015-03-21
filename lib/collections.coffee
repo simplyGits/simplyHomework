@@ -10,16 +10,17 @@
 @Projects        = new Ground.Collection "projects"
 @CalendarItems   = new Meteor.Collection "calendarItems"
 @ChatMessages    = new Ground.Collection "chatMessages"
-#new Ground.Collection Meteor.users
+
+@ReportItems     = new Meteor.Collection "reportItems"
 
 @MagisterAppointments = new Ground.Collection "magisterAppointments",
 	transform: (a) ->
 		a._magisterObj = magister if magister?
 		a._teachers = (_.extend(new Person, t) for t in a._teachers)
 
-		a.__groupInfo = _.find Meteor.user()?.profile.groupInfos, (gi) -> gi.group is a._description
-		a.__class = a.__groupInfo?.id
-		a.__classInfo = _.find Meteor.user()?.classInfos, (ci) -> EJSON.equals ci.id, a.__class
+		a.__groupInfo = -> _.find Meteor.user()?.profile.groupInfos, (gi) -> gi.group is a._description
+		a.__class = -> a.__groupInfo()?.id
+		a.__classInfo = -> _.find Meteor.user()?.classInfos, (ci) -> EJSON.equals ci.id, a.__class()
 
 		a._magisterObj = null
 		return _.extend new Appointment, a
@@ -191,13 +192,13 @@ Schemas.GoaledSchedules = new SimpleSchema
 @[key].attachSchema Schemas[key] for key of Schemas
 
 @classTransform = (tmpClass) ->
-	classInfo = _.find Meteor.user().classInfos, (cI) -> EJSON.equals cI.id, tmpClass._id
+	classInfo = -> _.find Meteor.user().classInfos, (cI) -> EJSON.equals cI.id, tmpClass._id
 	groupInfo = _.find Meteor.user().profile.groupInfos, (gI) -> EJSON.equals gI.id, tmpClass._id
 
 	return _.extend tmpClass,
 		__taskAmount: _.filter(homeworkItems.get(), (a) -> groupInfo?.group is a.description() and not a.isDone()).length
-		__book: Books.findOne classInfo?.bookId
-		__color: classInfo?.color
+		__book: -> Books.findOne classInfo()?.bookId
+		__color: -> classInfo()?.color
 		__sidebarName: Helpers.cap if (val = tmpClass.name).length > 14 then tmpClass.course else val
 		__showBadge: not _.contains [11..14], tmpClass.name.length
 

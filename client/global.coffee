@@ -39,9 +39,9 @@
 	a.__description = Helpers.convertLinksToAnchor a.content()
 	a.__taskDescription = a.__description.replace /\n/g, "; "
 
-	a.__groupInfo = _.find Meteor.user()?.profile.groupInfos, (gi) -> gi.group is a._description
-	a.__class = a.__groupInfo?.id
-	a.__classInfo = _.find Meteor.user()?.classInfos, (ci) -> EJSON.equals ci.id, a.__class
+	a.__groupInfo = -> _.find Meteor.user()?.profile.groupInfos, (gi) -> gi.group is a._description
+	a.__class = -> a.__groupInfo()?.id
+	a.__classInfo = -> _.find Meteor.user()?.classInfos, (ci) -> EJSON.equals ci.id, a.__class()
 
 	return a
 

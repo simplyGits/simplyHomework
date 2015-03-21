@@ -48,7 +48,7 @@ Template.personSharedHours.rendered = ->
 		appointments = magisterAppointment new Date(), new Date().addDays(7)
 
 		sharedHours.set _.filter appointments, (a) ->
-			currentUserHasHour = a.__groupInfo?
+			currentUserHasHour = a.__groupInfo()?
 			personHasHour = _.any Router.current().data().profile.groupInfos, (gi) -> gi.group is a.description()
 
 			return currentUserHasHour and personHasHour

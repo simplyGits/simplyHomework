@@ -19,7 +19,7 @@ Template.classView.helpers
 	currentClass: currentClass
 	tasksAmount: -> currentClass().__taskAmount
 	tasksWord: -> if tasksAmount() is 1 then "taak" else "taken"
-	classColor: -> currentClass().__color
+	classColor: -> currentClass().__color()
 	textAlign: -> if Session.get "isPhone" then "left" else "right"
 
 	gradeGroups: ->
@@ -36,7 +36,7 @@ Template.classView.helpers
 		return MagisterStudyGuides
 			.find {
 				_class: $exists: yes
-				"_class._id": currentClass().__classInfo.magisterId
+				"_class._id": currentClass().__classInfo().magisterId
 			}
 			.fetch()
 
@@ -68,7 +68,7 @@ Template.classView.rendered = ->
 
 	@autorun (c) ->
 		grades.set(_(fetchedGrades.get())
-			.filter((g) -> g.class().id() is currentClass().__classInfo.magisterId and g.grade()?)
+			.filter((g) -> g.class().id() is currentClass().__classInfo().magisterId and g.grade()?)
 			.forEach (g) ->
 				converted = gradeConverter g.grade()
 
@@ -86,10 +86,10 @@ Template.classView.rendered = ->
 				grade.fillGrade p
 
 	@autorun ->
-		Meteor.subscribe "magisterDigitalSchoolUtilties", currentClass().__classInfo.magisterDescription
+		Meteor.subscribe "magisterDigitalSchoolUtilties", currentClass().__classInfo().magisterDescription
 		digitalSchoolUtilities.set MagisterDigitalSchoolUtilties.find(
 			_class: $exists: yes
-			"_class._description": currentClass().__classInfo.magisterDescription
+			"_class._description": currentClass().__classInfo().magisterDescription
 		).fetch()
 
 Template.classView.events
@@ -101,7 +101,7 @@ Template.classView.events
 
 			books = Books.find(classId: currentClass()._id).fetch()
 
-			scholierenClass = ScholierenClasses.findOne id: currentClass().__classInfo.scholierenId
+			scholierenClass = ScholierenClasses.findOne id: currentClass().__classInfo().scholierenId
 			books.pushMore _.filter scholierenClass?.books, (b) -> not _.contains (x.title for x in books), b.title
 
 			bookEngine.clear()
@@ -109,14 +109,14 @@ Template.classView.events
 
 		$("#changeColorInput")
 			.colorpicker "destroy"
-			.colorpicker color: currentClass().__color
+			.colorpicker color: currentClass().__color()
 
-		$("#changeColorLabel").css color: currentClass().__color
+		$("#changeColorLabel").css color: currentClass().__color()
 
 		$("#changeClassModal").modal backdrop: false
 
 Template.changeClassModal.rendered = ->
-	$("#changeColorInput").colorpicker color: currentClass().__color
+	$("#changeColorInput").colorpicker color: currentClass().__color()
 	$("#changeColorInput").on "changeColor", -> $("#changeColorLabel").css color: $("#changeColorInput").val()
 	bookEngine.initialize()
 
