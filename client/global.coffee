@@ -85,7 +85,6 @@ isOldInternetExplorer = ->
 @minuteTracker = new Tracker.Dependency
 Meteor.startup ->
 	window.viewportUnitsBuggyfill.init()
-	NProgress.configure showSpinner: no
 	[oldBrowser, version] = isOldInternetExplorer()
 
 	if oldBrowser # old Internet Explorer versions don't even support fast-render with iron-router :')

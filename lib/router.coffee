@@ -33,7 +33,6 @@ Router.map ->
 	@route "app",
 		fastRender: yes
 		subscriptions: ->
-			NProgress?.start()
 			return [
 				Meteor.subscribe("classes")
 				Meteor.subscribe("usersData")
@@ -60,8 +59,6 @@ Router.map ->
 
 			App.followSetupPath() if @ready()
 
-			NProgress?.done()
-
 		layoutTemplate: "app"
 		template: "appOverview"
 
@@ -71,7 +68,6 @@ Router.map ->
 		path: "/app/class/:classId"
 
 		subscriptions: ->
-			NProgress?.start()
 			return [
 				Meteor.subscribe("classes")
 				Meteor.subscribe("usersData")
@@ -93,7 +89,6 @@ Router.map ->
 				$("meta[name='theme-color']").attr "content", @data().__color()
 
 			document.title = "simplyHomework | #{@data().name}"
-			NProgress?.done()
 
 		data: ->
 			try
@@ -109,7 +104,6 @@ Router.map ->
 		path: "/app/project/:projectId"
 
 		subscriptions: ->
-			NProgress?.start()
 			return [
 				Meteor.subscribe("classes")
 				Meteor.subscribe("usersData")
@@ -133,7 +127,6 @@ Router.map ->
 				$("meta[name='theme-color']").attr "content", @data().__class.__color()
 
 			document.title = "simplyHomework | #{@data().name}"
-			NProgress?.done()
 
 		data: ->
 			try
@@ -149,7 +142,6 @@ Router.map ->
 		path: "/app/calendar"
 
 		subscriptions: ->
-			NProgress?.start()
 			return [
 				Meteor.subscribe("classes")
 				Meteor.subscribe("usersData")
@@ -168,7 +160,6 @@ Router.map ->
 				$("meta[name='theme-color']").attr "content", "#32A8CE"
 
 			document.title = "simplyHomework | Agenda"
-			NProgress?.done()
 
 	@route "mobileCalendar",
 		fastRender: yes
@@ -176,7 +167,6 @@ Router.map ->
 		path: "/app/mobileCalendar"
 
 		subscriptions: ->
-			NProgress?.start()
 			return [
 				Meteor.subscribe("classes")
 				Meteor.subscribe("usersData")
@@ -195,7 +185,6 @@ Router.map ->
 				$("meta[name='theme-color']").attr "content", "#32A8CE"
 
 			document.title = "simplyHomework | Agenda"
-			NProgress?.done()
 
 	@route "personView",
 		fastRender: yes
@@ -203,7 +192,6 @@ Router.map ->
 		path: "/app/person/:_id"
 
 		subscriptions: ->
-			NProgress?.start()
 			return [
 				subs.subscribe("usersData", [ @params._id ])
 				Meteor.subscribe("classes")
@@ -224,7 +212,6 @@ Router.map ->
 				return
 
 			document.title = "simplyHomework | #{@data().profile.firstName} #{@data().profile.lastName}"
-			NProgress?.done()
 
 		data: -> Meteor.users.findOne @params._id
 
@@ -234,7 +221,6 @@ Router.map ->
 		path: "/app/chat/:_id"
 
 		subscriptions: ->
-			NProgress?.start()
 			return [
 				subs.subscribe("usersData", [ @params._id ])
 				Meteor.subscribe("classes")
@@ -257,7 +243,6 @@ Router.map ->
 				return
 
 			document.title = "simplyHomework | #{@data().__friendlyName}"
-			NProgress?.done()
 
 		data: ->
 			x = Meteor.users.findOne { _id: @params._id }, transform: userChatTransform

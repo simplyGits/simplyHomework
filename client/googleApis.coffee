@@ -47,7 +47,6 @@ authResult = (res) ->
 buildPicker = =>
 	return unless pickerLoaded.get() and oauthToken? and !projectFilePicker?
 
-	NProgress.start()
 	@projectFilePicker = new google.picker.PickerBuilder()
 		.addView ( ->
 			x = new google.picker.DocsView()
@@ -59,9 +58,7 @@ buildPicker = =>
 		.addView new google.picker.DocsUploadView()
 		.setOAuthToken oauthToken
 		.setDeveloperKey "AIzaSyDZldjOJq0jrsi5IhtBIGz1ZHhbF3g-_ec"
-		.setCallback (data) ->
-			if data.action is "loaded" then NProgress.done()
-			else pickerResult.set data
+		.setCallback (data) -> pickerResult.set data if data.action isnt "loaded"
 		.setLocale "nl"
 		.build()
 	@projectFilePicker.setVisible yes
