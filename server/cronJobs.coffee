@@ -52,7 +52,7 @@ SyncedCron.add
 			return unless url?
 			{ username, password } = user.magisterCredentials
 
-			new Magister(url, username, password).ready (err) ->
+			new Magister({ url }, username, password).ready (err) ->
 				return if err?
 
 				@appointments new Date, no, Meteor.bindEnvironment (e, r) ->
