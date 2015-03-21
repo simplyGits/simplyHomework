@@ -31,13 +31,13 @@ _cachedMagisterObjects = {}
 
 	val = _cachedMagisterObjects[userId]
 
-	if val? and val.invalidationTime > new Date().getTime()
+	if val? and val.invalidationTime > _.now()
 		return val.magister
 	else
 		magister = new Magister school, username, password, null
 		_cachedMagisterObjects[userId] =
 			magister: magister
-			invalidationTime: new Date().getTime() + 1200000
+			invalidationTime: _.now() + 1200000
 
 		return magister
 
