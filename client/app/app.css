@@ -10,7 +10,6 @@
 	overflow-x: hidden;
 	overflow-y: auto;
 	z-index: 100;
-	backface-visibility: hidden;
 }
 
 .tt-query {
