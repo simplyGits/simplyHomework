@@ -551,7 +551,7 @@ Template.accountInfoModal.events
 			err = (query, content) ->
 				$(query)
 					.addClass "has-error"
-					.tooltip placement: "bottom", title: "Verkeerd wachtwoord"
+					.tooltip placement: "bottom", title: content
 					.tooltip "show"
 
 			if oldPass isnt newPass
