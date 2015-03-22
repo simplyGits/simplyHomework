@@ -1,7 +1,6 @@
 schoolSub = null
 magisterClassesComp = null
 addClassComp = null
-@snapper = null
 magisterClasses = new ReactiveVar null
 
 class @App
