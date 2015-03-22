@@ -215,7 +215,7 @@ Schemas.GoaledSchedules = new SimpleSchema
 				day = DayToDutch Helpers.weekDay p.deadline
 				time = "#{Helpers.addZero p.deadline.getHours()}:#{Helpers.addZero p.deadline.getMinutes()}"
 
-				(switch Helpers.daysRange new Date(), p.deadline
+				date = switch Helpers.daysRange new Date, p.deadline, no
 					when -6, -5, -4, -3 then "Afgelopen #{day}"
 					when -2 then "Eergisteren"
 					when -1 then "Gisteren"
@@ -223,7 +223,9 @@ Schemas.GoaledSchedules = new SimpleSchema
 					when 1 then "Morgen"
 					when 2 then "Overmorgen"
 					when 3, 4, 5, 6 then "Aanstaande #{day}"
-					else "#{Helpers.cap day} #{DateToDutch(p.deadline, no)}") + " " + time
+					else "#{Helpers.cap day} #{DateToDutch p.deadline, no}"
+
+				"#{date} #{time}"
 		)
 
 chatMessageReplaceMap = [

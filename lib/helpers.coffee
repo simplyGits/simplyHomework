@@ -91,9 +91,16 @@ class @Helpers
 	# @method daysRange
 	# @param firstDate {Date} First date as a Date object.
 	# @param lastDate {Date} Last date as a Date object.
+	# @param useTime {Boolean} If true the calculation will conisder the time of the given dates.
+	# @param round {Boolean} Whether or not to round the result.
 	# @return {Number} Amount of days between the two given dates. Can be negative.
 	###
-	@daysRange: (firstDate, lastDate) -> return Math.round (lastDate.getTime() - firstDate.getTime()) / 86400000
+	@daysRange: (firstDate, lastDate, useTime = yes, round = yes) ->
+		if useTime
+			moment(lastDate).diff firstDate, "days", not round
+		else
+			# When not using time, the result is always rounded.
+			moment(lastDate.date()).diff firstDate.date(), "days"
 
 	###*
 	# Returns the current day of the week.
