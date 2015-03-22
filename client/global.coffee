@@ -134,9 +134,4 @@ Meteor.startup ->
 					else "Je was een chatberichtje aan het typen! D:"
 				)
 
-	prevTime = _.now()
-	Meteor.setInterval (->
-		x = _.now()
-		minuteTracker.changed() if x - prevTime >= 60000
-		prevTime = x
-	), 10000
+	Meteor.setInterval (-> minuteTracker.changed()), 60000
