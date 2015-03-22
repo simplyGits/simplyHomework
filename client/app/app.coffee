@@ -586,7 +586,7 @@ Template.addProjectModal.helpers
 Template.addProjectModal.events
 	"click #createButton": ->
 		@added = yes
-		project = new Project @name(), @description(), @deadline(), @id(), @__class._id, Meteor.userId()
+		project = new Project @name(), @description(), @deadline(), Meteor.userId(), @__class._id, @id()
 		Projects.insert project, (e) => @added = not e?
 		$("#addProjectModal").modal "hide"
 
@@ -606,7 +606,7 @@ Template.addProjectModal.events
 			shake "#addProjectModal"
 			return
 
-		New.project name, description, deadline, null, classId, Meteor.userId()
+		New.project name, description, deadline, Meteor.userId(), classId, null
 
 		$("#addProjectModal").modal "hide"
 
