@@ -9,6 +9,7 @@
 		{{> accountInfoModal}}
 		{{> notificationSettingsModal}}
 		{{> addProjectModal}}
+		{{> deleteAccountModal}}
 	{{! end modals}}
 
 	{{> sidebar}}
@@ -40,6 +41,7 @@
 					<button class="btn btn-default" id="schedularPrefsButton">Planner Voorkeuren</button>
 					<button class="btn btn-default" id="accountInfoButton">Account info aanpassen</button>
 					<button class="btn btn-default" id="clearInfoButton">Alle data verwijderen</button>
+					<button class="btn btn-default" id="deleteAccountButton">Account verwijderen</button>
 					<button class="btn btn-default" id="startTourButton">Start rondleiding</button>
 					<button class="btn btn-danger" id="logOutButton">Uitloggen</button>
 				</div>
@@ -386,6 +388,33 @@
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-primary" id="goButton">Aanmaken</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</template>
+
+<template name="deleteAccountModal">
+	<div class="modal fade" id="deleteAccountModal">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+					<h4 class="modal-title">Account verwijderen</h4>
+				</div>
+				<div class="modal-body">
+					<div>
+						Je staat op het punt om je gehele account te verwijderen.
+						Dit kan <b>niet</b> worden teruggedraaid.
+						Om aan te geven dat je zeker weet dat je je account wilt
+						verwijderen moet je je wachtwoord beneden invoren.
+					</div>
+					<br>
+					<input type="password" class="form-control" id="passwordInput" placeholder="●●●●●●●●●●" autocomplete="off">
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Annuleren</button>
+					<button type="button" class="btn btn-danger" id="goButton">Verwijder</button>
 				</div>
 			</div>
 		</div>

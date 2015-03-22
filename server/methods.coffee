@@ -138,3 +138,23 @@ Meteor.methods
 				}
 			}
 		).count() isnt 0
+
+	###*
+	# Removes the account of the current caller.
+	# @method removeAccount
+	# @param passHash {String} The password of the user SHA256 encrypted.
+	###
+	removeAccount: (passHash) ->
+		check passHash, String
+		unless @userId?
+			throw new Meteor.Error "notLoggedIn", "User not logged in."
+
+		user = Meteor.users.findOne @userId
+		res = Accounts._checkPassword user,
+			digest: passHash
+			algorithm: "sha-256"
+
+		if res.error?
+			throw new Meteor.Error "wrongPassword", "Given password incorrect."
+
+		Meteor.users.remove @userId

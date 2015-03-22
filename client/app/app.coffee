@@ -464,6 +464,9 @@ Template.settingsModal.events
 				"profile.groupInfos": null
 			Meteor.call "clearMagisterInfo"
 			document.location.reload()
+	"click #deleteAccountButton": ->
+		$("#settingsModal").modal "hide"
+		$("#deleteAccountModal").modal()
 
 	"click #startTourButton": ->
 		$("#settingsModal").modal "hide"
@@ -471,6 +474,20 @@ Template.settingsModal.events
 
 	"click #logOutButton": ->
 		Meteor.logout()
+
+Template.deleteAccountModal.events
+	"click #goButton": ->
+		input = $ "#deleteAccountModal #passwordInput"
+
+		pass = Package.sha.SHA256 input.val()
+		# Store the name, when the user is gone we can't get the name anymore :P
+		name = Meteor.user().profile.firstName
+		Meteor.call "removeAccount", pass, (e) ->
+			if e.error is "wrongPassword"
+				input
+					.tooltip placement: "bottom", title: "Verkeerd wachtwoord", trigger: "focus"
+					.tooltip "show"
+			else ga "send", "event", "action", "remove", "account"
 
 Template.newSchoolYearModal.helpers classes: -> classes()
 
