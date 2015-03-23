@@ -87,10 +87,14 @@ div.itemContainerContent
 		text-decoration: none !important
 // \\ Item Container
 
-.snapjs-right .sidebar,
-.snapjs-left .chatSidebar {
-    display: none
-}
++mobile()
+	.chatSidebar, .sidebar
+		display: none
+
+	.snapjs-left .sidebar,
+	.snapjs-right .chatSidebar {
+		display: block
+	}
 
 div.classRemoveRow
 	font-size: 15px
