@@ -10,12 +10,15 @@
 }
 
 div#adbar {
-	z-index: 500;
-	background-color: #282828;
-	height: 90px;
 	position: fixed;
+	left: 0;
 	right: 0;
 	bottom: 0;
+	z-index: 500;
+	height: 90px;
+	background-color: #282828;
+	-webkit-transform: translateZ(0);
+	backface-visibility: hidden;
 }
 
 .tt-query {
@@ -54,12 +57,4 @@ div#adbar {
 
 .twitter-typeahead {
 	display: block !important;
-}
-
-@media only screen and (max-width: 760px) {
-	.content {
-		box-shadow: none;
-		-moz-box-shadow: none;
-		-webkit-box-shadow: none;
-	}
 }
