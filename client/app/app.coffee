@@ -628,7 +628,16 @@ Template.addProjectModal.rendered = ->
 		displayKey: "name"
 	).on "typeahead:selected", (obj, datum) -> Session.set "currentSelectedClassDatum", datum
 
-	$("#projectDeadlineInput").datetimepicker language: "nl", defaultDate: new Date()
+	$("#projectDeadlineInput").datetimepicker
+		locale: moment.locale()
+		defaultDate: new Date()
+		icons:
+			time: "fa fa-clock-o"
+			date: "fa fa-calendar"
+			up: "fa fa-arrow-up"
+			down: "fa fa-arrow-down"
+			previous: "fa fa-chevron-left"
+			next: "fa fa-chevron-right"
 
 # == End Modals ==
 

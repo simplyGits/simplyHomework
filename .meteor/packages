@@ -22,7 +22,7 @@ natestrauser:animate-css
 percolate:velocityjs
 cryptoquick:stylus-multi
 reactive-var
-tsega:bootstrap3-datetimepicker@0.4.0
+tsega:bootstrap3-datetimepicker
 meteorhacks:unblock
 meteorhacks:subs-manager
 meteorhacks:npm
