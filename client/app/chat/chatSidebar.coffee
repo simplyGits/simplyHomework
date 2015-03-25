@@ -128,13 +128,7 @@ class @ChatManager
 ###
 chats = ->
 	dam = DamerauLevenshtein insert: 0
-	caseInsensitive = searchTerm.get() is searchTerm.get().toLowerCase()
-
-	calcDistance = null
-	if caseInsensitive
-		calcDistance = _.curry (s) -> dam searchTerm.get().trim().toLowerCase(), s.trim().toLowerCase()
-	else
-		calcDistance = _.curry (s) -> dam searchTerm.get().trim(), s.trim()
+	calcDistance = _.curry (s) -> dam searchTerm.get().trim().toLowerCase(), s.trim().toLowerCase()
 
 	users = Meteor.users.find({ _id: $ne: Meteor.userId() }, transform: userChatTransform).fetch()
 	projects = Projects.find({}, sort: { "deadline": 1, "name": 1 }, transform: projectChatTransform).fetch()
@@ -142,7 +136,7 @@ chats = ->
 	groups = [] # Later when we implement groups.
 
 	return _(users.concat(projects).concat(groups))
-		.filter (chat) -> searchTerm.get().trim() is "" or calcDistance(chat.__friendlyName) < 2 or Helpers.contains chat.__friendlyName, searchTerm.get(), caseInsensitive
+		.filter (chat) -> searchTerm.get().trim() is "" or calcDistance(chat.__friendlyName) < 2 or Helpers.contains chat.__friendlyName, searchTerm.get(), yes
 		.sortBy (chat) -> chat.__friendlyName
 		.sortBy (chat) ->
 			if searchTerm.get().trim() is ""
