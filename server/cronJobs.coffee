@@ -24,10 +24,10 @@ SyncedCron.add
 	name: "Congratulate users"
 	schedule: (parser) -> parser.recur().on(5).hour()
 	job: ->
-		now = new Date
-		users = Meteor.users.find( ->
-			birthDate = @profile.birthDate
-			birthDate.getMonth() is now.getMonth() and birthDate.getDate() is now.getDate()
+		users = Meteor.users.find(
+			"this.profile.birthDate != null &&" +
+			"this.profile.birthDate.getMonth() === new Date().getMonth() &&" +
+			"this.profile.birthDate.getDate() === new Date().getDate()"
 		).fetch()
 
 		for user in users
