@@ -61,6 +61,7 @@ SyncedCron.add
 
 					for a in homework
 						if SavedHomework.find({ "obj._id": a.id() }).count() is 0
+							delete a._magisterObj
 							SavedHomework.insert
 								userId: user._id
 								obj: JSON.decycle a
