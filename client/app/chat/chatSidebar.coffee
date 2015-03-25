@@ -9,7 +9,7 @@ searchTerm = new ReactiveVar ""
 		__sidebarIcon: gravatar u
 		__type: "private"
 
-		__lastInteraction: ChatMessages.findOne({ $or: [ { to: u._id }, { creatorId: u._id } ] }, sort: "time": -1)?.time
+		__lastInteraction: -> ChatMessages.findOne({ $or: [ { to: u._id }, { creatorId: u._id } ] }, sort: "time": -1)?.time
 		__status: (
 			if u.status.idle then "inactive"
 			else if u.status.online then "online"
@@ -42,7 +42,7 @@ searchTerm = new ReactiveVar ""
 		__sidebarIcon: null
 		__type: "project"
 
-		__lastInteraction: ChatMessages.findOne({ projectId: p._id }, sort: "time": -1)?.time
+		__lastInteraction: -> ChatMessages.findOne({ projectId: p._id }, sort: "time": -1)?.time
 		__status: ""
 		__friendlyName: p.name
 
@@ -143,9 +143,10 @@ chats = ->
 
 	return _(users.concat(projects).concat(groups))
 		.filter (chat) -> searchTerm.get().trim() is "" or calcDistance(chat.__friendlyName) < 2 or Helpers.contains chat.__friendlyName, searchTerm.get(), caseInsensitive
+		.sortBy (chat) -> chat.__friendlyName
 		.sortBy (chat) ->
 			if searchTerm.get().trim() is ""
-				return chat.__lastInteraction
+				return -chat.__lastInteraction()?.getTime()
 			else
 				distance = DamerauLevenshtein()(searchTerm.get().trim().toLowerCase(), chat.__friendlyName.trim().toLowerCase())
 
