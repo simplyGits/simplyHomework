@@ -1,0 +1,85 @@
+<template name="setup">
+	<div class="setup">
+		{{> Template.dynamic template=currentSetupItem}}
+	</div>
+</template>
+
+<template name="welcome">
+	<div class="header">
+		Hey!
+	</div>
+
+	<div class="body">
+		simplyHomework is een automatische huiswerkplanner die je leven makkelijker maakt.
+		<br>
+		Het haalt automatisch je huiswerk van magister, zoekt de juiste woordenlijsten bij het huiswerk, plant automatisch voor proefwerken en nog veel meer.
+		<br>
+		Voordat we beginnen hebben we nog een paar vraagjes.
+	</div>
+
+	<div class="footer">
+		<button class="btn btn-primary" data-action="nextItem">verder</button>
+	</div>
+</template>
+
+<template name="magisterInfo">
+	<div class="header">
+		Magister informatie
+	</div>
+
+	<div class="body">
+		<form class="vertical full-width">
+			<div id="schoolNameGroup" class="group">
+				<label for="schoolNameInput">Schoolnaam</label>
+				<input type="text" id="schoolNameInput"/>
+			</div>
+			<div id="usernameGroup" class="group">
+				<label for="magisterUsernameInput">Magister inlognaam</label>
+				<input type="text" id="magisterUsernameInput"/>
+			</div>
+			<div id="passwordGroup" class="group">
+				<label for="magisterPasswordInput">Magister wachtwoord</label>
+				<input type="password" id="magisterPasswordInput"/>
+			</div>
+			<div id="allowGroup" class="group checkbox">
+				<label>
+					<input type="checkbox">
+					<span style="font-size: 13px">
+						Ik geef simply, simplyApps en simplyHomework toestemming mijn Magister gebruikersnaam, wachtwoord en data van Magister op te slaan en te gebruiken. Hierbij ga ik ook akkoord met het <a href="/privacy" target="_blank">volledige privacy beleid van simplyHomework</a>.
+
+					</span>
+				</label>
+			</div>
+		</form>
+	</div>
+
+	<div class="footer">
+		<button class="btn btn-primary" data-action="nextItem">verder</button>
+	</div>
+</template>
+
+<template name="plannerPrefs">
+	<div class="header">
+		Planner voorkeuren
+	</div>
+
+	<div class="body">
+		<h4 style="text-align: center; margin-bottom: 20px;">Hoeveel tijd heb je op elke weekdag?<small><br><i>(schooltijd niet meegerekend)</i><br>Je kan dit altijd in je instellingen aanpassen.</small></h4>
+		<form class="vertical full-width">
+			{{#each dayWeek}}
+				<div id="{{name}}Group" class="group">
+					<label for="{{name}}Input">{{friendlyName}}</label>
+					<select id="{{name}}Input">
+						{{#each weigthOptions}}
+							<option selected={{selected}}>{{name}}</option>
+						{{/each}}
+					</select>
+				</div>
+			{{/each}}
+		</form>
+	</div>
+
+	<div class="footer">
+		<button class="btn btn-primary" data-action="nextItem">verder</button>
+	</div>
+</template>
