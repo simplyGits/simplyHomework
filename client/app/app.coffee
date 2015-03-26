@@ -720,8 +720,8 @@ Template.app.rendered = ->
 
 		for project in projects
 			d = if (d = project.deadline).getHours() is 0 and d.getMinutes() is 0 then d.addDays(-1) else d
-			if project.__class?
-				s += "<b>#{project.__class.course}</b> #{project.name} - #{DayToDutch(Helpers.weekDay(d))}\n"
+			if project.__class()?
+				s += "<b>#{project.__class().course}</b> #{project.name} - #{DayToDutch(Helpers.weekDay(d))}\n"
 			else
 				s += "#{project.name} - #{DayToDutch(Helpers.weekDay(d))}\n"
 

@@ -206,7 +206,7 @@ Schemas.GoaledSchedules = new SimpleSchema
 
 @projectTransform = (p) ->
 	return _.extend p,
-		__class: Classes.findOne p.classId, transform: classTransform
+		__class: -> Classes.findOne p.classId, transform: classTransform
 		__borderColor: (
 			if p.deadline < new Date then "#FF4136"
 		)
