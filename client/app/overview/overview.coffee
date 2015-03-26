@@ -144,7 +144,6 @@ Template.appOverview.rendered = ->
 				lastGrade = _(gradesCurrentClass)
 					.filter (g) -> g.type().type() isnt 2
 					.max "_dateFilledIn"
-					.value()
 				lastGrade = null if lastGrade is -Infinity # rip lodash beheviour.
 
 				parsedData = Parser.parseDescription h.content()
