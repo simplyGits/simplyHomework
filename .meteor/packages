@@ -20,7 +20,6 @@ meteorhacks:fast-render
 reywood:iron-router-ga
 natestrauser:animate-css
 percolate:velocityjs
-cryptoquick:stylus-multi
 reactive-var
 tsega:bootstrap3-datetimepicker
 meteorhacks:unblock
@@ -43,4 +42,5 @@ meteor-analytics
 twbs:bootstrap-noglyph
 mizzao:bootboxjs
 fortawesome:fontawesome
+cryptoquick:stylus-multi
 rzymek:moment-locale-nl
