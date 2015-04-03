@@ -4,12 +4,10 @@
 
 AccountController = RouteController.extend
 	verifyMail: ->
-		route = @
-
-		Accounts.verifyEmail @params.token, ->
+		Accounts.verifyEmail @params.token, =>
 			Router.go "app"
 			notify "Email geverifiëerd", "success"
-			route.next()
+			@next()
 
 Router.configure
 	onStop: ->
