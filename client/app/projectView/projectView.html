@@ -25,12 +25,14 @@
 				<b>Beschrijving</b>: <span class="projectInfoDescription">{{description}}</span>
 			</div>
 
-			<div class="projectInfoChatQuoteContainer">
-				<img class="lastChatSenderPicture" src="https://www.gravatar.com/avatar/763664ead00ca1ed8e12db1d5ad703c5?s=75&d=identicon&r=PG" width="50" height="50" style="border-color: {{lastChatMessageSenderColor}}" />
-				<span class="robotoThin lastChatSenderName" style="color: {{lastChatMessageSenderColor}}">{{lastChatMessageSenderName}} Lieuwe</span>
-				<span class="robotoThin lastChatMessage">{{lastChatMessage}} Ik hou van placeholder</span>
-				<span class="robotoThin lastChatHeader">Chat</span>
-			</div>
+			{{#with __lastChatMessage}}
+				<div class="projectInfoChatQuoteContainer">
+					<img class="lastChatSenderPicture" src="{{gravatar __sender 100}}" width="50" height="50"/>
+					<span class="robotoThin lastChatSenderName">{{__sender.profile.firstName}}</span>
+					<span class="robotoThin lastChatMessage">{{content}}</span>
+					<span class="robotoThin lastChatHeader">Chat</span>
+				</div>
+			{{/with}}
 		</div>
 
 		<div class="row">

@@ -227,6 +227,7 @@ Schemas.GoaledSchedules = new SimpleSchema
 
 				"#{date} #{time}"
 		)
+		__lastChatMessage: -> ChatMessages.findOne { projectId: p._id }, transform: chatMessageTransform, sort: "time": -1
 
 chatMessageReplaceMap = [
 	[/\(y\)/ig, ":thumbsup:"]
