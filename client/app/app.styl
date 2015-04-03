@@ -59,28 +59,22 @@ div.itemContainer
 	width: 100%
 	margin-top: 10px
 	border: 1px lightgray solid
-	border-radius: 15px
-	padding-top: 50px
+	padding-top: 25px
+	min-height: 150px
 
 	+mobile()
 		height: initial !important
 
-div.itemContainerDivider
-	display: inline-table
-	width: calc(100% - 31px)
-	border: 0px lightgray solid
-	border-top-width: 1px
-	position: absolute
-	top: 65px
+div.itemContainerHeader
+	position: relative
+	border-bottom: 1px lightgray solid
 
 div.itemContainerContent
 	text-rendering: optimizeLegibility
 	roboto(600)
 
 	position: relative
-	height: calc(100% - 15px)
-	min-height: 50px
-	margin-top: 10px
+	height: calc(100% - 30px)
 	overflow-y: auto
 
 	a

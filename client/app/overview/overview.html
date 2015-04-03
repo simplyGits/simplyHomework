@@ -25,10 +25,9 @@
 		<div class="row">
 			<div class="col-sm-6">
 				<div class="itemContainer" id="overviewTaskContainer" style="height: calc(100vh - {{itemContainerMargin}})">
-					<span class="robotoThin itemContainerHeader">
+					<div class="robotoThin itemContainerHeader">
 						Vandaag
-					</span>
-					<div class="itemContainerDivider"></div>
+					</div>
 					<div class="itemContainerContent">
 						{{#each tasks}}
 							{{> taskRow}}
@@ -39,11 +38,10 @@
 
 			<div class="col-sm-6">
 				<div class="itemContainer" id="overviewProjectContainer" style="height: calc(100vh - {{itemContainerMargin}})">
-					<span class="robotoThin itemContainerHeader">
-						<span class="fa fa-plus" id="addProjectIcon" onmouseover="$(this).velocity({ opacity: 1 }, 100);" onmouseleave="$(this).velocity({ opacity: .5 }, 100);"></span>
+					<div class="robotoThin itemContainerHeader">
+						<span class="fa fa-plus" id="addProjectIcon"></span>
 						Projecten
-					</span>
-					<div class="itemContainerDivider"></div>
+					</div>
 					<div class="itemContainerContent">
 						{{#each projects}}
 							{{> projectRow}}

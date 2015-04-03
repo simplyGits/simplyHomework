@@ -69,11 +69,15 @@ span#addPersonIcon, span#addFileIcon
 	vertical-align: middle
 	font-size: 20px
 	position: absolute
-	right: 50px
+	right: 25px
 	top: 20px
 	cursor: pointer
 	opacity: .5
-	-moz-padding-end: 30px
+
+	transition: .1s opacity linear
+
+span#addPersonIcon:hover, span#addFileIcon:hover
+	opacity: 1
 
 span.projectTitle
 	absolute: left 40px right 35px
