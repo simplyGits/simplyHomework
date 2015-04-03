@@ -1,6 +1,6 @@
 @subs = new SubsManager
 	cacheLimit: 40
-	expireIn: 15
+	expireIn: 10
 
 AccountController = RouteController.extend
 	verifyMail: ->
