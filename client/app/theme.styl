@@ -49,7 +49,7 @@ form.vertical.full-width
 			width: 100%
 			font-size: 12px
 
-		input
+		input, select
 			// Remove default vender styling:
 			-webkit-appearance: none
 			-webkit-border-radius: 0
@@ -63,7 +63,9 @@ form.vertical.full-width
 			padding-left: .5em
 			padding-right: .5em
 
-		input:focus
+			background-color: white
+
+		input:focus, select:focus
 			border-color: darkgray
 
 	div.group.no-margin
@@ -103,6 +105,22 @@ form.vertical.full-width
 
 		span:first-child
 			margin-left: 4px
+
+	div.group.select
+		position: relative
+
+	div.group.select:after
+		absolute: top 70% right 1.25rem
+		display: inline-block
+		content: ""
+		width: 0
+		height: 0
+		pointer-events: none
+
+		border-top: .35rem solid
+		border-right: .35rem solid transparent
+		border-bottom: .35rem solid transparent
+		border-left: .35rem solid transparent
 
 div.colorpicker
 	border-radius: 0
