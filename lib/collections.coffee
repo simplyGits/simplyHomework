@@ -189,6 +189,19 @@ Schemas.GoaledSchedules = new SimpleSchema
 		type: Number
 		optional: yes
 
+Schemas.ReportItems = new SimpleSchema
+	_id:
+		type: Meteor.Collection.ObjectID
+	userId:
+		type: String
+	reporterId:
+		type: String
+	reportGrounds:
+		type: [String]
+		minCount: 1
+	time:
+		type: Date
+
 @[key].attachSchema Schemas[key] for key of Schemas
 
 @classTransform = (tmpClass) ->

@@ -21,14 +21,17 @@ Template.personView.helpers
 	sameUser: sameUser
 
 Template.personView.events
+	"click i#reportButton": ->
+		modal = $ "#reportUserModal"
+		modal.find("input[type='checkbox']").prop "checked", no
+		modal.modal()
+
 	"click button#chatButton": -> ChatManager.openUserChat @
 
 Template.personView.rendered = ->
 	@autorun ->
 		Router.current()._paramsDep.depend()
-		Meteor.defer -> $('[data-toggle="tooltip"]').tooltip
-			container: "body"
-			placement: "bottom"
+		Meteor.defer -> $('[data-toggle="tooltip"]').tooltip container: "body"
 
 Template.personSharedHours.helpers
 	days: ->
@@ -52,3 +55,29 @@ Template.personSharedHours.rendered = ->
 			personHasHour = _.any Router.current().data().profile.groupInfos, (gi) -> gi.group is a.description()
 
 			return currentUserHasHour and personHasHour
+
+Template.reportUserModal.events
+	"click button#goButton": ->
+		reportItem = new ReportItem Meteor.userId(), Router.current().data()._id
+
+		checked = $ "div#checkboxes input:checked"
+		for checkbox in checked
+			reportItem.reportGrounds.push checkbox.closest("div").id
+
+		if reportItem.reportGrounds.length is 0
+			shake "#reportUserModal"
+			return
+
+		Meteor.call "reportUser", reportItem, (e, r) ->
+			$("#reportUserModal").modal "hide"
+
+			name = Router.current().data().profile.firstName
+			if e?
+				message = switch e.error
+					when "rateLimit" then "#{name} is niet gerapporteerd, je hebt pas teveel mensen gerapporteerd."
+					else "Onbekende fout tijdens het rapporteren"
+
+				notify message, "error"
+
+			else
+				notify "#{name} gerapporteerd.", "notice"
