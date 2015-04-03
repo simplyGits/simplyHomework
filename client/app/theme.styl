@@ -1,0 +1,104 @@
+.btn:not(.btn-trans)
+	padding: 5px 25px
+	border: 1px lightgray solid
+	border-radius: 0
+	outline: none !important
+
+.btn:not(.btn-trans):active
+	box-shadow: none
+	background-color: #dadada
+
+// Dismiss buttons need to be less 'visible' than the 'main' button.
+// Also contains colored buttons which also don't need a border.
+.btn:not(.btn-trans)[data-dismiss],
+.btn.btn-primary,
+.btn.btn-danger,
+.btn.btn-success {
+	padding: 6px 26px
+	border: 0
+}
+
+.btn.btn-primary:active
+	background-color: #274F71
+
+.btn.btn-danger:active
+	background-color: #A83936
+
+.btn.btn-success:active
+	background-color: #397E39
+
+.form-control
+	border-radius: 0
+	border: 1px lightgray solid
+	transition: none
+
+.form-control:focus
+	border-color: gray
+	box-shadow: none
+
+.modal-content
+	border: none
+	border-radius: 0
+
+form.vertical.full-width
+	div.group
+		width: 100%
+		margin-bottom: 15px
+
+		label
+			width: 100%
+			font-size: 12px
+
+		input
+			width: 100%
+			font-size: 15px
+			border: 1px lightgray solid
+			outline: none
+
+			padding: .2em
+			padding-left: .5em
+			padding-right: .5em
+
+		input:focus
+			border-color: darkgray
+
+	div.group.no-margin
+		margin-bottom: 0px
+
+	div.group.checkbox
+		size = 15px
+
+		input[type="checkbox"]:before
+			display: block
+			content: ""
+			background-color: #FFFFFF
+
+			width: size
+			height: size
+			margin-top: -2px
+
+		input[type="checkbox"]:after
+			display: block
+			content: ""
+			border: 1px #d3d3d3 solid
+
+			width: size
+			height: size
+
+			margin-top: -13px
+			margin-left: -1px
+
+			padding: 2px
+			background-clip: content-box
+			background-color: white
+
+			cursor: pointer
+
+		input[type="checkbox"]:checked:after
+			background-color: #337AB7
+
+		span:first-child
+			margin-left: 4px
+
+div.colorpicker
+	border-radius: 0

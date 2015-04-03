@@ -104,16 +104,15 @@ div.fileRow, div.personRow
 	white-space: nowrap
 
 div.personRow
-	padding-top: 5px
-	padding-bottom: 5px
+	height: 60px
 
 img.personImage
-	border-radius: 50%
-	//box-shadow: 0 0 30px 1px
-	border: 2px black solid
+	border-left: 3px black solid
+	absolute: top left bottom
 
 span.personName
-	absolute: left 70px right 40px
+	margin-left: 65px
+	line-height: 60px
 	color: #a4a4a4
 
 span.removePersonButton, span.removeFileButton
@@ -121,6 +120,7 @@ span.removePersonButton, span.removeFileButton
 	margin-right: 15px
 	opacity: 0
 	pointer-events: initial
+	font-weight: 300
 
 	transition: opacity .1s ease-in-out
 
