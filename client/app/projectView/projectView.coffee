@@ -202,22 +202,6 @@ Template.addParticipantModal.events
 	"keydown #personNameInput": (event) -> addUser() if event.which is 13
 
 Template.fileRow.events
-	"click": (event) ->
-		return # Ripple isn't really visible.
-		target = $(event.target)
-		ripple = target.find(".ripple")
-
-		ripple.removeClass "animate"
-
-		unless ripple.height() or ripple.width()
-			diameter = Math.max target.outerWidth(), target.outerHeight()
-			ripple.css height: diameter, width: diameter
-
-		x = event.pageX - target.offset().left - ripple.width() / 2
-		y = event.pageY - target.offset().top - ripple.height() / 2
-
-		ripple.css(top: "#{y}px", left: "#{x}px").addClass "animate"
-
 	"click .removeFileButton": (event) ->
 		event.preventDefault()
 		Projects.update currentProject()._id, $pull: driveFileIds: @id, (e) =>
