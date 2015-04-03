@@ -13,7 +13,8 @@ Router.configure
 	onStop: ->
 		$(".modal.in").modal "hide"
 		$(".backdrop.dimmed").removeClass "dimmed"
-		$(".tooltip").tooltip("destroy")
+		$(".tooltip").tooltip "destroy"
+		$("body").removeClass "modal-open"
 	trackPageView: true
 
 Router.map ->
