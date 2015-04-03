@@ -341,7 +341,7 @@ Meteor.startup ->
 					notification?.hide()
 					Session.set "allowNotifications", yes
 
-	Session.set "isPhone", window.matchMedia("only screen and (max-width: 760px)").matches or /android|iphone|ipod|ipad|blackberry|windows phone/i.test navigator.userAgent
+	Session.set "isPhone", window.matchMedia("only screen and (max-width: 760px)").matches or /android|iphone|ipod|blackberry|windows phone/i.test navigator.userAgent
 
 	UI.registerHelper "isPhone", -> Session.get "isPhone"
 	UI.registerHelper "empty", -> return @ is 0
