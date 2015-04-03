@@ -32,10 +32,14 @@ div#adbar {
 
 .tt-dropdown-menu {
 	background-color: white;
-	width: 468px;
-	border: 1px lightgray solid;
-	border-radius: 5px;
+
 	padding: 10px;
+	padding-left: 0;
+	padding-right: 0;
+
+	border: 1px #a9a9a9 solid;
+	border-top: none;
+	width: 100%;
 }
 
 .tt-suggestion {
@@ -46,9 +50,7 @@ div#adbar {
 
 .tt-suggestion.tt-cursor {
     color: #fff;
-    background-color: #0097cf;
-    margin-left: -10px;
-    margin-right: -10px;
+    background-color: #000;
     cursor: pointer;
 }
 
