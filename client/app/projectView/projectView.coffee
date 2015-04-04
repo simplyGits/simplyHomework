@@ -139,7 +139,16 @@ Template.projectView.events
 	"click #changeProjectIcon": ->
 		ga "send", "event", "button", "click", "projectInfoChange"
 
-		$("#changeDeadlineInput").datetimepicker language: "nl", defaultDate: currentProject().deadline
+		$("#changeDeadlineInput").datetimepicker
+			locale: moment.locale()
+			defaultDate: currentProject().deadline
+			icons:
+				time: "fa fa-clock-o"
+				date: "fa fa-calendar"
+				up: "fa fa-arrow-up"
+				down: "fa fa-arrow-down"
+				previous: "fa fa-chevron-left"
+				next: "fa fa-chevron-right"
 
 		ownClassesEngine = new Bloodhound
 			name: "ownClasses"
