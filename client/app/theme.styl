@@ -1,3 +1,4 @@
+// == buttons
 .btn:not(.btn-trans)
 	padding: 5px 25px
 	border: 1px lightgray solid
@@ -27,6 +28,7 @@
 .btn.btn-success:active
 	background-color: #397E39
 
+// == bootstrap form fallback
 .form-control
 	border-radius: 0
 	border: 1px lightgray solid
@@ -36,17 +38,35 @@
 	border-color: gray
 	box-shadow: none
 
+// == modals
 .modal-content
 	border: none
 	border-radius: 0
 
+// == tooltips
 .tooltip-inner
 	border-radius: 0
 	background-color: rgba(0, 0, 0, .8)
 
-.tooltip-arrow
+.tooltip.top .tooltip-arrow,
+.tooltip.top-left .tooltip-arrow,
+.tooltip.top-right .tooltip-arrow {
 	border-top-color: rgba(0, 0, 0, .8)
+}
 
+.tooltip.bottom .tooltip-arrow,
+.tooltip.bottom-left .tooltip-arrow,
+.tooltip.bottom-right .tooltip-arrow {
+	border-bottom-color: rgba(0, 0, 0, .8)
+}
+
+.tooltip.left .tooltip-arrow
+	border-left-color: rgba(0, 0, 0, .8)
+
+.tooltip.right .tooltip-arrow
+	border-right-color: rgba(0, 0, 0, .8)
+
+// == custom forms
 form.vertical.full-width
 	div.group
 		width: 100%
