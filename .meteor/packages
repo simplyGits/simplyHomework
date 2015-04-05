@@ -35,7 +35,6 @@ percolate:synced-cron
 mousetrap:mousetrap
 percolate:paginated-subscription
 aldeed:collection2
-ground:db
 markdown
 qnub:emojione
 meteor-analytics

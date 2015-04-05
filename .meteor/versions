@@ -25,13 +25,6 @@ email@1.0.6
 fastclick@1.0.3
 fortawesome:fontawesome@4.3.0
 geojson-utils@1.0.3
-ground:db@0.3.6
-ground:dictionary@0.2.0
-ground:localstorage@0.1.7
-ground:minimax@1.1.2
-ground:servertime@0.0.3
-ground:store@0.1.1
-ground:util@0.1.13
 html-tools@1.0.4
 htmljs@1.0.4
 http@1.1.0
@@ -83,9 +76,6 @@ percolate:paginated-subscription@0.2.4
 percolate:synced-cron@1.2.0
 percolate:velocityjs@1.2.1_1
 qnub:emojione@0.0.3
-raix:eventemitter@0.1.2
-raix:onetimeout@1.0.3
-raix:stubfence@1.0.1
 random@1.0.3
 reactive-dict@1.1.0
 reactive-var@1.0.5
