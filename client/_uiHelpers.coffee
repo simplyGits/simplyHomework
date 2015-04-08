@@ -322,10 +322,6 @@ class @NotificationsManager
 		.one 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', -> $(this).removeClass "animated shake"
 
 Meteor.startup ->
-	$("html").attr "lang", "nl"
-	moment.locale "nl"
-	emojione.ascii = yes # Convert ascii smileys (eg. :D) to emojis.
-
 	Session.set "allowNotifications", no
 
 	notification = null

@@ -84,6 +84,10 @@ isOldInternetExplorer = ->
 
 @minuteTracker = new Tracker.Dependency
 Meteor.startup ->
+	$("html").attr "lang", "nl"
+	moment.locale "nl"
+	emojione.ascii = yes # Convert ascii smileys (eg. :D) to emojis.
+
 	window.viewportUnitsBuggyfill.init()
 	[oldBrowser, version] = isOldInternetExplorer()
 
