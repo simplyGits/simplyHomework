@@ -85,7 +85,7 @@ http://tomsmeding.nl/
 ###
 @empty = (inputId, groupId, message) ->
 	if $("##{inputId}").val() is ""
-		$("##{groupId}").addClass("has-error").tooltip(placement: "bottom", title: message).tooltip("show")
+		$("##{groupId}").addClass("error").tooltip(placement: "bottom", title: message).tooltip("show")
 		return true
 	return false
 

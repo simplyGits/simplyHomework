@@ -2,7 +2,7 @@ login = ->
 	if not Session.get "creatingAccount"
 		Meteor.loginWithPassword $("#emailInput").val().toLowerCase(), $("#passwordInput").val(), (error) ->
 			if error? and error.reason is "Incorrect password"
-				$("#passwordGroup").addClass("has-error").tooltip(placement: "bottom", title: "Wachtwoord is fout", trigger: "manual").tooltip("show")
+				$("#passwordGroup").addClass("error").tooltip(placement: "bottom", title: "Wachtwoord is fout", trigger: "manual").tooltip("show")
 	else
 		Meteor.call "mailExists", $("#emailInput").val().toLowerCase(), (error, result) ->
 			if result
@@ -14,8 +14,8 @@ login = ->
 				if empty "passwordInput", "passwordGroup", "Wachtwoord is leeg" then okay = false
 				if empty "betaCodeInput", "betaCodeGroup", "Voornaam is leeg" then okay = false
 				unless correctMail $("#emailInput").val()
-					$("#emailGroup").removeClass("has-error").tooltip "destroy"
-					$("#emailGroup").addClass("has-error").tooltip(placement: "bottom", title: "Ongeldig email adres", trigger: "manual").tooltip("show")
+					$("#emailGroup").removeClass("error").tooltip "destroy"
+					$("#emailGroup").addClass("error").tooltip(placement: "bottom", title: "Ongeldig email adres", trigger: "manual").tooltip("show")
 					okay = false
 				if okay
 					Accounts.createUser {
@@ -41,11 +41,11 @@ Template.signupModal.events
 
 		unless event.which is 13
 			if correctMail $("#emailInput").val()
-				$("#emailGroup").removeClass "has-error"
-				$("#emailGroup").addClass "has-success"
+				$("#emailGroup").removeClass "error"
+				$("#emailGroup").addClass "success"
 			else
-				$("#emailGroup").removeClass "has-success"
-				$("#emailGroup").addClass "has-error"
+				$("#emailGroup").removeClass "success"
+				$("#emailGroup").addClass "error"
 
 			unless value.length < 4
 				Meteor.call "mailExists", $("#emailInput").val().toLowerCase(), (error, result) -> Session.set "creatingAccount", not result

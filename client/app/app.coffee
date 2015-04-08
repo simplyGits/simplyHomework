@@ -484,6 +484,7 @@ Template.deleteAccountModal.events
 		Meteor.call "removeAccount", pass, (e) ->
 			if e.error is "wrongPassword"
 				input
+					.addClass "error"
 					.tooltip placement: "bottom", title: "Verkeerd wachtwoord", trigger: "focus"
 					.tooltip "show"
 			else ga "send", "event", "action", "remove", "account"
@@ -549,7 +550,7 @@ Template.accountInfoModal.events
 
 			err = (query, content) ->
 				$(query)
-					.addClass "has-error"
+					.addClass "error"
 					.tooltip placement: "bottom", title: content
 					.tooltip "show"
 

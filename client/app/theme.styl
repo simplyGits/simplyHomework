@@ -1,3 +1,23 @@
+// == colors
+errorColor = #F44336
+errorFocusColor = #B61C1C
+successColor = #4CAF50
+successFocusColor = #2E7D32
+
+// == functions
+setFormColors(color, focusColor)
+	label
+		color: color
+
+	.tt-dropdown-menu
+		border-color: focusColor
+
+	input, select
+		border-color: color
+
+	input:focus, select:focus
+		border-color focusColor
+
 // == buttons
 .btn:not(.btn-trans)
 	padding: 5px 25px
@@ -37,6 +57,16 @@
 .form-control:focus
 	border-color: gray
 	box-shadow: none
+
+.form-control.error
+	border-color: errorColor
+.form-control.error:focus
+	border-color: errorFocusColor
+
+.form-control.success
+	border-color: successColor
+.form-control.success:focus
+	border-color: successFocusColor
 
 // == modals
 .modal-content
@@ -97,6 +127,12 @@ form.vertical.full-width
 
 	div.group.no-margin
 		margin-bottom: 0px
+
+	div.group.success
+		setFormColors(successColor, successFocusColor)
+
+	div.group.error
+		setFormColors(errorColor, errorFocusColor)
 
 	div.group.checkbox
 		size = 15px
