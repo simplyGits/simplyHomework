@@ -405,10 +405,14 @@
 						Je staat op het punt om je gehele account te verwijderen.
 						Dit kan <b>niet</b> worden teruggedraaid.
 						Om aan te geven dat je zeker weet dat je je account wilt
-						verwijderen moet je je wachtwoord beneden invoren.
+						verwijderen moet je beneden je wachtwoord en een captcha invoren.
 					</div>
 					<br>
 					<input type="password" class="form-control" id="passwordInput" placeholder="●●●●●●●●●●" autocomplete="off">
+
+					<div style="margin-top: 15px">
+						{{> reCAPTCHA}}
+					</div>
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">Annuleren</button>

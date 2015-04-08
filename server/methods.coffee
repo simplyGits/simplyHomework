@@ -160,11 +160,18 @@ Meteor.methods
 	# Removes the account of the current caller.
 	# @method removeAccount
 	# @param passHash {String} The password of the user SHA256 encrypted.
+	# @param captchaReponse {String} The response of a captcha by the user.
 	###
-	removeAccount: (passHash) ->
+	removeAccount: (passHash, captchaResponse) ->
 		check passHash, String
+		check captchaResponse, String
+
 		unless @userId?
 			throw new Meteor.Error "notLoggedIn", "User not logged in."
+
+		captchaStatus = reCAPTCHA.verifyCaptcha this.connection.clientAddress, captchaResponse
+		unless captchaStatus.data.success
+			throw new Meteor.Error "wrongCaptcha", "Captcha was not correct."
 
 		user = Meteor.users.findOne @userId
 		res = Accounts._checkPassword user,

@@ -100,3 +100,6 @@ Meteor.startup ->
 			throw new Meteor.Error "wrong-code", "Entered beta code is invalid."
 
 		return yes
+
+	reCAPTCHA.config
+		privatekey: "6LejzwQTAAAAAKlQfXJ8rpT8vY0fm-6H4-CnZy9M"

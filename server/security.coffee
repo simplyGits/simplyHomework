@@ -13,6 +13,7 @@ Meteor.startup -> # my eyes feel dizzy, i think. cant remember. please. help.
 	BrowserPolicy.content.allowImageOrigin "https://adelbert.magister.net/"
 	BrowserPolicy.content.allowImageOrigin "www.google-analytics.com"
 	BrowserPolicy.content.allowImageOrigin "http://cdn.jsdelivr.net/"
+	BrowserPolicy.content.allowImageOrigin "ssl.gstatic.com"
 
 	BrowserPolicy.content.allowMediaOrigin "www.ispeech.org"
 
@@ -20,10 +21,13 @@ Meteor.startup -> # my eyes feel dizzy, i think. cant remember. please. help.
 	BrowserPolicy.content.allowScriptOrigin "rawgit.com"
 	BrowserPolicy.content.allowScriptOrigin "apis.google.com"
 	BrowserPolicy.content.allowScriptOrigin "www.google-analytics.com"
+	BrowserPolicy.content.allowScriptOrigin "www.google.com"
+	BrowserPolicy.content.allowScriptOrigin "www.gstatic.com"
 
 	BrowserPolicy.content.allowFrameOrigin "accounts.google.com"
 	BrowserPolicy.content.allowFrameOrigin "docs.google.com"
 	BrowserPolicy.content.allowFrameOrigin "content.googleapis.com"
+	BrowserPolicy.content.allowFrameOrigin "www.google.com"
 
 	BrowserPolicy.content.allowEval()
 

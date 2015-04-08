@@ -477,16 +477,19 @@ Template.settingsModal.events
 Template.deleteAccountModal.events
 	"click #goButton": ->
 		input = $ "#deleteAccountModal #passwordInput"
+		captcha = $("#g-recaptcha-response").val()
 
 		pass = Package.sha.SHA256 input.val()
 		# Store the name, when the user is gone we can't get the name anymore :P
 		name = Meteor.user().profile.firstName
-		Meteor.call "removeAccount", pass, (e) ->
+		Meteor.call "removeAccount", pass, captcha, (e) ->
 			if e.error is "wrongPassword"
 				input
 					.addClass "error"
 					.tooltip placement: "bottom", title: "Verkeerd wachtwoord", trigger: "focus"
 					.tooltip "show"
+			else if e.error is "wrongCaptcha"
+				shake "#deleteAccountModal"
 			else ga "send", "event", "action", "remove", "account"
 
 Template.newSchoolYearModal.helpers classes: -> classes()
