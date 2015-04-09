@@ -14,7 +14,7 @@
 
 	{{> sidebar}}
 
-	<div class="content unselectable" style="left: {{contentOffsetLeft}}; right: {{contentOffsetRight}}">
+	<div class="content unselectable smoothScroll" style="left: {{contentOffsetLeft}}; right: {{contentOffsetRight}}">
 		{{> yield}}
 		{{#unless has "noAds"}}
 			<div style="height: 100px" id="adpadding"></div>

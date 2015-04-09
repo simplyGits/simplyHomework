@@ -72,13 +72,14 @@ div.itemContainerHeader
 	border-bottom: 1px lightgray solid
 
 div.itemContainerContent
+	@extend .smoothScroll
+
 	text-rendering: optimizeLegibility
 	roboto(600)
 
 	position: relative
 	height: calc(100% - 30px)
-	overflow-y: scroll
-	-webkit-overflow-scrolling: touch
+	overflow-y: auto
 
 	a
 		text-decoration: none !important
