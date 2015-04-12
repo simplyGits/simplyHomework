@@ -596,6 +596,9 @@ Template.addProjectModal.events
 		classId = Session.get("currentSelectedClassDatum")?._id
 
 		return if name is ""
+		if Projects.findOne({ name })?
+			setFieldError "#projectNameInput", "Er is al een project met deze naam"
+			return
 
 		if $("#projectClassNameInput").val().trim() isnt "" and not classId?
 			shake "#addProjectModal"
