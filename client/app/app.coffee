@@ -592,7 +592,7 @@ Template.addProjectModal.events
 	"click #goButton": ->
 		name = $("#projectNameInput").val().trim()
 		description = $("#projectDescriptionInput").val().trim()
-		deadline = $("#projectDeadlineInput").data("DateTimePicker").getDate().toDate()
+		deadline = $("#projectDeadlineInput").data("DateTimePicker").date().toDate()
 		classId = Session.get("currentSelectedClassDatum")?._id
 
 		return if name is ""
