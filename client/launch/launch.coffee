@@ -74,18 +74,11 @@ Template.page1.events
 
 			else Router.go "app"
 
-usersCount = new ReactiveVar null
-Template.page2.helpers
-	usersCount: -> usersCount.get()
-
 Template.launchPage.events
 	'click #page1': -> if $("#page2").hasClass("topShadow") then $("body").stop().animate {scrollTop: 0}, 600, "easeOutExpo"
 
-coll = new Meteor.Collection "userCount"
 Template.launchPage.rendered = ->
-	@autorun ->
-		Meteor.subscribe "userCount"
-		usersCount.set coll.findOne()?.count
+	@subscribe "userCount"
 
 	signUpForm = @$ ".signUpForm"
 	$("body").keypress (event) ->

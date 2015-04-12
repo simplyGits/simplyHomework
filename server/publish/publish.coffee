@@ -151,28 +151,10 @@ Meteor.publish "books", (classId) ->
 
 Meteor.publish "roles", -> @unblock(); Meteor.users.find(@userId, fields: roles: 1)
 
-id = new Meteor.Collection.ObjectID()
 Meteor.publish "userCount", ->
 	@unblock()
-	count = 0
-	loaded = no
-
-	pub = @
-	handle = Meteor.users.find().observeChanges
-		added: ->
-			count++
-			if loaded then pub.changed "userCount", id, count: count
-
-		removed: ->
-			count--
-			if loaded then pub.changed "userCount", id, count: count
-
-	loaded = yes
-	@added "userCount", id, count: count
-	@ready()
-
-	@onStop ->
-		handle.stop()
+	Counts.publish this, "userCount", Meteor.users.find()
+	return undefined
 
 Meteor.publish "scholieren.com", ->
 	@unblock()

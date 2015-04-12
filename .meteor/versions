@@ -97,6 +97,7 @@ srp@1.0.3
 standard-app-packages@1.0.5
 stevezhu:lodash@3.6.0
 templating@1.1.1
+tmeasday:publish-counts@0.3.6
 tracker@1.0.7
 tsega:bootstrap3-datetimepicker@4.7.14_3
 twbs:bootstrap-noglyph@3.3.2

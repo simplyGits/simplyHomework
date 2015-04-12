@@ -40,9 +40,9 @@
 	<div class="about">
 		<div class="appNameHeaderBig"></div>
 		<div class="cards">
-			{{#if usersCount}}
+			{{#if Template.subscriptionsReady}}
 				<div class="bigCard">
-					{{usersCount}}
+					{{getPublishedCount "userCount"}}
 					<br>
 					<span style="font-size: 60%; font-weight: 100">mensen gingen je voor</span>
 				</div>
