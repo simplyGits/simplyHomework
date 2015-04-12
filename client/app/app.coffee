@@ -484,10 +484,7 @@ Template.deleteAccountModal.events
 		name = Meteor.user().profile.firstName
 		Meteor.call "removeAccount", pass, captcha, (e) ->
 			if e.error is "wrongPassword"
-				input
-					.addClass "error"
-					.tooltip placement: "bottom", title: "Verkeerd wachtwoord", trigger: "focus"
-					.tooltip "show"
+				setFieldError input, "Verkeerd wachtwoord"
 			else if e.error is "wrongCaptcha"
 				shake "#deleteAccountModal"
 			else ga "send", "event", "action", "remove", "account"
@@ -551,17 +548,11 @@ Template.accountInfoModal.events
 		if oldPass isnt "" and newPass isnt ""
 			any = yes
 
-			err = (query, content) ->
-				$(query)
-					.addClass "error"
-					.tooltip placement: "bottom", title: content
-					.tooltip "show"
-
 			if oldPass isnt newPass
 				Accounts.changePassword oldPass, newPass, (error) ->
 					if error?
 						if error.reason is "Incorrect password"
-							err "#oldPassInput", "Verkeerd wachtwoord"
+							setFieldError "#oldPassInput", "Verkeerd wachtwoord"
 							callback no
 						else callback no
 
@@ -570,7 +561,7 @@ Template.accountInfoModal.events
 						callback yes
 
 			else
-				err "#newPassInput", "Nieuw wachtwoord is hetzelfde als je oude wachtwoord."
+				setFieldError "#newPassInput", "Nieuw wachtwoord is hetzelfde als je oude wachtwoord."
 				callback no
 
 		unless any then callback null

@@ -75,6 +75,23 @@ http://tomsmeding.nl/
 	return undefined
 
 ###*
+# Sets the given `selector` to show an error state.
+#
+# @method setFieldError
+# @param selector {jQuery|String} The thing to show on error on.
+# @param message {String} The message to show as error.
+# @param [trigger="manual"] {String} When to trigger the bootstrap tooltip.
+# @param {jQuery} The given `selector`.
+###
+@setFieldError = (selector, message, trigger = "manual") ->
+	(if selector.jquery? then selector else $(selector))
+		.addClass "error"
+		.tooltip placement: "bottom", title: message, trigger: trigger
+		.tooltip "show"
+
+	return selector
+
+###*
 # Checks if a given field is empty, if so returns true and displays an error message for the user.
 #
 # @method empty
