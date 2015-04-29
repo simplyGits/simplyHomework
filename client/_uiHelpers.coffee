@@ -338,6 +338,37 @@ class @NotificationsManager
 		.addClass "animated shake"
 		.one 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', -> $(this).removeClass "animated shake"
 
+###*
+# Set the current bigNotice.
+# @method setBigNotice
+# @param [options] {Object} The options object. If null the notice will be removed.
+# @return {Object} An handle object: { hide, content, onClick, onDismissed }
+###
+@setBigNotice = (options) ->
+	if options?
+		check options, Object
+		_.defaults options, { theme: "default", onClick: (->), onDismissed: (->), allowDismiss: yes }
+
+		currentBigNotice.set options
+		$("body").addClass "bigNoticeOpen"
+
+		return {
+			hide: -> setBigNotice null
+			content: (content) ->
+				if content?
+					currentBigNotice.set _.extend currentBigNotice.get(), { content }
+					return content
+				else
+					return currentBigNotice.get().content
+
+			onClick: (callback) -> currentBigNotice.set _.extend currentBigNotice.get(), onClick: callback
+			onDismissed: (callback) -> currentBigNotice.set _.extend currentBigNotice.get(), onDismissed: callback
+		}
+	else
+		currentBigNotice.set null
+		$("body").removeClass "bigNoticeOpen"
+		return undefined
+
 Meteor.startup ->
 	Session.set "allowNotifications", no
 
@@ -346,10 +377,12 @@ Meteor.startup ->
 		if Meteor.userId()? and htmlNotify.isSupported and !("ActiveXObject" of window)
 			switch htmlNotify.permissionLevel()
 				when "default"
-					notification ?= notify "Als je bureaublad meldingen toestaat kan je overal meldingen van simplyHomework zien, zelfs als je op een ander tabblad zit.", null, -1, no, 9
-					htmlNotify.requestPermission (result) ->
-						notification?.hide()
-						Session.set "allowNotifications", result is "granted"
+					notification = setBigNotice
+						content: "Wij hebben je toestemming nodig om bureaubladmeldingen weer te kunnen geven."
+						onClick: ->
+							htmlNotify.requestPermission (result) ->
+								notification?.hide()
+								Session.set "allowNotifications", result is "granted"
 				when "granted"
 					notification?.hide()
 					Session.set "allowNotifications", yes

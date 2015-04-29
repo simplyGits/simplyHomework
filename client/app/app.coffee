@@ -2,6 +2,7 @@ schoolSub = null
 magisterClassesComp = null
 addClassComp = null
 magisterClasses = new ReactiveVar null
+@currentBigNotice = new ReactiveVar null
 
 class @App
 	@_setupPathItems:
@@ -668,6 +669,12 @@ Template.sidebar.events
 Template.app.helpers
 	contentOffsetLeft: -> if Session.get "isPhone" then "0" else "200px"
 	contentOffsetRight: -> if Session.get "isPhone" then "0" else "50px"
+
+	currentBigNotice: -> currentBigNotice.get()
+
+Template.app.events
+	"click #bigNotice > #content": -> currentBigNotice.get().onClick arguments...
+	"click #bigNotice > #dismissButton": -> currentBigNotice.get().onDismissed arguments...
 
 Template.app.rendered = ->
 	if "#{Math.random()}"[2] is "2" and "#{Math.random()}"[4] is "2"

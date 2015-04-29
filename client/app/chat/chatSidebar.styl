@@ -8,11 +8,11 @@ div.chatWindows
 	overflow: hidden
 	overflow-y: auto
 
-body.chatSidebarOpen > div.chatWindows
-	display: initial
+body.chatSidebarOpen div.chatWindows
+	display: block
 
 div.chatSidebar
-	fixed: right top bottom
+	absolute: right top bottom
 	width: 200px
 	transition: .25s transform, .25s box-shadow, .25s border-color linear
 	background-color: white
