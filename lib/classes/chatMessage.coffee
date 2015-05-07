@@ -75,10 +75,11 @@ class @ChatMessage
 		@attachments = []
 
 		###*
-		# True if the contents of this message has been changed since the original insert.
+		# The date the content of this message was changed since the original insert.
+		# If null the content is still the same.
 		#
-		# @property isChanged
-		# @type Boolean
-		# @default []
+		# @property changedOn
+		# @type Date|null
+		# @default null
 		###
-		@isChanged = no
+		@changedOn = null

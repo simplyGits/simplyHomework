@@ -62,7 +62,7 @@ Projects.allow
 
 ChatMessages.allow
 	insert: -> yes
-	update: -> no # Not yet. We don't have have GUI to change it or to show it. (which is really important).
+	update: -> yes
 	remove: -> no # Never I guess.
 
 GoaledSchedules.allow

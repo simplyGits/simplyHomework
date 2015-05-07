@@ -97,6 +97,7 @@ Meteor.publish null, ->
 			magisterId: 1
 			classId: 1
 			deadline: 1
+			participants: 1
 
 		# All unread chatMessages.
 		ChatMessages.find({$or: [{ to: @userId }, { creatorId: @userId }], readBy: $ne: @userId}, sort: "time": -1)

@@ -11,10 +11,17 @@ AccountController = RouteController.extend
 
 Router.configure
 	onStop: ->
+		# Remove modal dialogs.
 		$(".modal.in").modal "hide"
-		$(".backdrop.dimmed").removeClass "dimmed"
-		$(".tooltip").tooltip "destroy"
 		$("body").removeClass "modal-open"
+		$(".backdrop.dimmed").removeClass "dimmed"
+
+		# Remove tooltips.
+		$(".tooltip").tooltip "destroy"
+
+		# Remove fullscreenChatWindow.
+		$(".fullscreenChatWindow").remove()
+
 	trackPageView: true
 
 Router.map ->
