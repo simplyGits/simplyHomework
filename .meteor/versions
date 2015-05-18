@@ -48,7 +48,6 @@ logging@1.0.7
 markdown@1.0.4
 mdg:reload-on-resume@1.0.4
 meteor@1.1.6
-meteor-analytics@0.9.5
 meteor-platform@1.2.2
 meteorhacks:async@1.0.0
 meteorhacks:fast-render@2.3.2
@@ -96,6 +95,7 @@ spiderable@1.0.7
 srp@1.0.3
 standard-app-packages@1.0.5
 stevezhu:lodash@3.6.0
+tail:core@0.9.6
 templating@1.1.1
 tmeasday:publish-counts@0.3.6
 tracker@1.0.7
