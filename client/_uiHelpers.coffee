@@ -1,18 +1,18 @@
 ###
-	   \|\/
-	  _/;;\__
-	,' /  \',";   <---- Onion
-   /  |    | \ \
-   |  |    |  ||           ,-- HAND
-	\  \   ; /,'           |
-	 '--^-^-^' _           v
-	,-._     ," '-,,___
-   ',_  '--,__'-,      '''--"
-   (  ''--,_  ''-^-''
-   ;''--,___''
-  .'--,,__  ''
-   ^._    '''             ,.--
-	  ''----________----''
+      \|\/
+     _/;;\__
+   ,' /  \',";   <---- Onion
+  /  |    | \ \
+  |  |    |  ||          ,-- HAND
+   \  \   ; /,'          |
+    '--^-^-^'  _         v
+   ,-._      ," '-,,___
+  ',_  '--.,__'-,      '''--"
+  (  ''--.,_  ''-^-''
+  ;''--.,___''
+ .'--.,,__  ''
+  ^.,_    '''             ,.--
+      ''----________----''
 
 Art by Tom Smeding
 http://tomsmeding.nl/
@@ -75,6 +75,23 @@ http://tomsmeding.nl/
 	return undefined
 
 ###*
+# Sets the given `selector` to show an error state.
+#
+# @method setFieldError
+# @param selector {jQuery|String} The thing to show on error on.
+# @param message {String} The message to show as error.
+# @param [trigger="manual"] {String} When to trigger the bootstrap tooltip.
+# @param {jQuery} The given `selector`.
+###
+@setFieldError = (selector, message, trigger = "manual") ->
+	(if selector.jquery? then selector else $(selector))
+		.addClass "error"
+		.tooltip placement: "bottom", title: message, trigger: trigger
+		.tooltip "show"
+
+	return selector
+
+###*
 # Checks if a given field is empty, if so returns true and displays an error message for the user.
 #
 # @method empty
@@ -85,7 +102,7 @@ http://tomsmeding.nl/
 ###
 @empty = (inputId, groupId, message) ->
 	if $("##{inputId}").val() is ""
-		$("##{groupId}").addClass("has-error").tooltip(placement: "bottom", title: message).tooltip("show")
+		$("##{groupId}").addClass("error").tooltip(placement: "bottom", title: message).tooltip("show")
 		return true
 	return false
 
@@ -321,11 +338,38 @@ class @NotificationsManager
 		.addClass "animated shake"
 		.one 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', -> $(this).removeClass "animated shake"
 
-Meteor.startup ->
-	$("html").attr "lang", "nl"
-	moment.locale "nl"
-	emojione.ascii = yes # Convert ascii smileys (eg. :D) to emojis.
+###*
+# Set the current bigNotice.
+# @method setBigNotice
+# @param [options] {Object} The options object. If null the notice will be removed.
+# @return {Object} An handle object: { hide, content, onClick, onDismissed }
+###
+@setBigNotice = (options) ->
+	if options?
+		check options, Object
+		_.defaults options, { theme: "default", onClick: (->), onDismissed: (->), allowDismiss: yes }
 
+		currentBigNotice.set options
+		$("body").addClass "bigNoticeOpen"
+
+		return {
+			hide: -> setBigNotice null
+			content: (content) ->
+				if content?
+					currentBigNotice.set _.extend currentBigNotice.get(), { content }
+					return content
+				else
+					return currentBigNotice.get().content
+
+			onClick: (callback) -> currentBigNotice.set _.extend currentBigNotice.get(), onClick: callback
+			onDismissed: (callback) -> currentBigNotice.set _.extend currentBigNotice.get(), onDismissed: callback
+		}
+	else
+		currentBigNotice.set null
+		$("body").removeClass "bigNoticeOpen"
+		return undefined
+
+Meteor.startup ->
 	Session.set "allowNotifications", no
 
 	notification = null
@@ -333,15 +377,17 @@ Meteor.startup ->
 		if Meteor.userId()? and htmlNotify.isSupported and !("ActiveXObject" of window)
 			switch htmlNotify.permissionLevel()
 				when "default"
-					notification ?= notify "Als je bureaublad meldingen toestaat kan je overal meldingen van simplyHomework zien, zelfs als je op een ander tabblad zit.", null, -1, no, 9
-					htmlNotify.requestPermission (result) ->
-						notification?.hide()
-						Session.set "allowNotifications", result is "granted"
+					notification = setBigNotice
+						content: "Wij hebben je toestemming nodig om bureaubladmeldingen weer te kunnen geven."
+						onClick: ->
+							htmlNotify.requestPermission (result) ->
+								notification?.hide()
+								Session.set "allowNotifications", result is "granted"
 				when "granted"
 					notification?.hide()
 					Session.set "allowNotifications", yes
 
-	Session.set "isPhone", window.matchMedia("only screen and (max-width: 760px)").matches or /android|iphone|ipod|ipad|blackberry|windows phone/i.test navigator.userAgent
+	Session.set "isPhone", window.matchMedia("only screen and (max-width: 760px)").matches or /android|iphone|ipod|blackberry|windows phone/i.test navigator.userAgent
 
 	UI.registerHelper "isPhone", -> Session.get "isPhone"
 	UI.registerHelper "empty", -> return @ is 0

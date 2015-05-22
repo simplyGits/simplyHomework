@@ -1,21 +1,20 @@
 @subs = new SubsManager
 	cacheLimit: 40
-	expireIn: 15
+	expireIn: 10
 
 AccountController = RouteController.extend
 	verifyMail: ->
-		route = @
-
-		Accounts.verifyEmail @params.token, ->
+		Accounts.verifyEmail @params.token, =>
 			Router.go "app"
 			notify "Email geverifiëerd", "success"
-			route.next()
+			@next()
 
 Router.configure
 	onStop: ->
 		$(".modal.in").modal "hide"
 		$(".backdrop.dimmed").removeClass "dimmed"
-		$(".tooltip").tooltip("destroy")
+		$(".tooltip").tooltip "destroy"
+		$("body").removeClass "modal-open"
 	trackPageView: true
 
 Router.map ->

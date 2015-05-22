@@ -9,7 +9,7 @@
 </template>
 
 <template name="page1">
-	<div class="appNameHeader" style="color: white; font-size: 200%; position: fixed; top: 0;"><span style="cursor: pointer; opacity: .6; margin-left: 15px">simply</span></div>
+	<div class="appNameHeader"></div>
 	<div class="Center">
 		<img height=350 width=350 src="images/simplyLogo.gif" id="simplyLogoIntro">
 
@@ -38,11 +38,11 @@
 
 <template name="page2">
 	<div class="about">
-		<div class="appNameHeaderBig center"><span style="cursor: pointer; margin-left: 15px">simply</span></div>
+		<div class="appNameHeaderBig"></div>
 		<div class="cards">
-			{{#if usersCount}}
+			{{#if Template.subscriptionsReady}}
 				<div class="bigCard">
-					{{usersCount}}
+					{{getPublishedCount "userCount"}}
 					<br>
 					<span style="font-size: 60%; font-weight: 100">mensen gingen je voor</span>
 				</div>
@@ -91,7 +91,7 @@
 
 <template name="signupModal">
 	{{! Modal for signing up / logging in }}
-	<div class="modal fade" id="signupModal">
+	<div class="modal fade" aria-hidden="true" id="signupModal">
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header">
@@ -104,31 +104,25 @@
 						{{/if}}
 					</h4>
 				</div>
-				<form class="form-horizontal">
+				<form class="vertical full-width">
 					<fieldset name="Signup Form">
 						<div class="modal-body">
-							<div id="emailGroup" class="form-group">
-								<label for="emailInput" class="col-sm-2 control-label" style="text-align: left">Email</label>
-								<div class="col-sm-10">
-									<input type="email" class="form-control" id="emailInput" placeholder="hello@simplyApps.nl" autocomplete="off">
-								</div>
+							<div id="emailGroup" class="group">
+								<label for="emailInput">Email</label>
+								<input type="email" id="emailInput" placeholder="hello@simplyApps.nl">
 							</div>
-							<div id="passwordGroup" class="form-group">
-								<label for="passwordInput" class="col-sm-2 control-label">Wachtwoord</label>
-								<div class="col-sm-10">
-									<input type="password" class="form-control" id="passwordInput" placeholder="●●●●●●●●●●" autocomplete="off">
-								</div>
+							<div id="passwordGroup" class="group">
+								<label for="passwordInput">Wachtwoord</label>
+								<input type="password" id="passwordInput" placeholder="●●●●●●●●●●">
 							</div>
 							{{#if creatingAccount}}
-								<div id="betaCodeGroup" class="form-group">
-									<label for="betaCodeInput" class="col-sm-2 control-label" style="text-align: left">Beta toeganscode</label>
-									<div class="col-sm-10">
-										<input type="text" class="form-control" id="betaCodeInput">
-									</div>
+								<div id="betaCodeGroup" class="group">
+									<label for="betaCodeInput">Beta toeganscode</label>
+									<input type="text" id="betaCodeInput">
 								</div>
 							{{/if}}
-							<div class="form-group">
-								<a class="col-sm-offset-2 col-sm-10" href="{{pathFor 'forgotPass'}}">Wachtwoord vergeten</a>
+							<div class="group no-margin">
+								<a href="{{pathFor 'forgotPass'}}">Wachtwoord vergeten</a>
 							</div>
 						</div>
 						<div class="modal-footer">

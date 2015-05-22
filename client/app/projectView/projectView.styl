@@ -26,7 +26,6 @@ div.projectInfoChatQuoteContainer
 	float: right
 	border: 1px lightgray solid
 	padding: 10px
-	border-radius: 5px
 	cursor: pointer
 
 	transition: all .1s ease-in-out
@@ -69,11 +68,15 @@ span#addPersonIcon, span#addFileIcon
 	vertical-align: middle
 	font-size: 20px
 	position: absolute
-	right: 50px
+	right: 25px
 	top: 20px
 	cursor: pointer
 	opacity: .5
-	-moz-padding-end: 30px
+
+	transition: .1s opacity linear
+
+span#addPersonIcon:hover, span#addFileIcon:hover
+	opacity: 1
 
 span.projectTitle
 	absolute: left 40px right 35px
@@ -100,16 +103,15 @@ div.fileRow, div.personRow
 	white-space: nowrap
 
 div.personRow
-	padding-top: 5px
-	padding-bottom: 5px
+	height: 60px
 
 img.personImage
-	border-radius: 50%
-	//box-shadow: 0 0 30px 1px
-	border: 2px black solid
+	border-left: 3px black solid
+	absolute: top left bottom
 
 span.personName
-	absolute: left 70px right 40px
+	margin-left: 65px
+	line-height: 60px
 	color: #a4a4a4
 
 span.removePersonButton, span.removeFileButton
@@ -117,6 +119,7 @@ span.removePersonButton, span.removeFileButton
 	margin-right: 15px
 	opacity: 0
 	pointer-events: initial
+	font-weight: 300
 
 	transition: opacity .1s ease-in-out
 
@@ -128,24 +131,6 @@ div.fileRow:hover, div.personRow:hover
 
 	span.removePersonButton, span.removeFileButton
 		opacity: .4
-
-.ripple
-	position: absolute
-	border-radius: 100%
-	background-color: gray
-	transform: scale(0)
-
-.ripple.animate
-	-webkit-animation: ripple .45s linear
-	-moz-animation: ripple .45s linear
-	-ms-animation: ripple .45s linear
-	-o-animation: ripple .45s linear
-	animation: ripple .45s linear
-
-@keyframes ripple
-	100%
-		opacity: 0
-		transform: scale(2.5)
 
 .personSuggestionName
 	margin-left: 15px

@@ -43,10 +43,9 @@
 		<div class="row">
 			<div class="col-sm-6">
 				<div class="itemContainer studyGuides">
-					<span class="robotoThin itemContainerHeader">
+					<div class="robotoThin itemContainerHeader">
 						Studiewijzers
-					</span>
-					<div class="itemContainerDivider"></div>
+					</div>
 					<div class="itemContainerContent">
 						{{#each studyGuides}}
 							{{> studyGuide}}
@@ -56,10 +55,9 @@
 			</div>
 			<div class="col-sm-6">
 				<div class="itemContainer digitalSchoolUtilities">
-					<span class="robotoThin itemContainerHeader">
+					<div class="robotoThin itemContainerHeader">
 						Leermiddelen
-					</span>
-					<div class="itemContainerDivider"></div>
+					</div>
 					<div class="itemContainerContent">
 						{{#each digitalSchoolUtilities}}
 							{{> digitalSchoolUtility}}
@@ -129,7 +127,7 @@
 </template>
 
 <template name="changeClassModal">
-	<div class="modal fade" id="changeClassModal">
+	<div class="modal fade" aria-hidden="true" id="changeClassModal">
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header">

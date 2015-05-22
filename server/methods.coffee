@@ -140,14 +140,38 @@ Meteor.methods
 		).count() isnt 0
 
 	###*
+	# Reports the given user as specified by the given `reportItem`.
+	# @method reportUser
+	# @param reportItem {ReportItem} The reportItem to store.
+	###
+	reportUser: (reportItem) ->
+		if (val = ReportItems.findOne reporterId: @userId, userId: reportItem.userId)?
+			ReportItems.update reportItem._id,
+				reportGrounds: _.union val.reportGrounds, reportItems.reportGrounds
+				time: new Date()
+
+		else
+			if ReportItems.find( reporterId: @userId, time: $gte: new Date(_.now() - 1800000) ).count() > 4
+				throw new Meteor.Error "rateLimit", "You've reported too much users recently."
+
+			ReportItems.insert reportItem
+
+	###*
 	# Removes the account of the current caller.
 	# @method removeAccount
 	# @param passHash {String} The password of the user SHA256 encrypted.
+	# @param captchaReponse {String} The response of a captcha by the user.
 	###
-	removeAccount: (passHash) ->
+	removeAccount: (passHash, captchaResponse) ->
 		check passHash, String
+		check captchaResponse, String
+
 		unless @userId?
 			throw new Meteor.Error "notLoggedIn", "User not logged in."
+
+		captchaStatus = reCAPTCHA.verifyCaptcha this.connection.clientAddress, captchaResponse
+		unless captchaStatus.data.success
+			throw new Meteor.Error "wrongCaptcha", "Captcha was not correct."
 
 		user = Meteor.users.findOne @userId
 		res = Accounts._checkPassword user,

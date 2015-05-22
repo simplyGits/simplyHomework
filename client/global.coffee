@@ -84,6 +84,14 @@ isOldInternetExplorer = ->
 
 @minuteTracker = new Tracker.Dependency
 Meteor.startup ->
+	$("html").attr "lang", "nl"
+	moment.locale "nl"
+	emojione.ascii = yes # Convert ascii smileys (eg. :D) to emojis.
+
+	reCAPTCHA.config
+		theme: "light"
+		publickey: "6LejzwQTAAAAAJ0blWyasr-UPxQjbm4SWOni22SH"
+
 	window.viewportUnitsBuggyfill.init()
 	[oldBrowser, version] = isOldInternetExplorer()
 

@@ -139,7 +139,16 @@ Template.projectView.events
 	"click #changeProjectIcon": ->
 		ga "send", "event", "button", "click", "projectInfoChange"
 
-		$("#changeDeadlineInput").datetimepicker language: "nl", defaultDate: currentProject().deadline
+		$("#changeDeadlineInput").datetimepicker
+			locale: moment.locale()
+			defaultDate: currentProject().deadline
+			icons:
+				time: "fa fa-clock-o"
+				date: "fa fa-calendar"
+				up: "fa fa-arrow-up"
+				down: "fa fa-arrow-down"
+				previous: "fa fa-chevron-left"
+				next: "fa fa-chevron-right"
 
 		ownClassesEngine = new Bloodhound
 			name: "ownClasses"
@@ -202,22 +211,6 @@ Template.addParticipantModal.events
 	"keydown #personNameInput": (event) -> addUser() if event.which is 13
 
 Template.fileRow.events
-	"click": (event) ->
-		return # Ripple isn't really visible.
-		target = $(event.target)
-		ripple = target.find(".ripple")
-
-		ripple.removeClass "animate"
-
-		unless ripple.height() or ripple.width()
-			diameter = Math.max target.outerWidth(), target.outerHeight()
-			ripple.css height: diameter, width: diameter
-
-		x = event.pageX - target.offset().left - ripple.width() / 2
-		y = event.pageY - target.offset().top - ripple.height() / 2
-
-		ripple.css(top: "#{y}px", left: "#{x}px").addClass "animate"
-
 	"click .removeFileButton": (event) ->
 		event.preventDefault()
 		Projects.update currentProject()._id, $pull: driveFileIds: @id, (e) =>

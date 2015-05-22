@@ -1,0 +1,193 @@
+// == colors
+errorColor = #F44336
+errorFocusColor = #B61C1C
+successColor = #4CAF50
+successFocusColor = #2E7D32
+
+// == functions
+setFormColors(color, focusColor)
+	label
+		color: color
+
+	.tt-dropdown-menu
+		border-color: focusColor
+
+	input, select
+		border-color: color
+
+	input:focus, select:focus
+		border-color focusColor
+
+// == buttons
+.btn:not(.btn-trans)
+	padding: 5px 25px
+	border: 1px lightgray solid
+	border-radius: 0
+	outline: none !important
+
+.btn:not(.btn-trans):active
+	box-shadow: none
+	background-color: #dadada
+
+// Dismiss buttons need to be less 'visible' than the 'main' button.
+// Also contains colored buttons which also don't need a border.
+.btn:not(.btn-trans)[data-dismiss],
+.btn.btn-primary,
+.btn.btn-danger,
+.btn.btn-success {
+	padding: 6px 26px
+	border: 0
+}
+
+.btn.btn-primary:active
+	background-color: #274F71
+
+.btn.btn-danger:active
+	background-color: #A83936
+
+.btn.btn-success:active
+	background-color: #397E39
+
+// == bootstrap form fallback
+.form-control
+	-moz-appearance: none
+	-webkit-appearance: none
+	border-radius: 0
+	border: 1px lightgray solid
+	transition: none
+	box-shadow: none
+
+.form-control:focus
+	border-color: gray
+	box-shadow: none
+
+.form-control.error
+	border-color: errorColor
+.form-control.error:focus
+	border-color: errorFocusColor
+
+.form-control.success
+	border-color: successColor
+.form-control.success:focus
+	border-color: successFocusColor
+
+// == modals
+.modal-content
+	border: none
+	border-radius: 0
+
+// == tooltips
+.tooltip-inner
+	border-radius: 0
+	background-color: rgba(0, 0, 0, .8)
+
+.tooltip.top .tooltip-arrow,
+.tooltip.top-left .tooltip-arrow,
+.tooltip.top-right .tooltip-arrow {
+	border-top-color: rgba(0, 0, 0, .8)
+}
+
+.tooltip.bottom .tooltip-arrow,
+.tooltip.bottom-left .tooltip-arrow,
+.tooltip.bottom-right .tooltip-arrow {
+	border-bottom-color: rgba(0, 0, 0, .8)
+}
+
+.tooltip.left .tooltip-arrow
+	border-left-color: rgba(0, 0, 0, .8)
+
+.tooltip.right .tooltip-arrow
+	border-right-color: rgba(0, 0, 0, .8)
+
+// == custom forms
+form.vertical.full-width
+	div.group
+		width: 100%
+		margin-bottom: 15px
+
+		label
+			width: 100%
+			font-size: 12px
+
+		input, select
+			// Remove default vender styling:
+			-moz-appearance: none
+			-webkit-appearance: none
+			-webkit-border-radius: 0
+
+			width: 100%
+			font-size: 15px
+			border: 1px lightgray solid
+			outline: none
+
+			padding: .2em
+			padding-left: .5em
+			padding-right: .5em
+
+			background-color: white
+
+		input:focus, select:focus
+			border-color: darkgray
+
+	div.group.no-margin
+		margin-bottom: 0px
+
+	div.group.success
+		setFormColors(successColor, successFocusColor)
+
+	div.group.error
+		setFormColors(errorColor, errorFocusColor)
+
+	div.group.checkbox
+		size = 15px
+
+		input[type="checkbox"]:before
+			display: block
+			content: ""
+			background-color: #FFFFFF
+
+			width: size
+			height: size
+			margin-top: -2px
+
+		input[type="checkbox"]:after
+			display: block
+			content: ""
+			border: 1px #d3d3d3 solid
+
+			width: size
+			height: size
+
+			margin-top: -13px
+			margin-left: -1px
+
+			padding: 2px
+			background-clip: content-box
+			background-color: white
+
+			cursor: pointer
+
+		input[type="checkbox"]:checked:after
+			background-color: #337AB7
+
+		span:first-child
+			margin-left: 4px
+
+	div.group.select
+		position: relative
+
+	div.group.select:after
+		absolute: top 70% right 1.25rem
+		display: inline-block
+		content: ""
+		width: 0
+		height: 0
+		pointer-events: none
+
+		border-top: .35rem solid
+		border-right: .35rem solid transparent
+		border-bottom: .35rem solid transparent
+		border-left: .35rem solid transparent
+
+div.colorpicker
+	border-radius: 0

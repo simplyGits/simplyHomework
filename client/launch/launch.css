@@ -1,18 +1,3 @@
-#page1 {
-	background-color: #32a8ce;
-	width: 100vw;
-	height: 100vh;
-}
-
-#page2 {
-	background-color: #32a8ce;
-	width: 100vw;
-	height: 100%;
-	position: absolute;
-	transition: all .25s;
-	min-height: 800px;
-}
-
 .topShadow {
 	-webkit-box-shadow: 0 -20px 150px 10px #000000;
 	box-shadow: 0 -20px 150px 10px #000000;
@@ -34,10 +19,6 @@
 
 .about {
 	width: 100%;
-}
-
-.center {
-	text-align: center;
 }
 
 .card {

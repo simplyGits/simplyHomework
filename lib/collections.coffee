@@ -1,19 +1,19 @@
 @Schemas         = {}
-@GoaledSchedules = new Ground.Collection "goaledSchedules"
-@Classes         = new Ground.Collection "classes"
-@Books           = new Ground.Collection "books"
-@Schools         = new Ground.Collection "schools"
-@Schedules       = new Ground.Collection "schedules"
-@Votes           = new Ground.Collection "votes"
-@Utils           = new Ground.Collection "utils"
-@Tickets         = new Ground.Collection "tickets"
-@Projects        = new Ground.Collection "projects"
+@GoaledSchedules = new Meteor.Collection "goaledSchedules"
+@Classes         = new Meteor.Collection "classes"
+@Books           = new Meteor.Collection "books"
+@Schools         = new Meteor.Collection "schools"
+@Schedules       = new Meteor.Collection "schedules"
+@Votes           = new Meteor.Collection "votes"
+@Utils           = new Meteor.Collection "utils"
+@Tickets         = new Meteor.Collection "tickets"
+@Projects        = new Meteor.Collection "projects"
 @CalendarItems   = new Meteor.Collection "calendarItems"
-@ChatMessages    = new Ground.Collection "chatMessages"
+@ChatMessages    = new Meteor.Collection "chatMessages"
 
 @ReportItems     = new Meteor.Collection "reportItems"
 
-@MagisterAppointments = new Ground.Collection "magisterAppointments",
+@MagisterAppointments = new Meteor.Collection "magisterAppointments",
 	transform: (a) ->
 		a._magisterObj = magister if magister?
 		a._teachers = (_.extend(new Person, t) for t in a._teachers)
@@ -26,19 +26,19 @@
 		return _.extend new Appointment, a
 	sort: "_begin": 1
 
-@MagisterStudyGuides = new Ground.Collection "magisterStudyGuides", transform: (s) ->
+@MagisterStudyGuides = new Meteor.Collection "magisterStudyGuides", transform: (s) ->
 	s.parts = ( _.extend(new StudyGuidePart, part) for part in s.parts )
 	p._files = (_.extend(new File, f) for f in p._files) for p in s.parts
 
 	return _.extend new StudyGuide, s
 
-@MagisterAssignments = new Ground.Collection "magisterAssignments", transform: (a) ->
+@MagisterAssignments = new Meteor.Collection "magisterAssignments", transform: (a) ->
 	return _.extend new Assignment, a
 
-@MagisterDigitalSchoolUtilties = new Ground.Collection "magisterDigitalSchoolUtilties", transform: (du) ->
+@MagisterDigitalSchoolUtilties = new Meteor.Collection "magisterDigitalSchoolUtilties", transform: (du) ->
 	return _.extend new DigitalSchoolUtility, du
 
-@ScholierenClasses = new Ground.Collection "scholieren.com"
+@ScholierenClasses = new Meteor.Collection "scholieren.com"
 
 Schemas.Classes = new SimpleSchema
 	_id:
@@ -189,6 +189,19 @@ Schemas.GoaledSchedules = new SimpleSchema
 		type: Number
 		optional: yes
 
+Schemas.ReportItems = new SimpleSchema
+	_id:
+		type: Meteor.Collection.ObjectID
+	userId:
+		type: String
+	reporterId:
+		type: String
+	reportGrounds:
+		type: [String]
+		minCount: 1
+	time:
+		type: Date
+
 @[key].attachSchema Schemas[key] for key of Schemas
 
 @classTransform = (tmpClass) ->
@@ -227,6 +240,7 @@ Schemas.GoaledSchedules = new SimpleSchema
 
 				"#{date} #{time}"
 		)
+		__lastChatMessage: -> ChatMessages.findOne { projectId: p._id }, transform: chatMessageTransform, sort: "time": -1
 
 chatMessageReplaceMap = [
 	[/\(y\)/ig, ":thumbsup:"]

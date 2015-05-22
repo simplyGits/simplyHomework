@@ -2,6 +2,68 @@
 @import "axis"
 @import "../main"
 
+noticeHeight = 50px
+
+#app
+	absolute: top left right bottom
+
+body.bigNoticeOpen #app
+	top: noticeHeight
+
+#bigNotice
+	absolute: left top right
+	height: noticeHeight
+	z-index: 300
+	text-align: center
+
+	#content
+		display: inline-block
+		cursor: pointer
+		line-height: noticeHeight
+		font-size: 20px
+
+	#content:hover
+		text-decoration: underline
+
+	#dismissButton
+		absolute: top bottom right 15px
+		cursor: pointer
+		font-weight: 300
+		font-size: 40px
+		line-height: 40px
+
+#bigNotice.default
+	textColor = white
+
+	background-color: #2ECC40
+	animation: bigNoticeDefaultAnimation 4s ease-in-out infinite
+
+	#content
+		color: textColor
+
+	#dismissButton
+		color: textColor
+
+@keyframes bigNoticeDefaultAnimation {
+	0% {
+		background-color: #2ECC40
+	}
+	50% {
+		background-color: #4AE25C
+	}
+	100% {
+		background-color: #2ECC40
+	}
+}
+
+#wrapper
+	absolute: top left 200px right 50px bottom
+	z-index: 100
+
+	+mobile()
+		left: 0
+		right: 0
+
 div.notification
 	z-index: 98765
 	fixed: top 15px right 60px
@@ -19,6 +81,8 @@ div.notification
 	-ms-user-select: none
 	user-select: none
 	cursor: default
+
+	border-radius: 0 !important
 
 	button
 		margin: 3px
@@ -59,28 +123,24 @@ div.itemContainer
 	width: 100%
 	margin-top: 10px
 	border: 1px lightgray solid
-	border-radius: 15px
-	padding-top: 50px
+	padding-top: 25px
+	min-height: 150px
 
 	+mobile()
 		height: initial !important
 
-div.itemContainerDivider
-	display: inline-table
-	width: calc(100% - 31px)
-	border: 0px lightgray solid
-	border-top-width: 1px
-	position: absolute
-	top: 65px
+div.itemContainerHeader
+	position: relative
+	border-bottom: 1px lightgray solid
 
 div.itemContainerContent
+	@extend .smoothScroll
+
 	text-rendering: optimizeLegibility
 	roboto(600)
 
 	position: relative
-	height: calc(100% - 15px)
-	min-height: 50px
-	margin-top: 10px
+	height: calc(100% - 30px)
 	overflow-y: auto
 
 	a

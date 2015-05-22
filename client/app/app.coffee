@@ -2,6 +2,7 @@ schoolSub = null
 magisterClassesComp = null
 addClassComp = null
 magisterClasses = new ReactiveVar null
+@currentBigNotice = new ReactiveVar null
 
 class @App
 	@_setupPathItems:
@@ -477,15 +478,16 @@ Template.settingsModal.events
 Template.deleteAccountModal.events
 	"click #goButton": ->
 		input = $ "#deleteAccountModal #passwordInput"
+		captcha = $("#g-recaptcha-response").val()
 
 		pass = Package.sha.SHA256 input.val()
 		# Store the name, when the user is gone we can't get the name anymore :P
 		name = Meteor.user().profile.firstName
-		Meteor.call "removeAccount", pass, (e) ->
+		Meteor.call "removeAccount", pass, captcha, (e) ->
 			if e.error is "wrongPassword"
-				input
-					.tooltip placement: "bottom", title: "Verkeerd wachtwoord", trigger: "focus"
-					.tooltip "show"
+				setFieldError input, "Verkeerd wachtwoord"
+			else if e.error is "wrongCaptcha"
+				shake "#deleteAccountModal"
 			else ga "send", "event", "action", "remove", "account"
 
 Template.newSchoolYearModal.helpers classes: -> classes()
@@ -547,17 +549,11 @@ Template.accountInfoModal.events
 		if oldPass isnt "" and newPass isnt ""
 			any = yes
 
-			err = (query, content) ->
-				$(query)
-					.addClass "has-error"
-					.tooltip placement: "bottom", title: content
-					.tooltip "show"
-
 			if oldPass isnt newPass
 				Accounts.changePassword oldPass, newPass, (error) ->
 					if error?
 						if error.reason is "Incorrect password"
-							err "#oldPassInput", "Verkeerd wachtwoord"
+							setFieldError "#oldPassInput", "Verkeerd wachtwoord"
 							callback no
 						else callback no
 
@@ -566,7 +562,7 @@ Template.accountInfoModal.events
 						callback yes
 
 			else
-				err "#newPassInput", "Nieuw wachtwoord is hetzelfde als je oude wachtwoord."
+				setFieldError "#newPassInput", "Nieuw wachtwoord is hetzelfde als je oude wachtwoord."
 				callback no
 
 		unless any then callback null
@@ -597,10 +593,13 @@ Template.addProjectModal.events
 	"click #goButton": ->
 		name = $("#projectNameInput").val().trim()
 		description = $("#projectDescriptionInput").val().trim()
-		deadline = $("#projectDeadlineInput").data("DateTimePicker").getDate().toDate()
+		deadline = $("#projectDeadlineInput").data("DateTimePicker").date().toDate()
 		classId = Session.get("currentSelectedClassDatum")?._id
 
 		return if name is ""
+		if Projects.findOne({ name })?
+			setFieldError "#projectNameInput", "Er is al een project met deze naam"
+			return
 
 		if $("#projectClassNameInput").val().trim() isnt "" and not classId?
 			shake "#addProjectModal"
@@ -670,6 +669,12 @@ Template.sidebar.events
 Template.app.helpers
 	contentOffsetLeft: -> if Session.get "isPhone" then "0" else "200px"
 	contentOffsetRight: -> if Session.get "isPhone" then "0" else "50px"
+
+	currentBigNotice: -> currentBigNotice.get()
+
+Template.app.events
+	"click #bigNotice > #content": -> currentBigNotice.get().onClick arguments...
+	"click #bigNotice > #dismissButton": -> currentBigNotice.get().onDismissed arguments...
 
 Template.app.rendered = ->
 	if "#{Math.random()}"[2] is "2" and "#{Math.random()}"[4] is "2"

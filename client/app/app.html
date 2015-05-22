@@ -12,21 +12,30 @@
 		{{> deleteAccountModal}}
 	{{! end modals}}
 
-	{{> sidebar}}
+	{{#with currentBigNotice}}
+		<div id="bigNotice" class="{{theme}}">
+			<div id="content">
+				{{content}}
+			</div>
+			<span id="dismissButton">&times;</span>
+		</div>
+	{{/with}}
 
-	<div class="content unselectable" style="left: {{contentOffsetLeft}}; right: {{contentOffsetRight}}">
-		{{> yield}}
-		{{#unless has "noAds"}}
-			<div style="height: 100px" id="adpadding"></div>
-			<div id="adbar" style="left: {{contentOffsetLeft}}; right: {{contentOffsetRight}}"></div>
-		{{/unless}}
+	<div id="app">
+		{{> sidebar}}
+
+		<div id="wrapper">
+			<div class="content unselectable smoothScroll">
+				{{> yield}}
+			</div>
+		</div>
+		{{> chatSidebar}}
 	</div>
-	{{> chatSidebar}}
 	<div class="backdrop"></div>
 </template>
 
 <template name="settingsModal">
-	<div class="modal fade" id="settingsModal">
+	<div class="modal fade" aria-hidden="true" id="settingsModal">
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header">
@@ -47,7 +56,7 @@
 </template>
 
 <template name="setMagisterInfoModal">
-	<div class="modal fade" id="setMagisterInfoModal">
+	<div class="modal fade" aria-hidden="true" id="setMagisterInfoModal">
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header">
@@ -94,7 +103,7 @@
 </template>
 
 <template name="getMagisterClassesModal">
-	<div class="modal fade" id="getMagisterClassesModal">
+	<div class="modal fade" aria-hidden="true" id="getMagisterClassesModal">
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header">
@@ -132,7 +141,7 @@
 </template>
 
 <template name="plannerPrefsModal">
-	<div class="modal fade" id="plannerPrefsModal">
+	<div class="modal fade" aria-hidden="true" id="plannerPrefsModal">
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header">
@@ -141,17 +150,15 @@
 				</div>
 				<div class="modal-body">
 					<h4 style="text-align: center; margin-bottom: 20px;">Hoeveel tijd heb je op elke weekdag?<small><br><i>(schooltijd niet meegerekend)</i><br>Je kan dit altijd in je instellingen aanpassen.</small></h4>
-					<form class="form-horizontal">
+					<form class="vertical full-width">
 						{{#each dayWeek}}
-							<div id="{{name}}}Group" class="form-group">
-								<label for="{{name}}Input" class="col-sm-2 control-label" style="text-align: left">{{friendlyName}}</label>
-								<div class="col-sm-10">
-									<select id="{{name}}Input" class="form-control">
-										{{#each weigthOptions}}
-											<option selected={{selected}}>{{name}}</option>
-										{{/each}}
-									</select>
-								</div>
+							<div id="{{name}}}Group" class="group select">
+								<label for="{{name}}Input">{{friendlyName}}</label>
+								<select id="{{name}}Input">
+									{{#each weigthOptions}}
+										<option selected={{selected}}>{{name}}</option>
+									{{/each}}
+								</select>
 							</div>
 						{{/each}}
 					</form>
@@ -165,7 +172,7 @@
 </template>
 
 <template name="addClassModal">
-	<div class="modal fade" id="addClassModal">
+	<div class="modal fade" aria-hidden="true" id="addClassModal">
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header">
@@ -173,30 +180,34 @@
 					<h4 class="modal-title">Vak toevoegen</h4>
 				</div>
 				<div class="modal-body">
-					<form class="form-horizontal">
-						<div id="nameGroup" class="form-group">
-							<label for="classNameInput" class="col-sm-2 control-label" style="text-align: left">Vaknaam</label>
-							<div class="col-sm-10">
-								<input type="text" class="form-control" id="classNameInput" placeholder="Engels">
-							</div>
+					{{#with magisterClasses}}
+						{{#unless empty}}
+							<h3>Kies een vak van Magister</h3>
+							{{#each this}}
+								<div class="classRow">
+									<div class="classname"></div>
+									<button type="button" class="btn btn-primary">toevoegen</button>
+								</div>
+							{{/each}}
+							<h3>Of maak zelf een vak</h3>
+						{{/unless}}
+					{{/with}}
+					<form class="vertical full-width">
+						<div id="nameGroup" class="group">
+							<label for="classNameInput">Vaknaam</label>
+							<input type="text" id="classNameInput" placeholder="Engels">
 						</div>
-						<div id="courseGroup" class="form-group">
-							<label for="courseInput" class="col-sm-2 control-label" style="text-align: left">Vakafkorting</label>
-							<div class="col-sm-10">
-								<input type="text" class="form-control" id="courseInput" placeholder="entl">
-							</div>
+						<div id="courseGroup" class="group">
+							<label for="courseInput">Vakafkorting</label>
+							<input type="text" id="courseInput" placeholder="entl">
 						</div>
-						<div id="bookGroup" class="form-group">
-							<label for="bookInput" class="col-sm-2 control-label" style="text-align: left">Methode</label>
-							<div class="col-sm-10">
-								<input type="text" class="form-control" id="bookInput" placeholder="New Interface">
-							</div>
+						<div id="bookGroup" class="group">
+							<label for="bookInput">Methode</label>
+							<input type="text" id="bookInput" placeholder="New Interface">
 						</div>
-						<div id="colorGroup" class="form-group">
-							<label for="colorInput" id="colorLabel" class="col-sm-2 control-label" style="text-align: left">Kleur</label>
-							<div class="col-sm-10">
-								<input type="text" class="form-control" id="colorInput" placeholder="#32A8CE">
-							</div>
+						<div id="colorGroup" class="group">
+							<label for="colorInput" id="colorLabel">Kleur</label>
+							<input type="text" id="colorInput" placeholder="#32A8CE">
 						</div>
 					</form>
 				</div>
@@ -210,7 +221,7 @@
 </template>
 
 <template name="newSchoolYearModal">
-	<div class="modal fade" id="newSchoolYearModal">
+	<div class="modal fade" aria-hidden="true" id="newSchoolYearModal">
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header">
@@ -239,7 +250,7 @@
 </template>
 
 <template name="accountInfoModal">
-	<div class="modal fade" id="accountInfoModal">
+	<div class="modal fade" aria-hidden="true" id="accountInfoModal">
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header">
@@ -290,7 +301,7 @@
 </template>
 
 <template name="notificationSettingsModal">
-	<div class="modal fade" id="accountInfoModal">
+	<div class="modal fade" aria-hidden="true" id="accountInfoModal">
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header">
@@ -329,7 +340,7 @@
 </template>
 
 <template name="addProjectModal">
-	<div class="modal fade" id="addProjectModal">
+	<div class="modal fade" aria-hidden="true" id="addProjectModal">
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header">
@@ -391,7 +402,7 @@
 </template>
 
 <template name="deleteAccountModal">
-	<div class="modal fade" id="deleteAccountModal">
+	<div class="modal fade" aria-hidden="true" id="deleteAccountModal">
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header">
@@ -403,10 +414,14 @@
 						Je staat op het punt om je gehele account te verwijderen.
 						Dit kan <b>niet</b> worden teruggedraaid.
 						Om aan te geven dat je zeker weet dat je je account wilt
-						verwijderen moet je je wachtwoord beneden invoren.
+						verwijderen moet je beneden je wachtwoord en een captcha invoren.
 					</div>
 					<br>
 					<input type="password" class="form-control" id="passwordInput" placeholder="●●●●●●●●●●" autocomplete="off">
+
+					<div style="margin-top: 15px">
+						{{> reCAPTCHA}}
+					</div>
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">Annuleren</button>

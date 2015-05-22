@@ -31,7 +31,7 @@
 			</div>
 		</div>
 
-		<div class="sidebarClasses">
+		<div class="sidebarClasses smoothScroll">
 			{{#each classes}}
 				{{#linkTo route="classView" classId=_id.toHexString}}
 					{{> sidebarItem}}
@@ -40,7 +40,7 @@
 		</div>
 		<div class="sidebarFooter">
 			<div class="sidebarFooterSettingsIcon"></div>
-			<div class="appNameHeader sidebarFooterAppNameHeader" style="color: white"><span id="sidebarFooterSimply" style="cursor: pointer; opacity: .6; margin-right: -2px">simply</span></div>
+			<div class="appNameHeader sidebarFooterAppNameHeader"></div>
 		</div>
 	</div>
 </template>

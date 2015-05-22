@@ -12,22 +12,30 @@ Template.chatWindow.events
 
 	"keyup input.messageInput": (event) ->
 		content = event.target.value
-		return unless event.which is 13 and content.trim().length > 0
 
-		cm = switch @__type
-			when "private" then new ChatMessage content, Meteor.userId(), @_id
-			when "project"
-				cm = new ChatMessage content, Meteor.userId(), null
-				cm.projectId = @_id
-				cm
+		if event.which is 32 and (val = /\B!abbr ([a-z]+)\b/i.exec(content))?
+			ga "send", "event", "abbr", "use"
+			query = val[1]
 
-		ChatMessages.insert cm
-		event.target.value = ""
+			Meteor.call "http", "get", "http://tomsmeding.com/abbrgen/#{query}", (e, r) ->
+				unless e?
+					event.target.value = event.target.value.replace "!abbr #{query}", r.content
 
-		_.defer -> # A lot of jQuery is pretty heavy, let's just defer it.
-			x = $(event.target).closest(".chatWindow").find(".messages")
-			x.addClass "sticky"
-			x.scrollTop x[0].scrollHeight
+		else if event.which is 13 and content.trim().length > 0
+			cm = switch @__type
+				when "private" then new ChatMessage content, Meteor.userId(), @_id
+				when "project"
+					cm = new ChatMessage content, Meteor.userId(), null
+					cm.projectId = @_id
+					cm
+
+			ChatMessages.insert cm
+			event.target.value = ""
+
+			_.defer -> # A lot of jQuery is pretty heavy, let's just defer it.
+				x = $(event.target).closest(".chatWindow").find(".messages")
+				x.addClass "sticky"
+				x.scrollTop x[0].scrollHeight
 
 	"scroll div.messages": (event) ->
 		t = $ event.target
@@ -47,22 +55,30 @@ Template.mobileChatWindow.events
 
 	"keyup input.messageInput": (event) ->
 		content = event.target.value
-		return unless event.which is 13 and content.trim().length > 0
 
-		cm = switch @__type
-			when "private" then new ChatMessage content, Meteor.userId(), @_id
-			when "project"
-				cm = new ChatMessage content, Meteor.userId(), null
-				cm.projectId = @_id
-				cm
+		if event.which is 32 and (val = /\B!abbr ([a-z]+)\b/i.exec(content))?
+			ga "send", "event", "abbr", "use"
+			query = val[1]
 
-		ChatMessages.insert cm
-		event.target.value = ""
+			Meteor.call "http", "get", "http://tomsmeding.com/abbrgen/#{query}", (e, r) ->
+				unless e?
+					event.target.value = event.target.value.replace "!abbr #{query}", r.content
 
-		_.defer -> # A lot of jQuery is pretty heavy, let's just defer it.
-			x = $(event.target).closest(".mobileChatWindow").find(".messages")
-			x.addClass "sticky"
-			x.scrollTop x[0].scrollHeight
+		else if event.which is 13 and content.trim().length > 0
+			cm = switch @__type
+				when "private" then new ChatMessage content, Meteor.userId(), @_id
+				when "project"
+					cm = new ChatMessage content, Meteor.userId(), null
+					cm.projectId = @_id
+					cm
+
+			ChatMessages.insert cm
+			event.target.value = ""
+
+			_.defer -> # A lot of jQuery is pretty heavy, let's just defer it.
+				x = $(event.target).closest(".chatWindow").find(".messages")
+				x.addClass "sticky"
+				x.scrollTop x[0].scrollHeight
 
 	"scroll div.messages": (event) ->
 		t = $ event.target

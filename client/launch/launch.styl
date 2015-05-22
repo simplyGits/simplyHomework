@@ -1,6 +1,33 @@
 @import "../main"
 @import "jeet"
 
+#page1, #page2
+	background-color: simplyBlue
+	width: 100%
+	height: 100%
+	position: relative
+
+#page1
+	.appNameHeader
+		fixed: top
+		color: white
+		font-size: 2em
+		margin-left: 15px
+
+	.appNameHeader:before
+		opacity: .6
+
+#page2
+	transition: .25s all
+	min-height: 800px
+
+	.appNameHeaderBig
+		text-align: center
+
+	+mobile()
+		height: auto
+		padding-bottom: 40px
+
 div.signUpForm
 	opacity: 0
 	visibility: hidden

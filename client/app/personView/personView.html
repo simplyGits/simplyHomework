@@ -1,8 +1,9 @@
 <template name="personView">
+	{{> reportUserModal}}
 	<div class="personInfo" style="background-color: {{backColor}}">
 		{{#if sameUser}}
 			<a href="http://en.gravatar.com/emails/" target="_blank">
-				<img class="personPicture" style="pointer-events: initial" src="{{gravatar this 250}}" width="250" height="250" data-toggle="tooltip" title="Klik hier om je foto aan te passen"/>
+				<img class="personPicture" style="pointer-events: initial" src="{{gravatar this 250}}" width="250" height="250" data-toggle="tooltip" data-placement="bottom" title="Klik hier om je foto aan te passen"/>
 			</a>
 		{{else}}
 			<img class="personPicture" src="{{gravatar this 250}}" width="250" height="250"/>
@@ -11,7 +12,10 @@
 		<div class="name">{{profile.firstName}} {{profile.lastName}}</div>
 
 		{{#unless sameUser}}
-			<button type="button" class="btn btn-trans noFontSmoothing" id="chatButton">chat</button>
+			<div class="buttons">
+				<i id="reportButton" class="fa fa-flag" data-toggle="tooltip" data-placement="top" title="Rapporteer {{profile.firstName}}"></i>
+				<button type="button" class="btn btn-trans noFontSmoothing" id="chatButton">chat</button>
+			</div>
 		{{/unless}}
 	</div>
 	<div class="personDetailsContainer">
@@ -33,5 +37,87 @@
 				</li>
 			{{/each}}
 		</ul>
+	</div>
+</template>
+
+<template name="reportUserModal">
+	<div class="modal fade" aria-hidden="true" id="reportUserModal">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+					<h4 class="modal-title">{{profile.firstName}} {{profile.lastName}} rapporteren</h4>
+				</div>
+				<div class="modal-body">
+					<div>
+						Waarom wil je {{profile.firstName}} rapporteren?
+						Je kan meerdere opties selecteren.
+					</div>
+					<br>
+					<div id="checkboxes">
+						<div id="harrassMe">
+							<label>
+								<input type="checkbox"/>
+								<span>
+									Deze persoon bedreigt me.
+								</span>
+							</label>
+						</div>
+						<div id="harrassOther">
+							<label>
+								<input type="checkbox"/>
+								<span>
+									Deze persoon bedreigt iemand anders / anderen.
+								</span>
+							</label>
+						</div>
+						<div id="spam">
+							<label>
+								<input type="checkbox"/>
+								<span>
+									Deze persoon verstuurt spam.
+								</span>
+							</label>
+						</div>
+						<div id="hacked">
+							<label>
+								<input type="checkbox"/>
+								<span>
+									Het account van deze persoon is (waarschijnlijk) gehackt.
+								</span>
+							</label>
+						</div>
+						<div id="rights">
+							<label>
+								<input type="checkbox"/>
+								<span>
+									Deze persoon maakt inbreuk op (mijn) rechten.
+								</span>
+							</label>
+						</div>
+						<div id="offensivePic">
+							<label>
+								<input type="checkbox"/>
+								<span>
+									De profielfoto van deze persoon is beledigend / haatdragend.
+								</span>
+							</label>
+						</div>
+						<div id="offensiveName">
+							<label>
+								<input type="checkbox"/>
+								<span>
+									De naam van deze persoon is beledigend / haatdragend.
+								</span>
+							</label>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Annuleren</button>
+					<button type="button" class="btn btn-primary" id="goButton">Rapporteren</button>
+				</div>
+			</div>
+		</div>
 	</div>
 </template>

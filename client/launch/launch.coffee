@@ -2,7 +2,7 @@ login = ->
 	if not Session.get "creatingAccount"
 		Meteor.loginWithPassword $("#emailInput").val().toLowerCase(), $("#passwordInput").val(), (error) ->
 			if error? and error.reason is "Incorrect password"
-				$("#passwordGroup").addClass("has-error").tooltip(placement: "bottom", title: "Wachtwoord is fout", trigger: "manual").tooltip("show")
+				setFieldError "#passwordGroup", "Wachtwoord is fout"
 	else
 		Meteor.call "mailExists", $("#emailInput").val().toLowerCase(), (error, result) ->
 			if result
@@ -14,8 +14,8 @@ login = ->
 				if empty "passwordInput", "passwordGroup", "Wachtwoord is leeg" then okay = false
 				if empty "betaCodeInput", "betaCodeGroup", "Voornaam is leeg" then okay = false
 				unless correctMail $("#emailInput").val()
-					$("#emailGroup").removeClass("has-error").tooltip "destroy"
-					$("#emailGroup").addClass("has-error").tooltip(placement: "bottom", title: "Ongeldig email adres", trigger: "manual").tooltip("show")
+					group = $("#emailGroup").tooltip "destroy"
+					setFieldError group, "Ongeldig email adres"
 					okay = false
 				if okay
 					Accounts.createUser {
@@ -41,11 +41,13 @@ Template.signupModal.events
 
 		unless event.which is 13
 			if correctMail $("#emailInput").val()
-				$("#emailGroup").removeClass "has-error"
-				$("#emailGroup").addClass "has-success"
+				$("#emailGroup")
+					.removeClass "error"
+					.addClass "success"
 			else
-				$("#emailGroup").removeClass "has-success"
-				$("#emailGroup").addClass "has-error"
+				$("#emailGroup")
+					.removeClass "success"
+					.addClass "error"
 
 			unless value.length < 4
 				Meteor.call "mailExists", $("#emailInput").val().toLowerCase(), (error, result) -> Session.set "creatingAccount", not result
@@ -74,41 +76,35 @@ Template.page1.events
 
 			else Router.go "app"
 
-usersCount = new ReactiveVar null
-Template.page2.helpers
-	usersCount: -> usersCount.get()
-
 Template.launchPage.events
 	'click #page1': -> if $("#page2").hasClass("topShadow") then $("body").stop().animate {scrollTop: 0}, 600, "easeOutExpo"
 
-coll = new Meteor.Collection "userCount"
 Template.launchPage.rendered = ->
-	@autorun ->
-		Meteor.subscribe "userCount"
-		usersCount.set coll.findOne()?.count
+	@subscribe "userCount"
 
+	signUpForm = @$ ".signUpForm"
 	$("body").keypress (event) ->
 		return if event.which is 13 or $("input").is ":focus"
 
 		$("body").stop().animate {scrollTop: 0}, 600, "easeOutExpo"
 
-		$(".signUpForm").css( "visibility": "initial" )
+		signUpForm.css( "visibility": "initial" )
 		$(".Center, .signUpForm").addClass("active")
 		_.delay ( ->
-			$(".signUpForm input#username").val(String.fromCharCode event.which).focus()
+			signUpForm.find("input#username").val(String.fromCharCode event.which).focus()
 		), 45
 
 	$("body").on "input", (event) ->
 		return unless $(".signUpForm input#username").val() is "" and $(".signUpForm input#password").val() is ""
-		$(".signUpForm input").blur()
+		signUpForm.find("input").blur()
 
-		$(".signUpForm").css( "visibility": "hidden" )
+		signUpForm.css( "visibility": "hidden" )
 		$(".Center, .signUpForm").removeClass("active")
 
 	# sexy shadow, you like that, don't ya ;)
+	page2 = $ "#page2"
 	$(window).scroll ->
-		scroll = $(window).scrollTop()
-		if scroll > 40
-			$("#page2").addClass("topShadow")
+		if $(this).scrollTop() > 40
+			page2.addClass("topShadow")
 		else
-			$("#page2").removeClass("topShadow")
+			page2.removeClass("topShadow")
