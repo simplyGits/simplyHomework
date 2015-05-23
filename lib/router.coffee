@@ -80,7 +80,7 @@ Router.map ->
 		onAfterAction: ->
 			if !@data()? and @ready()
 				@redirect "app"
-				swalert title: "Niet gevonden", text: "Jij hebt dit vak waarschijnlijk niet.", confirmButtonText: "o.", type: "error"
+				swalert title: "Niet gevonden", text: "Je hebt dit vak waarschijnlijk niet.", confirmButtonText: "o.", type: "error"
 				return
 
 			Meteor.defer =>
@@ -207,7 +207,7 @@ Router.map ->
 
 			if !@data()? and @ready()
 				@redirect "app"
-				swalert title: "Niet gevonden", text: "Dit persoon is niet gevonden.", type: "error"
+				swalert title: "Niet gevonden", text: "Deze persoon is niet gevonden.", type: "error"
 				return
 
 			document.title = "simplyHomework | #{@data().profile.firstName} #{@data().profile.lastName}"

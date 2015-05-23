@@ -562,7 +562,7 @@ Template.accountInfoModal.events
 						callback yes
 
 			else
-				setFieldError "#newPassInput", "Nieuw wachtwoord is hetzelfde als je oude wachtwoord."
+				setFieldError "#newPassInput", "Het nieuwe wachtwoord is hetzelfde als je oude wachtwoord."
 				callback no
 
 		unless any then callback null
@@ -691,7 +691,7 @@ Template.app.rendered = ->
 				Meteor.users.update Meteor.userId(), $set: hasGravatar: yes
 
 	if Meteor.userId()? and not Meteor.user().emails[0].verified
-		notify "Je hebt je account nog niet geverifiëerd!", "warning"
+		notify "Je hebt je account nog niet geverifiëerd.\nCheck je email!", "warning"
 
 	assignmentNotification = null
 	recentGradesNotification = null
@@ -832,7 +832,7 @@ Template.app.rendered = ->
 				if !Session.get "adsAllowed"
 					Router.go "launchPage"
 					Meteor.logout()
-					swalert title: "Adblock :c", html: 'Om simplyHomework gratis beschikbaar te kunnen houden zijn we afhankelijk van reclame-inkomsten.\nOm simplyHomework te kunnen gebruiken, moet je daarom je AdBlocker uitzetten.\nWil je toch simplyHomework zonder reclame gebruiken, dan kan je <a href="/">premium</a> nemen.', type: "error"
+					swalert title: "Adblock :c", html: 'Om simplyHomework gratis beschikbaar te kunnen houden zijn we afhankelijk van reclame-inkomsten.\nOm simplyHomework te kunnen gebruiken, moet je daarom je AdBlocker uitzetten.\nWil je simplyHomework toch zonder reclame gebruiken, dan kan je <a href="/">premium</a> nemen.', type: "error"
 			), 3000
 
 	if Session.get("isPhone") then setMobile()

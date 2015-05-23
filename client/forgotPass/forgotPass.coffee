@@ -13,7 +13,7 @@ Template.forgotPass.events
 				Meteor.call("log", "log", "Error while checking mail. #{err.message}")
 				swalert title: "Fout", text: "Onbekende fout, we zijn op de hoogte gesteld", type: "error"
 			else
-				setFieldError "#forgotPassMailInput", "Geen account met deze e-mail gevonden."
+				setFieldError "#forgotPassMailInput", "We hebben geen account met deze email gevonden."
 
 Template.resetPass.events
 	"keydown": ->
@@ -22,12 +22,12 @@ Template.resetPass.events
 		Accounts.resetPassword Router.current().params.token, event.target.value, (err) ->
 			if err?
 				if err.reason is "Token expired"
-					swalert title: "Reeds gebruikt", html: 'Wachtwoord is al veranderd met deze link. Klik <a href="/forgot">hier</a> als je je wachtwoord nog een keer wilt wijzingen.', type: "error"
+					swalert title: "Reeds gebruikt", html: 'Wachtwoord is al een keer veranderd met deze link. Klik <a href="/forgot">hier</a> als je je wachtwoord nog een keer wilt wijzingen.', type: "error"
 				else
 					Meteor.call("log", "log", "Error while resetting password. #{err.message}")
 					swalert title: "Fout", text: "Onbekende fout, we zijn op de hoogte gesteld", type: "error"
 			else
 				Router.go "app"
-				swalert title: "yay", text: "Wachtwoord is aangepast. Denk ik... Naja, laten we zeggen van wel.", type: "success"
+				swalert title: "yay", text: "Wachtwoord is aangepast. Denk ik... Naja, laten we zeggen van wel. (Ik zou het toch maar even proberen)", type: "success"
 
 Template.resetPass.rendered = -> $("#hintText").velocity { opacity: 1 }, 15000
