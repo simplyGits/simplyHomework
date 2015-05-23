@@ -403,7 +403,7 @@ Template.addClassModal.events
 		{ year, schoolVariant } = Meteor.user().profile.courseInfo
 
 		_class = Classes.findOne { $or: [{ name: name }, { course: course }], schoolVariant: schoolVariant, year: year}
-		_class ?= New.class name, course, year, schoolVariant, ScholierenClasses.findOne(-> @name.toLowerCase().indexOf(val.toLowerCase()) > -1).id
+		_class ?= New.class name, course, year, schoolVariant, ScholierenClasses.findOne(-> @name.toLowerCase().indexOf(name.toLowerCase()) > -1).id
 
 		book = Books.findOne title: bookName
 		unless book? or bookName.trim() is ""
