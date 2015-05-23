@@ -37,7 +37,6 @@ percolate:paginated-subscription
 aldeed:collection2
 markdown
 qnub:emojione
-meteor-analytics
 twbs:bootstrap-noglyph
 mizzao:bootboxjs
 fortawesome:fontawesome
@@ -45,3 +44,4 @@ cryptoquick:stylus-multi
 rzymek:moment-locale-nl
 appshore:recaptcha
 tmeasday:publish-counts
+tail:core
