@@ -76,6 +76,7 @@ ordered-dict@1.0.3
 percolate:paginated-subscription@0.2.4
 percolate:synced-cron@1.2.0
 percolate:velocityjs@1.2.1_1
+planner@0.0.1
 qnub:emojione@0.0.3
 random@1.0.3
 reactive-dict@1.1.0
