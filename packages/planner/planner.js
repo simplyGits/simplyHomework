@@ -1,6 +1,6 @@
-var assert=require("assert");
+var assert = Npm.require("assert");
 
-function HomeworkDescription(){
+HomeworkDescription = function () {
 	if(!(this instanceof HomeworkDescription))return new HomeworkDescription;
 
 	//A unique identifier for a subject. Can be pretty much anything, lest it's a primitive type
@@ -18,7 +18,7 @@ function HomeworkDescription(){
 	this.location=[];
 }
 
-function Planner(){
+Planner = function () {
 	if(!(this instanceof Planner))return new Planner;
 
 	var subjects={}; //The Cache
@@ -73,13 +73,6 @@ function rms(arr){
 	for(i=0;i<len;i++)sum+=arr[i]*arr[i];
 	return Math.sqrt(sum/len);
 }
-
-
-
-module.exports={
-	HomeworkDescription:HomeworkDescription,
-	Planner:Planner
-};
 
 /*
 var REQ=require("./planner");
