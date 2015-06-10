@@ -1,6 +1,8 @@
-var assert = Npm.require("assert");
+var assert;
+if(typeof Meteor!="undefined")assert=Npm.require("assert");
+else assert=require("assert");
 
-HomeworkDescription = function () {
+HomeworkDescription=function(){
 	if(!(this instanceof HomeworkDescription))return new HomeworkDescription;
 
 	//A unique identifier for a subject. Can be pretty much anything, lest it's a primitive type
@@ -18,7 +20,7 @@ HomeworkDescription = function () {
 	this.location=[];
 }
 
-Planner = function () {
+Planner=function(){
 	if(!(this instanceof Planner))return new Planner;
 
 	var subjects={}; //The Cache
@@ -72,6 +74,13 @@ function rms(arr){
 	len=arr.length;
 	for(i=0;i<len;i++)sum+=arr[i]*arr[i];
 	return Math.sqrt(sum/len);
+}
+
+if(typeof Meteor=="undefined"){
+	module.exports={
+		HomeworkDescription:HomeworkDescription,
+		Planner:Planner
+	};
 }
 
 /*
