@@ -92,7 +92,7 @@ Meteor.methods
 
 		return errors if not forceUpdate and user.lastGradeUpdateTime?.getTime() > _.now() - GRADES_INVALIDATION_TIME
 
-		services = _.filter ExternalSercicesConnector.externalServices, (s) -> s.hasData userId
+		services = _.filter ExternalSercicesConnector.externalServices, (s) -> s.active userId
 		for externalService in services
 			result = null
 			try
