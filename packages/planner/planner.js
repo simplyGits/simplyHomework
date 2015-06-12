@@ -1,3 +1,9 @@
+/*
+ * simplyHomework plan algorithm and stuff.
+ * @author simply
+ * @module planner
+ */
+
 var assert;
 if(typeof Meteor!="undefined")assert=Npm.require("assert");
 else assert=require("assert");
