@@ -268,6 +268,10 @@ class @Helpers
 			else
 				return "<a target=\"_blank\" href=\"http://#{match}\">#{match}</a>"
 
+	@interval: (func, interval) ->
+		func()
+		Meteor.setInterval func, interval
+
 ###*
 # Checks if the given `user` is in the given `role`.
 # @method userIsInRole

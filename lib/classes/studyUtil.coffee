@@ -8,9 +8,10 @@
 # @param name {String} The name of the studyUtil.
 # @param description {String} A description.
 # @param classId {ObjectID} The ID of a SchoolClass this studyUtil is for.
+# @param ownerId {String} The ID of the owner of this studyUtil.
 ###
 class @StudyUtil
-	constructor: (@name, @description, @classId) ->
+	constructor: (@name, @description, @classId, @ownerId) ->
 		@_id = new Meteor.Collection.ObjectID
 
 		###*
@@ -24,7 +25,7 @@ class @StudyUtil
 		###*
 		# The date till this studyUtil is accesible.
 		# @property visibleTo
-		# @type Date
+		# @type Date|null
 		# @default null
 		###
 		@visibleTo = null
@@ -37,27 +38,18 @@ class @StudyUtil
 		###
 		@files = []
 
-	###*
-	# Converts the given StudyGuidePart to a StudyUtil.
-	# @method fromMagister
-	# @static
-	# @param part {StudyGuidePart} The StudyGuidePart to convert.
-	# @param studyGuide {StudyGuide} The parent StudyGuide of `part` to use for converting the `part`.
-	# @param files {File[]} The files of the given `part`.
-	# @param [classId] {ObjectID} An ID used to overwrite the ID found in the studyGuide.
-	# @return {StudyUtil} The converted StudyGuide as a StudyUtil
-	###
-	@fromMagister: (part, studyGuide, files, classId) ->
-		unless classId?
-			classInfo = _.find Meteor.user().classInfos, (i) -> i.magisterAbbreviation is studyGuide._class
-			classId = classInfo.id
+		###*
+		# The name of the externalService that fetched this StudyUtil.
+		# @property fetchedBy
+		# @type String|null
+		# @defualt null
+		###
+		@fetchedBy = null
 
-		studyUtil = new StudyUtil part.name(), part.description(), classId
-
-		studyUtil.visibleFrom = part.from()
-		studyUtil.visibleTo = part.to()
-		# TODO == Find a good universal file class profile and make a magister
-		# file converter for it.
-		#studyUtil.files = xxx.fromMagister files
-
-		return studyUtil
+		###
+		# Info about the external object, ( studyGuide this StudyUtil is from, for exmaple )
+		# @property externalInfo
+		# @type Object|null
+		# @default null
+		###
+		@externalInfo = null

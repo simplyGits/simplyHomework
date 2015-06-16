@@ -43,11 +43,18 @@ class @CalendarItem
 		###*
 		# If this calendarItem is linked to an appointment
 		# (eg for giving up homework that isn't filled in
-		# into Magister, `appointmentId` will contain the
+		# into Magister, `externalId` will contain the
 		# ID of the appointment this calendarItem is linked to.
 		#
-		# @property appointmentId
-		# @type Number
+		# @property externalId
+		# @type mixed
 		# @default null
 		###
-		@appointmentId = null
+		@externalId = null
+
+		###*
+		# @property fetchedBy
+		# @type String|null
+		# @default null
+		###
+		@fetchedBy = null

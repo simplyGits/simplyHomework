@@ -13,7 +13,7 @@ Package.describe({
 Package.onUse(function(api) {
   api.versionsFrom('1.1.0.1');
 
-  api.use(["erasaur:meteor-lodash", "magisterjs"], "server");
+  api.use(["erasaur:meteor-lodash", "magisterjs", "ejson"], "server");
   //api.use(["erasaur:meteor-lodash", "simply:magisterjs@1.3.3"], "server");
 
   api.addFiles("magister-binding.js", "server");
