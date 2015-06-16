@@ -219,52 +219,6 @@ Meteor.methods
 		Meteor.users.update(userId, $set: lastCalendarItemUpdateTime: new Date) if services.length > 0
 		errors
 
-	###*
-	# Gets the grades for the user with the given `userId` or the user in the
-	# current connection from various sources. It also stores the retreived grades
-	# in the database unless they were already in it.
-	#
-	# @method getGrades
-	# @param [options] {Object} A map of options that is passed to the service.
-	# 	@param [options.from=new Date(0)] {Date} The minimal date the Grade was filled in should be.
-	# 	@param [options.to=new Date()] {Date} The maximal date the Grade was filled in should be.
-	# 	@param [options.onlyRecent=false] {Boolean} If true, all grades should be newer than 7 days ago. Overrides `options.from`.
-	# 	@param [option.onlyEnds=false] {Boolean} If true, all grades are end grades. Overrides `options.onlyNonEnds`
-	# 	@param [options.onlyNonEnds=false] {Boolean} If true, all grades are _not_ end grades.
-	# @param [userId=this.userId] `userId` overwrites the `this.userId` which is used by default which is used by default.
-	# @return {StoredGrade[]} The grades you asked for.
-	###
-	'getGrades': (query = {}, userId = @userId) ->
-		@unblock()
-		check query, Object
-		check userId, String
-
-		Meteor.call 'updateGrades', userId, no, yes unless @isSimulation
-
-		StoredGrades.find(query).fetch()
-
-	###*
-	# Gets the studyUtils for the user with the given `userId` or the user in the
-	# current connection from various sources. It also stores the retreived utils
-	# in the database unless they were already in it.
-	#
-	# @method getStudyUtils
-	# @param [options] {Object} A map of options that is passed to the service.
-	# 	@param [options.from=null] {Date} The minimal date the util should be visble from. `null` for no limit.
-	# 	@param [options.to=null] {Date} The maximal date the util should be visble to. `null` for no limit.
-	# 	@param [options.classIds=[]] {ObjectID[]} Array of IDs to get the studyUtils for, `null`, `undefined` and an empty array fetches the utils for all classes.
-	# @param [userId=this.userId] `userId` overwrites the `this.userId` which is used by default which is used by default.
-	# @return {StudyUtil[]} The damn utils you asked for.
-	###
-	'getStudyUtils': (query = {}, userId = @userId) ->
-		@unblock()
-		check query, Object
-		check userId, String
-
-		Meteor.call 'updateStudyUtils', userId, no, yes unless @isSimulation
-
-		StudyUtils.find(query).fetch()
-
 	'getPersons': (query, type = undefined, userId = @userId) ->
 		# TODO: Store doneQueries so that we can cache them, example:
 		# tho -> fetch persons -> store persons
