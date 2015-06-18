@@ -533,8 +533,11 @@ Template.accountInfoModal.events
 					title: "D:"
 					text: "Er is iets fout gegaan tijdens het opslaan van je instellingen.\nWe zijn op de hoogte gesteld."
 					type: "error"
+			else if not success?
+				shake "#accountInfoModal"
 
 			$("#accountInfoModal").modal "hide"
+			undefined
 
 		any = no # If this is false we will just close the modal later.
 		if mail isnt Meteor.user().emails[0].address
@@ -557,7 +560,7 @@ Template.accountInfoModal.events
 					if error?
 						if error.reason is "Incorrect password"
 							setFieldError "#oldPassInput", "Verkeerd wachtwoord"
-							callback no
+							callback null
 						else callback no
 
 					else
@@ -566,7 +569,7 @@ Template.accountInfoModal.events
 
 			else
 				setFieldError "#newPassInput", "Het nieuwe wachtwoord is hetzelfde als je oude wachtwoord."
-				callback no
+				callback null
 
 		unless any then callback null
 
