@@ -124,13 +124,21 @@ Template.calendar.rendered = ->
 
 		dayRender: (date, cell) ->
 			_.defer ->
-				return if $(".fc-left h2").text().indexOf("week") isnt -1
-				$(".fc-left h2").html "#{$(".fc-left h2").text()} <small>week: #{date.week()}</small>"
+				header = $ ".fc-left h2"
+				return if header.text().indexOf("week") isnt -1
+				header.html "#{$(".fc-left h2").text()} <small>week: #{date.week()}</small>"
+
 		eventDrop: (event) ->
-			if event.allDay
-				CalendarItems.update event.calendarItem._id, $set: startDate: event.start.toDate().date(), endDate: event.start.toDate().date().addDays 1
-			else
-				CalendarItems.update event.calendarItem._id, $set: startDate: event.start.toDate(), endDate: event.end?.toDate() ? event.start.add(1, "hour").toDate()
+			CalendarItems.update event.calendarItem._id, $set: (
+				if event.allDay
+					startDate: event.start.toDate().date()
+					endDate: event.start.toDate().date().addDays 1
+
+				else
+					startDate: event.start.toDate()
+					endDate: event.end?.toDate() ? event.start.add(1, "hour").toDate()
+			)
+
 		eventResize: (event) -> CalendarItems.update event.calendarItem._id, $set: startDate: event.start.toDate(), endDate: event.end.toDate()
 
 	$("div.addAppointmentForm").detach().prependTo "body"

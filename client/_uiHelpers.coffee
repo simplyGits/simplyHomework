@@ -57,8 +57,16 @@ http://tomsmeding.nl/
 
 @swalert = (options) ->
 	throw new ArgumentException "options", "Can't be null" unless options?
-	_.defaults options, { onSuccess: (->), onCancel: (->) }
-	{ title, text, type, confirmButtonText, cancelButtonText, onSuccess, onCancel, html } = options
+	{
+		title
+		text
+		type
+		confirmButtonText
+		cancelButtonText
+		onSuccess
+		onCancel
+		html
+	} = options
 
 	swal {
 		title
@@ -68,11 +76,10 @@ http://tomsmeding.nl/
 		cancelButtonText
 		allowOutsideClick: cancelButtonText?
 		showCancelButton: cancelButtonText?
-	}, (success) -> if success then onSuccess() else onCancel()
+	}, (success) -> if success then onSuccess?() else onCancel?()
 
 	if html? then $(".sweet-alert > p").html html.replace "\n", "<br>"
-
-	return undefined
+	undefined
 
 ###*
 # Sets the given `selector` to show an error state.
@@ -89,7 +96,7 @@ http://tomsmeding.nl/
 		.tooltip placement: "bottom", title: message, trigger: trigger
 		.tooltip "show"
 
-	return selector
+	selector
 
 ###*
 # Checks if a given field is empty, if so returns true and displays an error message for the user.
@@ -157,13 +164,14 @@ class @NotificationsManager
 				clearTimeout @_delayHandle
 				if @_htmlNotification?
 					@_htmlNotification.close()
-					delete NotificationsManager._notifications[@id]
+					_.remove NotificationsManager._notifications, @id
 				else
-					$(".notification##{notId}").removeClass "transformIn"
+					$notification = @element()
+					$notification.removeClass "transformIn"
 					@_startedHiding = yes
 					_.delay ( =>
-						$(".notification##{notId}").remove()
-						delete NotificationsManager._notifications[@id]
+						$notification.remove()
+						_.remove NotificationsManager._notifications, @id
 					), 2000
 					NotificationsManager._updatePositions()
 
@@ -205,7 +213,7 @@ class @NotificationsManager
 			d.append "<br>"
 			if onClick?
 				d.click ->
-					if $(@).hasClass("noclick") then $(@).removeClass "noclick"
+					if $(this).hasClass("noclick") then $(this).removeClass "noclick"
 					else
 						onClick arguments...
 						onHide?()
@@ -219,30 +227,31 @@ class @NotificationsManager
 				d.draggable
 					axis: "x"
 					start: (event, helper) ->
-						pos = $(@).position().left
-						$(@)
+						$(this)
 							.css width: $(this).outerWidth()
 							.addClass "noclick"
 					stop: (event, helper) ->
-						if $(@).position().left - pos > MIN
-							$(@).css
+						$this = $ this
+						if $this.position().left - pos > MIN
+							$this.css
 								width: "initial"
 								opacity: 1
 						else
-							$(@).velocity opacity: 0
+							$this.velocity opacity: 0
 							notHandle.hide()
 							onDismissed?()
 							onHide?()
 					drag: (event, helper) ->
-						$(@).css opacity: 1 - ((pos - $(@).position().left) / 250)
-					revert: -> $(@).position().left - pos > MIN
+						$this = $ this
+						$this.css opacity: 1 - ((pos - $this.position().left) / 250)
+					revert: -> $(this).position().left - pos > MIN
 
 			for label, i in labels
 				style = styles[i] ? "btn-default"
-				btn = $.parseHTML "<button type=\"button\" class=\"btn #{style}\" id=\"#{notId}_#{i}\">#{label}</button>"
+				btn = $.parseHTML("<button type='button' class='btn #{style}' id='#{notId}_#{i}'>#{label}</button>")[0]
 
 				callback = callbacks[i] ? (->)
-				do (callback) -> btn[0].onclick = (event) -> callback event, notHandle
+				do (callback) -> btn.onclick = (event) -> callback event, notHandle
 
 				d.append btn
 
@@ -278,7 +287,7 @@ class @NotificationsManager
 
 		return notHandle
 
-	@notifications = -> _.filter NotificationsManager._notifications, (n) -> n? and not n._startedHiding
+	@notifications = -> _.reject NotificationsManager._notifications, "_startedHiding"
 
 	@hideAll = -> x.hide() for x in NotificationsManager.notifications(); return undefined
 
@@ -390,19 +399,23 @@ Meteor.startup ->
 	Session.set "isPhone", window.matchMedia("only screen and (max-width: 760px)").matches or /android|iphone|ipod|blackberry|windows phone/i.test navigator.userAgent
 
 	UI.registerHelper "isPhone", -> Session.get "isPhone"
-	UI.registerHelper "empty", -> return @ is 0
-	UI.registerHelper "first", (arr) -> EJSON.equals @, _.first arr
-	UI.registerHelper "last", (arr) -> EJSON.equals @, _.last arr
+	UI.registerHelper "empty", -> return this is 0
+	UI.registerHelper "first", (arr) -> EJSON.equals this, _.first arr
+	UI.registerHelper "last", (arr) -> EJSON.equals this, _.last arr
 	UI.registerHelper "minus", (base, substraction) -> base - substraction
 	UI.registerHelper "gravatar", gravatar
 	UI.registerHelper "has", (feature) -> has feature
 
+	# TODO: Remove the console.infos.
 	disconnectedNotify = null
 	_.delay ->
 		Deps.autorun ->
 			if Meteor.status().connected
+				console.info("Reconnected.") if disconnectedNotify?
+
 				disconnectedNotify?.hide()
 				disconnectedNotify = null
 			else unless disconnectedNotify?
 				disconnectedNotify = notify("Verbinding verbroken", "error", -1, no, 10)
+				console.info "Disconnected."
 	, 1200

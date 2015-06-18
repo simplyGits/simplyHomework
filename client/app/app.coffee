@@ -9,7 +9,7 @@ class @App
 		welcome:
 			done: yes
 			func: ->
-				alertModal "Hey!", Locals["nl-NL"].GreetingMessage(), DialogButtons.Ok, { main: "verder" }, { main: "btn-primary" }, {main: ->
+				alertModal "Hey!", Locals["nl-NL"].GreetingMessage(), DialogButtons.Ok, { main: "verder" }, { main: "btn-primary" }, { main: ->
 					App.step()
 				}, no
 		magisterInfo:
@@ -24,7 +24,8 @@ class @App
 		getMagisterClasses:
 			done: no
 			func: ->
-				magisterClassesComp = Tracker.autorun -> # Subscribes should be stopped when this computation is stopped later.
+				# Subscribes should be stopped when this computation is stopped later.
+				magisterClassesComp = Tracker.autorun ->
 					Meteor.subscribe "scholieren.com"
 					year = schoolVariant = null
 					Tracker.nonreactive -> { year, schoolVariant } = Meteor.user().profile.courseInfo
@@ -60,7 +61,7 @@ class @App
 					Meteor.defer ->
 						for x in $("#magisterClassesResult > div").colorpicker(input: null)
 							$(x)
-								.on "changeColor", (e) -> $(@).attr "colorHex", e.color.toHex()
+								.on "changeColor", (e) -> $(this).attr "colorHex", e.color.toHex()
 								.colorpicker "setValue", "##{("00000" + (Math.random() * (1 << 24) | 0).toString(16)).slice -6}"
 
 					$("#getMagisterClassesModal").modal backdrop: "static", keyboard: no
@@ -270,7 +271,7 @@ Template.getMagisterClassesModal.rendered = ->
 	spinner = new Spinner(opts).spin $("#spinner").get()[0]
 
 Template.getMagisterClassesModal.events
-	"click .fa-times": (event) -> magisterClasses.set _.reject magisterClasses.get(), @
+	"click .fa-times": (event) -> magisterClasses.set _.reject magisterClasses.get(), this
 	"keyup #method": (event) ->
 		unless event.target.value is @__method?.title and not _.isEmpty event.target.value
 			@__method =
@@ -365,7 +366,7 @@ Template.plannerPrefsModal.rendered = ->
 	# Set the data on the modal, if available
 	return unless Get.schedular()?
 
-	dayWeeks = _.sortBy _.filter(Get.schedular().schedularPrefs().dates(), (dI) -> !dI.date()? and _.isNumber dI.weekday()), (dI) -> dI.weekday()
+	dayWeeks = _.sortBy _.filter(Get.schedular().schedularPrefs().dates(), (dI) -> not dI.date()? and _.isNumber dI.weekday()), (dI) -> dI.weekday()
 	return if dayWeeks.length isnt 7
 
 	for i in [0...dayWeek.length]
@@ -829,16 +830,16 @@ Template.app.rendered = ->
 		return
 		if Meteor.userId()? and not has("noAds") and Meteor.status().connected
 			setTimeout (-> Meteor.defer ->
-				if !Session.get "adsAllowed"
+				if not Session.get "adsAllowed"
 					Router.go "launchPage"
 					Meteor.logout()
 					swalert title: "Adblock :c", html: 'Om simplyHomework gratis beschikbaar te kunnen houden zijn we afhankelijk van reclame-inkomsten.\nOm simplyHomework te kunnen gebruiken, moet je daarom je AdBlocker uitzetten.\nWil je simplyHomework toch zonder reclame gebruiken, dan kan je <a href="/">premium</a> nemen.', type: "error"
 			), 3000
 
-	if Session.get("isPhone") then setMobile()
-	else setShortcuts()
+	if Session.get("isPhone") then setMobileSettings()
+	else setKeyboardShortcuts()
 
-	if !amplify.store("allowCookies") and $(".cookiesContainer").length is 0
+	if not amplify.store("allowCookies") and $(".cookiesContainer").length is 0
 		Blaze.render Template.cookies, $("body").get()[0]
 		$(".cookiesContainer")
 			.css visibility: "initial"
@@ -846,11 +847,11 @@ Template.app.rendered = ->
 
 		$("#acceptCookiesButton").click ->
 			amplify.store "allowCookies", yes
-			$(".cookiesContainer").velocity { bottom: "-500px" }, 2400, "easeOutExpo", -> $(@).remove()
+			$(".cookiesContainer").velocity { bottom: "-500px" }, 2400, "easeOutExpo", -> $(this).remove()
 
-setMobile = ->
-	snapper = new Snap
-		element: $(".content")[0]
+setMobileSettings = ->
+	window.snapper = snapper = new Snap
+		element: document.getElementById "wrapper"
 		minPosition: -200
 		maxPosition: 200
 		flickThreshold: 45
@@ -860,7 +861,7 @@ setMobile = ->
 
 	@closeSidebar = -> snapper.close()
 
-setShortcuts = ->
+setKeyboardShortcuts = ->
 	Mousetrap.bind ["a", "c"], ->
 		Router.go "calendar"
 		return no
