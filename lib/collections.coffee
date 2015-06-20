@@ -49,10 +49,10 @@ Schemas.Classes = new SimpleSchema
 		trim: yes
 		regEx: /^[a-z ]+$/i
 		index: 1
-	course:
-		type: String
-		label: "Vakafkorting"
-		regEx: /^[a-z]*$/
+	abbreviations:
+		type: [String]
+		label: "Vakafkortingen"
+		regEx: /^[\w&+-]*$/
 	year:
 		type: Number
 	schoolVariant:
@@ -60,6 +60,10 @@ Schemas.Classes = new SimpleSchema
 		regEx: /^[a-z]+$/
 	schedules:
 		type: [Object]
+		blackbox: yes
+	scholierenClassId:
+		type: Number
+		optional: yes
 
 Schemas.Books = new SimpleSchema
 	_id:

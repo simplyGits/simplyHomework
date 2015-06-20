@@ -2,7 +2,7 @@
 	{{! begin modals}}
 		{{> settingsModal}}
 		{{> setMagisterInfoModal}}
-		{{> getMagisterClassesModal}}
+		{{> getExternalClassesModal}}
 		{{> plannerPrefsModal}}
 		{{> addClassModal}}
 		{{> newSchoolYearModal}}
@@ -102,30 +102,30 @@
 	</div>
 </template>
 
-<template name="getMagisterClassesModal">
-	<div class="modal fade" aria-hidden="true" id="getMagisterClassesModal">
+<template name="getExternalClassesModal">
+	<div class="modal fade" aria-hidden="true" id="getExternalClassesModal">
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header">
 					<h4 class="modal-title">Vakken</h4>
 				</div>
-				<div class="modal-body" id="getMagisterClassesModalBody">
-					{{#unless magisterClasses}}
+				<div class="modal-body">
+					{{#unless externalClasses}}
 						<div style="width: 100%; text-align: center; font-size: 16px">
-							Vakken aan het ophalen van Magister...<br>
+							Vakken aan het ophalen van [meh]...<br>
 							<div id="spinner"></div>
 						</div>
 					{{else}}
 						<div>
-							We hebben geprobeerd zoveel mogelijk vakken van Magister automatisch op te halen.<br>
+							We hebben geprobeerd zoveel mogelijk vakken van [meh] automatisch op te halen.<br>
 							Verwijder overbodige vakken en wijzig onjuiste informatie, vakken kun je later toevoegen.
 						</div>
-						<div id="magisterClassesResult">
-							{{#each magisterClasses}}
-								<div id="{{id}}">
+						<div id="result">
+							{{#each externalClasses}}
+								<div id="{{_id.toHexString}}">
 									<i style="cursor: pointer" class="fa fa-times"></i>
 									<span class="input-group-addon"><i></i></span>
-									<div id="classTitle">{{description}}</div>
+									<div id="classTitle">{{name}}</div>
 									<input class="form-control" type="text" id="method" placeholder="Methode"/>
 								</div>
 							{{/each}}

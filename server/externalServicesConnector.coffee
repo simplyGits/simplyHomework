@@ -249,6 +249,50 @@ Meteor.methods
 		result
 
 	###*
+	# Returns the classes from externalServices for the given `userId`
+	# @method getExternalClasses
+	# @param [userId=this.userId] {String} The ID of the user to get the classes from.
+	# @return {SchoolClass[]} The external classes as SchoolClasses
+	###
+	'getExternalClasses': (userId = @userId) ->
+		check userId, String
+
+		user = Meteor.users.findOne userId
+		result = []
+		{ year, schoolVariant } = user.profile.courseInfo
+
+		services = _.filter ExternalSercicesConnector.externalServices, (s) -> s.active userId
+		for service in services
+			classes = service.getClasses userId
+			result = result.concat classes.map (c) ->
+				_class = Classes.findOne
+					$or: [
+						{ name: $regex: c.description, $options: 'i' }
+						{ course: c.abbreviation.toLowerCase() }
+					]
+					schoolVariant: schoolVariant
+					year: year
+
+				unless _class?
+					scholierenClass = _.find ScholierenClasses.get(), (sc) ->
+						c.description
+							.toLowerCase()
+							.indexOf(sc.name.toLowerCase()) > -1
+
+					_class = new SchoolClass(
+						c.description.toLowerCase(),
+						c.abbreviation.toLowerCase(),
+						year,
+						schoolVariant
+					)
+					_class.scholierenClassId = scholierenClass?.id
+					Classes.insert _class
+
+				_class
+
+		result
+
+	###*
 	# Returns an array containg info about available services.
 	# @method getModuleInfo
 	# @param [userId=this.userId] {String} The ID of the user to use for the service info.
@@ -275,6 +319,8 @@ Meteor.methods
 		undefined
 
 Meteor.publish 'externalCalendarItems', (from, to) ->
+	@unblock()
+
 	from ?= new Date().addDays -7
 	to ?= new Date().addDays 7
 

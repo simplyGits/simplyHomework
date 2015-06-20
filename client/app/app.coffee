@@ -1,7 +1,6 @@
 schoolSub = null
-magisterClassesComp = null
 addClassComp = null
-magisterClasses = new ReactiveVar null
+externalClasses = new ReactiveVar null
 @currentBigNotice = new ReactiveVar null
 
 class @App
@@ -21,49 +20,46 @@ class @App
 			func: ->
 				$("#plannerPrefsModal").modal backdrop: "static", keyboard: no
 				$("#plannerPrefsModal .modal-header button").remove() # Remove close button
-		getMagisterClasses:
+		getExternalClasses:
 			done: no
 			func: ->
-				magisterClassesComp = Tracker.autorun -> # Subscribes should be stopped when this computation is stopped later.
-					Meteor.subscribe "scholieren.com"
-					year = schoolVariant = null
-					Tracker.nonreactive -> { year, schoolVariant } = Meteor.user().profile.courseInfo
+				Meteor.call 'getExternalClasses', (e, r) ->
+					return if e?
+					Meteor.subscribe 'scholieren.com', ->
+						externalClasses.set r
+						for c in r
+							Meteor.subscribe 'books', c._id
+							scholierenClass = ScholierenClasses.findOne c.scholierenClassId
+							books = scholierenClass?.books ? []
+							books.pushMore Books.find(classId: c._id).fetch()
 
-					classes = magisterResult("classes").result ? []
-					c.__scholierenClass = ScholierenClasses.findOne(-> c.description().toLowerCase().indexOf(@name.toLowerCase()) > -1) for c in classes
-					magisterClasses.set classes
+							bookEngine = new Bloodhound
+								name: 'books'
+								datumTokenizer: (d) -> Bloodhound.tokenizers.whitespace d.title
+								queryTokenizer: Bloodhound.tokenizers.whitespace
+								local: _.uniq books, 'title'
+							bookEngine.initialize()
 
-					for c in classes
-						scholierenClass = c.__scholierenClass
-						classId = Classes.findOne(name: scholierenClass?.name ? Helpers.cap(c.description()), schoolVariant: schoolVariant, year: year)?._id
+							Meteor.defer _.bind (->
+								$("#magisterClassesResult > div##{c._id.toHexString()} > input")
+									.typeahead null,
+										source: bookEngine.ttAdapter()
+										displayKey: 'title'
+									.on 'typeahead:selected', (obj, datum) -> c.__method = datum
+							), { bookEngine, c }
 
-						Meteor.subscribe("books", classId) if classId?
+						Meteor.defer ->
+							$('#magisterClassesResult > div')
+								.colorpicker input: null
+								.each ->
+									$this = $ this
+									$this
+										.on 'changeColor', (e) -> $this.attr 'colorHex', e.color.toHex()
+										.colorpicker 'setValue', "##{Random.hexString 6}"
 
-						books = scholierenClass?.books ? []
-						books.pushMore Books.find({ classId }).fetch()
-
-						engine = new Bloodhound
-							name: "books"
-							datumTokenizer: (d) -> Bloodhound.tokenizers.whitespace d.title
-							queryTokenizer: Bloodhound.tokenizers.whitespace
-							local: _.uniq books, "title"
-
-						engine.initialize()
-
-						Meteor.defer do (engine, c) -> return ->
-							$("#magisterClassesResult > div##{c.id()} > input")
-								.typeahead null,
-									source: engine.ttAdapter()
-									displayKey: "title"
-								.on "typeahead:selected", (obj, datum) -> c.__method = datum
-
-					Meteor.defer ->
-						for x in $("#magisterClassesResult > div").colorpicker(input: null)
-							$(x)
-								.on "changeColor", (e) -> $(@).attr "colorHex", e.color.toHex()
-								.colorpicker "setValue", "##{("00000" + (Math.random() * (1 << 24) | 0).toString(16)).slice -6}"
-
-					$("#getMagisterClassesModal").modal backdrop: "static", keyboard: no
+						$('#getExternalClassesModal').modal
+							backdrop: 'static'
+							keyboard: no
 
 		newSchoolYear:
 			done: no
@@ -203,7 +199,7 @@ class @App
 	@followSetupPath: ->
 		return if @_running
 		@_setupPathItems.plannerPrefs.done = @_setupPathItems.magisterInfo.done = Meteor.user().magisterCredentials?
-		@_setupPathItems.getMagisterClasses.done = Meteor.user().classInfos? and Meteor.user().classInfos.length > 0
+		@_setupPathItems.getExternalClasses.done = Meteor.user().classInfos? and Meteor.user().classInfos.length > 0
 		@_setupPathItems.newSchoolYear.done = yes
 
 		@_fullCount = _.filter(@_setupPathItems, (x) -> not x.done).length
@@ -230,10 +226,10 @@ classEngine = new Bloodhound
 
 # == Modals ==
 
-Template.getMagisterClassesModal.helpers
-	magisterClasses: -> magisterClasses.get()
+Template.getExternalClassesModal.helpers
+	externalClasses: -> externalClasses.get()
 
-Template.getMagisterClassesModal.rendered = ->
+Template.getExternalClassesModal.rendered = ->
 	magisterResult "course", (e, r) ->
 		return if e? or amplify.store "courseInfoSet_#{Meteor.userId()}"
 
@@ -269,8 +265,8 @@ Template.getMagisterClassesModal.rendered = ->
 
 	spinner = new Spinner(opts).spin $("#spinner").get()[0]
 
-Template.getMagisterClassesModal.events
-	"click .fa-times": (event) -> magisterClasses.set _.reject magisterClasses.get(), @
+Template.getExternalClassesModal.events
+	"click .fa-times": (event) -> externalClasses.set _.reject externalClasses.get(), this
 	"keyup #method": (event) ->
 		unless event.target.value is @__method?.title and not _.isEmpty event.target.value
 			@__method =
@@ -282,33 +278,19 @@ Template.getMagisterClassesModal.events
 
 		Meteor.users.update(Meteor.userId(), $set: classInfos: []) unless Meteor.user().classInfos?
 
-		for c in magisterClasses.get()
-			color = $("#magisterClassesResult > div##{c.id()}").attr "colorHex"
-			_class = Classes.findOne
-				$or: [
-					{ $where: -> c.description().toLowerCase().indexOf(@name.toLowerCase()) > -1}
-					{ course: c.abbreviation().toLowerCase() }
-				]
-				schoolVariant: schoolVariant
-				year: year
-
-			_class ?= New.class c.description(), c.abbreviation(), year, schoolVariant, c.__scholierenClass?.id
-
-			if (val = c.__method)?
-				book = Books.findOne title: val.title
-				unless book? or val.title.trim() is ""
-					book = New.book val.title, undefined, val.id, undefined, _class._id
-
+		for c in externalClasses.get()
 			Meteor.users.update Meteor.userId(), $push: classInfos:
 				id: _class._id
 				color: color
-				magisterId: c.id()
-				magisterDescription: c.description()
-				magisterAbbreviation: c.abbreviation()
+				# FIXME: currently hardcoded and stuff.
+				createdBy: "magister"
+				externalInfo:
+					id: c.id()
+					description: c.description()
+					abbreviation: c.abbreviation()
 				bookId: book?._id ? null
 
-		$("#getMagisterClassesModal").modal "hide"
-		magisterClassesComp.stop()
+		$("#getExternalClassesModal").modal "hide"
 		App.step()
 
 Template.setMagisterInfoModal.events
@@ -321,7 +303,9 @@ Template.setMagisterInfoModal.events
 			password = $("#magisterPasswordInput").val()
 
 			school = Schools.findOne { name: schoolName }
-			school ?= New.school schoolName, s.url, new Location()
+			unless school?
+				school = new School schoolName, s.url, new Location()
+				Schools.insert school
 
 			unless $("#allowGroup input").is ":checked"
 				shake "#setMagisterInfoModal"
