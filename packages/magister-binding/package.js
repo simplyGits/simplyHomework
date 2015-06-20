@@ -23,5 +23,5 @@ Package.onUse(function(api) {
 Package.onTest(function(api) {
   api.use('tinytest');
   api.use('magister-binding');
-  api.addFiles('magister-binding-tests.js');
+  api.addFiles('magister-binding-tests.js', 'server');
 });
