@@ -219,6 +219,16 @@ Meteor.methods
 		Meteor.users.update(userId, $set: lastCalendarItemUpdateTime: new Date) if services.length > 0
 		errors
 
+	###*
+	# Gets the persons matching the given `query` and `type` for the
+	# user with the given `userId`
+	#
+	# @method getPersons
+	# @param query {String}
+	# @param [type] {String}
+	# @param [userId=this.userId] {String}
+	# @return {ExternalPerson[]}
+	###
 	'getPersons': (query, type = undefined, userId = @userId) ->
 		# TODO: Store doneQueries so that we can cache them, example:
 		# tho -> fetch persons -> store persons
