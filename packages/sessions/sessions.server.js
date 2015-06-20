@@ -8,6 +8,7 @@ Meteor.startup(function () {
 		sessions.insert({
 			_id: connection.id,
 			useragent: useragent,
+			creation: new Date(),
 		})
 
 		connection.onClose(function () {
