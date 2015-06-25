@@ -10,11 +10,11 @@ Meteor.startup(function () {
 	var cookies = function () {
 		var res = {}
 		document.cookie
-		.split(/[\s;]+/g)
-		.forEach(function (cookie) {
-			var splitted = cookie.split('=')
-			res[splitted[0]] = splitted[1]
-		})
+			.split(/[\s;]+/g)
+			.forEach(function (cookie) {
+				var splitted = cookie.split('=')
+				res[splitted[0]] = splitted[1]
+			})
 		return res
 	}
 
