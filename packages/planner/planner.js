@@ -4,9 +4,9 @@
  * @module planner
  */
 
-var assert;
-if(typeof Meteor!="undefined")assert=Npm.require("assert");
-else assert=require("assert");
+var assert = function (val) {
+	if (!val) throw new Error("AssertionError: false == true");
+};
 
 HomeworkDescription=function(){
 	if(!(this instanceof HomeworkDescription))return new HomeworkDescription;
