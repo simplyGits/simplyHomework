@@ -22,8 +22,21 @@ root = @
 ###
 class @CalendarItem
 	constructor: (@ownerId, @description, @startDate, @endDate, @classId) ->
-		@isDone = no
 		@endDate ?= moment(@startDate).add(1, "hour").toDate()
+
+		###*
+		# @property isDone
+		# @type Boolean
+		# @defualt false
+		###
+		@isDone = no
+
+		###*
+		# @property content
+		# @type Object|null
+		# @default null
+		###
+		@content = null
 
 		###*
 		# The interval for repeating in seconds.
@@ -58,3 +71,17 @@ class @CalendarItem
 		# @default null
 		###
 		@fetchedBy = null
+
+		###*
+		# @property scrapped
+		# @type Boolean
+		# @defualt false
+		###
+		@scrapped = no
+
+		###*
+		# @property fullDay
+		# @type Boolean
+		# @default false
+		###
+		@fullDay = no

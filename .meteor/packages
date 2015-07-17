@@ -46,3 +46,4 @@ appshore:recaptcha
 tmeasday:publish-counts
 tail:core
 magister-binding
+gravatar-binding

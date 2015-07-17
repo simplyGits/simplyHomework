@@ -105,5 +105,45 @@ class @StoredGrade
 		###
 		@fetchedBy = null
 
+		###*
+		# @property period
+		# @type GradePeriod
+		###
+		@period = null
+
 	toString: (precision = 2) -> @grade.toPrecision precision
 	valueOf: -> @grade
+
+###*
+# @class GradePeriod
+# @constructor
+# @param id {any} The ID of the gradePeriod.
+# @param [name] {String} The name of this period.
+###
+class @GradePeriod
+	constructor: (id, name) ->
+		###*
+		# @property id
+		# @type any
+		###
+		@id = id
+
+		###*
+		# @property name
+		# @type String|null
+		###
+		@name = name
+
+		###*
+		# @property from
+		# @type Date|null
+		###
+		@from = null
+
+		###*
+		# @property to
+		# @type Date|null
+		###
+		@to = null
+
+	toString: -> @name

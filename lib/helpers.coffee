@@ -247,6 +247,20 @@ class @Helpers
 		func()
 		Meteor.setInterval func, interval
 
+	###*
+	# Returns an array containg each day of the week starting on monday.
+	# Respects the current moment locale.
+	#
+	# @method weekdays
+	# @return {String[]}
+	###
+	@weekdays: ->
+		_weekdays = moment()._locale._weekdays
+		_(_weekdays)
+			.slice 1
+			.push _weekdays[0]
+			.value()
+
 ###*
 # Checks if the given `user` is in the given `role`.
 # @method userIsInRole
