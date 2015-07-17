@@ -147,7 +147,7 @@ Template.changeClassModal.events
 		$("#changeClassModal").modal "hide"
 		alertModal(
 			"Zeker weten?",
-			"Als je dit vak verwijderd kunnen alle gegevens, zoals projecten verwijderd worden.\nDit gebeurd wanneer iedereen van het project dit vak verwijderd heeft.\nDit kan niet ongedaan worden gemaakt.",
+			"Als je dit vak verwijdert kunnen alle gegevens, zoals projecten verwijdert worden.\nDit laatste gebeurd alleen wanneer alle deelnemers van het project dit vak verwijderd hebben.\nDit kan niet ongedaan worden gemaakt.",
 			DialogButtons.OkCancel,
 			{ main: "Verwijderen", second: "Toch niet" },
 			{ main: "btn-danger" },

@@ -111,10 +111,17 @@ Meteor.methods
 	# @param [adress] {String} The adress to verify, if this is omitted the first address of the current user (`this.userId`) will be used.
 	###
 	callMailVerification: (address) ->
-		user = if address? then Meteor.users.findOne { "emails": $elemMatch: { address }} else Meteor.users.findOne @userId
+		user = (
+			if address?
+				Meteor.users.findOne emails: $elemMatch: { address }
+			else
+				Meteor.users.findOne @userId
+		)
+
+		console.log 'callMailVerification'
 
 		if user.emails[0].verified
-			throw new Meteor.Error(400, "Mail already verified.")
+			throw new Meteor.Error 400, 'Mail already verified.'
 		else
 			Accounts.sendVerificationEmail user._id
 
@@ -182,3 +189,14 @@ Meteor.methods
 			throw new Meteor.Error "wrongPassword", "Given password incorrect."
 
 		Meteor.users.remove @userId
+
+	storePlannerPrefs: (obj) ->
+		@unblock()
+		return if not @userId or _.isEmpty obj
+		check obj, Object
+
+		user = Meteor.users.findOne @userId
+		original = user.plannerPrefs ? {}
+
+		Meteor.users.update @userId, $set: plannerPrefs: _.extend original, obj
+		undefined

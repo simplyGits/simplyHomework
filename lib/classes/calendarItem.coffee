@@ -22,8 +22,21 @@ root = @
 ###
 class @CalendarItem
 	constructor: (@ownerId, @description, @startDate, @endDate, @classId) ->
-		@isDone = no
 		@endDate ?= moment(@startDate).add(1, "hour").toDate()
+
+		###*
+		# @property isDone
+		# @type Boolean
+		# @defualt false
+		###
+		@isDone = no
+
+		###*
+		# @property content
+		# @type Object|null
+		# @default null
+		###
+		@content = null
 
 		###*
 		# The interval for repeating in seconds.
@@ -43,11 +56,32 @@ class @CalendarItem
 		###*
 		# If this calendarItem is linked to an appointment
 		# (eg for giving up homework that isn't filled in
-		# into Magister, `appointmentId` will contain the
+		# into Magister, `externalId` will contain the
 		# ID of the appointment this calendarItem is linked to.
 		#
-		# @property appointmentId
-		# @type Number
+		# @property externalId
+		# @type mixed
 		# @default null
 		###
-		@appointmentId = null
+		@externalId = null
+
+		###*
+		# @property fetchedBy
+		# @type String|null
+		# @default null
+		###
+		@fetchedBy = null
+
+		###*
+		# @property scrapped
+		# @type Boolean
+		# @defualt false
+		###
+		@scrapped = no
+
+		###*
+		# @property fullDay
+		# @type Boolean
+		# @default false
+		###
+		@fullDay = no

@@ -49,14 +49,14 @@ Router.map ->
 				$("meta[name='theme-color']").attr "content", "#32A8CE"
 
 			document.title = (
-				# When we don't have magister info yet the name is empty.
+				# When we don't have external info yet the name is empty.
 				unless _.isEmpty Meteor.user().profile.firstName
 					"simplyHomework | #{Meteor.user().profile.firstName} #{Meteor.user().profile.lastName}"
 				else
 					"simplyHomework"
 			)
 
-			App.followSetupPath() if @ready()
+			followSetupPath() if @ready()
 
 		layoutTemplate: "app"
 		template: "appOverview"
@@ -80,7 +80,7 @@ Router.map ->
 		onAfterAction: ->
 			if !@data()? and @ready()
 				@redirect "app"
-				swalert title: "Niet gevonden", text: "Jij hebt dit vak waarschijnlijk niet.", confirmButtonText: "o.", type: "error"
+				swalert title: "Niet gevonden", text: "Je hebt dit vak waarschijnlijk niet.", confirmButtonText: "o.", type: "error"
 				return
 
 			Meteor.defer =>
@@ -207,7 +207,7 @@ Router.map ->
 
 			if !@data()? and @ready()
 				@redirect "app"
-				swalert title: "Niet gevonden", text: "Dit persoon is niet gevonden.", type: "error"
+				swalert title: "Niet gevonden", text: "Deze persoon is niet gevonden.", type: "error"
 				return
 
 			document.title = "simplyHomework | #{@data().profile.firstName} #{@data().profile.lastName}"
@@ -247,6 +247,17 @@ Router.map ->
 			x = Meteor.users.findOne { _id: @params._id }, transform: userChatTransform
 			x ?= Projects.findOne { _id: new Meteor.Collection.ObjectID @params._id }, transform: projectChatTransform
 			return x
+
+	@route 'setup',
+		fastRender: no
+		layoutTemplate: 'setup'
+		onBeforeAction: ->
+			unless Meteor.loggingIn() or Meteor.userId()?
+				@redirect 'launchPage'
+			else
+				@next()
+		onAfterAction: ->
+			document.title = 'simplyHomework | Setup'
 
 	@route "privacy",
 		fastRender: yes

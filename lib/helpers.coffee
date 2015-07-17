@@ -1,7 +1,6 @@
-root = @
+root = this
 
-@uS = _ 	 # We need underscore sometimes; refer uS to underscore
-@_  = lodash # Shortcut for lo-dash. Replaces underscore.
+@_ = lodash # Shortcut for lo-dash. Replaces underscore.
 
 ###*
 # Returns today as an Date object.
@@ -24,21 +23,21 @@ Date::addDays = (days, newDate = false) ->
 	newDate = false unless Match.test newDate, Boolean
 
 	if newDate
-		return new Date @getTime() + (86400000 * days)
+		new Date @getTime() + (86400000 * days)
 	else
 		@setDate @getDate() + days
-		return @
+		this
 
 Date::date = -> return new Date @getUTCFullYear(), @getMonth(), @getDate()
 
 Array::remove = (item) ->
 	if _.isObject(item) and _.contains _.keys(item), "_id"
-		_.remove @, (i) -> EJSON.equals item._id, i._id
+		_.remove this, (i) -> EJSON.equals item._id, i._id
 	else
-		_.remove @, (i) -> EJSON.equals item, i
+		_.remove this, (i) -> EJSON.equals item, i
 
-	return @
-Array::pushMore = (items) -> [].push.apply @, items; return @
+	this
+Array::pushMore = (items) -> [].push.apply this, items; return this
 
 ###*
 # Checks if the given `mail` is a valid address.
@@ -48,41 +47,11 @@ Array::pushMore = (items) -> [].push.apply @, items; return @
 ###
 @correctMail = (mail) -> /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/i.test mail
 
-###*
-# Converts a grade to a number, can be Dutch grade style or English. More can be added.
-# If the `grade` can't be converted it will return NaN.
-#
-# @method gradeConverter
-# @param grade {String|Number} The grade to convert.
-# @return {Number} `grade` converted to a number. Defaults to NaN.
-###
-@gradeConverter = (grade) ->
-	return undefined unless grade?
-	return grade if _.isNumber grade
-
-	# Normal dutch grades
-	val = grade.replace(",", ".").replace(/[^\d\.]/g, "")
-	unless val.length is 0 or _.isNaN(+val)
-		return +val
-
-	# English grades
-	englishGradeMap =
-		"F": 1.7
-		"E": 3.3
-		"D": 5.0
-		"C": 6.7
-		"B": 8.3
-		"A": 10.0
-
-	if _(englishGradeMap).keys().contains(grade.toUpperCase())
-		return englishGradeMap[grade.toUpperCase()]
-
-	return NaN
-
 ###
 # Static class containing helper methods.
 #
 # @class Helpers
+# @static
 ###
 class @Helpers
 	###*
@@ -157,7 +126,13 @@ class @Helpers
 	# @return {Boolean} Whether the original string contains the query string.
 	###
 	@contains: (original, query, ignoreCasing = false) ->
-		return if ignoreCasing then original.toUpperCase().indexOf(query.toUpperCase()) >= 0 else original.indexOf(query) >= 0
+		if ignoreCasing
+			original
+				.toUpperCase()
+				.indexOf(query.toUpperCase()) >= 0
+		else
+			original
+				.indexOf(query) >= 0
 
 	###*
 	# Returns all the matches of the given RegEx tested on the given string as strings.
@@ -174,7 +149,7 @@ class @Helpers
 
 		tmp = []
 		tmp.push item[0] while (item = regex.exec str)?
-		return tmp
+		tmp
 
 	###*
 	# Returns all the matches of the given RegEx tested on the given string with the details.
@@ -193,7 +168,7 @@ class @Helpers
 
 		while (item = regex.exec str)? then tmp.push _.extend item, lastIndex: item.index + item[0].length
 
-		return tmp
+		tmp
 
 	###*
 	# Returns the sum of the values in the given array.
@@ -206,7 +181,7 @@ class @Helpers
 	@getTotal: (arr, mapper) ->
 		sum = 0
 		sum += (if _.isFunction(mapper) then mapper i else i) for i in arr
-		return sum
+		sum
 
 	###*
 	# Returns the average of the values in the given array.
@@ -216,7 +191,7 @@ class @Helpers
 	# @param [mapper] {Function} The function to map the values in the array to before counting it to the average.
 	# @return {Number} The average of the given values.
 	###
-	@getAverage: (arr, mapper) -> return @getTotal(arr, mapper) / arr.length
+	@getAverage: (arr, mapper) -> @getTotal(arr, mapper) / arr.length
 
 	###*
 	# Caps the given string.
@@ -262,16 +237,34 @@ class @Helpers
 	###
 	@convertLinksToAnchor: (string) ->
 		return undefined unless string?
-		return string.replace /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b((\/|\?)[-a-zA-Z0-9@:%_\+.~#?&//=]+)?\b/ig, (match) ->
+		string.replace /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b((\/|\?)[-a-zA-Z0-9@:%_\+.~#?&//=]+)?\b/ig, (match) ->
 			if /^https?:\/\/.+/i.test match
-				return "<a target=\"_blank\" href=\"#{match}\">#{match}</a>"
+				"<a target=\"_blank\" href=\"#{match}\">#{match}</a>"
 			else
-				return "<a target=\"_blank\" href=\"http://#{match}\">#{match}</a>"
+				"<a target=\"_blank\" href=\"http://#{match}\">#{match}</a>"
+
+	@interval: (func, interval) ->
+		func()
+		Meteor.setInterval func, interval
+
+	###*
+	# Returns an array containg each day of the week starting on monday.
+	# Respects the current moment locale.
+	#
+	# @method weekdays
+	# @return {String[]}
+	###
+	@weekdays: ->
+		_weekdays = moment()._locale._weekdays
+		_(_weekdays)
+			.slice 1
+			.push _weekdays[0]
+			.value()
 
 ###*
 # Checks if the given `user` is in the given `role`.
 # @method userIsInRole
-# @param [user=Meteor.user()] {User} The user to check.
+# @param [user=Meteor.user()] {User|String} The user or its ID to check.
 # @param [role="admin"] {String} The role to check.
 # @return {Boolean} True if the given `user` is in the given `role`.
 ###
@@ -291,10 +284,11 @@ class @Helpers
 # @return {Function} A getter/setter method for the given global class variable.
 ###
 @getset = (varName, pattern = Match.Any, allowChanges = yes, transformIn, transformOut) ->
-	return (newVar) ->
+	(newVar) ->
 		if newVar?
 			if allowChanges
 				@[varName] = if _.isFunction(transformIn) then transformIn newVar else newVar
 			else
 				throw new root.NotAllowedException "Changes on this property aren't allowed"
-		return if _.isFunction(transformOut) then transformOut @[varName] else @[varName]
+
+		if _.isFunction(transformOut) then transformOut @[varName] else @[varName]

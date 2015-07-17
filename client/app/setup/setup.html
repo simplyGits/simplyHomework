@@ -1,0 +1,185 @@
+<template name="setup">
+	<div class="appNameHeader" style="position: fixed; top: 0; left: 5px; color: black; font-size: 1.5em"></div>
+	<div class="setup">
+		{{> Template.dynamic template=currentSetupItem}}
+	</div>
+</template>
+
+<template name="setupFooter">
+	<div class="footer">
+		<button class="btn btn-primary" data-action="nextItem">
+			{{#if isLast}}
+				afronden
+			{{else}}
+				verder
+			{{/if}}
+		</button>
+	</div>
+</template>
+
+<template name="welcome">
+	<div class="header">
+		Hey!
+	</div>
+
+	<div class="body">
+		simplyHomework is een automatische huiswerkplanner die je leven makkelijker maakt.
+		<br>
+		Het haalt automatisch je huiswerk van magister, zoekt de juiste woordenlijsten bij het huiswerk, plant automatisch voor proefwerken en nog veel meer.
+		<br>
+		Voordat we beginnen hebben we nog een paar vraagjes.
+	</div>
+
+	{{> setupFooter}}
+</template>
+
+<template name="externalServices">
+	<div class="header">
+		Integraties
+	</div>
+
+	<div class="body">
+		<div id="description">
+			Login met elke site waarmee je wilt.
+			Je kan met meerdere sites {{! (ook van dezelfde site) }}inloggen.
+		</div>
+
+		{{#each externalServices}}
+			{{#if loginNeeded}}
+				{{#if profileData}}
+					<div class="externalServiceResult">
+						<h1>{{friendlyName}}</h1>
+						<div id="center">
+							<img src="{{profileData.picture}}" width="100" height="100"/>
+
+							<span>Ingelogd als <strong>{{profileData.nameInfo.firstName}}</strong><br>
+							{{profileData.courseInfo.year}} {{profileData.courseInfo.schoolVariant}}</span>
+						</div>
+					</div>
+				{{else}}
+					<div class="externalServiceButton">
+						Inloggen met {{friendlyName}}
+					</div>
+				{{/if}}
+			{{/if}}
+		{{/each}}
+	</div>
+
+	{{> setupFooter}}
+</template>
+
+<template name="extractInfo">
+	<div class="header">
+		Data importeren
+	</div>
+
+	<div class="body" id="extractInfo">
+		{{!
+			import classes, picture, course info and stuff
+			in a nice visual selector.
+		}}
+
+		{{#with pictures}}
+			{{#unless empty}}
+				<h2>Profielfoto</h2>
+				<div id="pictureSelector" class="selector">
+					{{#each this}}
+						<img src="{{value}}" height="100" width="100" class="{{isSelected}}"/>
+					{{/each}}
+				</div>
+				<hr>
+			{{/unless}}
+		{{/with}}
+
+		{{#with courseInfos}}
+			{{#unless empty}}
+				<h2>Profielinfo</h2>
+				<div id="courseInfoSelector" class="selector">
+					{{#each this}}
+						<div class="{{isSelected}}">
+							{{value.profile}}
+							<br>
+							{{value.year}} {{value.schoolVariant}}
+						</div>
+					{{/each}}
+				</div>
+				<hr>
+			{{/unless}}
+		{{/with}}
+
+		<h2>Naam</h2>
+		<form class="vertical full-width">
+			<div id="firstNameGroup" class="group">
+				<label for="firstNameInput">Voornaam</label>
+				<input type="text" id="firstNameInput" value="{{firstName}}"/>
+			</div>
+			<div id="lastNameGroup" class="group">
+				<label for="lastNameInput">Achternaam</label>
+				<input type="text" id="lastNameInput" value="{{lastName}}"/>
+			</div>
+		</form>
+
+	</div>
+
+	{{> setupFooter}}
+</template>
+
+<template name="plannerPrefsDay">
+	<div class="group select">
+		<label>{{name}}</label>
+		<select>
+			{{#each weightOptions}}
+				<option data-day-index="{{index}}" selected="{{selected}}">{{name}}</option>
+			{{/each}}
+		</select>
+	</div>
+</template>
+
+<template name="plannerPrefs">
+	<div class="header">
+		Planner voorkeuren
+	</div>
+
+	<div class="body">
+		<h4 style="text-align: center; margin-bottom: 20px;">Hoeveel tijd heb je op elke weekdag?<small><br><i>(schooltijd niet meegerekend)</i><br>Je kan dit altijd in je instellingen aanpassen.</small></h4>
+		<form class="vertical full-width">
+			{{#each weekdays}}
+				{{> plannerPrefsDay}}
+			{{/each}}
+		</form>
+	</div>
+
+	{{> setupFooter}}
+</template>
+
+<template name="getExternalClasses">
+	<div class="header">
+		Vakken
+	</div>
+
+	<div class="body" id="getExternalClasses">
+		{{#unless externalClasses}}
+			<div style="position: relative; width: 100%; text-align: center; font-size: 16px">
+				Vakken aan het ophalen...<br>
+				<div id="spinner"></div>
+			</div>
+		{{else}}
+			<div>
+				We hebben geprobeerd zoveel mogelijk vakken automatisch op te halen.<br>
+				Verwijder overbodige vakken en wijzig onjuiste informatie, vakken kun je later toevoegen.
+			</div>
+			<div id="result">
+				{{#each externalClasses}}
+					<div id="{{_id.toHexString}}">
+						<i style="cursor: pointer" class="fa fa-times"></i>
+						<span class="input-group-addon"><i></i></span>
+						<div id="classTitle">{{name}}</div>
+						<input class="form-control" type="text" id="method" placeholder="Methode"/>
+					</div>
+				{{/each}}
+			</div>
+		{{/unless}}
+	</div>
+
+	{{> setupFooter}}
+</template>

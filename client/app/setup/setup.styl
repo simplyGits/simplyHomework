@@ -1,0 +1,170 @@
+@import "../../main"
+@import "jeet"
+
+.externalServiceButton, .externalServiceResult
+	margin-top: 10px
+
+.externalServiceButton
+	cursor: pointer
+	width: 100%
+	text-align: center
+	font-size: 17px
+
+	padding = 10px
+	padding-top: padding
+	padding-bottom: padding
+
+	border: 1px lightgray solid
+
+.externalServiceButton:hover
+	border-color: darkgray
+
+.externalServiceResult
+	border: 1px lightgray solid
+	padding: 10px
+
+	h1
+		roboto(300)
+		text-align: center
+		margin-top: 0
+
+	#center
+		center(85%)
+
+		span
+			display: table-cell
+			margin-left: 15px
+			font-size: 20px
+			word-wrap: break-word
+			overflow-x: hidden
+			max-width: calc(100% - 115px)
+
+	#center > *
+		float: left
+
+
+#extractInfo
+	h2
+		roboto(300)
+
+	.selector
+		width: 100%
+
+	#courseInfoSelector
+		height: 80px
+
+	.selector > *
+		border: 2px black solid
+		cursor: pointer
+		pointer-events: all
+
+		overflow: hidden
+
+	.selector > div
+		col(1/4)
+		height: 100%
+		padding: 5px
+
+	.selector > .selected
+		border-color: simplyBlue
+		cursor: initial
+
+#getExternalClasses
+	text-align: center
+
+	#spinner
+		height: 60px
+
+	#result
+		margin-top: 15px
+		width: 100%
+
+	#result > div
+		width: 100%
+		height: 30px
+		margin-bottom: 7px
+
+		i.fa-times
+			opacity: .5
+			transition: .25s opacity linear
+
+			float: left
+			margin-right: 10px
+			margin-top: 3px
+
+		i.fa-times:hover
+			opacity: 1
+
+		.twitter-typeahead
+			display: initial !important
+
+			.tt-dropdown-menu
+				width: 175px
+
+		.input-group-addon
+			float: left
+			display: inline-block
+			margin-right: 10px
+			height: 25px
+
+			i
+				margin-left: -8px
+				margin-top: -3px
+
+		div#classTitle
+			text-transform: lowercase
+			font-size: 15px
+			float: left
+			max-width: calc(100% - 240px)
+			white-space: nowrap
+			overflow: hidden
+			text-overflow: ellipsis
+
+		input#method, .twitter-typeahead
+			float: right
+			width: auto
+
+		+mobile()
+			height: 75px
+			border-bottom: 1px lightgray solid
+			margin-bottom: 15px
+
+			div#classTitle
+				max-width: calc(100% - 60px)
+
+			input#method
+				width: 100%
+				margin-top: 10px
+				margin-bottom: 10px
+
+div.setup
+	max-width: 650px
+	margin-left: auto
+	margin-right: auto
+
+	animation: 2s fadeIn ease-out-expo
+
+	padTop = 15px
+	padding-top: padTop
+	padding-bottom: padTop
+
+	padSide = 45px
+	padding-left: padSide
+	padding-right: padSide
+
+	div.header
+		width: 100%
+		roboto(300)
+		font-size: 35px
+		margin-bottom: 15px
+		border-bottom: 1px #DFDFDF solid
+
+	div.content
+		font-size: 15px
+
+	div.footer
+		text-align: right
+		width: 100%
+		border-top: 1px #DFDFDF solid
+		margin-top: 25px
+		padding-top: 10px

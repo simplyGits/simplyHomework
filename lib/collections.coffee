@@ -1,44 +1,21 @@
-@Schemas         = {}
-@GoaledSchedules = new Meteor.Collection "goaledSchedules"
-@Classes         = new Meteor.Collection "classes"
-@Books           = new Meteor.Collection "books"
-@Schools         = new Meteor.Collection "schools"
-@Schedules       = new Meteor.Collection "schedules"
-@Votes           = new Meteor.Collection "votes"
-@Utils           = new Meteor.Collection "utils"
-@Tickets         = new Meteor.Collection "tickets"
-@Projects        = new Meteor.Collection "projects"
-@CalendarItems   = new Meteor.Collection "calendarItems"
-@ChatMessages    = new Meteor.Collection "chatMessages"
+@Schemas           = {}
+@GoaledSchedules   = new Meteor.Collection 'goaledSchedules'
+@Classes           = new Meteor.Collection 'classes'
+@Books             = new Meteor.Collection 'books'
+@Schools           = new Meteor.Collection 'schools'
+@Schedules         = new Meteor.Collection 'schedules'
+@Votes             = new Meteor.Collection 'votes'
+@Utils             = new Meteor.Collection 'utils'
+@Tickets           = new Meteor.Collection 'tickets'
+@Projects          = new Meteor.Collection 'projects'
+@CalendarItems     = new Meteor.Collection 'calendarItems', transform: (c) -> _.extend new CalendarItem, c
+@ChatMessages      = new Meteor.Collection 'chatMessages'
+@ReportItems       = new Meteor.Collection 'reportItems'
+@StoredGrades      = new Meteor.Collection 'storedGrades', transform: (g) -> _.extend new StoredGrade, g
+@StudyUtils        = new Meteor.Collection 'studyUtils',   transform: (s) -> _.extend new StudyUtil, s
 
-@ReportItems     = new Meteor.Collection "reportItems"
-
-@MagisterAppointments = new Meteor.Collection "magisterAppointments",
-	transform: (a) ->
-		a._magisterObj = magister if magister?
-		a._teachers = (_.extend(new Person, t) for t in a._teachers)
-
-		a.__groupInfo = -> _.find Meteor.user()?.profile.groupInfos, (gi) -> gi.group is a._description
-		a.__class = -> a.__groupInfo()?.id
-		a.__classInfo = -> _.find Meteor.user()?.classInfos, (ci) -> EJSON.equals ci.id, a.__class()
-
-		a._magisterObj = null
-		return _.extend new Appointment, a
-	sort: "_begin": 1
-
-@MagisterStudyGuides = new Meteor.Collection "magisterStudyGuides", transform: (s) ->
-	s.parts = ( _.extend(new StudyGuidePart, part) for part in s.parts )
-	p._files = (_.extend(new File, f) for f in p._files) for p in s.parts
-
-	return _.extend new StudyGuide, s
-
-@MagisterAssignments = new Meteor.Collection "magisterAssignments", transform: (a) ->
-	return _.extend new Assignment, a
-
-@MagisterDigitalSchoolUtilties = new Meteor.Collection "magisterDigitalSchoolUtilties", transform: (du) ->
-	return _.extend new DigitalSchoolUtility, du
-
-@ScholierenClasses = new Meteor.Collection "scholieren.com"
+if Meteor.isClient
+	@ScholierenClasses = new Meteor.Collection 'scholieren.com'
 
 Schemas.Classes = new SimpleSchema
 	_id:
@@ -47,12 +24,15 @@ Schemas.Classes = new SimpleSchema
 		type: String
 		label: "Vaknaam"
 		trim: yes
-		regEx: /^[a-z ]+$/i
+		# TODO: Because of issues with some classes, the regex is disabled. Maybe we
+		# can find another, better regex? Some weird names for classes are passed
+		# through now.
+		#regEx: /^[a-z ]+$/i
 		index: 1
-	course:
-		type: String
-		label: "Vakafkorting"
-		regEx: /^[a-z]*$/
+	abbreviations:
+		type: [String]
+		label: "Vakafkortingen"
+		regEx: /^[\w&+-]*$/
 	year:
 		type: Number
 	schoolVariant:
@@ -60,6 +40,10 @@ Schemas.Classes = new SimpleSchema
 		regEx: /^[a-z]+$/
 	schedules:
 		type: [Object]
+		blackbox: yes
+	scholierenClassId:
+		type: Number
+		optional: yes
 
 Schemas.Books = new SimpleSchema
 	_id:
@@ -79,8 +63,10 @@ Schemas.Books = new SimpleSchema
 		type: Meteor.Collection.ObjectID
 	utils:
 		type: [Object]
+		blackbox: yes
 	chapters:
 		type: [Object]
+		blackbox: yes
 
 Schemas.Schools = new SimpleSchema
 	_id:
@@ -89,7 +75,13 @@ Schemas.Schools = new SimpleSchema
 		type: String
 	url:
 		type: String
-		regEx: /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/
+		regEx: SimpleSchema.RegEx.Url
+	externalId:
+		type: null
+		optional: yes
+	fetchedBy:
+		type: String
+		optional: yes
 
 Schemas.Projects = new SimpleSchema
 	_id:
@@ -202,18 +194,105 @@ Schemas.ReportItems = new SimpleSchema
 	time:
 		type: Date
 
+###
+Schemas.StoredGrades = new SimpleSchema
+	_id:
+		type: Meteor.Collection.ObjectID
+	grade:
+		type: null
+		custom: -> _.isNumber @value
+		index: 1
+	description:
+		type: String
+		defaultValue: ""
+		trim: yes
+	weight:
+		# HACK: Number wasn't working, but should be used.
+		#type: Number
+		type: null
+	dateFilledIn:
+		type: Date
+		index: 1
+		optional: yes
+	dateTestMade:
+		type: Date
+		index: 1
+		optional: yes
+	classId:
+		type: Meteor.Collection.ObjectID
+		# REVIEW: optional?
+		optional: yes
+	ownerId:
+		type: String
+	passed:
+		type: Boolean
+	isEnd:
+		type: Boolean
+		optional: yes
+		index: 1
+	externalId:
+		type: null # any type.
+		optional: yes
+	fetchedBy:
+		type: String
+		optional: yes
+	period:
+		# TODO: make schema for `GradePeriod`
+		type: null
+###
+
+Schemas.StudyUtils = new SimpleSchema
+	_id:
+		type: Meteor.Collection.ObjectID
+	name:
+		type: String
+		trim: yes
+	description:
+		type: String
+		trim: yes
+		optional: yes
+		defaultValue: ""
+	classId:
+		type: String
+		# REVIEW: optional?
+		optional: yes
+	ownerId:
+		type: String
+	visibleFrom:
+		type: Date
+		optional: yes
+		defaultValue: new Date()
+	visibleTo:
+		type: Date
+		optional: yes
+	files:
+		type: [Object]
+		blackbox: yes
+		defaultValue: []
+	fetchedBy:
+		type: String
+		optional: yes
+	externalInfo:
+		type: Object
+		blackbox: yes
+		optional: yes
+
 @[key].attachSchema Schemas[key] for key of Schemas
 
 @classTransform = (tmpClass) ->
 	classInfo = -> _.find Meteor.user().classInfos, (cI) -> EJSON.equals cI.id, tmpClass._id
 	groupInfo = _.find Meteor.user().profile.groupInfos, (gI) -> EJSON.equals gI.id, tmpClass._id
 
-	return _.extend tmpClass,
+	_.extend tmpClass,
 		__taskAmount: _.filter(homeworkItems.get(), (a) -> groupInfo?.group is a.description() and not a.isDone()).length
 		__book: -> Books.findOne classInfo()?.bookId
 		__color: -> classInfo()?.color
-		__sidebarName: Helpers.cap if (val = tmpClass.name).length > 14 then tmpClass.course else val
-		__showBadge: not _.contains [11..14], tmpClass.name.length
+		__sidebarName: (
+			val = tmpClass.name
+			if val.length > 14 then tmpClass.abbreviations[0]
+			else val
+		)
+		__showBadge: tmpClass.name.length not in [11..14]
 
 		__classInfo: classInfo
 

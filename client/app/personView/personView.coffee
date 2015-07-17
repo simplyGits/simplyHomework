@@ -74,7 +74,7 @@ Template.reportUserModal.events
 			name = Router.current().data().profile.firstName
 			if e?
 				message = switch e.error
-					when "rateLimit" then "#{name} is niet gerapporteerd, je hebt pas teveel mensen gerapporteerd."
+					when "rateLimit" then "#{name} is niet gerapporteerd,\nJe rapporteert teveel mensen."
 					else "Onbekende fout tijdens het rapporteren"
 
 				notify message, "error"

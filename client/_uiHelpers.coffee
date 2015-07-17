@@ -303,17 +303,6 @@ class @NotificationsManager
 @notify = (body, type = "default", time = 4000, dismissable = yes, priority = 0) -> NotificationsManager.notify { body: "<b>#{_.escape body}</b>", type, time, dismissable, priority, html: yes, allowDesktopNotifications: no }
 
 ###*
-# Gets the gravatar url of the given `userId`.
-# @method gravatar
-# @param [userId=Meteor.userId()] {User|ObjectID} The object or ID of the user to get the gravatar from.
-# @param [size=100] {Number} The size in pixels that the gravatar shall be.
-# @return {String} A string containing the URL of the gravatar.
-###
-@gravatar = (userId = Meteor.userId(), size = 100) ->
-	user = if _.isString(userId) then Meteor.users.findOne(userId) else userId
-	if user.hasGravatar or _.isEmpty(user.profile.magisterPicture) then "#{user.gravatarUrl}&s=#{size}" else user.profile.magisterPicture
-
-###*
 # 'Slides' the slider to the given destanation.
 # @method slide
 # @param id {String} The ID of the `.sidebarButton` to slide to.

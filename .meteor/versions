@@ -26,6 +26,7 @@ email@1.0.6
 fastclick@1.0.3
 fortawesome:fontawesome@4.3.0
 geojson-utils@1.0.3
+gravatar-binding@0.0.1
 handlebars@1.0.3
 html-tools@1.0.4
 htmljs@1.0.4
@@ -45,10 +46,11 @@ launch-screen@1.0.2
 livedata@1.0.13
 localstorage@1.0.3
 logging@1.0.7
+magister-binding@0.0.1
+magisterjs@1.3.3
 markdown@1.0.4
 mdg:reload-on-resume@1.0.4
 meteor@1.1.6
-meteor-analytics@0.9.5
 meteor-platform@1.2.2
 meteorhacks:async@1.0.0
 meteorhacks:fast-render@2.3.2
@@ -96,6 +98,7 @@ spiderable@1.0.7
 srp@1.0.3
 standard-app-packages@1.0.5
 stevezhu:lodash@3.6.0
+tail:core@0.9.6
 templating@1.1.1
 tmeasday:publish-counts@0.3.6
 tracker@1.0.7
