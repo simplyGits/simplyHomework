@@ -19,6 +19,8 @@ Template.personView.helpers
 
 Template.personView.events
 	"click i#reportButton": ->
+		ga "send", "event", "button", "click", "reportButton"
+
 		modal = $ "#reportUserModal"
 		modal.find("input[type='checkbox']").prop "checked", no
 		modal.modal()
@@ -58,6 +60,7 @@ Template.personSharedHours.rendered = ->
 
 Template.reportUserModal.events
 	"click button#goButton": ->
+		ga "send", "event", "action", "report"
 		reportItem = new ReportItem Meteor.userId(), Router.current().data()._id
 
 		checked = $ "div#checkboxes input:checked"
