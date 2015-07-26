@@ -334,16 +334,15 @@ class @NotificationsManager
 	closeSidebar?()
 
 ###*
-# Start a animate.css shake animation on
-# the elements which match the given selector.
-# After the shake this method makes sure it can
-# shake again. Shake it like it's hot! ;)
+# Start a animate.css shake animation on the elements which match the
+# given selector. After the shake this method makes sure it can shake
+# again. Shake it like it's hot! ;)
 #
 # @method shake
-# @param selector {String} The selector of which elements to shake.
+# @param selector {jQuery|String} The selector of which elements to shake.
 ###
 @shake = (selector) ->
-	$(selector)
+	(if selector.jquery? then selector else $ selector)
 		.addClass "animated shake"
 		.one 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', -> $(this).removeClass "animated shake"
 
