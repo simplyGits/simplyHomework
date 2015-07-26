@@ -382,6 +382,8 @@
 					}
 					calendarItem.scrapped = a.scrapped();
 					calendarItem.fullDay = a.fullDay();
+					calendarItem.schoolHour = a.beginBySchoolHour();
+					calendarItem.location = a.location();
 
 					return calendarItem;
 				}));

@@ -271,7 +271,6 @@ Meteor.methods
 		user = Meteor.users.findOne userId
 		result = []
 
-		console.log user.profile
 		unless user? and user.profile.courseInfo?
 			throw new Meteor.Error 'unauthorized'
 

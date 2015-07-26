@@ -1,5 +1,3 @@
-root = @
-
 ###
 # Note: we don't have a property that
 # tracks if the calendarItem is full day,
@@ -85,3 +83,17 @@ class @CalendarItem
 		# @default false
 		###
 		@fullDay = no
+
+		###*
+		# @property schoolHour
+		# @type Number|null
+		# @default null
+		###
+		@schoolHour = null
+
+		###*
+		# @property location
+		# @type String|null
+		# @default null
+		###
+		@location = null

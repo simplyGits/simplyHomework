@@ -1,5 +1,4 @@
 height = -> $(".content").height() - if has("noAds") then 10 else 100
-root = @
 
 currentEvents = []
 
@@ -7,38 +6,8 @@ dblDate = null
 dblDateResetHandle = null
 keydownSet = no
 
-appointmentToEvent = (appointment) ->
-	type = null
-	type = "quiz" if /\b((so)|((luister ?)?toets)|(schriftelijke overhoring))/i.test(appointment.content()?.split(" ")?[0] ? "")
-	type = "test" if /\b((proefwerk)|(pw)|(examen)|(tentamen))/i.test(appointment.content()?.split(" ")?[0] ? "")
-
-	id: appointment.id()
-	title: (
-		if appointment.classes().length > 0
-			s = appointment.classes()[0]
-			s += " - #{appointment.classRooms()[0]}" if appointment.classRooms()[0]?
-		else
-			appointment.description()
-	)
-	allDay: appointment.fullDay()
-	start: appointment.begin()
-	end: appointment.end()
-	color:
-		if appointment.scrapped() then "gray"
-		else if type is "quiz" then "#FF851B"
-		else if type is "test" then "#FF4136"
-		else switch appointment.infoType()
-			when 1 then "#32A8CE"
-			when 2, 3 then "#FF4136"
-			when 4, 5 then "#FF851B"
-
-			else "#3a87ad"
-	clickable: not appointment.scrapped()
-	open: no
-	appointment: appointment
-
 calendarItemToEvent = (calendarItem) ->
-	type = null
+	type = calendarItem.content?.type
 	type = "quiz" if /\b((so)|((luister ?)?toets)|(schriftelijke overhoring))/i.test(calendarItem.description?.split(" ")?[0] ? "")
 	type = "test" if /\b((proefwerk)|(pw)|(examen)|(tentamen))/i.test(calendarItem.description?.split(" ")?[0] ? "")
 
@@ -48,17 +17,23 @@ calendarItemToEvent = (calendarItem) ->
 		else if calendarItem.description.length > 12 then "#{calendarItem.description.substring(0, 9)}..."
 		else calendarItem.description
 	)
-	allDay: calendarItem.startDate.getHours() is 0 and moment(calendarItem.endDate).diff(calendarItem.startDate, "hours") is 24
+	allDay: calendarItem.fullDay
 	start: calendarItem.startDate
 	end: calendarItem.endDate
-	color:
-		if type is "quiz" then "#FF851B"
-		else if type is "test" then "#FF4136"
-		else "#3a87ad"
-	clickable: yes
+	color: (
+		if calendarItem.scrapped then "gray"
+		else switch type
+			when 'homework' then '#32A8CE'
+			when 'test', 'exam' then '#FF4136'
+			when 'quiz', 'oral' then '#FF851B'
+
+			else "#3a87ad"
+	)
+	clickable: not calendarItem.scrapped
 	open: no
 	calendarItem: calendarItem
-	editable: yes
+	editable: not calendarItem.fetchedBy?
+	content: calendarItem.content
 
 Template.calendar.rendered = ->
 	$(".calendar").fullCalendar
@@ -115,8 +90,14 @@ Template.calendar.rendered = ->
 
 		eventAfterRender: (event, element) ->
 			event.element = element
-			if event.appointment?
-				element.popover content: event.appointment.content(), placement: "auto top", animation: yes, delay: {show: 750}, trigger: "hover", container: ".content"
+			if event.content?
+				element.popover
+					content: event.content.description
+					placement: 'auto top'
+					animation: yes
+					delay: { show: 750 }
+					trigger: 'hover'
+					container: '.content'
 
 			return unless event.clickable
 
@@ -124,13 +105,15 @@ Template.calendar.rendered = ->
 
 		dayRender: (date, cell) ->
 			_.defer ->
-				return if $(".fc-left h2").text().indexOf("week") isnt -1
-				$(".fc-left h2").html "#{$(".fc-left h2").text()} <small>week: #{date.week()}</small>"
+				header = $ ".fc-left h2"
+				return if header.text().indexOf("week") isnt -1
+				header.html "#{$(".fc-left h2").text()} <small>week: #{date.week()}</small>"
+
 		eventDrop: (event) ->
-			if event.allDay
-				CalendarItems.update event.calendarItem._id, $set: startDate: event.start.toDate().date(), endDate: event.start.toDate().date().addDays 1
-			else
-				CalendarItems.update event.calendarItem._id, $set: startDate: event.start.toDate(), endDate: event.end?.toDate() ? event.start.add(1, "hour").toDate()
+			CalendarItems.update event.calendarItem._id, $set:
+				startDate: event.start.toDate()
+				endDate: event.end?.toDate() ? event.start.add(1, "hour").toDate()
+
 		eventResize: (event) -> CalendarItems.update event.calendarItem._id, $set: startDate: event.start.toDate(), endDate: event.end.toDate()
 
 	$("div.addAppointmentForm").detach().prependTo "body"
@@ -150,8 +133,8 @@ Template.calendar.rendered = ->
 	@autorun (c) -> # swagger nagger reactivity for FullCalendar.
 		currentEvents = []
 		[start, end] = Session.get("currentDateRange")
+		Meteor.subscribe 'externalCalendarItems', start, end
 
-		currentEvents.pushMore updatedAppointments(start, end).map appointmentToEvent
 		currentEvents.pushMore CalendarItems.find().map calendarItemToEvent
 
 #		currentEvents.pushMore CalendarItems.find({ $or: [

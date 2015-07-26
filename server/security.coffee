@@ -74,3 +74,14 @@ Schools.allow
 	insert: -> yes
 	update: -> no # maybe later?
 	remove: -> no
+
+# StoredGrades and StudyUtils are only updated serverside.
+StoredGrades.allow
+	insert: -> no
+	update: -> no
+	remove: -> no
+
+StudyUtils.allow
+	insert: -> no
+	update: -> no
+	remove: -> no
