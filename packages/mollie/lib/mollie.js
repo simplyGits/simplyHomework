@@ -14,14 +14,11 @@ Mollie = {
 	 * @return {Null|Payement} Null if callback is given, otherwise the payement.
 	 **/
 	makePayement: function (options, callback) {
-		if (callback != null)
-			Meteor.call("_mollieMakePayement", options, callback);
-
-		else if (Meteor.isServer)
-			return Meteor.call("_mollieMakePayement", options);
-
-		else
+		if (typeof(callback) !== "function" || Meteor.isServer) {
+			return Meteor.call("_mollieMakePayement", options, callback);
+		} else {
 			throw new Error("Callback required on client.");
+		}
 	},
 
 	/**
@@ -35,13 +32,10 @@ Mollie = {
 	 * @return {Null|Payement} Null if callback is given, otherwise the payement.
 	 **/
 	getPayement: function (id, callback) {
-		if (callback != null)
-			Meteor.call("_mollieGetPayement", id, callback);
-
-		else if (Meteor.isServer)
-			return Meteor.call("_mollieGetPayement", id);
-
-		else
+		if (typeof(callback) !== "function" || Meteor.isServer) {
+			return Meteor.call("_mollieGetPayement", id, callback);
+		} else {
 			throw new Error("Callback required on client.");
+		}
 	}
 };
