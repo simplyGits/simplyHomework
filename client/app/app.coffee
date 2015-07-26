@@ -611,7 +611,8 @@ Template.addProjectModal.events
 			shake "#addProjectModal"
 			return
 
-		New.project name, description, deadline, Meteor.userId(), classId, null
+		project = new Project name, description, deadline, Meteor.userId(), classId, null
+		Projects.insert project
 
 		$("#addProjectModal").modal "hide"
 
