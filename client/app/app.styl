@@ -64,6 +64,39 @@ body.bigNoticeOpen #app
 		left: 0
 		right: 0
 
+#mobileHeader
+	height = 50px
+	position: relative
+	height: height
+	font-size: 17px
+
+	border-bottom: 1px lightgray solid
+	background-color: white
+
+	i
+		absolute: top bottom
+		cursor: pointer
+		font-size: 20px
+		line-height: height
+
+	i:first-child
+		left: 10px
+
+	i:last-child
+		right: 10px
+
+	#title
+		center(80%)
+		text-align: center
+		line-height: height
+
+		white-space: nowrap
+		overflow: hidden
+
++mobile()
+	.content
+		top: 50px
+
 div.notification
 	z-index: 98765
 	fixed: top 15px right 60px
