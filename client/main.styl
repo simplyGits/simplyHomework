@@ -56,21 +56,23 @@ body
 
 button.btn-trans
 	background-color: transparent
-	color: white
-	border-color: white
-	border-radius: 5px
+	color: white !important
+	border-color: white !important
+	border-radius: 0
 	padding: 4px 35px
 	font-family: 'Roboto', sans-serif
 	font-weight: 100
 	letter-spacing: 1px
 
 button.btn-trans:hover
-	color: #F0F0F0
-	border-color: #E8E8E8
+	background-color: rgba(0, 0, 0, 0.1)
+
+button.btn-trans:active
+	outline: none
+	box-shadow: none
 
 button.btn-trans:focus
-	color: white
-	border-color: white
+	outline: none
 
 .appNameHeader
 	color: white

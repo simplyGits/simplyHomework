@@ -42,8 +42,8 @@ fileTypes =
 
 Template.projectView.rendered = ->
 	@autorun ->
-		root.personsEngine.clear()
-		root.personsEngine.add getOthers()
+		window.personsEngine.clear()
+		window.personsEngine.add getOthers()
 
 	loading = []
 	@autorun ->
@@ -80,7 +80,7 @@ Template.projectView.helpers
 	persons: -> _.reject getParticipants(), (p) -> EJSON.equals p._id, Meteor.userId()
 	isOwner: -> Router.current().data().ownerId is Meteor.userId()
 
-	showRightHeader: -> if (currentProject().participants ? []).length is 1 then false else true
+	showRightHeader: -> (currentProject().participants ? []) isnt 1
 	overDue: -> if not currentProject().deadline? or currentProject().deadline > new Date() then "initial" else "darkred"
 	heightOffset: -> if has("noAds") then 260 else 315
 
@@ -165,7 +165,7 @@ Template.projectView.events
 
 		$("#changeProjectModal").modal backdrop: false
 
-	"click .projectInfoChatQuoteContainer": -> ChatManager.openProjectChat @
+	"click .projectInfoChatQuoteContainer": -> ChatManager.openProjectChat this
 
 Template.changeProjectModal.events
 	"click #goButton": ->
@@ -220,7 +220,7 @@ Template.fileRow.events
 			else notify "#{@title} verwijderd.", "notice"
 
 Template.personRow.events
-	"click": (event) -> Router.go "personView", @ unless $(event.target).hasClass "removePersonButton"
+	"click": (event) -> Router.go "personView", this unless $(event.target).hasClass "removePersonButton"
 
 	"click .removePersonButton": ->
 		alertModal "Zeker weten?", Locals["nl-NL"].ProjectPersonRemovalMessage(@profile.firstName), DialogButtons.OkCancel, { main: "Is de bedoeling", second: "heh!?" }, { main: "btn-danger" }, main: =>

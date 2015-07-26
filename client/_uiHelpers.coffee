@@ -22,7 +22,7 @@ http://tomsmeding.nl/
 	Ok: 0
 	OkCancel: 1
 
-@alertModal = (title, body, buttonType = 0, labels = { main: "oké", second: "annuleren" }, styles  = { main: "btn-default", second: "btn-default" }, callbacks = { main: null, second: null }, exitButton = yes) ->
+@alertModal = (title, body, buttonType = 0, labels = { main: "oké", second: "annuleren" }, styles = { main: "btn-default", second: "btn-default" }, callbacks = { main: null, second: null }, exitButton = yes) ->
 	labels = _.extend { main: "oké", second: "annuleren" }, labels
 	styles = _.extend { main: "btn-default", second: "btn-default" }, styles
 
@@ -54,19 +54,18 @@ http://tomsmeding.nl/
 							bootbox.hideAll()
 
 	$(".bootbox-close-button").remove() unless exitButton
+	undefined
 
 @swalert = (options) ->
 	throw new ArgumentException "options", "Can't be null" unless options?
-	{
-		title
+	{ title
 		text
 		type
 		confirmButtonText
 		cancelButtonText
 		onSuccess
 		onCancel
-		html
-	} = options
+		html } = options
 
 	swal {
 		title

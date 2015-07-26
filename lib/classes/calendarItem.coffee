@@ -1,5 +1,3 @@
-root = @
-
 ###
 # Note: we don't have a property that
 # tracks if the calendarItem is full day,

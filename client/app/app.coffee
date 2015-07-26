@@ -673,157 +673,28 @@ Template.sidebar.events
 # == End Sidebar ==
 
 Template.app.helpers
-	contentOffsetLeft: -> if Session.get "isPhone" then "0" else "200px"
-	contentOffsetRight: -> if Session.get "isPhone" then "0" else "50px"
+	pageColor: -> Session.get("pageColor") ? "lightgray"
+	pageTitle: -> Session.get("headerPageTitle") ? ""
 
 	currentBigNotice: -> currentBigNotice.get()
 
 Template.app.events
+	"click .headerIcon": (event) ->
+		if window.snapper.state().state is "closed"
+			window.snapper.open event.target.dataset.snapSide
+		else
+			window.snapper.close()
+
 	"click #bigNotice > #content": -> currentBigNotice.get().onClick arguments...
 	"click #bigNotice > #dismissButton": -> currentBigNotice.get().onDismissed arguments...
 
 Template.app.rendered = ->
-	if "#{Math.random()}"[2] is "2" and "#{Math.random()}"[4] is "2"
-		console.error "CRITICAL ERROR: UNEXPECTED KAAS"
-
-	Deps.autorun ->
-		if Meteor.userId()? then Tracker.nonreactive ->
-			if Meteor.user()?.magisterCredentials?
-				initializeMagister()
-
-	Deps.autorun (c) ->
-		if Meteor.user()? and Meteor.status().connected and not Meteor.user().hasGravatar
-			$.get("#{Meteor.user().gravatarUrl}&s=1&d=404").done ->
-				Meteor.users.update Meteor.userId(), $set: hasGravatar: yes
+	# REFACTOR THE SHIT OUT OF THIS.
 
 	if Meteor.userId()? and not Meteor.user().emails[0].verified
 		notify "Je hebt je account nog niet geverifiëerd.\nCheck je email!", "warning"
 
 	assignmentNotification = null
-	recentGradesNotification = null
-
-	@autorun ->
-		return unless Meteor.subscribe("magisterAssignments").ready()
-		assignments = MagisterAssignments.find({
-			_deadline:
-				$gte: new Date
-				$lte: Date.today().addDays 7
-			_finished: no
-		}, {
-			sort: "_deadline": 1
-		}).fetch()
-
-		projects = Projects.find({
-			deadline:
-				$gte: new Date
-				$lte: Date.today().addDays 7
-		}, {
-			transform: projectTransform
-			sort: "deadline": 1
-		}).fetch()
-
-		return if assignments.length is 0 and projects.length is 0
-
-		s = "Projecten en opdrachten met deadline binnenkort:\nKlik voor meer info.\n\n"
-		for assignment in assignments when not _.find(projects, (p) -> p.magisterId is assignment.id())?
-			d = if (d = assignment.deadline()).getHours() is 0 and d.getMinutes() is 0 then d.addDays(-1) else d
-			s += "<b>#{assignment.class()._abbreviation}</b> #{assignment.name()} - #{DayToDutch(Helpers.weekDay(d))}\n"
-
-		for project in projects
-			d = if (d = project.deadline).getHours() is 0 and d.getMinutes() is 0 then d.addDays(-1) else d
-			if project.__class()?
-				s += "<b>#{project.__class().course}</b> #{project.name} - #{DayToDutch(Helpers.weekDay(d))}\n"
-			else
-				s += "#{project.name} - #{DayToDutch(Helpers.weekDay(d))}\n"
-
-		if assignmentNotification?
-			assignmentNotification.content s, yes
-		else
-			assignmentNotification = NotificationsManager.notify body: s, type: "warning", time: -1, html: yes, onClick: -> $("#addProjectModal").modal()
-
-	recentGrades = new ReactiveVar []
-	magisterResult "recent grades", (e, r) ->
-		return if e? or r.length is 0
-		recentGrades.set r
-
-	@autorun ->
-		r = recentGrades.get()
-		gradeNotificationDismissTime = Meteor.user().gradeNotificationDismissTime
-
-		recentGradesFiltered = _.reject r, (g) -> gradeNotificationDismissTime > new Date(g.dateFilledIn())
-		unless recentGradesFiltered.length is 0
-			s = "Recent ontvangen cijfers:\n\n"
-
-			for c in (z.class() for z in _.uniq recentGradesFiltered, "_class")
-				grades = _.filter recentGradesFiltered, (g) -> g.class() is c
-				s += "<b>#{c.abbreviation()}</b> - #{grades.map((z) -> if Number(z.grade().replace(",", ".")) < 5.5 then "<b style=\"color: red\">#{z.grade()}</b>" else z.grade()).join ' & '}\n"
-
-			if recentGradesNotification?
-				recentGradesNotification.content s, yes
-			else
-				recentGradesNotification = NotificationsManager.notify body: s, type: "warning", time: -1, html: yes, onHide: -> Meteor.users.update(Meteor.userId(), $set: gradeNotificationDismissTime: new Date)
-
-	@autorun ->
-		return unless Meteor.userId()? and Meteor.status().connected
-		appointments = magisterAppointment new Date(), new Date().addDays(7), no, no
-
-		Tracker.nonreactive ->
-			tmpGroupInfos = Meteor.user().profile.groupInfos ? []
-
-			for classInfo in Meteor.user().classInfos ? []
-				magisterGroup = _.find(appointments, (a) -> a.classes()[0] is classInfo.magisterDescription)?.description()
-				groupInfo = _.find tmpGroupInfos, (gi) -> gi.id is classInfo.id
-
-				continue if groupInfo?.group is magisterGroup or not magisterGroup?
-
-				_.remove tmpGroupInfos, id: classInfo.id
-				tmpGroupInfos.push _.extend id: classInfo.id, group: magisterGroup
-
-			Meteor.users.update Meteor.userId(), $set: "profile.groupInfos": tmpGroupInfos
-
-	studyGuideChangeNotification = null
-	@autorun (c) ->
-		return unless Meteor.subscribe("magisterStudyGuides").ready() # Wait till the subscription is ready.
-		Meteor.setInterval (-> c.invalidate()), 1200000 # Make sure to rerun this computation after 20 minutes.
-
-		studyGuides = MagisterStudyGuides.find().fetch()
-		studyGuidesHashes = {}
-		oldStudyGuideHashes = Meteor.user().studyGuidesHashes
-
-		for studyGuide in studyGuides then do (studyGuide) ->
-			parts = _.sortBy ( { id: x.id(), description: x.description(), fileSizes: (z.size() for z in x.files()) } for x in studyGuide.parts ), "id"
-			studyGuidesHashes[studyGuide.id()] = md5(EJSON.stringify parts).substring 0, 6
-
-		if EJSON.equals studyGuidesHashes, oldStudyGuideHashes
-			studyGuideChangeNotification?.hide()
-			return
-
-		if _.isEmpty(oldStudyGuideHashes)
-			Meteor.users.update Meteor.userId(), $set: { studyGuidesHashes }
-			return
-
-		s = "Studiewijzers die veranderd zijn:\n\n"
-		x = _(studyGuidesHashes)
-			.keys()
-			.filter((s) -> studyGuidesHashes[s] isnt oldStudyGuideHashes[s])
-			.map((id) -> _.find(studyGuides, (sg) -> sg.id() is +id))
-			.sortBy((sg) -> sg.classCodes()[0])
-			.value()
-
-		s += "<b>#{studyGuide.classCodes()[0]}</b> - #{studyGuide.name()}\n" for studyGuide in x
-
-		if studyGuideChangeNotification?
-			studyGuideChangeNotification.content s, yes
-		else
-			studyGuideChangeNotification = NotificationsManager.notify
-				body: s
-				type: "warning"
-				time: -1
-				html: yes
-				onHide: -> Meteor.users.update Meteor.userId(), $set: { studyGuidesHashes }
-				onClick: ->
-					return unless _.uniq(x, "_class").length is 1
-					Router.go "classView", classId: _.find(Meteor.user().classInfos, (z) -> z.magisterId is x[0].class()._id).id.toHexString()
 
 	val = Meteor.user().profile.birthDate
 	now = new Date()
@@ -867,37 +738,37 @@ setMobileSettings = ->
 	@closeSidebar = -> snapper.close()
 
 setKeyboardShortcuts = ->
-	Mousetrap.bind ["a", "c"], ->
-		Router.go "calendar"
+	Mousetrap.bind ['a', 'c'], ->
+		Router.go 'calendar'
 		return no
 
-	Mousetrap.bind "o", ->
-		Router.go "app"
+	Mousetrap.bind 'o', ->
+		Router.go 'app'
 		return no
 
-	Mousetrap.bind ["/", "?"], ->
-		$("div.searchBox > input").focus()
+	Mousetrap.bind ['/', '?'], ->
+		$('div.searchBox > input').focus()
 		return no
 
 	buttonGoto = (delta) ->
-		buttons = $(".sidebarButton").get()
-		oldIndex = buttons.indexOf $(".sidebarButton.selected").get()[0]
+		buttons = $('.sidebarButton').get()
+		oldIndex = buttons.indexOf $('.sidebarButton.selected').get()[0]
 		index = (oldIndex + delta) % buttons.length
 
 		id = buttons[if index is -1 then buttons.length - 1 else index].id
 		switch id
-			when "overview" then Router.go "app"
-			when "calendar" then Router.go "calendar"
-			else Router.go "classView", classId: id
+			when 'overview' then Router.go 'app'
+			when 'calendar' then Router.go 'calendar'
+			else Router.go 'classView', classId: id
 
-	Mousetrap.bind ["shift+up", "shift+k"], ->
+	Mousetrap.bind ['shift+up', 'shift+k'], ->
 		buttonGoto -1
 		return no
 
-	Mousetrap.bind ["shift+down", "shift+j"], ->
+	Mousetrap.bind ['shift+down', 'shift+j'], ->
 		buttonGoto 1
 		return no
 
-	Mousetrap.bind ["ctrl+/", "command+/", "ctrl+?", "command+?"], ->
-		alertModal "Toetsenbord shortcuts", Locals["nl-NL"].KeyboardShortcuts(), DialogButtons.Ok, { main: "Sluiten" }, { main: "btn-primary" }
+	Mousetrap.bind ['ctrl+/', 'command+/', 'ctrl+?', 'command+?'], ->
+		alertModal 'Toetsenbord shortcuts', Locals['nl-NL'].KeyboardShortcuts(), DialogButtons.Ok, { main: 'Sluiten' }, { main: 'btn-primary' }
 		return no

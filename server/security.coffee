@@ -57,7 +57,16 @@ CalendarItems.allow
 
 Projects.allow
 	insert: (userId, doc) -> doc.ownerId is userId and _.contains doc.participants, userId
-	update: (userId, doc, fields, modifier) -> _.contains(doc.participants, userId) and ( !_.any(["ownerId", "participants"], (x) -> _.contains(fields, x)) or userId is doc.ownerId or EJSON.equals modifier, { $pull: participants: userId } )
+	update: (userId, doc, fields, modifier) ->
+		isParticiapnt = _.contains doc.participants, userId
+		isOwner = userId is doc.ownerId
+
+		modifiesAllowedFields = (
+			leaves = EJSON.equals modifier, { $pull: participants: userId }
+			leaves or not _.any ["ownerId", "participants"], (x) -> _.contains fields, x
+		)
+
+		return isParticiapnt and ( modifiesAllowedFields or isOwner )
 	remove: -> no
 
 ChatMessages.allow

@@ -1,5 +1,4 @@
 height = -> $(".content").height() - if has("noAds") then 10 else 100
-root = @
 
 currentEvents = []
 

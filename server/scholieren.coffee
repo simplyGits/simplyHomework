@@ -44,4 +44,8 @@ class @Scholieren
 			if e?
 				callback(e, null)
 			else
-				callback null, (id: x.id, classId: x.vakid, title: x.name for x in JSON.parse(r.content).methods)
+				callback null, ({
+					id: x.id
+					classId: x.vakid
+					title: x.name
+				} for x in JSON.parse(r.content).methods)

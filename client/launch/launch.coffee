@@ -1,56 +1,56 @@
 login = ->
-	if not Session.get "creatingAccount"
-		Meteor.loginWithPassword $("#emailInput").val().toLowerCase(), $("#passwordInput").val(), (error) ->
-			if error? and error.reason is "Incorrect password"
-				setFieldError "#passwordGroup", "Wachtwoord is fout"
+	if not Session.get 'creatingAccount'
+		Meteor.loginWithPassword $('#emailInput').val().toLowerCase(), $('#passwordInput').val(), (error) ->
+			if error? and error.reason is 'Incorrect password'
+				setFieldError '#passwordGroup', 'Wachtwoord is fout'
 	else
-		Meteor.call "mailExists", $("#emailInput").val().toLowerCase(), (error, result) ->
+		Meteor.call 'mailExists', $('#emailInput').val().toLowerCase(), (error, result) ->
 			if result
-				Session.set "creatingAccount", no
+				Session.set 'creatingAccount', no
 				login()
 			else
 				okay = true
-				if empty "emailInput", "emailGroup", "Email is leeg" then okay = false
-				if empty "passwordInput", "passwordGroup", "Wachtwoord is leeg" then okay = false
-				if empty "betaCodeInput", "betaCodeGroup", "Voornaam is leeg" then okay = false
-				unless correctMail $("#emailInput").val()
-					group = $("#emailGroup").tooltip "destroy"
-					setFieldError group, "Ongeldig email adres"
+				if empty 'emailInput', 'emailGroup', 'Email is leeg' then okay = false
+				if empty 'passwordInput', 'passwordGroup', 'Wachtwoord is leeg' then okay = false
+				if empty 'betaCodeInput', 'betaCodeGroup', 'Voornaam is leeg' then okay = false
+				unless correctMail $('#emailInput').val()
+					group = $('#emailGroup').tooltip 'destroy'
+					setFieldError group, 'Ongeldig email adres'
 					okay = false
 				if okay
 					Accounts.createUser {
-						password: $("#passwordInput").val()
-						email: $("#emailInput").val().toLowerCase()
+						password: $('#passwordInput').val()
+						email: $('#emailInput').val().toLowerCase()
 						profile:
-							firstName: ""
-							lastName: ""
-							code: $("#betaCodeInput").val().trim().toLowerCase()
+							firstName: ''
+							lastName: ''
+							code: $('#betaCodeInput').val().trim().toLowerCase()
 					}, (e, r) ->
-						if e? then shake "#signupModal"
-						else Meteor.call "callMailVerification", -> Router.go "app"
+						if e? then shake '#signupModal'
+						else Meteor.call 'callMailVerification', -> Router.go 'app'
 
-	Router.go "app" if Meteor.userId()? or Meteor.loggingIn()
+	Router.go 'app' if Meteor.userId()? or Meteor.loggingIn()
 
-Template.page1.helpers showQuickLoginhint: -> amplify.store("allowCookies")?
+Template.page1.helpers showQuickLoginhint: -> amplify.store('allowCookies')?
 
-Template.signupModal.helpers creatingAccount: -> Session.get "creatingAccount"
+Template.signupModal.helpers creatingAccount: -> Session.get 'creatingAccount'
 
 Template.signupModal.events
-	"keyup": (event) ->
+	'keyup': (event) ->
 		value = event.target.value
 
 		unless event.which is 13
-			if correctMail $("#emailInput").val()
-				$("#emailGroup")
-					.removeClass "error"
-					.addClass "success"
+			if correctMail $('#emailInput').val()
+				$('#emailGroup')
+					.removeClass 'error'
+					.addClass 'success'
 			else
-				$("#emailGroup")
-					.removeClass "success"
-					.addClass "error"
+				$('#emailGroup')
+					.removeClass 'success'
+					.addClass 'error'
 
 			unless value.length < 4
-				Meteor.call "mailExists", $("#emailInput").val().toLowerCase(), (error, result) -> Session.set "creatingAccount", not result
+				Meteor.call 'mailExists', $('#emailInput').val().toLowerCase(), (error, result) -> Session.set 'creatingAccount', not result
 
 	'submit form': (event) ->
 		event.preventDefault()
@@ -59,52 +59,59 @@ Template.signupModal.events
 
 Template.page1.events
 	'click #signupButton': ->
-		Session.set "creatingAccount", false
-		$("#signupModal").modal()
+		Session.set 'creatingAccount', false
+		$('#signupModal').modal()
 
-	'click .launchpageMoreInfoBottom': -> $("body").stop().animate {scrollTop: $('#page2').offset().top}, 1200, "easeOutExpo"
+	'click #moreInfoButton': -> $('body').stop().animate {scrollTop: $('#page2').offset().top}, 1200, 'easeOutExpo'
 
-	"keyup input#password": (event) ->
-		$(".signUpForm > .enterHint").velocity opacity: .7
+	'keyup input#password': (event) ->
+		$('.signupForm > .enterHint').velocity opacity: .7
 		return unless event.which is 13
 
-		Meteor.loginWithPassword $("input#username").val().toLowerCase(), $("input#password").val(), (error) ->
-			if error? and error.reason is "Incorrect password"
-				shake "input#password"
-			else if error?
-				shake "input"
+		$input    = $ '.signupForm input'
+		$username = $ '.signupForm input#username'
+		$password = $ '.signupForm input#password'
 
-			else Router.go "app"
+		Meteor.loginWithPassword $username.val().toLowerCase(), $password.val(), (error) ->
+			if error? and error.reason is 'Incorrect password'
+				shake $password
+			else if error?
+				shake $input
+
+			else Router.go 'app'
 
 Template.launchPage.events
-	'click #page1': -> if $("#page2").hasClass("topShadow") then $("body").stop().animate {scrollTop: 0}, 600, "easeOutExpo"
+	'click #page1': -> if $('#page2').hasClass('topShadow') then $('body').stop().animate {scrollTop: 0}, 600, 'easeOutExpo'
 
 Template.launchPage.rendered = ->
-	@subscribe "userCount"
+	@subscribe 'userCount'
 
-	signUpForm = @$ ".signUpForm"
-	$("body").keypress (event) ->
-		return if event.which is 13 or $("input").is ":focus"
+	$signUpForm = @$ '.signupForm'
+	$('body').keypress (event) ->
+		hasModifier = event.altKey or event.ctrlKey or event.metaKey
+		return if event.which < 32 or hasModifier or $('input').is ':focus'
 
-		$("body").stop().animate {scrollTop: 0}, 600, "easeOutExpo"
+		$('body').stop().animate { scrollTop: 0 }, 600, 'easeOutExpo'
 
-		signUpForm.css( "visibility": "initial" )
-		$(".Center, .signUpForm").addClass("active")
+		$signUpForm.css( 'visibility': 'initial' )
+		$('.Center, .signupForm').addClass('active')
 		_.delay ( ->
-			signUpForm.find("input#username").val(String.fromCharCode event.which).focus()
+			$signUpForm.find('input#username').val(String.fromCharCode event.which).focus()
 		), 45
 
-	$("body").on "input", (event) ->
-		return unless $(".signUpForm input#username").val() is "" and $(".signUpForm input#password").val() is ""
-		signUpForm.find("input").blur()
+	$('body').on 'input', (event) ->
+		Meteor.setTimeout (->
+			return unless $('.signupForm input#username').val() is '' and $('.signupForm input#password').val() is ''
+			$signUpForm.find('input').blur()
 
-		signUpForm.css( "visibility": "hidden" )
-		$(".Center, .signUpForm").removeClass("active")
+			$signUpForm.css( 'visibility': 'hidden' )
+			$('.Center, .signupForm').removeClass('active')
+		), 500
 
 	# sexy shadow, you like that, don't ya ;)
-	page2 = $ "#page2"
+	page2 = $ '#page2'
 	$(window).scroll ->
 		if $(this).scrollTop() > 40
-			page2.addClass("topShadow")
+			page2.addClass('topShadow')
 		else
-			page2.removeClass("topShadow")
+			page2.removeClass('topShadow')

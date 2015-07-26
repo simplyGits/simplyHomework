@@ -36,21 +36,14 @@ Meteor.methods
 		headers = _.extend (options.headers ? {}), "User-Agent": "simplyHomework"
 		fut = new Future()
 
-		request { method: "GET", url: fromUrl, encoding: null, headers }, (error, response, content) ->
-			opt = _.extend options, {
-				method: "POST"
-				url: destUrl
-				headers
-				formData: file:
-					value: content
-					options:
-						filename: options.fileName
-						contentType: "application/octet-stream"
-			}
-
-			request opt, (error, response, content) ->
-				if error? then fut.throw error
-				else fut.return { content, headers: response.headers }
+		request(fromUrl).pipe(request {
+			method: "POST"
+			url: destUrl
+			headers
+		}, (error, response, content) ->
+			if error? then fut.throw error
+			else fut.return { content, headers: response.headers }
+		)
 
 		fut.wait()
 
@@ -111,10 +104,17 @@ Meteor.methods
 	# @param [adress] {String} The adress to verify, if this is omitted the first address of the current user (`this.userId`) will be used.
 	###
 	callMailVerification: (address) ->
-		user = if address? then Meteor.users.findOne { "emails": $elemMatch: { address }} else Meteor.users.findOne @userId
+		user = (
+			if address?
+				Meteor.users.findOne emails: $elemMatch: { address }
+			else
+				Meteor.users.findOne @userId
+		)
+
+		console.log 'callMailVerification'
 
 		if user.emails[0].verified
-			throw new Meteor.Error(400, "Mail already verified.")
+			throw new Meteor.Error 400, 'Mail already verified.'
 		else
 			Accounts.sendVerificationEmail user._id
 
@@ -146,8 +146,8 @@ Meteor.methods
 	###
 	reportUser: (reportItem) ->
 		if (val = ReportItems.findOne reporterId: @userId, userId: reportItem.userId)?
-			ReportItems.update reportItem._id,
-				reportGrounds: _.union val.reportGrounds, reportItems.reportGrounds
+			ReportItems.update reportItem._id, $set:
+				reportGrounds: _.union val.reportGrounds, reportItem.reportGrounds
 				time: new Date()
 
 		else

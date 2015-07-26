@@ -26,12 +26,15 @@ Template.personView.events
 		modal.find("input[type='checkbox']").prop "checked", no
 		modal.modal()
 
-	"click button#chatButton": -> ChatManager.openUserChat @
+	"click button#chatButton": -> ChatManager.openUserChat this
 
-Template.personView.rendered = ->
+Template.personView.onRendered ->
 	@autorun ->
 		Router.current()._paramsDep.depend()
-		Meteor.defer -> $('[data-toggle="tooltip"]').tooltip container: "body"
+		Meteor.defer ->
+			$('[data-toggle="tooltip"]')
+				.tooltip "destroy"
+				.tooltip container: "body"
 
 Template.personSharedHours.helpers
 	days: ->

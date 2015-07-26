@@ -1,5 +1,3 @@
-root = @
-
 ###*
 # Repesents a school.
 #
