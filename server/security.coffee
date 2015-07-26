@@ -1,10 +1,8 @@
 Meteor.startup -> # my eyes feel dizzy, i think. cant remember. please. help.
-	BrowserPolicy.content.allowStyleOrigin "maxcdn.bootstrapcdn.com"
 	BrowserPolicy.content.allowStyleOrigin "fonts.googleapis.com"
 
 	BrowserPolicy.content.allowFontOrigin "themes.googleusercontent.com"
 	BrowserPolicy.content.allowFontOrigin "fonts.gstatic.com"
-	BrowserPolicy.content.allowFontOrigin "maxcdn.bootstrapcdn.com"
 
 	BrowserPolicy.content.allowImageOrigin "www.gravatar.com"
 	BrowserPolicy.content.allowImageOrigin "http://csi.gstatic.com/"
@@ -23,6 +21,7 @@ Meteor.startup -> # my eyes feel dizzy, i think. cant remember. please. help.
 	BrowserPolicy.content.allowScriptOrigin "www.google-analytics.com"
 	BrowserPolicy.content.allowScriptOrigin "www.google.com"
 	BrowserPolicy.content.allowScriptOrigin "www.gstatic.com"
+	BrowserPolicy.content.allowScriptOrigin "cdn.mathjax.org"
 
 	BrowserPolicy.content.allowFrameOrigin "accounts.google.com"
 	BrowserPolicy.content.allowFrameOrigin "docs.google.com"
@@ -82,4 +81,15 @@ GoaledSchedules.allow
 Schools.allow
 	insert: -> yes
 	update: -> no # maybe later?
+	remove: -> no
+
+# StoredGrades and StudyUtils are only updated serverside.
+StoredGrades.allow
+	insert: -> no
+	update: -> no
+	remove: -> no
+
+StudyUtils.allow
+	insert: -> no
+	update: -> no
 	remove: -> no
