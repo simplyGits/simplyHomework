@@ -33,9 +33,7 @@ div#adbar {
 .tt-dropdown-menu {
 	background-color: white;
 
-	padding: 10px;
-	padding-left: 0;
-	padding-right: 0;
+	padding: 0;
 
 	border: 1px #a9a9a9 solid;
 	border-top: none;
@@ -46,6 +44,13 @@ div#adbar {
     padding: 3px 20px;
     font-size: 18px;
     line-height: 24px;
+}
+
+.tt-suggestion:first-child {
+	padding-top: 13px;
+}
+.tt-suggestion:last-child {
+	padding-bottom: 13px;
 }
 
 .tt-suggestion.tt-cursor {

@@ -4,16 +4,13 @@ sharedHours = new ReactiveVar []
 status = ->
 	s = Router.current().data().status
 
-	res = null
-	if s.idle
-		res = "#FF9800"
-	else if s.online
-		res = "#4CAF50"
-	else
-		res = "#EF5350"
+	res = (
+		if s.idle then "#FF9800"
+		else if s.online then "#4CAF50"
+		else "#EF5350"
+	)
 
-	$("meta[name='theme-color']").attr "content", res.backColor
-
+	setPageOptions color: res
 	return res
 
 Template.personView.helpers
@@ -22,16 +19,21 @@ Template.personView.helpers
 
 Template.personView.events
 	"click i#reportButton": ->
+		ga "send", "event", "button", "click", "reportButton"
+
 		modal = $ "#reportUserModal"
 		modal.find("input[type='checkbox']").prop "checked", no
 		modal.modal()
 
-	"click button#chatButton": -> ChatManager.openUserChat @
+	"click button#chatButton": -> ChatManager.openUserChat this
 
-Template.personView.rendered = ->
+Template.personView.onRendered ->
 	@autorun ->
 		Router.current()._paramsDep.depend()
-		Meteor.defer -> $('[data-toggle="tooltip"]').tooltip container: "body"
+		Meteor.defer ->
+			$('[data-toggle="tooltip"]')
+				.tooltip "destroy"
+				.tooltip container: "body"
 
 Template.personSharedHours.helpers
 	days: ->
@@ -58,6 +60,7 @@ Template.personSharedHours.rendered = ->
 
 Template.reportUserModal.events
 	"click button#goButton": ->
+		ga "send", "event", "action", "report"
 		reportItem = new ReportItem Meteor.userId(), Router.current().data()._id
 
 		checked = $ "div#checkboxes input:checked"

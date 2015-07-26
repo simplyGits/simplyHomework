@@ -47,3 +47,4 @@ tmeasday:publish-counts
 tail:core
 magister-binding
 gravatar-binding
+meteorhacks:kadira-debug

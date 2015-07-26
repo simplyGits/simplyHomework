@@ -26,8 +26,10 @@ Router.map ->
 			Meteor.defer => @redirect "app" if Meteor.userId()? or Meteor.loggingIn()
 			@next()
 		onAfterAction: ->
-			document.title = "simplyHomework"
-			$("meta[name='theme-color']").attr "content", "#32A8CE"
+			setPageOptions
+				title: 'simplyHomework'
+				useAppPrefix: no
+				color: null
 
 	@route "app",
 		fastRender: yes
@@ -46,15 +48,17 @@ Router.map ->
 		onAfterAction: ->
 			Meteor.defer ->
 				slide "overview"
-				$("meta[name='theme-color']").attr "content", "#32A8CE"
+				setPageOptions color: null
 
-			document.title = (
-				# When we don't have external info yet the name is empty.
-				unless _.isEmpty Meteor.user().profile.firstName
-					"simplyHomework | #{Meteor.user().profile.firstName} #{Meteor.user().profile.lastName}"
-				else
-					"simplyHomework"
-			)
+			setPageOptions
+				title: (
+					# When we don't have external info yet the name is empty.
+					unless _.isEmpty Meteor.user().profile.firstName
+						"simplyHomework | #{Meteor.user().profile.firstName} #{Meteor.user().profile.lastName}"
+					else
+						"simplyHomework"
+				)
+				useAppPrefix: no
 
 			followSetupPath() if @ready()
 
@@ -83,11 +87,11 @@ Router.map ->
 				swalert title: "Niet gevonden", text: "Je hebt dit vak waarschijnlijk niet.", confirmButtonText: "o.", type: "error"
 				return
 
-			Meteor.defer =>
-				slide @data()._id.toHexString()
-				$("meta[name='theme-color']").attr "content", @data().__color()
+			Meteor.defer => slide @data()._id.toHexString()
 
-			document.title = "simplyHomework | #{@data().name}"
+			setPageOptions
+				title: @data().name
+				color: @data().__color()
 
 		data: ->
 			try
@@ -125,7 +129,9 @@ Router.map ->
 				slide @data().__class()._id.toHexString()
 				$("meta[name='theme-color']").attr "content", @data().__class().__color()
 
-			document.title = "simplyHomework | #{@data().name}"
+			setPageOptions
+				title: @data().name
+				color: @data().__class().__color()
 
 		data: ->
 			try
@@ -156,9 +162,10 @@ Router.map ->
 		onAfterAction: ->
 			Meteor.defer ->
 				slide "calendar"
-				$("meta[name='theme-color']").attr "content", "#32A8CE"
 
-			document.title = "simplyHomework | Agenda"
+			setPageOptions
+				title: 'Agenda'
+				color: null
 
 	@route "mobileCalendar",
 		fastRender: yes
@@ -181,9 +188,10 @@ Router.map ->
 		onAfterAction: ->
 			Meteor.defer ->
 				slide "calendar"
-				$("meta[name='theme-color']").attr "content", "#32A8CE"
 
-			document.title = "simplyHomework | Agenda"
+			setPageOptions
+				title: 'Agenda'
+				color: null
 
 	@route "personView",
 		fastRender: yes
@@ -210,7 +218,7 @@ Router.map ->
 				swalert title: "Niet gevonden", text: "Deze persoon is niet gevonden.", type: "error"
 				return
 
-			document.title = "simplyHomework | #{@data().profile.firstName} #{@data().profile.lastName}"
+			setPageOptions title: "simplyHomework | #{@data().profile.firstName} #{@data().profile.lastName}"
 
 		data: -> Meteor.users.findOne @params._id
 
@@ -241,7 +249,8 @@ Router.map ->
 				swalert title: "Niet gevonden", text: "Deze chat is niet gevonden.", type: "error"
 				return
 
-			document.title = "simplyHomework | #{@data().__friendlyName}"
+			setPageOptions
+				title: @data().__friendlyName
 
 		data: ->
 			x = Meteor.users.findOne { _id: @params._id }, transform: userChatTransform
@@ -257,20 +266,20 @@ Router.map ->
 			else
 				@next()
 		onAfterAction: ->
-			document.title = 'simplyHomework | Setup'
+			setPageOptions title: 'simplyHomework | Setup'
 
 	@route "privacy",
 		fastRender: yes
 		layoutTemplate: "privacy"
 		onAfterAction: ->
-			document.title = "simplyHomework | Privacy"
+			setPageOptions title: "simplyHomework | Privacy"
 			$("body").scrollTop 0
 
 	@route "press",
 		fastRender: yes
 		layoutTemplate: "press"
 		onAfterAction: ->
-			document.title = "simplyHomework | Pers"
+			setPageOptions title: "simplyHomework | Pers"
 			$("body").scrollTop 0
 
 	@route "verifyMail",
@@ -291,5 +300,5 @@ Router.map ->
 
 Router.route "/(.*)", -> # 404 route.
 	if @ready()
-		document.title = "simplyHomework | Niet gevonden"
+		setPageOptions title: "simplyHomework | Niet gevonden"
 		@render "notFound"

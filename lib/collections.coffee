@@ -121,7 +121,6 @@ Schemas.ChatMessages = new SimpleSchema
 		type: Meteor.Collection.ObjectID
 	content:
 		type: String
-		denyUpdate: yes # Denying updates for now, later we can allow these with some UI implementations. (See the `isChanged` property)
 		autoValue: -> Helpers.convertLinksToAnchor @value
 	creatorId:
 		type: String
@@ -149,11 +148,14 @@ Schemas.ChatMessages = new SimpleSchema
 		type: [String]
 	attachments:
 		type: [String]
-	isChanged:
-		type: Boolean
+	changedOn:
+		type: Date
+		optional: yes
 		autoValue: ->
-			if not @isFromTrustedCode and @isInsert then no
-			else if not @isFromTrustedCode and @isUpdate then yes # Force it to yes when updating, we want to clearly show that an user changed a message.
+			if not @isFromTrustedCode and @isInsert then null
+
+			# Force it to the change date when updating, we want to clearly show that an user changed a message.
+			else if not @isFromTrustedCode and @isUpdate then new Date()
 
 Schemas.GoaledSchedules = new SimpleSchema
 	_id:
@@ -171,6 +173,7 @@ Schemas.GoaledSchedules = new SimpleSchema
 		denyUpdate: yes
 	tasks:
 		type: [Object]
+		blackbox: yes
 	magisterAppointmentId:
 		type: Number
 		optional: yes
@@ -321,30 +324,47 @@ Schemas.StudyUtils = new SimpleSchema
 		)
 		__lastChatMessage: -> ChatMessages.findOne { projectId: p._id }, transform: chatMessageTransform, sort: "time": -1
 
-chatMessageReplaceMap = [
-	[/\(y\)/ig, ":thumbsup:"]
-	[/\(n\)/ig, ":thumbsdown:"]
-	[/\(a\)/ig, ":innocent:"]
-	[/\(h\)/ig, ":sunglasses:"]
-	[/\^\^'/ig, ":sweat_smile:"]
-]
+chatMessageReplaceMap =
+	":thumbsup:": [/\(y\)/ig]
+	":thumbsdown:": [/\(n\)/ig]
+	":innocent:": [/\(a\)/ig]
+	":sunglasses:": [/\(h\)/ig]
+	":sweat_smile:": [/\^\^'/ig]
+
+###*
+# Returns the given `date` friendly formatted for chat.
+# If `date` is a null value, `null` will be returned.
+#
+# @method formatDate
+# @param date {Date|null} The date to format.
+# @return {String|null} The given `date` formatted.
+###
+formatDate = (date) ->
+	return unless date?
+
+	check date, Date
+	m = moment date
+
+	if m.year() isnt new Date().getUTCFullYear()
+		m.format "DD-MM-YYYY HH:mm"
+	else if m.toDate().date().getTime() isnt Date.today().getTime()
+		m.format "DD-MM HH:mm"
+	else
+		m.format "HH:mm"
+
 
 @chatMessageTransform = (cm) ->
 	return _.extend cm,
 		__sender: Meteor.users.findOne cm.creatorId
 		__own: if Meteor.userId() is cm.creatorId then "own" else ""
-		__time: (
-			m = moment cm.time
-
-			if m.year() isnt new Date().getUTCFullYear()
-				m.format "DD-MM-YYYY HH:mm"
-			else if m.toDate().date().getTime() isnt Date.today().getTime()
-				m.format "DD-MM HH:mm"
-			else
-				m.format "HH:mm"
-		)
+		__time: formatDate cm.time
 		content: (
 			s = cm.content
-			s = s.replace t[0], t[1] for t in chatMessageReplaceMap
+
+			for key in _.keys chatMessageReplaceMap
+				for regex in chatMessageReplaceMap[key]
+					s = s.replace regex, key
+
 			s
 		)
+		__changedOn: formatDate cm.changedOn

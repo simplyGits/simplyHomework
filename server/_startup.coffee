@@ -90,16 +90,14 @@ Meteor.startup ->
 			recents[user._id] = times: 0
 			Meteor.setTimeout (-> delete recents[user._id] ), 300000
 
-	Accounts.validateNewUser (user) -> correctMail user.emails[0].address
-
 	SyncedCron.start()
 
 	Accounts.validateNewUser (doc) ->
 		if doc.profile.code isnt "pilot"
-			console.warn "#{doc.profile.firstName} #{doc.profile.lastName} tried to signup with wrong code #{doc.profile.code}."
+			console.warn "#{doc.emails[0].address} tried to signup with wrong code #{doc.profile.code}."
 			throw new Meteor.Error "wrong-code", "Entered beta code is invalid."
 
-		return yes
+		correctMail doc.emails[0].address
 
 	reCAPTCHA.config
 		privatekey: "6LejzwQTAAAAAKlQfXJ8rpT8vY0fm-6H4-CnZy9M"

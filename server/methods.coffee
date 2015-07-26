@@ -36,21 +36,14 @@ Meteor.methods
 		headers = _.extend (options.headers ? {}), "User-Agent": "simplyHomework"
 		fut = new Future()
 
-		request { method: "GET", url: fromUrl, encoding: null, headers }, (error, response, content) ->
-			opt = _.extend options, {
-				method: "POST"
-				url: destUrl
-				headers
-				formData: file:
-					value: content
-					options:
-						filename: options.fileName
-						contentType: "application/octet-stream"
-			}
-
-			request opt, (error, response, content) ->
-				if error? then fut.throw error
-				else fut.return { content, headers: response.headers }
+		request(fromUrl).pipe(request {
+			method: "POST"
+			url: destUrl
+			headers
+		}, (error, response, content) ->
+			if error? then fut.throw error
+			else fut.return { content, headers: response.headers }
+		)
 
 		fut.wait()
 
@@ -153,8 +146,8 @@ Meteor.methods
 	###
 	reportUser: (reportItem) ->
 		if (val = ReportItems.findOne reporterId: @userId, userId: reportItem.userId)?
-			ReportItems.update reportItem._id,
-				reportGrounds: _.union val.reportGrounds, reportItems.reportGrounds
+			ReportItems.update reportItem._id, $set:
+				reportGrounds: _.union val.reportGrounds, reportItem.reportGrounds
 				time: new Date()
 
 		else

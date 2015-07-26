@@ -24,6 +24,13 @@
 		{{> sidebar}}
 
 		<div id="wrapper">
+			{{#if isPhone}}
+				<div id="mobileHeader" style="border-color: {{pageColor}}">
+					<i class="fa fa-bars headerIcon" data-snap-side="left"></i>
+					<div id="title">{{pageTitle}}</div>
+					<i class="fa fa-users headerIcon" data-snap-side="right"></i>
+				</div>
+			{{/if}}
 			<div class="content unselectable smoothScroll">
 				{{> yield}}
 			</div>

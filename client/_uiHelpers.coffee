@@ -22,7 +22,7 @@ http://tomsmeding.nl/
 	Ok: 0
 	OkCancel: 1
 
-@alertModal = (title, body, buttonType = 0, labels = { main: "oké", second: "annuleren" }, styles  = { main: "btn-default", second: "btn-default" }, callbacks = { main: null, second: null }, exitButton = yes) ->
+@alertModal = (title, body, buttonType = 0, labels = { main: "oké", second: "annuleren" }, styles = { main: "btn-default", second: "btn-default" }, callbacks = { main: null, second: null }, exitButton = yes) ->
 	labels = _.extend { main: "oké", second: "annuleren" }, labels
 	styles = _.extend { main: "btn-default", second: "btn-default" }, styles
 
@@ -54,11 +54,18 @@ http://tomsmeding.nl/
 							bootbox.hideAll()
 
 	$(".bootbox-close-button").remove() unless exitButton
+	undefined
 
 @swalert = (options) ->
 	throw new ArgumentException "options", "Can't be null" unless options?
-	_.defaults options, { onSuccess: (->), onCancel: (->) }
-	{ title, text, type, confirmButtonText, cancelButtonText, onSuccess, onCancel, html } = options
+	{ title
+		text
+		type
+		confirmButtonText
+		cancelButtonText
+		onSuccess
+		onCancel
+		html } = options
 
 	swal {
 		title
@@ -68,11 +75,10 @@ http://tomsmeding.nl/
 		cancelButtonText
 		allowOutsideClick: cancelButtonText?
 		showCancelButton: cancelButtonText?
-	}, (success) -> if success then onSuccess() else onCancel()
+	}, (success) -> if success then onSuccess?() else onCancel?()
 
 	if html? then $(".sweet-alert > p").html html.replace "\n", "<br>"
-
-	return undefined
+	undefined
 
 ###*
 # Sets the given `selector` to show an error state.
@@ -89,7 +95,7 @@ http://tomsmeding.nl/
 		.tooltip placement: "bottom", title: message, trigger: trigger
 		.tooltip "show"
 
-	return selector
+	selector
 
 ###*
 # Checks if a given field is empty, if so returns true and displays an error message for the user.
@@ -157,13 +163,14 @@ class @NotificationsManager
 				clearTimeout @_delayHandle
 				if @_htmlNotification?
 					@_htmlNotification.close()
-					delete NotificationsManager._notifications[@id]
+					_.remove NotificationsManager._notifications, @id
 				else
-					$(".notification##{notId}").removeClass "transformIn"
+					$notification = @element()
+					$notification.removeClass "transformIn"
 					@_startedHiding = yes
 					_.delay ( =>
-						$(".notification##{notId}").remove()
-						delete NotificationsManager._notifications[@id]
+						$notification.remove()
+						_.remove NotificationsManager._notifications, @id
 					), 2000
 					NotificationsManager._updatePositions()
 
@@ -205,7 +212,7 @@ class @NotificationsManager
 			d.append "<br>"
 			if onClick?
 				d.click ->
-					if $(@).hasClass("noclick") then $(@).removeClass "noclick"
+					if $(this).hasClass("noclick") then $(this).removeClass "noclick"
 					else
 						onClick arguments...
 						onHide?()
@@ -219,30 +226,31 @@ class @NotificationsManager
 				d.draggable
 					axis: "x"
 					start: (event, helper) ->
-						pos = $(@).position().left
-						$(@)
+						$(this)
 							.css width: $(this).outerWidth()
 							.addClass "noclick"
 					stop: (event, helper) ->
-						if $(@).position().left - pos > MIN
-							$(@).css
+						$this = $ this
+						if $this.position().left - pos > MIN
+							$this.css
 								width: "initial"
 								opacity: 1
 						else
-							$(@).velocity opacity: 0
+							$this.velocity opacity: 0
 							notHandle.hide()
 							onDismissed?()
 							onHide?()
 					drag: (event, helper) ->
-						$(@).css opacity: 1 - ((pos - $(@).position().left) / 250)
-					revert: -> $(@).position().left - pos > MIN
+						$this = $ this
+						$this.css opacity: 1 - ((pos - $this.position().left) / 250)
+					revert: -> $(this).position().left - pos > MIN
 
 			for label, i in labels
 				style = styles[i] ? "btn-default"
-				btn = $.parseHTML "<button type=\"button\" class=\"btn #{style}\" id=\"#{notId}_#{i}\">#{label}</button>"
+				btn = $.parseHTML("<button type='button' class='btn #{style}' id='#{notId}_#{i}'>#{label}</button>")[0]
 
 				callback = callbacks[i] ? (->)
-				do (callback) -> btn[0].onclick = (event) -> callback event, notHandle
+				do (callback) -> btn.onclick = (event) -> callback event, notHandle
 
 				d.append btn
 
@@ -278,7 +286,7 @@ class @NotificationsManager
 
 		return notHandle
 
-	@notifications = -> _.filter NotificationsManager._notifications, (n) -> n? and not n._startedHiding
+	@notifications = -> _.reject NotificationsManager._notifications, "_startedHiding"
 
 	@hideAll = -> x.hide() for x in NotificationsManager.notifications(); return undefined
 
@@ -314,18 +322,46 @@ class @NotificationsManager
 	closeSidebar?()
 
 ###*
-# Start a animate.css shake animation on
-# the elements which match the given selector.
-# After the shake this method makes sure it can
-# shake again. Shake it like it's hot! ;)
+# Start a animate.css shake animation on the elements which match the
+# given selector. After the shake this method makes sure it can shake
+# again. Shake it like it's hot! ;)
 #
 # @method shake
-# @param selector {String} The selector of which elements to shake.
+# @param selector {jQuery|String} The selector of which elements to shake.
 ###
 @shake = (selector) ->
-	$(selector)
+	(if selector.jquery? then selector else $ selector)
 		.addClass "animated shake"
-		.one 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', -> $(this).removeClass "animated shake"
+		.one 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', ->
+			$(this).removeClass "animated shake"
+
+###*
+# Sets various meta data for the current page. (eg: the document title)
+#
+# @method setPageOptions
+# @param options {Object} The options you prefer.
+#   @param [options.title] {String} The title to set.
+#   @param [options.color] {String} The color to set. If this is omitted the default color for each component will be used.
+#   @param [options.headerTitle=title] {String} The title that is used for the header.
+#   @param [options.useAppPrefix=true] {Boolean} Whether or not to use the app prefix ("simplyHomework").
+###
+@setPageOptions = ({ title, headerTitle, color, useAppPrefix }) ->
+	check title, Match.Optional String
+	check headerTitle, Match.Optional String
+	check color, Match.Optional Match.OneOf String, null
+	check useAppPrefix, Match.Optional Boolean
+
+	headerTitle ?= title
+	useAppPrefix ?= yes
+
+	if not title? and headerTitle?
+		Session.set "headerPageTitle", headerTitle
+	else if title? or headerTitle?
+		Session.set "documentPageTitle", if useAppPrefix then "simplyHomework | #{title}" else title
+		Session.set "headerPageTitle", headerTitle
+
+	unless _.isUndefined color
+		Session.set "pageColor", color
 
 ###*
 # Set the current bigNotice.
@@ -359,7 +395,14 @@ class @NotificationsManager
 		return undefined
 
 Meteor.startup ->
-	Session.set "allowNotifications", no
+	Session.setDefault "pageTitle", "simplyHomework"
+	Session.setDefault "pageColor", "lightgray"
+	Session.setDefault "allowNotifications", no
+
+	colortag = $ "meta[name='theme-color']"
+	Tracker.autorun ->
+		document.title = Session.get "documentPageTitle"
+		colortag.attr "content", Session.get("pageColor") ? "#32A8CE"
 
 	notification = null
 	Tracker.autorun ->
@@ -379,19 +422,24 @@ Meteor.startup ->
 	Session.set "isPhone", window.matchMedia("only screen and (max-width: 760px)").matches or /android|iphone|ipod|blackberry|windows phone/i.test navigator.userAgent
 
 	UI.registerHelper "isPhone", -> Session.get "isPhone"
-	UI.registerHelper "empty", -> return @ is 0
-	UI.registerHelper "first", (arr) -> EJSON.equals @, _.first arr
-	UI.registerHelper "last", (arr) -> EJSON.equals @, _.last arr
+	UI.registerHelper "empty", -> return this is 0
+	UI.registerHelper "first", (arr) -> EJSON.equals this, _.first arr
+	UI.registerHelper "last", (arr) -> EJSON.equals this, _.last arr
 	UI.registerHelper "minus", (base, substraction) -> base - substraction
 	UI.registerHelper "gravatar", gravatar
 	UI.registerHelper "has", (feature) -> has feature
+	UI.registerHelper "currentYear", -> new Date().getUTCFullYear()
 
+	# TODO: Remove the console.infos.
 	disconnectedNotify = null
 	_.delay ->
 		Deps.autorun ->
 			if Meteor.status().connected
+				console.info("Reconnected.") if disconnectedNotify?
+
 				disconnectedNotify?.hide()
 				disconnectedNotify = null
 			else unless disconnectedNotify?
 				disconnectedNotify = notify("Verbinding verbroken", "error", -1, no, 10)
+				console.info "Disconnected."
 	, 1200

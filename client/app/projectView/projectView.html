@@ -9,9 +9,7 @@
 				<span id="changeProjectIcon" class="fa fa-pencil"></span>
 			</div>
 			{{#if showRightHeader}}
-				{{#with participants}}
-					<div class="robotoHeader overviewHeader head2 projectHeader" style="text-align: right">{{length}} <span class="robotoThin" style="margin-left: 5px">personen</span></div>
-				{{/with}}
+				<div class="robotoHeader overviewHeader head2 projectHeader" style="text-align: right">{{participants.length}} <span class="robotoThin" style="margin-left: 5px">personen</span></div>
 			{{/if}}
 		</div>
 		<div class="divider"></div>
@@ -25,14 +23,14 @@
 				<b>Beschrijving</b>: <span class="projectInfoDescription">{{description}}</span>
 			</div>
 
-			{{#with __lastChatMessage}}
-				<div class="projectInfoChatQuoteContainer">
+			<div class="projectInfoChatQuoteContainer">
+				{{#with __lastChatMessage}}
 					<img class="lastChatSenderPicture" src="{{gravatar __sender 100}}" width="50" height="50"/>
 					<span class="robotoThin lastChatSenderName">{{__sender.profile.firstName}}</span>
 					<span class="robotoThin lastChatMessage">{{content}}</span>
-					<span class="robotoThin lastChatHeader">Chat</span>
-				</div>
-			{{/with}}
+				{{/with}}
+				<span class="robotoThin lastChatHeader">Chat</span>
+			</div>
 		</div>
 
 		<div class="row">
@@ -94,7 +92,7 @@
 
 <template name="personRow">
 	<div class="personRow">
-		<img src="{{gravatar this 100}}" width="63" height="60" class="personImage" style="border-color: {{__statusColor}}">
+		<img src="{{gravatar this 100}}" width="63" height="60" class="personImage {{__status}}">
 		<span class="personName"><span style="color: black">{{profile.firstName}}</span> {{profile.lastName}}</span>
 		{{#if __isOwner}}
 			<span class="removePersonButton">&times;</span>
@@ -104,7 +102,7 @@
 
 <template name="selfRow">
 	<div class="personRow">
-		<img src="{{gravatar currentUser 100}}" width="63" height="60" class="personImage" style="border-color: #2ECC40">
+		<img src="{{gravatar currentUser 100}}" width="63" height="60" class="personImage online">
 		<span class="personName" style="color: black">Jij</span>
 	</div>
 </template>
