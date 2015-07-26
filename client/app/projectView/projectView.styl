@@ -103,11 +103,24 @@ div.fileRow, div.personRow
 	white-space: nowrap
 
 div.personRow
-	height: 60px
+	rowHeight = 60px
+	height: rowHeight
+
+	.removePersonButton
+		line-height: rowHeight
 
 img.personImage
 	border-left: 3px black solid
 	absolute: top left bottom
+
+img.personImage.online
+	border-color: #2ECC40
+
+img.personImage.inactive
+	border-color: #FF851B
+
+img.personImage.offline
+	border-color: #FF4136
 
 span.personName
 	margin-left: 65px
