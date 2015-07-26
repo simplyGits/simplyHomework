@@ -439,6 +439,7 @@ Meteor.startup ->
 	UI.registerHelper "minus", (base, substraction) -> base - substraction
 	UI.registerHelper "gravatar", gravatar
 	UI.registerHelper "has", (feature) -> has feature
+	UI.registerHelper "currentYear", -> new Date().getUTCFullYear()
 
 	# TODO: Remove the console.infos.
 	disconnectedNotify = null
