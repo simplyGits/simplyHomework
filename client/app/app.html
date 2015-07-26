@@ -265,37 +265,28 @@
 					<h4 class="modal-title">Account info</h4>
 				</div>
 				<div class="modal-body">
-					<form class="form-horizontal">
-						<div id="mailGroup" class="form-group">
-							<label for="mailInput" class="col-sm-2 control-label" style="text-align: left">Email</label>
-							<div class="col-sm-10">
-								<input type="text" class="form-control" id="mailInput" placeholder="hello@simplyApps.nl" value="{{currentMail}}">
-							</div>
+					<form class="vertical full-width">
+						<div id="mailGroup" class="group">
+							<label for="mailInput">Email</label>
+							<input type="text" id="mailInput" placeholder="hello@simplyApps.nl" value="{{currentMail}}">
 						</div>
-						<div id="firstNameGroup" class="form-group">
-							<label for="firstNameInput" class="col-sm-2 control-label" style="text-align: left">Voornaam</label>
-							<div class="col-sm-10">
-								<input type="text" class="form-control" id="firstNameInput" placeholder="Henk" value="{{currentUser.profile.firstName}}">
-							</div>
+						<div id="firstNameGroup" class="group">
+							<label for="firstNameInput">Voornaam</label>
+							<input type="text" id="firstNameInput" placeholder="Henk" value="{{currentUser.profile.firstName}}">
 						</div>
-						<div id="lastNameGroup" class="form-group">
-							<label for="lastNameInput" class="col-sm-2 control-label" style="text-align: left">Achternaam</label>
-							<div class="col-sm-10">
-								<input type="text" class="form-control" id="lastNameInput" placeholder="Jansen" value="{{currentUser.profile.lastName}}">
-							</div>
+						<div id="lastNameGroup" class="group">
+							<label for="lastNameInput">Achternaam</label>
+							<input type="text" id="lastNameInput" placeholder="Jansen" value="{{currentUser.profile.lastName}}">
 						</div>
-						<div id="oldPassGroup" class="form-group">
-							<label for="oldPassInput" class="col-sm-2 control-label" style="text-align: left">Oud wachtwoord</label>
-							<div class="col-sm-10">
-								<input type="password" class="form-control" id="oldPassInput" placeholder="●●●●●●●●●●">
-							</div>
+						<div id="oldPassGroup" class="group">
+							<label for="oldPassInput">Oud wachtwoord</label>
+							<input type="password" id="oldPassInput" placeholder="●●●●●●●●●●">
 						</div>
-						<div id="newPassGroup" class="form-group">
-							<label for="newPassInput" class="col-sm-2 control-label" style="text-align: left">Nieuw wachtwoord</label>
-							<div class="col-sm-10">
-								<input type="password" class="form-control" id="newPassInput" placeholder="●●●●●●●●●●">
-							</div>
+						<div id="newPassGroup" class="group">
+							<label for="newPassInput">Nieuw wachtwoord</label>
+							<input type="password" id="newPassInput" placeholder="●●●●●●●●●●">
 						</div>
+						{{! todo: insert captcha here (just like deleteAccountModal)}}
 					</form>
 				</div>
 				<div class="modal-footer">
