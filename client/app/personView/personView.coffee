@@ -4,16 +4,13 @@ sharedHours = new ReactiveVar []
 status = ->
 	s = Router.current().data().status
 
-	res = null
-	if s.idle
-		res = "#FF9800"
-	else if s.online
-		res = "#4CAF50"
-	else
-		res = "#EF5350"
+	res = (
+		if s.idle then "#FF9800"
+		else if s.online then "#4CAF50"
+		else "#EF5350"
+	)
 
-	$("meta[name='theme-color']").attr "content", res.backColor
-
+	setPageOptions color: res
 	return res
 
 Template.personView.helpers

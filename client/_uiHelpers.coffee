@@ -343,7 +343,36 @@ class @NotificationsManager
 @shake = (selector) ->
 	(if selector.jquery? then selector else $ selector)
 		.addClass "animated shake"
-		.one 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', -> $(this).removeClass "animated shake"
+		.one 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', ->
+			$(this).removeClass "animated shake"
+
+###*
+# Sets various meta data for the current page. (eg: the document title)
+#
+# @method setPageOptions
+# @param options {Object} The options you prefer.
+#   @param [options.title] {String} The title to set.
+#   @param [options.color] {String} The color to set. If this is omitted the default color for each component will be used.
+#   @param [options.headerTitle=title] {String} The title that is used for the header.
+#   @param [options.useAppPrefix=true] {Boolean} Whether or not to use the app prefix ("simplyHomework").
+###
+@setPageOptions = ({ title, headerTitle, color, useAppPrefix }) ->
+	check title, Match.Optional String
+	check headerTitle, Match.Optional String
+	check color, Match.Optional Match.OneOf String, null
+	check useAppPrefix, Match.Optional Boolean
+
+	headerTitle ?= title
+	useAppPrefix ?= yes
+
+	if not title? and headerTitle?
+		Session.set "headerPageTitle", headerTitle
+	else if title? or headerTitle?
+		Session.set "documentPageTitle", if useAppPrefix then "simplyHomework | #{title}" else title
+		Session.set "headerPageTitle", headerTitle
+
+	unless _.isUndefined color
+		Session.set "pageColor", color
 
 ###*
 # Set the current bigNotice.
@@ -377,7 +406,14 @@ class @NotificationsManager
 		return undefined
 
 Meteor.startup ->
-	Session.set "allowNotifications", no
+	Session.setDefault "pageTitle", "simplyHomework"
+	Session.setDefault "pageColor", "lightgray"
+	Session.setDefault "allowNotifications", no
+
+	colortag = $ "meta[name='theme-color']"
+	Tracker.autorun ->
+		document.title = Session.get "documentPageTitle"
+		colortag.attr "content", Session.get("pageColor") ? "#32A8CE"
 
 	notification = null
 	Tracker.autorun ->
