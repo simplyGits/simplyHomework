@@ -47,8 +47,6 @@ Meteor.methods
 
 		fut.wait()
 
-	log: (type, message, elements...) -> console[type] message, elements...
-
 	###*
 	# Check if the given magisterData is correct and if so,
 	# insert it into the database.
