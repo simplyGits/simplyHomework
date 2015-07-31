@@ -88,6 +88,10 @@ setupItems =
 					'profile.courseInfo': courseInfos()[currentSelectedCourseInfo.get()]?.value
 					'profile.firstName': names()?.firstName ? firstName
 					'profile.lastName': names()?.lastName ? lastName
+					'profile.birthDate':
+						_(externalServices.get())
+							.map (s) -> s.profileData()?.birthDate
+							.find _.isDate
 				}, ->
 					cb()
 					sub.stop()

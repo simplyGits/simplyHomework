@@ -491,6 +491,7 @@
 				firstName: magister.profileInfo().firstName(),
 				lastName: magister.profileInfo().lastName()
 			},
+			birthDate: magister.profileInfo().birthDate(),
 			picture: pictureFut.wait(),
 			courseInfo: {
 				year: courseInfo.type.year,
