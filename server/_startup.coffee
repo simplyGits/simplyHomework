@@ -11,26 +11,26 @@ Meteor.startup ->
 	Accounts.urls.verifyEmail = (token) -> Meteor.absoluteUrl "verify/#{token}"
 	Accounts.urls.resetPassword = (token) -> Meteor.absoluteUrl "reset/#{token}"
 
-	Accounts.emailTemplates.siteName = "simplyHomework.nl"
-	Accounts.emailTemplates.from = "simplyHomework <hello@simplyApps.nl>"
+	Accounts.emailTemplates.siteName = 'simplyHomework.nl'
+	Accounts.emailTemplates.from = 'simplyHomework <hello@simplyApps.nl>'
 
-	Accounts.emailTemplates.resetPassword.subject = (user) -> "simplyHomework | Wachtwoord"
+	Accounts.emailTemplates.resetPassword.subject = (user) -> 'simplyHomework | Wachtwoord'
 	Accounts.emailTemplates.resetPassword.html = (user, url) ->
-		message = "Hey #{user.profile.firstName}!\n\n" +
+		getMail """
+			Hey #{user.profile.firstName}!
 
-		"Je was je wachtwoord vergeten, hier krijg je een nieuwe:\n" +
-		'<a href="' + url + '">' + url + '</a>'
+			Je was je wachtwoord vergeten, hier krijg je een nieuwe:
+			<a href='#{url}'>#{url}</a>
+		"""
 
-		return getMail message
-
-	Accounts.emailTemplates.verifyEmail.subject = (user) -> "simplyHomework | Nieuw Account"
+	Accounts.emailTemplates.verifyEmail.subject = (user) -> 'simplyHomework | Nieuw Account'
 	Accounts.emailTemplates.verifyEmail.html = (user, url) ->
-		message = "Hey #{user.profile.firstName}!\n\n" +
+		getMail """
+			Hey!
 
-		"Welkom bij simplyHomework! Klik, om je account te verifieren, op deze link:\n" +
-		'<a href="' + url + '">' + url + '</a>'
-
-		return getMail message
+			Welkom bij simplyHomework! Klik, om je account te verifieren, op deze link:
+			<a href='#{url}'>#{url}</a>
+		"""
 
 	Meteor.users.find().observe
 		changed: (newDoc, old) ->
@@ -39,24 +39,24 @@ Meteor.startup ->
 
 			if passChanged or mailChanged
 				user = if mailChanged then old else newDoc
-				message = "Hey #{user.profile.firstName}!\n\n" +
+				message = 'Hey #{user.profile.firstName}!\n\n' +
 				(
-					if passChanged and mailChanged then "Zojuist is het wachtwoord en het email adres van je account veranderd.\n"
-					else if passChanged and not mailChanged then "Zojuist is het wachtwoord van je account veranderd.\n"
-					else if not passChanged and mailChanged then "Zojuist is het mail adres van je account veranderd.\n"
+					if passChanged and mailChanged then 'Zojuist is het wachtwoord en het email adres van je account veranderd.\n'
+					else if passChanged and not mailChanged then 'Zojuist is het wachtwoord van je account veranderd.\n'
+					else if not passChanged and mailChanged then 'Zojuist is het mail adres van je account veranderd.\n'
 				) +
-				"Als je dit zelf was kan je dit bericht negeren en het uitprinten en als papieren vliegtuigje gebruiken ofzo.\n" +
-				"Als je dit niet was heb je 2 opties:\n"+
-				"- Rondjes rennen.\n" +
-				"- Emailtje terug sturen (<a href=\"mailto:hello@simplyApps.nl\">hello@simplyApps.nl</a>)"
+				'Als je dit zelf was kan je dit bericht negeren en het uitprinten en als papieren vliegtuigje gebruiken ofzo.\n' +
+				'Als je dit niet was heb je 2 opties:\n'+
+				'- Rondjes rennen.\n' +
+				'- Emailtje terug sturen (<a href=\'mailto:hello@simplyApps.nl\'>hello@simplyApps.nl</a>)'
 
 				subject = (
-					if passChanged and mailChanged then "Wachtwoord en Mail Adres Veranderd"
-					else if passChanged and not mailChanged then "Wachtwoord Veranderd"
-					else if not passChanged and mailChanged then "Mail Adres Veranderd"
+					if passChanged and mailChanged then 'Wachtwoord en Mail Adres Veranderd'
+					else if passChanged and not mailChanged then 'Wachtwoord Veranderd'
+					else if not passChanged and mailChanged then 'Mail Adres Veranderd'
 				)
 
-				sendMail user, "simplyHomework | #{subject}", message
+				sendMail user, 'simplyHomework | #{subject}', message
 
 			unless EJSON.equals old.classInfos, newDoc.classInfos
 				Projects.update { participants: newDoc._id, classId: $exists: 1, $nin: (x.id for x in newDoc.classInfos) }, { $pull: participants: newDoc._id }, multi: yes
@@ -71,16 +71,18 @@ Meteor.startup ->
 	recents = {}
 	longTimeIgnore = []
 	Accounts.onLoginFailure (res) ->
-		{user, error} = res
+		{ user, error } = res
 		return unless error.error is 403 and user?
 		if ++recents[user._id]?.times is 5
-			message = "Hey,\n\n" +
+			message = """
+				Hey,
 
-			"Pas heeft iemand in een korte tijd meerdere keren een fout wachtwoord ingevuld.\n" +
-			"Als jij dit niet was verander dan zo snel mogelijk je wachtwoord in <a href=\"#{Meteor.absoluteUrl()}\">simplyHomework</a>.\n" +
-			"Als jij dit wel was en je bent je wachtwoord vergeten kan je het <a href=\"#{Meteor.absoluteUrl()}forgot\">hier</a> veranderen."
+				Pas heeft iemand in een korte tijd meerdere keren een fout wachtwoord ingevuld.
+				Als jij dit niet was verander dan zo snel mogelijk je wachtwoord in <a href='#{Meteor.absoluteUrl()}'>simplyHomework</a>.
+				Als jij dit wel was en je bent je wachtwoord vergeten kan je het <a href='#{Meteor.absoluteUrl()}forgot'>hier</a> veranderen.
+			"""
 
-			sendMail user, "simplyHomework | Account mogelijk in gevaar", message
+			sendMail user, 'simplyHomework | Account mogelijk in gevaar', message
 
 			delete recents[user._id]
 			longTimeIgnore.push user._id
@@ -95,4 +97,4 @@ Meteor.startup ->
 	Accounts.validateNewUser (doc) -> correctMail doc.emails[0].address
 
 	reCAPTCHA.config
-		privatekey: "6LejzwQTAAAAAKlQfXJ8rpT8vY0fm-6H4-CnZy9M"
+		privatekey: '6LejzwQTAAAAAKlQfXJ8rpT8vY0fm-6H4-CnZy9M'
