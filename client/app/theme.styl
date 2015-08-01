@@ -1,6 +1,8 @@
 // == colors
 errorColor = #F44336
 errorFocusColor = #B61C1C
+warningColor = #E09D3B
+warningFocusColor = #8A6023
 successColor = #4CAF50
 successFocusColor = #2E7D32
 
@@ -65,6 +67,11 @@ setFormColors(color, focusColor)
 	border-color: errorColor
 .form-control.error:focus
 	border-color: errorFocusColor
+
+.form-control.warning
+	border-color: warningColor
+.form-control.warning
+	border-color: warningFocusColor
 
 .form-control.success
 	border-color: successColor
@@ -134,6 +141,9 @@ form.vertical.full-width
 
 	div.group.success
 		setFormColors(successColor, successFocusColor)
+
+	div.group.warning
+		setFormColors(warningColor, warningFocusColor)
 
 	div.group.error
 		setFormColors(errorColor, errorFocusColor)

@@ -10,7 +10,7 @@ Template.forgotPass.events
 				swalert title: "Mail verstuurd", text: "Je krijgt zometeen een mailtje waarmee je je wachtwoord kan veranderen.", type: "success"
 				Accounts.forgotPassword(email: mail)
 			else if err?
-				Meteor.call("log", "log", "Error while checking mail. #{err.message}")
+				Kadira.trackError "forgotPass-client", err.message, stacks: EJSON.stringify err
 				swalert title: "Fout", text: "Onbekende fout, we zijn op de hoogte gesteld", type: "error"
 			else
 				setFieldError "#forgotPassMailInput", "We hebben geen account met deze email gevonden."
@@ -24,7 +24,7 @@ Template.resetPass.events
 				if err.reason is "Token expired"
 					swalert title: "Reeds gebruikt", html: 'Wachtwoord is al een keer veranderd met deze link. Klik <a href="/forgot">hier</a> als je je wachtwoord nog een keer wilt wijzingen.', type: "error"
 				else
-					Meteor.call("log", "log", "Error while resetting password. #{err.message}")
+					Kadira.trackError "resetPass-client", err.message, stacks: EJSON.stringify err
 					swalert title: "Fout", text: "Onbekende fout, we zijn op de hoogte gesteld", type: "error"
 			else
 				Router.go "app"
