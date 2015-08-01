@@ -92,12 +92,7 @@ Meteor.startup ->
 
 	SyncedCron.start()
 
-	Accounts.validateNewUser (doc) ->
-		if doc.profile.code isnt "pilot"
-			console.warn "#{doc.emails[0].address} tried to signup with wrong code #{doc.profile.code}."
-			throw new Meteor.Error "wrong-code", "Entered beta code is invalid."
-
-		correctMail doc.emails[0].address
+	Accounts.validateNewUser (doc) -> correctMail doc.emails[0].address
 
 	reCAPTCHA.config
 		privatekey: "6LejzwQTAAAAAKlQfXJ8rpT8vY0fm-6H4-CnZy9M"

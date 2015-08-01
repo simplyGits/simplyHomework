@@ -24,7 +24,6 @@ login = ->
 						profile:
 							firstName: ''
 							lastName: ''
-							code: $('#betaCodeInput').val().trim().toLowerCase()
 					}, (e, r) ->
 						if e? then shake '#signupModal'
 						else Meteor.call 'callMailVerification', -> Router.go 'app'
