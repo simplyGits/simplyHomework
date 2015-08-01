@@ -292,6 +292,32 @@ class @Helpers
 			.push _weekdays[0]
 			.value()
 
+	###
+	# Returns the strength of the given `password`, Rules (and their weight)
+	# stolen from http://www.passwordmeter.com/
+	#
+	# @method passwordStrength
+	# @param password {String} The password to chec
+	# @return {Number} The strength of `password`.
+	###
+	@passwordStrength: (password) ->
+		uppercaseChars = _.filter password, (c) -> c.toUpperCase() is c
+		lowercaseChars = _.filter password, (c) -> c.toLowerCase() is c
+		numbers = _.reject password, (c) -> isNaN c
+		symbols = _.filter password, (c) -> /[-!$%^&*()_+|~=`{}\[\]:";'<>?,.\/]/.test c
+		middleNumbersOrSymbols =
+			_.filter numbers.concat(symbols), (c, i) -> 0 < i < password.length-1
+		len = password.length
+
+		sum = 0
+		sum += len * 4
+		sum += numbers.length * 4
+		sum += symbols.length * 6
+		sum += middleNumbersOrSymbols.length * 2
+		sum += (len - uppercaseChars.length) * 2
+		sum += (len - lowercaseChars.length) * 2
+		sum
+
 ###*
 # Checks if the given `user` is in the given `role`.
 # @method userIsInRole

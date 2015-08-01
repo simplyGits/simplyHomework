@@ -52,10 +52,22 @@ Template.signupModal.events
 			unless value.length < 4
 				Meteor.call 'mailExists', $('#emailInput').val().toLowerCase(), (error, result) -> Session.set 'creatingAccount', not result
 
+	'keyup #passwordInput': (event) ->
+		if event.which is 13 then login()
+		else
+			strength = Helpers.passwordStrength event.target.value
+			len = event.target.value.length
+			$('#passwordGroup')
+				.removeClass 'error warning success'
+				.addClass switch
+					when len is 0 then ''
+					when 0 <= strength < 20 then 'error'
+					when 20 <= strength < 60 then 'warning'
+					else 'success'
+
 	'submit form': (event) ->
 		event.preventDefault()
 		login()
-	'keyup #passwordInput': (event) -> login() if event.which is 13
 
 Template.page1.events
 	'click #signupButton': ->
