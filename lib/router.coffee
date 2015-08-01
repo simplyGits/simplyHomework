@@ -267,6 +267,7 @@ Router.map ->
 				@next()
 		onAfterAction: ->
 			setPageOptions title: 'simplyHomework | Setup'
+			followSetupPath() if @ready()
 
 	@route "privacy",
 		fastRender: yes
