@@ -15,7 +15,7 @@ if (settings == null || settings.apiKey == null) {
 	client.setApiKey(settings.apiKey);
 
 	Meteor.methods({
-		'_mollieMakePayement': function (options) {
+		'mollie-makePayement': function (options) {
 			if (this.connection != null && !settings.allowClient)
 				throw new Meteor.Error('forbidden', "Clients aren't allowed to make requests.");
 
@@ -30,7 +30,9 @@ if (settings == null || settings.apiKey == null) {
 			return fut.wait();
 		},
 
-		'_mollieGetPayement': function (id) {
+		'mollie-getPayement': function (id) {
+			this.unblock();
+
 			if (this.connection != null && !settings.allowClient)
 				throw new Meteor.Error('forbidden', "Clients aren't allowed to make requests.");
 

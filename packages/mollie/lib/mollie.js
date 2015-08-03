@@ -15,7 +15,7 @@ Mollie = {
 	 **/
 	makePayement: function (options, callback) {
 		if (typeof(callback) !== 'function' || Meteor.isServer) {
-			return Meteor.call('_mollieMakePayement', options, callback);
+			return Meteor.call('mollie-makePayement', options, callback);
 		} else {
 			throw new Error('Callback required on client.');
 		}
@@ -33,7 +33,7 @@ Mollie = {
 	 **/
 	getPayement: function (id, callback) {
 		if (typeof(callback) !== 'function' || Meteor.isServer) {
-			return Meteor.call('_mollieGetPayement', id, callback);
+			return Meteor.call('mollie-getPayement', id, callback);
 		} else {
 			throw new Error('Callback required on client.');
 		}
