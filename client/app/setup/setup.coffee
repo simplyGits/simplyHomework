@@ -12,7 +12,7 @@ weekdays = new SReactiveVar [Object]
 
 engines = []
 
-# TODO: These methods are not really DRY. Maybe generate them?
+# TODO: These methods are not really DRY, even overall ugly.
 pictures = ->
 	current = currentSelectedImage.get()
 
@@ -56,7 +56,7 @@ fullCount = 0
 ran = no
 setupItems =
 	welcome:
-		done: yes
+		done: no
 		async: no
 
 	externalServices:
@@ -195,7 +195,7 @@ setupItems =
 			)
 
 	final:
-		done: yes
+		done: no
 		func: ->
 			swalert
 				type: "success"
