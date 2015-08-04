@@ -346,6 +346,6 @@ class @Helpers
 			if allowChanges
 				@[varName] = if _.isFunction(transformIn) then transformIn newVar else newVar
 			else
-				throw new root.NotAllowedException "Changes on this property aren't allowed"
+				throw new Error "Changes on this property aren't allowed"
 
 		if _.isFunction(transformOut) then transformOut @[varName] else @[varName]
