@@ -14,9 +14,7 @@
 @StoredGrades      = new Meteor.Collection 'storedGrades', transform: (g) -> _.extend new StoredGrade, g
 @StudyUtils        = new Meteor.Collection 'studyUtils',   transform: (s) -> _.extend new StudyUtil, s
 @Notifications     = new Meteor.Collection 'notifications'
-
-if Meteor.isClient
-	@ScholierenClasses = new Meteor.Collection 'scholieren.com'
+@ScholierenClasses = new Meteor.Collection 'scholieren.com'
 
 Schemas.Classes = new SimpleSchema
 	_id:

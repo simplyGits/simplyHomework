@@ -160,6 +160,7 @@ Meteor.publish "userCount", ->
 	undefined
 
 Meteor.publish "scholieren.com", ->
-	@unblock()
-	@added("scholieren.com", c.id, c) for c in ScholierenClasses.get()
-	@ready()
+	unless @userId?
+		@ready()
+		return undefined
+	ScholierenClasses.find()

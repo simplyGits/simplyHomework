@@ -21,6 +21,48 @@ SyncedCron.add
 		return result
 
 SyncedCron.add
+	name: 'update scholieren.com data'
+	schedule: (parser) -> parser.recur().on(4).hour()
+	job: ->
+		# This job tries to get the scholieren.com data every 5 minutes until we got
+		# the data or we hit the try limit (12, which takes 1 hour).
+
+		i = 0
+		handle = Helpers.interval (->
+			Scholieren.getClasses (e, classes = []) =>
+				console.error 'Scholieren.getClasses error', e if e?
+				return if e?
+
+				# If we don't have ScholierenClasses data yet, we want to insert the
+				# classes we currently fetched, even though we don't have the books yet.
+				# We will update ScholierenClasses with books when we got them.
+				# We don't want to do this when we already have ScholierenClasses tho,
+				# otherwise we may overwrite perfectly fine ScholierenClasses _with_
+				# books.
+				if ScholierenClasses.find().count() is 0
+					ScholierenClasses.insert c for c in classes
+
+				Scholieren.getBooks (e, books = []) =>
+					console.error 'Scholieren.getBooks error', e if e?
+					return if e?
+
+					for c in classes
+						# Put the matching books inside of the current class.
+						c.books = _.filter books, (b) -> b.classId is c.id
+
+						# Update or, if it doesn't currently exist, the scholierenClass in
+						# the database.
+						ScholierenClasses.upsert { id: c.id }, c
+
+					# We're done here, stop looping.
+					@stop()
+
+			# Try limit exceeded, stop looping.
+			@stop() if i is 12
+			i++
+		), 300000 # 5 minutes
+
+SyncedCron.add
 	name: "Congratulate users"
 	schedule: (parser) -> parser.recur().on(5).hour()
 	job: ->
@@ -41,27 +83,3 @@ SyncedCron.add
 		result = "Congratulated #{users.length} users."
 		console.log result
 		return result
-
-# Pilot homework data bulking.
-SyncedCron.add
-	name: "Pilot: Store homework"
-	schedule: (parser) -> parser.recur().on(4).hour()
-	job: ->
-		for user in Meteor.users.find({}).fetch() then do (user) ->
-			url = Schools.findOne(user.profile.schoolId)?.url
-			return unless url?
-			{ username, password } = user.magisterCredentials
-
-			new Magister({ url }, username, password).ready (err) ->
-				return if err?
-
-				@appointments new Date, no, Meteor.bindEnvironment (e, r) ->
-					return if e?
-					homework = _.filter r, (a) -> _.contains [1..5], a.infoType()
-
-					for a in homework
-						if SavedHomework.find({ "obj._id": a.id() }).count() is 0
-							delete a._magisterObj
-							SavedHomework.insert
-								userId: user._id
-								obj: JSON.decycle a
