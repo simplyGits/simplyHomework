@@ -86,8 +86,8 @@ setupItems =
 							fetchedBy: val.fetchedBy
 					)
 					'profile.courseInfo': courseInfos()[currentSelectedCourseInfo.get()]?.value
-					'profile.firstName': names()?.firstName ? firstName
-					'profile.lastName': names()?.lastName ? lastName
+					'profile.firstName': Helpers.nameCap (names()?.firstName ? firstName)
+					'profile.lastName': Helpers.nameCap (names()?.lastName ? lastName)
 					'profile.birthDate':
 						_(externalServices.get())
 							.map (s) -> s.profileData()?.birthDate
@@ -115,7 +115,6 @@ setupItems =
 		func: (callback) ->
 			Meteor.call 'getExternalClasses', (e, r) ->
 				if e? or _.isEmpty r
-					console.log 'e? or _.isEmpty r', e, r
 					callback false
 					return
 
