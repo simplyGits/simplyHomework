@@ -77,7 +77,7 @@ setupItems =
 							.map (s) -> s.profileData()?.externalSchoolId
 							.find _.negate _.isUndefined
 
-						Schools.findOne { externalId }
+						Schools.findOne({ externalId })._id
 					)
 					'profile.pictureInfo': (
 						val = pictures()[currentSelectedImage.get()]
