@@ -80,32 +80,35 @@
 		}}
 
 		{{#with pictures}}
-			{{#unless empty}}
-				<h2>Profielfoto</h2>
-				<div id="pictureSelector" class="selector">
-					{{#each this}}
-						<img src="{{value}}" height="100" width="100" class="{{isSelected}}"/>
-					{{/each}}
-				</div>
-				<hr>
-			{{/unless}}
+			<h2>Profielfoto</h2>
+			<div id="pictureSelector" class="selector">
+				{{#each this}}
+					<img src="{{value}}" height="100" width="100" class="{{isSelected}}"/>
+				{{/each}}
+			</div>
+			<hr>
 		{{/with}}
 
+		<h2>Profielinfo</h2>
 		{{#with courseInfos}}
-			{{#unless empty}}
-				<h2>Profielinfo</h2>
-				<div id="courseInfoSelector" class="selector">
-					{{#each this}}
-						<div class="{{isSelected}}">
-							{{value.profile}}
-							<br>
-							{{value.year}} {{value.schoolVariant}}
-						</div>
-					{{/each}}
+			<div id="courseInfoSelector" class="selector">
+				{{#each this}}
+					<div class="{{isSelected}}">
+						{{value.profile}}
+						<br>
+						{{value.year}} {{value.schoolVariant}}
+					</div>
+				{{/each}}
+			</div>
+		{{else}}
+			<form class="vertical full-width">
+				<div id="courseGroup" class="group">
+					<label for="courseInput">Schooljaar en profiel</label>
+					<input type="text" id="courseInput" placeholder="5 VWO"/>
 				</div>
-				<hr>
-			{{/unless}}
+			</form>
 		{{/with}}
+		<hr>
 
 		<h2>Naam</h2>
 		<form class="vertical full-width">

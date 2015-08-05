@@ -85,7 +85,13 @@ setupItems =
 							url: val.value
 							fetchedBy: val.fetchedBy
 					)
-					'profile.courseInfo': courseInfos()[currentSelectedCourseInfo.get()]?.value
+					'profile.courseInfo': (
+						value = $('#courseInput').val()
+						courseInfos()[currentSelectedCourseInfo.get()]?.value ? {
+							year: parseInt value, 10
+							schoolVariant: value.replace(/\d/g, '').trim().toLowerCase()
+						}
+					)
 					'profile.firstName': Helpers.nameCap (names()?.firstName ? firstName)
 					'profile.lastName': Helpers.nameCap (names()?.lastName ? lastName)
 					'profile.birthDate':
