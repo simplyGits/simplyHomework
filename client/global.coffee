@@ -4,10 +4,12 @@
 # @return {Cursor} A cursor pointing to the classes.
 ###
 @classes = ->
-	homeworkItems.dep.depend()
-	return Classes.find {_id: { $in: (cI.id for cI in (Meteor.user().classInfos ? [])) }},
+	Classes.find {
+		_id: $in: (info.id for info in Meteor.user()?.classInfos ? [])
+	}, {
 		transform: classTransform
-		sort: "name": 1
+		sort: 'name': 1
+	}
 
 ###*
 # Get the projects for the current user, converted and sorted.
@@ -15,35 +17,11 @@
 # @return {Cursor} A cursor pointing to the projects.
 ###
 @projects = ->
-	return Projects.find {},
+	Projects.find {},
 		transform: projectTransform
 		sort:
-			"deadline": 1
-			"name": 1
-
-###*
-# Converts the given appointment(s) to a globally used format
-# with extra info (such as classId) added.
-#
-# @method magisterAppointmentTransform
-# @param a {Appointment|Appointment[]} The appointment(s) to convert.
-# @return {Appointment|Appointments[]} The appointment(s) converted.
-###
-@magisterAppointmentTransform = (a) ->
-	return a unless _.isObject a
-	return ( @magisterAppointmentTransform x for x in a ) if _.isArray a
-
-	a.__id = "#{a.id()}"
-	a.__className = Helpers.cap(a.classes()[0]) if a.classes()[0]?
-
-	a.__description = Helpers.convertLinksToAnchor a.content()
-	a.__taskDescription = a.__description.replace /\n/g, "; "
-
-	a.__groupInfo = -> _.find Meteor.user()?.profile.groupInfos, (gi) -> gi.group is a._description
-	a.__class = -> a.__groupInfo()?.id
-	a.__classInfo = -> _.find Meteor.user()?.classInfos, (ci) -> EJSON.equals ci.id, a.__class()
-
-	return a
+			'deadline': 1
+			'name': 1
 
 ###*
 # smoke weed everyday.
