@@ -1,13 +1,4 @@
-@ScholierenClasses = new ReactiveVar []
-
 Meteor.startup ->
-	getClasses = ->
-		Scholieren.getClasses (e, classes) -> Scholieren.getBooks (e, books) ->
-			for c in (classes ? []) then do (c) ->
-				c.books = _.filter(books, (b) -> b.classId is c.id)
-			ScholierenClasses.set classes
-	getClasses(); Meteor.setInterval getClasses, 3600000
-
 	Accounts.urls.verifyEmail = (token) -> Meteor.absoluteUrl "verify/#{token}"
 	Accounts.urls.resetPassword = (token) -> Meteor.absoluteUrl "reset/#{token}"
 
@@ -94,7 +85,14 @@ Meteor.startup ->
 
 	SyncedCron.start()
 
-	Accounts.validateNewUser (doc) -> correctMail doc.emails[0].address
+	Accounts.onCreateUser (options, doc) ->
+		correctMail = Helpers.correctMail doc.emails[0].address
+		unless correctMail
+			throw new Error 'Given mail address is invalid.'
+
+		doc.creationDate = new Date()
+		doc.profile = options.profile
+		doc
 
 	reCAPTCHA.config
 		privatekey: '6LejzwQTAAAAAKlQfXJ8rpT8vY0fm-6H4-CnZy9M'

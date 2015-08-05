@@ -57,7 +57,7 @@ http://tomsmeding.nl/
 	undefined
 
 @swalert = (options) ->
-	throw new ArgumentException "options", "Can't be null" unless options?
+	check options, Object
 	{ title
 		text
 		type
@@ -145,7 +145,7 @@ class @NotificationsManager
 	@_notifications: []
 
 	@notify = (options) ->
-		throw new ArgumentException "options", "Can't be null" unless options?
+		check options, Object
 		_.defaults options, { type: "default", time: 4000, dismissable: yes, labels: [], styles: [], callbacks: [], html: no, priority: 0, allowDesktopNotifications: yes, image: "" }
 		{ body, type, time, dismissable, labels, styles, callbacks, html, onClick, priority, onDismissed, allowDesktopNotifications, image, onHide } = options
 

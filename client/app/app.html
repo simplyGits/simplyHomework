@@ -1,16 +1,4 @@
 <template name="app">
-	{{! begin modals}}
-		{{> settingsModal}}
-		{{> getExternalClassesModal}}
-		{{> plannerPrefsModal}}
-		{{> addClassModal}}
-		{{> newSchoolYearModal}}
-		{{> accountInfoModal}}
-		{{> notificationSettingsModal}}
-		{{> addProjectModal}}
-		{{> deleteAccountModal}}
-	{{! end modals}}
-
 	{{#with currentBigNotice}}
 		<div id="bigNotice" class="{{theme}}">
 			<div id="content">
@@ -51,7 +39,6 @@
 				<div class="modal-body">
 					<button class="btn btn-default" id="schedularPrefsButton">Planner Voorkeuren</button>
 					<button class="btn btn-default" id="accountInfoButton">Account info aanpassen</button>
-					<button class="btn btn-default" id="clearInfoButton">Alle data verwijderen</button>
 					<button class="btn btn-default" id="deleteAccountButton">Account verwijderen</button>
 					<button class="btn btn-default" id="startTourButton">Start rondleiding</button>
 					<button class="btn btn-danger" id="logOutButton">Uitloggen</button>

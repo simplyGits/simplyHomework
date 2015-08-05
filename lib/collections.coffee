@@ -13,9 +13,8 @@
 @ReportItems       = new Meteor.Collection 'reportItems'
 @StoredGrades      = new Meteor.Collection 'storedGrades', transform: (g) -> _.extend new StoredGrade, g
 @StudyUtils        = new Meteor.Collection 'studyUtils',   transform: (s) -> _.extend new StudyUtil, s
-
-if Meteor.isClient
-	@ScholierenClasses = new Meteor.Collection 'scholieren.com'
+@Notifications     = new Meteor.Collection 'notifications'
+@ScholierenClasses = new Meteor.Collection 'scholieren.com'
 
 Schemas.Classes = new SimpleSchema
 	_id:
@@ -283,8 +282,8 @@ Schemas.StudyUtils = new SimpleSchema
 @[key].attachSchema Schemas[key] for key of Schemas
 
 @classTransform = (tmpClass) ->
-	classInfo = -> _.find Meteor.user().classInfos, (cI) -> EJSON.equals cI.id, tmpClass._id
-	groupInfo = _.find Meteor.user().profile.groupInfos, (gI) -> EJSON.equals gI.id, tmpClass._id
+	classInfo = -> _.find Meteor.user()?.classInfos, (cI) -> EJSON.equals cI.id, tmpClass._id
+	groupInfo = _.find Meteor.user()?.profile.groupInfos, (gI) -> EJSON.equals gI.id, tmpClass._id
 
 	_.extend tmpClass,
 		__taskAmount: _.filter(homeworkItems.get(), (a) -> groupInfo?.group is a.description() and not a.isDone()).length
