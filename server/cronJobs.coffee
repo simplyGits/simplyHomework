@@ -21,7 +21,7 @@ SyncedCron.add
 		return result
 
 SyncedCron.add
-	name: 'update scholieren.com data'
+	name: 'Update scholieren.com data'
 	schedule: (parser) -> parser.recur().on(4).hour()
 	job: ->
 		# This job tries to get the scholieren.com data every 5 minutes until we got
