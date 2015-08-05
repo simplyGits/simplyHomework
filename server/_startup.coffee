@@ -85,7 +85,14 @@ Meteor.startup ->
 
 	SyncedCron.start()
 
-	Accounts.validateNewUser (doc) -> correctMail doc.emails[0].address
+	Accounts.onCreateUser (options, doc) ->
+		correctMail = Helpers.correctMail doc.emails[0].address
+		unless correctMail
+			throw new Error 'Given mail address is invalid.'
+
+		doc.creationDate = new Date()
+		doc.profile = options.profile
+		doc
 
 	reCAPTCHA.config
 		privatekey: '6LejzwQTAAAAAKlQfXJ8rpT8vY0fm-6H4-CnZy9M'

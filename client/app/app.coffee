@@ -673,70 +673,16 @@ Template.sidebar.events
 
 # == End Sidebar ==
 
-Template.app.helpers
-	pageColor: -> Session.get("pageColor") ? "lightgray"
-	pageTitle: -> Session.get("headerPageTitle") ? ""
-
-	currentBigNotice: -> currentBigNotice.get()
-
-Template.app.events
-	"click .headerIcon": (event) ->
-		if window.snapper.state().state is "closed"
-			window.snapper.open event.target.dataset.snapSide
-		else
-			window.snapper.close()
-
-	"click #bigNotice > #content": -> currentBigNotice.get().onClick arguments...
-	"click #bigNotice > #dismissButton": -> currentBigNotice.get().onDismissed arguments...
-
-Template.app.rendered = ->
-	# REFACTOR THE SHIT OUT OF THIS.
-
-	if Meteor.userId()? and not Meteor.user().emails[0].verified
-		notify "Je hebt je account nog niet geverifiëerd.\nCheck je email!", "warning"
-
-	assignmentNotification = null
-
-	val = Meteor.user().profile.birthDate
-	now = new Date()
-	if val?.getMonth() is now.getMonth() and val?.getDate() is now.getDate() and not amplify.store("congratulated")?
-		swalert title: "Gefeliciteerd!", text: "Gefeliciteerd met je #{moment().diff(val, "years")}e verjaardag!"
-		amplify.store "congratulated", yes, expires: 172800000
-
-	Deps.autorun ->
-		return
-		if Meteor.userId()? and not has("noAds") and Meteor.status().connected
-			setTimeout (-> Meteor.defer ->
-				if not Session.get "adsAllowed"
-					Router.go "launchPage"
-					Meteor.logout()
-					swalert title: "Adblock :c", html: 'Om simplyHomework gratis beschikbaar te kunnen houden zijn we afhankelijk van reclame-inkomsten.\nOm simplyHomework te kunnen gebruiken, moet je daarom je AdBlocker uitzetten.\nWil je simplyHomework toch zonder reclame gebruiken, dan kan je <a href="/">premium</a> nemen.', type: "error"
-			), 3000
-
-	if Session.get("isPhone") then setMobileSettings()
-	else setKeyboardShortcuts()
-
-	if not amplify.store("allowCookies") and $(".cookiesContainer").length is 0
-		Blaze.render Template.cookies, $("body").get()[0]
-		$(".cookiesContainer")
-			.css visibility: "initial"
-			.velocity { bottom: 0 }, 1200, "easeOutExpo"
-
-		$("#acceptCookiesButton").click ->
-			amplify.store "allowCookies", yes
-			$(".cookiesContainer").velocity { bottom: "-500px" }, 2400, "easeOutExpo", -> $(this).remove()
-
 setMobileSettings = ->
-	window.snapper = snapper = new Snap
-		element: document.getElementById "wrapper"
+	snapper = new Snap
+		element: document.getElementById 'wrapper'
 		minPosition: -200
 		maxPosition: 200
 		flickThreshold: 45
 		resistance: .9
+	window.closeSidebar = -> snapper.close()
 
-	$("body").addClass "chatSidebarOpen"
-
-	@closeSidebar = -> snapper.close()
+	$('body').addClass 'chatSidebarOpen'
 
 setKeyboardShortcuts = ->
 	Mousetrap.bind ['a', 'c'], ->
@@ -773,3 +719,76 @@ setKeyboardShortcuts = ->
 	Mousetrap.bind ['ctrl+/', 'command+/', 'ctrl+?', 'command+?'], ->
 		alertModal 'Toetsenbord shortcuts', Locals['nl-NL'].KeyboardShortcuts(), DialogButtons.Ok, { main: 'Sluiten' }, { main: 'btn-primary' }
 		return no
+
+Template.app.helpers
+	pageColor: -> Session.get("pageColor") ? "lightgray"
+	pageTitle: -> Session.get("headerPageTitle") ? ""
+
+	currentBigNotice: -> currentBigNotice.get()
+
+Template.app.events
+	'click .headerIcon': (event) ->
+		if window.snapper.state().state is 'closed'
+			window.snapper.open event.target.dataset.snapSide
+		else
+			window.snapper.close()
+
+	'click #bigNotice > #content': -> currentBigNotice.get().onClick? arguments...
+	'click #bigNotice > #dismissButton': -> currentBigNotice.get().onDismissed? arguments...
+
+Template.app.rendered = ->
+	# REFACTOR THE SHIT OUT OF THIS.
+
+	if Meteor.userId()? and not Meteor.user().emails[0].verified and
+	not Session.get('showedMailVerificationWarning') and
+	Helpers.daysRange(Meteor.user().creationDate, new Date(), no) >= 2
+		notify 'Je hebt je account nog niet geverifiëerd.\nCheck je email!', 'warning'
+		Session.set 'showedMailVerificationWarning', yes
+
+	val = Meteor.user().profile.birthDate
+	now = new Date()
+	if not amplify.store('congratulated') and val? and Helpers.datesEqual now, val
+		swalert
+			title: 'Gefeliciteerd!'
+			text: "Gefeliciteerd met je #{moment().diff val, 'years'}e verjaardag!"
+		amplify.store 'congratulated', yes, expires: 172800000 # 2 days, just to make sure.
+
+	Deps.autorun ->
+		# Disabled for now. It isn't working probably, and heck, we should even
+		# refactor it too, since the logic now spans 3 files in unlogical places.
+		return undefined
+		if Meteor.status().connected and Meteor.userId()? and not has 'noAds'
+			setTimeout (-> Meteor.defer ->
+				unless Session.get 'adsAllowed'
+					App.logout()
+					swalert
+						title: 'Adblock :c'
+						html: '''
+							Om simplyHomework gratis beschikbaar te kunnen houden zijn we afhankelijk van reclame-inkomsten.
+							Om simplyHomework te kunnen gebruiken, moet je daarom je AdBlocker uitzetten.
+							Wil je simplyHomework toch zonder reclame gebruiken, dan kan je <a href="/">premium</a> nemen.
+						'''
+						type: 'error'
+			), 3000
+
+	if Session.get('isPhone') then setMobileSettings()
+	else
+		setKeyboardShortcuts()
+
+		# `startMonitor` will throw an error when the time isn't synced yet, when
+		# the time is done syncing the current computation will invalidate, so to
+		# effectively enable the monitor ASAP we put it inside of an `autorun` and a
+		# `try`.
+		Deps.autorun -> try UserStatus.startMonitor idleOnBlur: yes
+
+	if not amplify.store('allowCookies') and $('.cookiesContainer').length is 0
+		Blaze.render Template.cookies, document.body
+		$cookiesContainer = $ '.cookiesContainer'
+
+		$cookiesContainer
+			.css visibility: 'initial'
+			.velocity { bottom: 0 }, 1200, 'easeOutExpo'
+
+		$cookiesContainer.find('#acceptCookiesButton').click ->
+			amplify.store 'allowCookies', yes
+			$cookiesContainer.velocity { bottom: '-500px' }, 2400, 'easeOutExpo', -> $(this).remove()
