@@ -90,12 +90,7 @@ Template.infoCurrentLesson.helpers
 	appointment: -> currentAppointment.get()
 
 Template.appOverview.events
-	"click #addProjectIcon": ->
-		$("#projectNameInput").val ""
-		$("#projectDescriptionInput").val ""
-		$("#projectClassNameInput").val ""
-
-		$("#addProjectModal").modal()
+	'click #addProjectIcon': -> App.showModal 'addProjectModal'
 
 Template.appOverview.rendered = ->
 	@autorun ->

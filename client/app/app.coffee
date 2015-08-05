@@ -4,6 +4,9 @@ addClassComp = null
 magisterClasses = new ReactiveVar null
 @currentBigNotice = new ReactiveVar null
 
+###*
+# @class App
+###
 class @App
 	@_setupPathItems:
 		welcome:
@@ -80,6 +83,23 @@ class @App
 					confirmButtonText: "Rondleiding"
 					cancelButtonText: "Afsluiten"
 					onSuccess: -> App.runTour()
+	###*
+	# @method showModal
+	# @param name {String} The ID of the modal, has to be the same as the template name.
+	# @param [options] {Object}
+	# @return {Function} When called, removes the newely spawned modal.
+	###
+	@showModal: (name, options) ->
+		check name, String
+		check options, Match.Optional Object
+
+		view = Blaze.render Template[name], document.body
+		$modal = $ "##{name}"
+		$modal
+			.modal options
+			.on 'hidden.bs.modal', -> Blaze.remove view
+
+		-> $modal.modal 'hide'
 
 	@runTour: ->
 		Router.go "app"
@@ -448,36 +468,15 @@ Template.addClassModal.rendered = ->
 		source: classEngine.ttAdapter()
 		displayKey: "name"
 
+	Meteor.call 'getExternalClasses', (e, r) -> externalClasses.set r unless e?
+
 Template.settingsModal.events
-	"click #schedularPrefsButton": ->
-		$("#settingsModal").modal "hide"
-		$("#plannerPrefsModal").modal()
-	"click #accountInfoButton": ->
-		$("#settingsModal").modal "hide"
-		$("#accountInfoModal").modal()
-	"click #clearInfoButton": ->
-		$("#settingsModal").modal "hide"
-		alertModal "Hey!", Locals["nl-NL"].ClearInfoWarning(), DialogButtons.OkCancel, { main: "zeker weten" }, { main: "btn-danger" }, main: ->
-			Meteor.users.update Meteor.userId(), $set:
-				classInfos: null
-				"profile.schoolId": null
-				"profile.magisterPicture": null
-				"profile.groupInfos": null
-			Meteor.call "clearMagisterInfo"
-			document.location.reload()
-	"click #deleteAccountButton": ->
-		$("#settingsModal").modal "hide"
-		$("#deleteAccountModal").modal()
-		$("#deleteAccountModal input.error")
-			.removeClass "error"
-			.tooltip "destroy"
-
-	"click #startTourButton": ->
-		$("#settingsModal").modal "hide"
-		App.runTour()
-
-	"click #logOutButton": ->
-		Meteor.logout()
+	'click button': -> $('#settingsModal').modal 'hide'
+	'click #schedularPrefsButton': -> App.showModal 'plannerPrefsModal'
+	'click #accountInfoButton': -> App.showModal 'accountInfoModal'
+	'click #deleteAccountButton': -> App.showModal 'deleteAccountModal'
+	'click #startTourButton': -> App.runTour()
+	'click #logOutButton': -> App.logout()
 
 Template.deleteAccountModal.events
 	"click #goButton": ->
@@ -655,15 +654,15 @@ Template.sidebar.helpers
 Template.sidebar.events
 	"click .bigSidebarButton": (event) -> slide $(event.target).attr "id"
 
-	"click .sidebarFooterSettingsIcon": -> $("#settingsModal").modal()
+	"click .sidebarFooterSettingsIcon": -> App.showModal 'settingsModal'
 	"click #addClassButton": ->
 		# Reset AddClassModal inputs
-		$("#classNameInput").val("")
-		$("#courseInput").val("")
-		$("#bookInput").val("")
-		$("#colorInput").colorpicker 'setValue', "#333"
+		$('#classNameInput').val ''
+		$('#courseInput').val ''
+		$('#bookInput').val ''
+		$('#colorInput').colorpicker 'setValue', '#333'
 
-		$("#addClassModal").modal()
+		App.showModal 'addClassModal'
 
 		addClassComp = Tracker.autorun ->
 			Meteor.subscribe "scholieren.com"
