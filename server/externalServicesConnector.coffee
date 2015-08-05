@@ -290,9 +290,9 @@ Meteor.methods
 
 				unless _class?
 					scholierenClass = _.find ScholierenClasses.get(), (sc) ->
-						c.name
+						sc.name
 							.toLowerCase()
-							.indexOf(sc.name.toLowerCase()) > -1
+							.indexOf(c.name.toLowerCase()) > -1
 
 					_class = new SchoolClass(
 						c.name.toLowerCase(),
