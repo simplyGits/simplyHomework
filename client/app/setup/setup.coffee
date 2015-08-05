@@ -315,7 +315,8 @@ Template.externalServices.onRendered ->
 					# Create data for services that don't need to be logged into
 					# (eg. Gravatar)
 					Meteor.call 'createServiceData', service.name, (e, r) ->
-						service.setProfileData r unless e?
+						if e? then console.error e
+						else service.setProfileData r
 			.value()
 
 		externalServices.set services
