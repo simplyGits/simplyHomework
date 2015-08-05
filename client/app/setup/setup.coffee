@@ -356,7 +356,7 @@ Template.plannerPrefsDay.events
 Template.plannerPrefs.rendered = ->
 	# TODO: When being implemented outside of the setup:
 	#       Set the current data of the plannerPrefs, if available
-	_.map Helpers.weekdays(), (name, index) ->
+	weekdays.set _.map Helpers.weekdays(), (name, index) ->
 		name: name
 		index: index
 		selectedWeightOption: 2
