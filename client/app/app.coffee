@@ -296,46 +296,53 @@ Template.accountInfoModal.events
 
 Template.addProjectModal.helpers
 	assignments: ->
-		MagisterAssignments.find({
-			_deadline: $gte: new Date
-		}, {
-			sort:
-				"_deadline": 1
-				"_abbreviation": 1
-		}).map (a) -> _.extend a,
-			project: Projects.findOne magisterId: a.id()
-			__class: Classes.findOne _.find(Meteor.user().classInfos, (z) -> z.magisterId is a.class()._id).id
+		externalAssignments.get()?.map (a) -> _.extend a,
+			__project: -> Projects.findOne externalId: a.externalId
+			__class: -> Classes.findOne a.classId
 
 Template.addProjectModal.events
-	"click #createButton": ->
-		@added = yes
-		project = new Project @name(), @description(), @deadline(), Meteor.userId(), @__class._id, @id()
-		Projects.insert project, (e) => @added = not e?
-		$("#addProjectModal").modal "hide"
+	'click #createButton': ->
+		project = new Project(
+			@name,
+			@description,
+			@deadline,
+			Meteor.userId(),
+			@classId,
+			@externalId
+		)
+		Projects.insert project
+		$('#addProjectModal').modal 'hide'
 
-	"click .goToProjectButton": (event) ->
-		Router.go "projectView", projectId: $(event.target).attr "id"
-		$("#addProjectModal").modal "hide"
+	'click .goToProjectButton': (event) ->
+		Router.go 'projectView', projectId: @__project._id
+		$('#addProjectModal').modal 'hide'
 
-	"click #goButton": ->
-		name = $("#projectNameInput").val().trim()
-		description = $("#projectDescriptionInput").val().trim()
-		deadline = $("#projectDeadlineInput").data("DateTimePicker").date().toDate()
-		classId = Session.get("currentSelectedClassDatum")?._id
+	'click #goButton': ->
+		name = $('#addProjectModal #nameInput').val().trim()
+		description = $('#addProjectModal #descriptionInput').val().trim()
+		deadline = $('#addProjectModal #deadlineInput').data('DateTimePicker').date().toDate()
+		classId = Session.get('currentSelectedClassDatum')?._id
 
-		return if name is ""
+		return undefined if name is ''
 		if Projects.findOne({ name })?
-			setFieldError "#projectNameInput", "Er is al een project met deze naam"
+			setFieldError '#projectNameGroup', 'Je hebt al een project met dezelfde naam'
 			return
 
-		if $("#projectClassNameInput").val().trim() isnt "" and not classId?
-			shake "#addProjectModal"
+		if not classId? and $('#addProjectModal #classNameInput').val().trim() isnt ''
+			shake '#addProjectModal'
 			return
 
-		project = new Project name, description, deadline, Meteor.userId(), classId, null
+		project = new Project(
+			name,
+			description,
+			deadline,
+			Meteor.userId(),
+			classId,
+			null
+		)
 		Projects.insert project
 
-		$("#addProjectModal").modal "hide"
+		$('#addProjectModal').modal 'hide'
 
 Template.addProjectModal.rendered = ->
 	ownClassesEngine = new Bloodhound
@@ -343,28 +350,30 @@ Template.addProjectModal.rendered = ->
 		datumTokenizer: (d) -> Bloodhound.tokenizers.whitespace d.name
 		queryTokenizer: Bloodhound.tokenizers.whitespace
 		local: []
-
 	ownClassesEngine.initialize()
 
 	@autorun (c) ->
 		ownClassesEngine.clear()
 		ownClassesEngine.add classes().fetch()
 
-	$("#projectClassNameInput").typeahead(null,
+	$('#projectClassNameInput').typeahead(null,
 		source: ownClassesEngine.ttAdapter()
-		displayKey: "name"
-	).on "typeahead:selected", (obj, datum) -> Session.set "currentSelectedClassDatum", datum
+		displayKey: 'name'
+	).on 'typeahead:selected', (obj, datum) -> Session.set 'currentSelectedClassDatum', datum
 
-	$("#projectDeadlineInput").datetimepicker
+	$('#projectDeadlineInput').datetimepicker
 		locale: moment.locale()
 		defaultDate: new Date()
 		icons:
-			time: "fa fa-clock-o"
-			date: "fa fa-calendar"
-			up: "fa fa-arrow-up"
-			down: "fa fa-arrow-down"
-			previous: "fa fa-chevron-left"
-			next: "fa fa-chevron-right"
+			time: 'fa fa-clock-o'
+			date: 'fa fa-calendar'
+			up: 'fa fa-arrow-up'
+			down: 'fa fa-arrow-down'
+			previous: 'fa fa-chevron-left'
+			next: 'fa fa-chevron-right'
+
+	Meteor.call 'getExternalAssignments', (e, r) ->
+		externalAssignments.set r unless e?
 
 # == End Modals ==
 

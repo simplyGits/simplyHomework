@@ -313,6 +313,30 @@ Meteor.methods
 
 		result
 
+	###*
+	# Gets the assignments for the user with the given `userId`.
+	# @method getExternalAssignments
+	# @param [userId=this.userId] {String} The ID of the user to get the assignments for.
+	# @return {Assignment[]}
+	###
+	'getExternalAssignments': (userId = @userId) ->
+		@unblock()
+
+		check userId, String
+
+		user = Meteor.users.findOne userId
+		reslt = []
+
+		unless user?
+			throw new Meteor.Error 'unauthorized'
+
+		services = _.filter Services, (s) -> s.getAssignments? and s.active userId
+		for service in services
+			assignments = service.getAssignments userId
+			result = result.concat assignments
+
+		result
+
 	'getServiceSchools': (serviceName, query) ->
 		@unblock()
 

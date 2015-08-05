@@ -499,4 +499,46 @@
 			externalSchoolId: magister.magisterSchool.id
 		};
 	};
+
+	MagisterBinding.getAssignments = function (userId) {
+		check (userId, String);
+
+		var fut = new Future();
+		var magister = getMagisterObject(userId);
+
+		//# @method assignments
+		//# @async
+		//# @param [amount=50] {Number} The amount of Assignments to fetch from the server.
+		//# @param [skip=0] {Number} The amount of Assignments to skip.
+		//# @param [fillPersons=false] {Boolean} Whether or not to download the full user objects from the server.
+		//# @param [fillClass=true] {Boolean} Whether or not to download the full class objects from the server. If this is false Assignment.class() will return null.
+		//# @param callback {Function} A standard callback.
+		//# 	@param [callback.error] {Object} The error, if it exists.
+		//# 	@param [callback.result] {Assignment[]} An array containing Assignments.
+		magister.assignments(function (e, r) {
+			if (e) {
+				fut.throw(e);
+			} else {
+				fut.return(r.map(function (a) {
+					var classInfo = _.filter(user.classInfos, function (i) {
+						return i.externalInfo.id === a.class().id();
+					});
+
+					var assignment = new Assignment(
+						a.name(),
+						classInfo ? classInfo.id : undefined,
+						a.deadline()
+					);
+
+					assignment.description = a.description();
+					assignment.externalId = a.id();
+					assignment.fetchedBy = MagisterBinding.name;
+
+					return assignment;
+				}));
+			}
+		});
+
+		return fut.wait();
+	}
 })(Magister, Npm.require("fibers/future"), Meteor.npmRequire("request"));

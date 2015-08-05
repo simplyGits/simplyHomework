@@ -286,47 +286,37 @@
 				</div>
 				<div class="modal-body">
 					{{#with assignments}}
-						{{#unless empty}}
-							<h3>Kies een een opdracht van Magister</h3>
-							{{#each this}}
-								<div class="assignmentRow">
-									<div class="className">{{__class.course}}</div>
-									<div class="assignmentName">{{name}}</div>
+						<h3>Kies een externe opdracht</h3>
+						{{#each this}}
+							<div class="assignmentRow">
+								<div class="className">{{__class.abbreviation}}</div>
+								<div class="assignmentName">{{name}}</div>
 
-									{{#unless project}}
-										<button type="button" class="btn btn-primary" id="createButton">aanmaken</button>
-									{{else}}
-										<button type="button" class="btn btn-default goToProjectButton" id="{{project._id.toHexString}}">aangemaakt</button>
-									{{/unless}}
-								</div>
-							{{/each}}
-							<h3>Of maak zelf een project</h3>
-						{{/unless}}
+								{{#if __project}}
+									<button type="button" class="btn btn-default goToProjectButton" id="{{__project._id.toHexString}}">aangemaakt</button>
+								{{else}}
+									<button type="button" class="btn btn-primary" id="createProjectButton">aanmaken</button>
+								{{/if}}
+							</div>
+						{{/each}}
+						<h3>Of maak zelf een project</h3>
 					{{/with}}
-					<form class="form-horizontal">
-						<div id="projectNameGroup" class="form-group">
-							<label for="projectNameInput" class="col-sm-2 control-label" style="text-align: left">Naam</label>
-							<div class="col-sm-10">
-								<input type="text" class="form-control" id="projectNameInput" placeholder="Projectnaam">
-							</div>
+					<form class="vertical full-width">
+						<div id="nameGroup" class="group">
+							<label for="nameInput">Naam</label>
+							<input type="text" class="form-control" id="nameInput" placeholder="Projectnaam" />
 						</div>
-						<div id="projectDescriptionGroup" class="form-group">
-							<label for="projectDescriptionInput" class="col-sm-2 control-label" style="text-align: left">Beschrijving</label>
-							<div class="col-sm-10">
-								<input type="text" class="form-control" id="projectDescriptionInput" placeholder="Projectbeschrijving">
-							</div>
+						<div id="descriptionGroup" class="group">
+							<label for="descriptionInput">Beschrijving</label>
+							<input type="text" class="form-control" id="descriptionInput" placeholder="Projectbeschrijving" />
 						</div>
-						<div id="projectDeadlineGroup" class="form-group">
-							<label for="projectDeadlineInput" class="col-sm-2 control-label" style="text-align: left">Deadline</label>
-							<div class="col-sm-10">
-								<input type="text" class="form-control" id="projectDeadlineInput">
-							</div>
+						<div id="deadlineGroup" class="group">
+							<label for="deadlineInput">Deadline</label>
+							<input type="text" class="form-control" id="deadlineInput" />
 						</div>
-						<div id="projectClassGroup" class="form-group">
-							<label for="projectClassNameInput" class="col-sm-2 control-label" style="text-align: left">Vak</label>
-							<div class="col-sm-10">
-								<input type="text" class="form-control" id="projectClassNameInput" placeholder="Projectvak">
-							</div>
+						<div id="classNameGroup" class="group">
+							<label for="classNameInput">Vak</label>
+							<input type="text" class="form-control" id="classNameInput" placeholder="Projectvak" />
 						</div>
 					</form>
 				</div>
