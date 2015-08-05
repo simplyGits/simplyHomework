@@ -1,37 +1,48 @@
 # PUSH ONLY FROM SAME SCHOOL <<<<
-
-# Meteor.publish "usersData", ->
-# 	unless @userId? and (callerSchoolId = Meteor.users.findOne(@userId).profile.schoolId)?
-# 		@ready()
-# 		return undefined
-
-# 	@unblock()
-
-# 	Meteor.users.find { _id: { $ne: @userId }, "profile.schoolId": callerSchoolId }, fields:
-# 		"status.online": 1
-# 		"status.idle": 1
-# 		profile: 1
-# 		gravatarUrl: 1
+#Meteor.publish 'usersData', (ids) ->
+#	@unblock()
+#	userId = @userId
+#	schoolId = Meteor.users.findOne(userId)?.profile.schoolId
+#
+#	# We don't have to handle shit if we are only asked for the current user, no
+#	# users at all or the current user doesn't have a school.
+#	if (not schoolId?) or (ids? and ids.length <= 1 and ids[0] is userId)
+#		@ready()
+#		return undefined
+#
+#	Meteor.users.find {
+#		_id: (
+#			if ids? then { $in: _.reject ids, userId }
+#			else { $ne: userId }
+#		)
+#		'profile.firstName': $ne: ''
+#		'profile.schoolId': schoolId
+#	}, fields:
+#		'status.online': 1
+#		'status.idle': 1
+#		profile: 1
 
 # WARNING: PUSHES ALL DATA
-Meteor.publish "usersData", (ids) ->
+Meteor.publish 'usersData', (ids) ->
 	@unblock()
+	userId = @userId
 
-	if ids? and ids.length is 1 and ids[0] is @userId
+	# We don't have to handle shit if we are only asked for the current user or no
+	# users at all.
+	if ids? and ids.length <= 1 and ids[0] is userId
 		@ready()
 		return undefined
 
-	fields =
-		"status.online": 1
-		"status.idle": 1
+	Meteor.users.find {
+		_id: (
+			if ids? then { $in: _.reject ids, userId }
+			else { $ne: userId }
+		)
+		'profile.firstName': $ne: ''
+	}, fields:
+		'status.online': 1
+		'status.idle': 1
 		profile: 1
-		gravatarUrl: 1
-		hasGravatar: 1
-
-	if ids?
-		Meteor.users.find { _id: $in: _.reject ids, @userId }, fields: fields
-	else
-		Meteor.users.find { _id: $ne: @userId }, fields: fields
 
 Meteor.publish "chatMessages", (data, limit) ->
 	@unblock()
@@ -81,15 +92,15 @@ Meteor.publish null, ->
 	[
 		Meteor.users.find(@userId, fields:
 			classInfos: 1
-			premiumInfo: 1
-			magisterCredentials: 1
-			schedular: 1
-			status: 1
-			gravatarUrl: 1
-			hasGravatar: 1
-			studyGuidesHashes: 1
+			creationDate: 1
 			gradeNotificationDismissTime: 1
-			profile: 1)
+			gravatarUrl: 1
+			magisterCredentials: 1
+			plannerPrefs: 1
+			premiumInfo: 1
+			profile: 1
+			status: 1
+			studyGuidesHashes: 1)
 		Schools.find _id: Meteor.users.findOne(@userId).profile.schoolId
 
 		Projects.find { participants: @userId }, fields:
@@ -103,17 +114,22 @@ Meteor.publish null, ->
 	]
 
 Meteor.publish "classes", ->
+	unless @userId?
+		@ready()
+		return undefined
+
 	@unblock()
 
-	if (val = Meteor.users.findOne(@userId)?.profile.courseInfo)?
-		{ year, schoolVariant } = val
+	coursInfo = Meteor.users.findOne(@userId).profile.courseInfo
+	if courseInfo?
+		{ year, schoolVariant } = courseInfo
 		Classes.find { schoolVariant, year }
 	else
 		Classes.find()
 
 Meteor.publish "schools", ->
 	@unblock()
-	Schools.find()
+	Schools.find {}, fields: externalId: 1
 
 Meteor.publish "calendarItems", ->
 	unless @userId?
@@ -125,6 +141,10 @@ Meteor.publish "calendarItems", ->
 
 Meteor.publish "goaledSchedules", -> GoaledSchedules.find { ownerId: @userId }
 Meteor.publish "projects", (id) ->
+	unless @userId?
+		@ready()
+		return undefined
+
 	@unblock()
 
 	if Projects.find(_id: id, participants: @userId).count() is 0
@@ -137,11 +157,11 @@ Meteor.publish "projects", (id) ->
 	]
 
 Meteor.publish "books", (classId) ->
-	@unblock()
-
 	unless @userId?
 		@ready()
 		return undefined
+
+	@unblock()
 
 	if classId?
 		Books.find { classId }
@@ -151,6 +171,10 @@ Meteor.publish "books", (classId) ->
 		Books.find _id: $in: (x.bookId for x in (Meteor.users.findOne(@userId).classInfos ? []))
 
 Meteor.publish "roles", ->
+	unless @userId?
+		@ready()
+		return undefined
+
 	@unblock()
 	Meteor.users.find(@userId, fields: roles: 1)
 
