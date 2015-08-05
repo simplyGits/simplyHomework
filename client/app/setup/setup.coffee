@@ -294,8 +294,10 @@ Template.externalServices.helpers
 Template.externalServices.events
 	'click .externalServiceButton': (event) ->
 		if @template?
-			Blaze.renderWithData @template, this, document.body
-			$("##{@templateName}").modal()
+			view = Blaze.renderWithData @template, this, document.body
+			$("##{@templateName}")
+				.modal()
+				.on 'hidden.bs.modal', -> Blaze.remove view
 
 Template.externalServices.onRendered ->
 	Meteor.call 'getModuleInfo', (e, r) ->
