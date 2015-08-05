@@ -408,8 +408,8 @@ Meteor.methods
 			res = service.createData params..., @userId
 			if res? and not res # login credentials wrong.
 				throw new Meteor.Error 'forbidden', 'Login credentials incorrect.'
-			else if not res? # other error
-				throw new Meteor.Error 'error', "Unknown error."
+			else if _.isString res # other error
+				throw new Meteor.Error 'error', 'Other error.', res
 		else
 			throw new Meteor.Error 'notfound', "No module with the name '#{serviceName}' found."
 		Meteor.call 'getServiceProfileData', serviceName, @userId

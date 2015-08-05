@@ -28,7 +28,7 @@
 		 * @param {String} username
 		 * @param {String} password
 		 * @param {String} userId The ID of the user to save the info to.
-		 * @return {Object|Boolean|undefined} True if the data was stored, false if the login credentials are incorrect. `undefined` if an other error occured.
+		 * @return {undefined|Boolean|String} undefined if the data was stored, false if the login credentials are incorrect. Returns a string containg more info when an error occured.
 		 */
 		createData: function (schoolurl, username, password, userId) {
 			check(schoolurl, String);
@@ -47,16 +47,17 @@
 			try {
 				getMagisterObject(userId);
 			} catch (e) {
-				if (e.statusCode === 403) {
-					// login credentials wrong, remove the stored info.
-					MagisterBinding.storedInfo(userId, null);
+				// Remove the stored info.
+				MagisterBinding.storedInfo(userId, null);
+
+				// TODO: check if `|| e.Message` is needed.
+				var message = e.message || e.Message;
+				if (message === 'Je gebruikersnaam en/of wachtwoord is niet correct.') {
 					return false;
 				} else {
-					return undefined;
+					return message;
 				}
 			}
-
-			return true;
 		}
 	};
 
@@ -174,14 +175,12 @@
 
 					if (stored) {
 						result[i] = stored;
-						console.log('already stored', g, stored);
 					} else {
 						var gradeFut = new Future();
 						futs.push(gradeFut);
 
 						g.fillGrade(function (e, r) {
 							if (e) {
-								console.log('err', e);
 								gradeFut.throw(e);
 							} else  {
 								var weight = g.counts() ? g.weight() : 0;
@@ -209,7 +208,6 @@
 								);
 
 								result[i] = storedGrade;
-								console.log('just stored', g, storedGrade);
 								gradeFut.return();
 							}
 						});
