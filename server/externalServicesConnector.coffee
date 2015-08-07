@@ -116,6 +116,7 @@ Meteor.methods
 			catch e
 				# TODO: Error pushing seems broken, if it's fixed remove the log line.
 				console.log 'error while fetching grades from service.', e
+				handleServiceError e
 				errors.push e
 
 			for grade in result ? []
@@ -162,6 +163,7 @@ Meteor.methods
 				result = externalService.getStudyUtils userId
 			catch e
 				console.log 'error while fetching studyUtils from service.', e
+				handleServiceError e
 				errors.push e
 
 			for studyUtil in result ? []
@@ -210,6 +212,7 @@ Meteor.methods
 				result = externalService.getCalendarItems userId, from, to
 			catch e
 				console.log 'error while fetching calendarItems from service.', e
+				handleServiceError e
 				errors.push e
 
 			for calendarItem in result ? []
@@ -354,6 +357,7 @@ Meteor.methods
 		try
 			result = service.getSchools query
 		catch e
+			handleServiceError e
 			throw new Meteor.Error 'externalError', "Error while retreiving schools from #{serviceName}"
 
 		for school in result
@@ -392,8 +396,9 @@ Meteor.methods
 
 		try
 			service.getProfileData userId
-		catch
-			throw new Meteor.Error 'externalError', "Error while retreiving profile data from #{serviceName}"
+		catch e
+			handleServiceError e
+			throw new Meteor.Error 'externalError', "Error while retreiving profile data from #{serviceName}", e.toString()
 
 	'getProfileData': (userId = @userId) ->
 		@unblock()
@@ -434,9 +439,17 @@ Meteor.methods
 				throw new Meteor.Error 'forbidden', 'Login credentials incorrect.'
 			else if _.isString res # other error
 				throw new Meteor.Error 'error', 'Other error.', res
+				handleServiceError res
 		else
 			throw new Meteor.Error 'notfound', "No module with the name '#{serviceName}' found."
 		Meteor.call 'getServiceProfileData', serviceName, @userId
+
+handleServiceError = (serviceName, error) ->
+	ExternalServiceErrors.insert
+		service: serviceName
+		date: new Date
+		error: error.toString()
+		stack: error.stack
 
 Meteor.publish 'externalCalendarItems', (from, to) ->
 	unless @userId?
