@@ -1,4 +1,4 @@
-SavedHomework = new Meteor.Collection "savedHomework"
+Future = Npm.require "fibers/future"
 
 SyncedCron.add
 	name: "Clear inactive users"
@@ -26,6 +26,8 @@ SyncedCron.add
 	job: ->
 		# This job tries to get the scholieren.com data every 5 minutes until we got
 		# the data or we hit the try limit (12, which takes 1 hour).
+
+		fut = new Future()
 
 		i = 0
 		handle = Helpers.interval (->
@@ -56,11 +58,18 @@ SyncedCron.add
 
 					# We're done here, stop looping.
 					@stop()
+					fut.return "Successfully updated scholieren.com data after #{i} tries."
 
 			# Try limit exceeded, stop looping.
-			@stop() if i is 12
+			if i is 12
+				@stop()
+				fut.return 'Reached try limit.'
 			i++
 		), 300000 # 5 minutes
+
+		res = fut.wait()
+		console.log res
+		res
 
 SyncedCron.add
 	name: "Congratulate users"
