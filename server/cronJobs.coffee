@@ -31,40 +31,44 @@ SyncedCron.add
 
 		i = 0
 		handle = Helpers.interval (->
-			Scholieren.getClasses (e, classes = []) =>
-				console.error 'Scholieren.getClasses error', e if e?
-				return if e?
-
-				# If we don't have ScholierenClasses data yet, we want to insert the
-				# classes we currently fetched, even though we don't have the books yet.
-				# We will update ScholierenClasses with books when we got them.
-				# We don't want to do this when we already have ScholierenClasses tho,
-				# otherwise we may overwrite perfectly fine ScholierenClasses _with_
-				# books.
-				if ScholierenClasses.find().count() is 0
-					ScholierenClasses.insert c for c in classes
-
-				Scholieren.getBooks (e, books = []) =>
-					console.error 'Scholieren.getBooks error', e if e?
-					return if e?
-
-					for c in classes
-						# Put the matching books inside of the current class.
-						c.books = _.filter books, (b) -> b.classId is c.id
-
-						# Update or, if it doesn't currently exist, the scholierenClass in
-						# the database.
-						ScholierenClasses.upsert { id: c.id }, c
-
-					# We're done here, stop looping.
-					@stop()
-					fut.return "Successfully updated scholieren.com data after #{i} tries."
-
 			# Try limit exceeded, stop looping.
 			if i is 12
 				@stop()
 				fut.return 'Reached try limit.'
-			i++
+			i += 1
+
+			try
+				classes = Scholieren.getClasses()
+			catch e
+				console.error 'Scholieren.getClasses error', e
+				return
+
+			# If we don't have ScholierenClasses data yet, we want to insert the
+			# classes we currently fetched, even though we don't have the books yet.
+			# We will update ScholierenClasses with books when we got them.
+			# We don't want to do this when we already have ScholierenClasses tho,
+			# otherwise we may overwrite perfectly fine ScholierenClasses _with_
+			# books.
+			if ScholierenClasses.find().count() is 0
+				ScholierenClasses.insert c for c in classes
+
+			try
+				books = Scholieren.getBooks()
+			catch e
+				console.error 'Scholieren.getBooks error', e
+				return
+
+			for c in classes
+				# Put the matching books inside of the current class.
+				c.books = _.filter books, (b) -> b.classId is c.id
+
+				# Update or, if it doesn't currently exist, the scholierenClass in
+				# the database.
+				ScholierenClasses.upsert { id: c.id }, c
+
+			# We're done here, stop looping.
+			@stop()
+			fut.return "Successfully updated scholieren.com data on the #{i}th try."
 		), 300000 # 5 minutes
 
 		res = fut.wait()
