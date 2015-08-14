@@ -77,6 +77,7 @@ npm-bcrypt@0.7.8_2
 npm-container@1.1.0
 observe-sequence@1.0.6
 ordered-dict@1.0.3
+particle4dev:cheerio@0.18.0
 percolate:paginated-subscription@0.2.4
 percolate:synced-cron@1.2.1
 percolate:velocityjs@1.2.1_1
@@ -94,6 +95,7 @@ scholieren@0.0.1
 service-configuration@1.0.4
 session@1.1.0
 sha@1.0.3
+simply:woordjesleren@0.0.1
 spacebars@1.0.6
 spacebars-compiler@1.0.6
 spiderable@1.0.7
