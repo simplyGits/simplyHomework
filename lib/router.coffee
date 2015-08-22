@@ -268,13 +268,6 @@ Router.map ->
 		onAfterAction: ->
 			setPageOptions title: 'simplyHomework | Setup'
 
-	@route "privacy",
-		fastRender: yes
-		layoutTemplate: "privacy"
-		onAfterAction: ->
-			setPageOptions title: "simplyHomework | Privacy"
-			$("body").scrollTop 0
-
 	@route "press",
 		fastRender: yes
 		layoutTemplate: "press"
@@ -302,3 +295,9 @@ Router.route "/(.*)", -> # 404 route.
 	if @ready()
 		setPageOptions title: "simplyHomework | Niet gevonden"
 		@render "notFound"
+
+Router.route '/privacy', (->
+	@response.writeHead 301,
+		'Location': '/privacy.html'
+	@response.end()
+), where: 'server'
