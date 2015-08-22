@@ -1,9 +1,3 @@
-<template name="privacy">
-	<div class="privacy">
-		<h1>Privacybeleid simplyApps</h1>
-
-		<div>
-			{{#markdown}}
 *Versie 0.2*
 
 Deze pagina is voor het laatst aangepast op 6-2-2015 *(zesde februari tweeduizendvijftien)*.
@@ -73,8 +67,3 @@ We controleren regelmatig of we aan dit privacybeleid voldoen. Als u vragen heef
 *simplyApps*
 
 *hello@simplyapps.nl*
-
-			{{/markdown}}
-		</div>
-	</div>
-</template>
