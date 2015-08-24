@@ -26,6 +26,8 @@ http://tomsmeding.nl/
 	labels = _.extend { main: "oké", second: "annuleren" }, labels
 	styles = _.extend { main: "btn-default", second: "btn-default" }, styles
 
+	bootbox.hideAll()
+
 	bootbox.dialog
 		title: title
 		message: body.replace /\n/ig, "<br>"
