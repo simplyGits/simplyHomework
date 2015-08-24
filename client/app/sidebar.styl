@@ -1,4 +1,4 @@
-@import "../main"
+@require "../utils"
 
 .sidebar
 	background-color: #2d2d2d
@@ -68,7 +68,7 @@ div.sidebarProfile
 		background-size: cover
 		background-position: center center
 
-		blur = blur(5px)
+		blur = blur(35px)
 		filter: blur
 		filter: url('/svg/sidebarProfileBackBlur.svg#blur')
 		-webkit-filter: blur
@@ -76,7 +76,7 @@ div.sidebarProfile
 		-o-filter: blur
 		-ms-filter: blur
 
-		opacity: .4
+		opacity: .8
 
 	img.sidebarProfilePicture
 		border-radius: 50%

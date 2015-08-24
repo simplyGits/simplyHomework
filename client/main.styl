@@ -1,14 +1,4 @@
-simplyBlue = #32A8CE
-
-roboto(weight)
-	font-family: 'Roboto', sans-serif
-	font-weight: weight
-
-underlineInput(color = lightgray, width = 1px)
-	border: 0px color solid;
-	background-color: transparent;
-	outline: none;
-	border-bottom-width: width;
+@require "./utils"
 
 .noFontSmoothing
 	-webkit-font-smoothing: initial
@@ -110,15 +100,24 @@ button.btn-trans:focus
 	color: black
 }
 
-div.cookiesContainer
-	background-color: rgba(0, 0, 0, .8)
-	position: fixed
-	bottom: -40px
-	width: 100vw
-	color: white
-	z-index: 500
-	padding-left: 15px
-	visibility: hidden
-
 div.modal
 	overflow-y: auto
+
+.container-fluid
+	margin-top: -10px
+
+body.win
+	@extend .noFontSmoothing
+
+	.robotoThin, .btn-trans
+		font-weight: 300 !important
+
+body.ie
+	.vCenter
+		position: relative !important
+
+	#addProjectIcon
+		padding-right: 30px !important
+
+	.backdrop
+		display: none

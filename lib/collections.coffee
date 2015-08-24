@@ -1,20 +1,22 @@
-@Schemas           = {}
-@GoaledSchedules   = new Meteor.Collection 'goaledSchedules'
-@Classes           = new Meteor.Collection 'classes'
-@Books             = new Meteor.Collection 'books'
-@Schools           = new Meteor.Collection 'schools'
-@Schedules         = new Meteor.Collection 'schedules'
-@Votes             = new Meteor.Collection 'votes'
-@Utils             = new Meteor.Collection 'utils'
-@Tickets           = new Meteor.Collection 'tickets'
-@Projects          = new Meteor.Collection 'projects'
-@CalendarItems     = new Meteor.Collection 'calendarItems', transform: (c) -> _.extend new CalendarItem, c
-@ChatMessages      = new Meteor.Collection 'chatMessages'
-@ReportItems       = new Meteor.Collection 'reportItems'
-@StoredGrades      = new Meteor.Collection 'storedGrades', transform: (g) -> _.extend new StoredGrade, g
-@StudyUtils        = new Meteor.Collection 'studyUtils',   transform: (s) -> _.extend new StudyUtil, s
-@Notifications     = new Meteor.Collection 'notifications'
-@ScholierenClasses = new Meteor.Collection 'scholieren.com'
+@Schemas               = {}
+@GoaledSchedules       = new Meteor.Collection 'goaledSchedules'
+@Classes               = new Meteor.Collection 'classes'
+@Books                 = new Meteor.Collection 'books'
+@Schools               = new Meteor.Collection 'schools'
+@Schedules             = new Meteor.Collection 'schedules'
+@Votes                 = new Meteor.Collection 'votes'
+@Utils                 = new Meteor.Collection 'utils'
+@Tickets               = new Meteor.Collection 'tickets'
+@Projects              = new Meteor.Collection 'projects'
+@CalendarItems         = new Meteor.Collection 'calendarItems', transform: (c) -> _.extend new CalendarItem, c
+@ChatMessages          = new Meteor.Collection 'chatMessages'
+@ReportItems           = new Meteor.Collection 'reportItems'
+@StoredGrades          = new Meteor.Collection 'storedGrades', transform: (g) -> _.extend new StoredGrade, g
+@StudyUtils            = new Meteor.Collection 'studyUtils',   transform: (s) -> _.extend new StudyUtil, s
+@Notifications         = new Meteor.Collection 'notifications'
+@ScholierenClasses     = new Meteor.Collection 'scholieren.com'
+@WoordjesLerenClasses  = new Meteor.Collection 'woordjesleren'
+@ExternalServiceErrors = new Meteor.Collection 'externalServiceErrors'
 
 Schemas.Classes = new SimpleSchema
 	_id:
@@ -281,28 +283,32 @@ Schemas.StudyUtils = new SimpleSchema
 
 @[key].attachSchema Schemas[key] for key of Schemas
 
-@classTransform = (tmpClass) ->
-	classInfo = -> _.find Meteor.user().classInfos, (cI) -> EJSON.equals cI.id, tmpClass._id
-	groupInfo = _.find Meteor.user().profile.groupInfos, (gI) -> EJSON.equals gI.id, tmpClass._id
+@classTransform = (c) ->
+	classInfo = ->
+		classInfos = Helpers.emboxValue -> Meteor.user()?.classInfos
+		_.find classInfos, (info) -> EJSON.equals info.id, c._id
 
-	_.extend tmpClass,
-		__taskAmount: _.filter(homeworkItems.get(), (a) -> groupInfo?.group is a.description() and not a.isDone()).length
-		__book: -> Books.findOne classInfo()?.bookId
-		__color: -> classInfo()?.color
+	groupInfos = Helpers.emboxValue -> Meteor.user()?.profile.groupInfos
+	groupInfo = _.find groupInfos, (info) -> EJSON.equals info.id, c._id
+
+	_.extend c,
+		#__taskAmount: _.filter(homeworkItems.get(), (a) -> groupInfo?.group is a.description() and not a.isDone()).length
+		__book: -> null# Books.findOne classInfo()?.bookId
+		__color: emboxValue -> classInfo()?.color
 		__sidebarName: (
-			val = tmpClass.name
-			if val.length > 14 then tmpClass.abbreviations[0]
+			val = c.name
+			if val.length > 14 then c.abbreviations[0]
 			else val
 		)
-		__showBadge: tmpClass.name.length not in [11..14]
+		__showBadge: c.name.length not in [11..14]
 
 		__classInfo: classInfo
 
 @projectTransform = (p) ->
-	return _.extend p,
+	_.extend p,
 		__class: -> Classes.findOne p.classId, transform: classTransform
 		__borderColor: (
-			if p.deadline < new Date then "#FF4136"
+			if p.deadline < new Date then '#FF4136'
 		)
 		__friendlyDeadline: (
 			if p.deadline?
@@ -311,58 +317,66 @@ Schemas.StudyUtils = new SimpleSchema
 
 				date = switch Helpers.daysRange new Date, p.deadline, no
 					when -6, -5, -4, -3 then "Afgelopen #{day}"
-					when -2 then "Eergisteren"
-					when -1 then "Gisteren"
-					when 0 then "Vandaag"
-					when 1 then "Morgen"
-					when 2 then "Overmorgen"
+					when -2 then 'Eergisteren'
+					when -1 then 'Gisteren'
+					when 0 then 'Vandaag'
+					when 1 then 'Morgen'
+					when 2 then 'Overmorgen'
 					when 3, 4, 5, 6 then "Aanstaande #{day}"
 					else "#{Helpers.cap day} #{DateToDutch p.deadline, no}"
 
 				"#{date} #{time}"
 		)
-		__lastChatMessage: -> ChatMessages.findOne { projectId: p._id }, transform: chatMessageTransform, sort: "time": -1
+		__lastChatMessage: ->
+			ChatMessages.findOne {
+				projectId: p._id
+			}, {
+				transform: chatMessageTransform
+				sort:
+					'time': -1
+			}
 
 chatMessageReplaceMap =
-	":thumbsup:": [/\(y\)/ig]
-	":thumbsdown:": [/\(n\)/ig]
-	":innocent:": [/\(a\)/ig]
-	":sunglasses:": [/\(h\)/ig]
-	":sweat_smile:": [/\^\^'/ig]
+	':thumbsup:':     /\(y\)/ig
+	':thumbsdown:':   /\(n\)/ig
+	':innocent:':     /\(a\)/ig
+	':sunglasses:':   /\(h\)/ig
+	':sweat_smile:':  /\^\^'/ig
 
 ###*
 # Returns the given `date` friendly formatted for chat.
-# If `date` is a null value, `null` will be returned.
+# If `date` is null or undefined, `undefined` will be returned.
 #
 # @method formatDate
-# @param date {Date|null} The date to format.
-# @return {String|null} The given `date` formatted.
+# @param date {Date|null|undefined} The date to format.
+# @return {String|void} The given `date` formatted.
 ###
 formatDate = (date) ->
-	return unless date?
+	return undefined unless date?
 
 	check date, Date
-	m = moment date
+	now = new Date
 
-	if m.year() isnt new Date().getUTCFullYear()
-		m.format "DD-MM-YYYY HH:mm"
-	else if m.toDate().date().getTime() isnt Date.today().getTime()
-		m.format "DD-MM HH:mm"
-	else
-		m.format "HH:mm"
-
+	moment(date).format (
+		if date.getUTCFullYear() isnt now.getUTCFullYear()
+			'DD-MM-YYYY HH:mm'
+		else if date.date().getTime() isnt now.date().getTime()
+			'DD-MM HH:mm'
+		else
+			'HH:mm'
+	)
 
 @chatMessageTransform = (cm) ->
-	return _.extend cm,
+	_.extend cm,
 		__sender: Meteor.users.findOne cm.creatorId
-		__own: if Meteor.userId() is cm.creatorId then "own" else ""
+		__own: if Meteor.userId() is cm.creatorId then 'own' else ''
 		__time: formatDate cm.time
 		content: (
 			s = cm.content
 
-			for key in _.keys chatMessageReplaceMap
-				for regex in chatMessageReplaceMap[key]
-					s = s.replace regex, key
+			for key of chatMessageReplaceMap
+				regex = chatMessageReplaceMap[key]
+				s = s.replace regex, key
 
 			s
 		)

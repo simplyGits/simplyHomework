@@ -4,7 +4,9 @@
 			<div id="content">
 				{{content}}
 			</div>
-			<span id="dismissButton">&times;</span>
+			{{#if allowDismiss}}
+				<span id="dismissButton">&times;</span>
+			{{/if}}
 		</div>
 	{{/with}}
 
@@ -38,6 +40,7 @@
 
 				<div class="modal-body">
 					<button class="btn btn-default" id="schedularPrefsButton">Planner Voorkeuren</button>
+					<button class="btn btn-default" id="externalServicesButton">Integraties beheren</button>
 					<button class="btn btn-default" id="accountInfoButton">Account info aanpassen</button>
 					<button class="btn btn-default" id="deleteAccountButton">Account verwijderen</button>
 					<button class="btn btn-default" id="startTourButton">Start rondleiding</button>
@@ -48,77 +51,30 @@
 	</div>
 </template>
 
-<template name="setMagisterInfoModal">
-	<div class="modal fade" aria-hidden="true" id="setMagisterInfoModal">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h4 class="modal-title">Magister informatie</h4>
-				</div>
-				<div class="modal-body">
-					<form class="form-horizontal">
-						<div id="nameGroup" class="form-group">
-							<label for="schoolNameInput" class="col-sm-2 control-label" style="text-align: left">Schoolnaam</label>
-							<div class="col-sm-10">
-								<input type="text" class="form-control" id="schoolNameInput" placeholder="Adelbert College">
-							</div>
-						</div>
-						<div id="usernameGroup" class="form-group">
-							<label for="magisterUsernameInput" class="col-sm-2 control-label" style="text-align: left">Magister inlognaam</label>
-							<div class="col-sm-10">
-								<input type="text" class="form-control" id="magisterUsernameInput" placeholder="120678">
-							</div>
-						</div>
-						<div id="passGroup" class="form-group">
-							<label for="magisterPasswordInput" class="col-sm-2 control-label" style="text-align: left">Magister wachtwoord</label>
-							<div class="col-sm-10">
-								<input type="password" class="form-control" id="magisterPasswordInput" placeholder="●●●●●●●●●●">
-							</div>
-						</div>
-						<div id="allowGroup" class="form-group">
-							<div class="col-sm-10 col-sm-offset-2">
-								<label>
-									<input type="checkbox">
-									<span id="checkboxLabel" style="font-size: 13px">
-										Ik geef simply, simplyApps en simplyHomework toestemming mijn Magister gebruikersnaam, wachtwoord en data van Magister op te slaan en te gebruiken. Hierbij ga ik ook akkoord met het <a href="/privacy" target="_blank">volledige privacy beleid van simplyHomework</a>.
-									</span>
-								</label>
-							</div>
-						</div>
-					</form>
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-primary" id="goButton">verder</button>
-				</div>
-			</div>
-		</div>
-	</div>
-</template>
-
-<template name="getMagisterClassesModal">
-	<div class="modal fade" aria-hidden="true" id="getMagisterClassesModal">
+<template name="getExternalClassesModal">
+	<div class="modal fade" aria-hidden="true" id="getExternalClassesModal">
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header">
 					<h4 class="modal-title">Vakken</h4>
 				</div>
-				<div class="modal-body" id="getMagisterClassesModalBody">
-					{{#unless magisterClasses}}
+				<div class="modal-body">
+					{{#unless externalClasses}}
 						<div style="width: 100%; text-align: center; font-size: 16px">
-							Vakken aan het ophalen van Magister...<br>
+							Vakken aan het ophalen van [meh]...<br>
 							<div id="spinner"></div>
 						</div>
 					{{else}}
 						<div>
-							We hebben geprobeerd zoveel mogelijk vakken van Magister automatisch op te halen.<br>
+							We hebben geprobeerd zoveel mogelijk vakken van [meh] automatisch op te halen.<br>
 							Verwijder overbodige vakken en wijzig onjuiste informatie, vakken kun je later toevoegen.
 						</div>
-						<div id="magisterClassesResult">
-							{{#each magisterClasses}}
-								<div id="{{id}}">
+						<div id="result">
+							{{#each externalClasses}}
+								<div id="{{_id.toHexString}}">
 									<i style="cursor: pointer" class="fa fa-times"></i>
 									<span class="input-group-addon"><i></i></span>
-									<div id="classTitle">{{description}}</div>
+									<div id="classTitle">{{name}}</div>
 									<input class="form-control" type="text" id="method" placeholder="Methode"/>
 								</div>
 							{{/each}}
@@ -145,7 +101,7 @@
 					<h4 style="text-align: center; margin-bottom: 20px;">Hoeveel tijd heb je op elke weekdag?<small><br><i>(schooltijd niet meegerekend)</i><br>Je kan dit altijd in je instellingen aanpassen.</small></h4>
 					<form class="vertical full-width">
 						{{#each dayWeek}}
-							<div id="{{name}}}Group" class="group select">
+							<div id="{{name}}Group" class="group select">
 								<label for="{{name}}Input">{{friendlyName}}</label>
 								<select id="{{name}}Input">
 									{{#each weigthOptions}}
@@ -173,17 +129,15 @@
 					<h4 class="modal-title">Vak toevoegen</h4>
 				</div>
 				<div class="modal-body">
-					{{#with magisterClasses}}
-						{{#unless empty}}
-							<h3>Kies een vak van Magister</h3>
-							{{#each this}}
-								<div class="classRow">
-									<div class="classname"></div>
-									<button type="button" class="btn btn-primary">toevoegen</button>
-								</div>
-							{{/each}}
-							<h3>Of maak zelf een vak</h3>
-						{{/unless}}
+					{{#with externalClasses}}
+						<h3>Kies een extern vak</h3>
+						{{#each this}}
+							<div class="classRow">
+								<div class="classname"></div>
+								<button type="button" class="btn btn-primary">toevoegen</button>
+							</div>
+						{{/each}}
+						<h3>Of maak zelf een vak</h3>
 					{{/with}}
 					<form class="vertical full-width">
 						<div id="nameGroup" class="group">
@@ -333,51 +287,42 @@
 				</div>
 				<div class="modal-body">
 					{{#with assignments}}
-						{{#unless empty}}
-							<h3>Kies een een opdracht van Magister</h3>
-							{{#each this}}
-								<div class="assignmentRow">
-									<div class="className">{{__class.course}}</div>
-									<div class="assignmentName">{{name}}</div>
+						<h3>Kies een externe opdracht</h3>
+						{{#each this}}
+							<div class="assignmentRow">
+								<div class="className">{{__class.abbreviation}}</div>
+								<div class="assignmentName">{{name}}</div>
 
-									{{#unless project}}
-										<button type="button" class="btn btn-primary" id="createButton">aanmaken</button>
-									{{else}}
-										<button type="button" class="btn btn-default goToProjectButton" id="{{project._id.toHexString}}">aangemaakt</button>
-									{{/unless}}
-								</div>
-							{{/each}}
-							<h3>Of maak zelf een project</h3>
-						{{/unless}}
+								{{#if __project}}
+									<button type="button" class="btn btn-default goToProjectButton" id="{{__project._id.toHexString}}">aangemaakt</button>
+								{{else}}
+									<button type="button" class="btn btn-primary" id="createProjectButton">aanmaken</button>
+								{{/if}}
+							</div>
+						{{/each}}
+						<h3>Of maak zelf een project</h3>
 					{{/with}}
-					<form class="form-horizontal">
-						<div id="projectNameGroup" class="form-group">
-							<label for="projectNameInput" class="col-sm-2 control-label" style="text-align: left">Naam</label>
-							<div class="col-sm-10">
-								<input type="text" class="form-control" id="projectNameInput" placeholder="Projectnaam">
-							</div>
+					<form class="vertical full-width">
+						<div id="nameGroup" class="group">
+							<label for="nameInput">Naam</label>
+							<input type="text" id="nameInput" placeholder="Projectnaam" />
 						</div>
-						<div id="projectDescriptionGroup" class="form-group">
-							<label for="projectDescriptionInput" class="col-sm-2 control-label" style="text-align: left">Beschrijving</label>
-							<div class="col-sm-10">
-								<input type="text" class="form-control" id="projectDescriptionInput" placeholder="Projectbeschrijving">
-							</div>
+						<div id="descriptionGroup" class="group">
+							<label for="descriptionInput">Beschrijving</label>
+							<input type="text" id="descriptionInput" placeholder="Projectbeschrijving" />
 						</div>
-						<div id="projectDeadlineGroup" class="form-group">
-							<label for="projectDeadlineInput" class="col-sm-2 control-label" style="text-align: left">Deadline</label>
-							<div class="col-sm-10">
-								<input type="text" class="form-control" id="projectDeadlineInput">
-							</div>
+						<div id="deadlineGroup" class="group">
+							<label for="deadlineInput">Deadline</label>
+							<input type="text" id="deadlineInput" />
 						</div>
-						<div id="projectClassGroup" class="form-group">
-							<label for="projectClassNameInput" class="col-sm-2 control-label" style="text-align: left">Vak</label>
-							<div class="col-sm-10">
-								<input type="text" class="form-control" id="projectClassNameInput" placeholder="Projectvak">
-							</div>
+						<div id="classNameGroup" class="group">
+							<label for="classNameInput">Vak</label>
+							<input type="text" id="classNameInput" placeholder="Projectvak" />
 						</div>
 					</form>
 				</div>
 				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Annuleren</button>
 					<button type="button" class="btn btn-primary" id="goButton">Aanmaken</button>
 				</div>
 			</div>
@@ -410,6 +355,25 @@
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">Annuleren</button>
 					<button type="button" class="btn btn-danger" id="goButton">Verwijder</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</template>
+
+<template name="externalServicesModal">
+	<div class="modal fade" aria-hidden="true" id="externalServicesModal">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+					<h4 class="modal-title">Integraties</h4>
+				</div>
+				<div class="modal-body">
+					{{> externalServices}}
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary" data-dismiss="modal">Oké</button>
 				</div>
 			</div>
 		</div>

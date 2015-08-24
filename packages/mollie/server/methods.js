@@ -1,6 +1,7 @@
 var mollie = Npm.require('mollie-api-node');
 var Future = Npm.require('fibers/future');
 var client = null;
+var Payements = new Mongo.Collection('payements');
 
 var settings = Meteor.settings && Meteor.settings.mollie;
 if (settings == null || settings.apiKey == null) {

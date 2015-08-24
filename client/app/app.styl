@@ -1,6 +1,7 @@
-@import "jeet"
-@import "axis"
-@import "../main"
+@require "axis"
+@require "jeet"
+@require "rupture"
+@require "../utils"
 
 noticeHeight = 50px
 
@@ -14,13 +15,28 @@ body.bigNoticeOpen #app
 	absolute: left top right
 	height: noticeHeight
 	z-index: 300
+
 	text-align: center
+	+mobile()
+		text-align: left
 
 	#content
 		display: inline-block
-		cursor: pointer
+		height: 100%
+		overflow: hidden
 		line-height: noticeHeight
 		font-size: 20px
+		text-overflow: ellipsis
+		cursor: pointer
+
+		+mobile()
+			display: block
+			width: calc(100% - 60px)
+			margin-left: 15px
+			margin-top: 3px
+			font-size: 15px
+			text-align: left
+			line-height: initial
 
 	#content:hover
 		text-decoration: underline
@@ -33,28 +49,8 @@ body.bigNoticeOpen #app
 		line-height: 40px
 
 #bigNotice.default
-	textColor = white
-
 	background-color: #2ECC40
-	animation: bigNoticeDefaultAnimation 4s ease-in-out infinite
-
-	#content
-		color: textColor
-
-	#dismissButton
-		color: textColor
-
-@keyframes bigNoticeDefaultAnimation {
-	0% {
-		background-color: #2ECC40
-	}
-	50% {
-		background-color: #4AE25C
-	}
-	100% {
-		background-color: #2ECC40
-	}
-}
+	color: white
 
 #wrapper
 	absolute: top left 200px right 50px bottom
@@ -167,8 +163,6 @@ div.itemContainerHeader
 	border-bottom: 1px lightgray solid
 
 div.itemContainerContent
-	@extend .smoothScroll
-
 	text-rendering: optimizeLegibility
 	roboto(600)
 
@@ -178,6 +172,10 @@ div.itemContainerContent
 
 	a
 		text-decoration: none !important
+
+	+mobile()
+		overflow-y: scroll
+		-webkit-overflow-scrolling: touch
 // \\ Item Container
 
 +mobile()
@@ -228,77 +226,6 @@ span#checkboxLabel
 		button
 			text-align: center !important
 			col(1/4)
-
-#getMagisterClassesModalBody
-	text-align: center
-
-	div.modal-body
-		scroll-y: auto
-
-	#spinner
-		height: 60px
-
-#magisterClassesResult
-	margin-top: 15px
-	width: 100%
-
-#magisterClassesResult > div
-	width: 100%
-	height: 30px
-	margin-bottom: 7px
-
-	i.fa-times
-		opacity: .5
-		transition: .25s opacity linear
-
-		float: left
-		margin-right: 10px
-		margin-top: 3px
-
-	i.fa-times:hover
-		opacity: 1
-
-	.twitter-typeahead
-		display: initial !important
-
-		.tt-dropdown-menu
-			width: 175px
-
-	.input-group-addon
-		float: left
-		display: inline-block
-		margin-right: 10px
-		height: 25px
-
-		i
-			margin-left: -8px
-			margin-top: -3px
-
-	div#classTitle
-		text-transform: lowercase
-		font-size: 15px
-		float: left
-		max-width: calc(100% - 240px)
-		white-space: nowrap
-		overflow: hidden
-		text-overflow: ellipsis
-
-	input#method, .twitter-typeahead
-		float: right
-		width: auto
-
-	+mobile()
-		height: 75px
-		border-bottom: 1px lightgray solid
-		margin-bottom: 15px
-
-		div#classTitle
-			max-width: calc(100% - 60px)
-
-		input#method
-			width: 100%
-			margin-top: 10px
-			margin-bottom: 10px
 
 div.backdrop
 	fixed: top bottom left right

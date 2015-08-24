@@ -1,10 +1,7 @@
 <template name="personView">
-	{{> reportUserModal}}
 	<div class="personInfo" style="background-color: {{backColor}}">
 		{{#if sameUser}}
-			<a href="http://en.gravatar.com/emails/" target="_blank">
-				<img class="personPicture" style="pointer-events: initial" src="{{gravatar this 250}}" width="250" height="250" data-toggle="tooltip" data-placement="bottom" title="Klik hier om je foto aan te passen"/>
-			</a>
+			<img class="personPicture" style="cursor: pointer; pointer-events: initial" src="{{gravatar this 250}}" width="250" height="250" data-toggle="tooltip" data-placement="bottom" title="Klik hier om je foto aan te passen"/>
 		{{else}}
 			<img class="personPicture" src="{{gravatar this 250}}" width="250" height="250"/>
 		{{/if}}
@@ -120,4 +117,38 @@
 			</div>
 		</div>
 	</div>
+</template>
+
+<template name="changePictureModal">
+	<div class="modal fade" aria-hidden="true" id="changePictureModal">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+					<h4 class="modal-title">Profielfoto aanpassen</h4>
+				</div>
+				<div class="modal-body">
+					{{#if loadingPictures}}
+						<div>
+							Foto's laden...
+						</div>
+					{{else}}
+						<div style="margin-bottom: 15px">
+							Klik op een foto om het in te stellen als je nieuwe profielfoto.<br>
+							Om een andere foto te kiezen moet je <a href="http://en.gravatar.com/emails/" target="_blank">bij Gravatar</a> zijn.
+						</div>
+						<div id="pictureSelector" class="selector">
+							{{#each pictures}}
+								{{> pictureSelectorItem}}
+							{{/each}}
+						</div>
+					{{/if}}
+				</div>
+			</div>
+		</div>
+	</div>
+</template>
+
+<template name="pictureSelectorItem">
+	<img src="{{value}}" title="{{fetchedBy}}" alt="{{fetchedBy}}" height="100" width="100" class="{{selected}}"/>
 </template>

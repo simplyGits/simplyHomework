@@ -1,16 +1,31 @@
+###*
+# @class SchoolClass
+# @constructor
+# @param name {String}
+# @param abbreviation {String}
+# @param year {Number} The year of the class this class is in.
+# @param schoolVariant {String} e.g VWO
+###
 class @SchoolClass
-	constructor: (name, course, @year, schoolVariant, scholierenClassId) ->
+	constructor: (name, abbreviation, @year, @schoolVariant) ->
+		@_id = new Meteor.Collection.ObjectID
+
+		@name = Helpers.cap name if name?
+		@schoolVariant = @schoolVariant?.toLowerCase()
+
+		###*
+		# @property abbreviations
+		# @type String[]
+		###
+		@abbreviations = []
+		@abbreviations.push abbreviation.toLowerCase() unless _.isEmpty abbreviation
+
+		@schedules = [] # Contains schedule ID's.
+
 		###*
 		# ID of class at Scholieren.com.
 		# @property scholierenClassId
 		# @type Number
-		# @default null
+		# @default undefined
 		###
-
-		@_id = new Meteor.Collection.ObjectID()
-
-		@course = course?.toLowerCase() ? ""
-		@schoolVariant = schoolVariant?.toLowerCase()
-		@name = Helpers.cap name if name?
-
-		@schedules = [] # Contains schedule ID's.
+		@scholierenClassId = undefined

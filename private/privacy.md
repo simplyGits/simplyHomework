@@ -22,7 +22,7 @@ simplyApps respecteert de privacy van alle gebruikers van haar site en draagt er
 
 Wanneer u zich aanmeldt voor een van onze diensten vragen we u om persoonsgegevens te verstrekken. Deze gegevens worden gebruikt om de dienst uit te kunnen voeren. De gegevens worden opgeslagen op eigen beveiligde servers van simplyApps of die van een derde partij. Deze gegevens kunnen worden gecombineerd met andere gegevens waarover wij beschikken als dit uw gebruikerservaring ten goede komt.
 
-**Communicatie**
+## Communicatie
 
 Wanneer u e-mail of andere berichten naar ons verzendt, is het mogelijk dat we die berichten bewaren. Soms vragen wij u naar uw persoonlijke gegevens die voor de desbetreffende situatie relevant zijn. Dit maakt het mogelijk uw vragen te verwerken en uw verzoeken te beantwoorden. De gegevens worden opgeslagen op eigen beveiligde servers van simplyApps of die van een derde partij. Wij zullen deze gegevens niet combineren met andere persoonlijke gegevens waarover wij beschikken, tenzij u ons daar expliciet toestemming tot geeft.
 

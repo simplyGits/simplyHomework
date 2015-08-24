@@ -1,0 +1,176 @@
+<template name="setup">
+	<div class="appNameHeader setupAppNameHeader"></div>
+	<div id="setup">
+		{{> Template.dynamic template=currentSetupItem}}
+	</div>
+</template>
+
+<template name="setupFooter">
+	<div class="footer">
+		<button class="btn btn-primary">
+			{{#if isLast}}
+				afronden
+			{{else}}
+				verder
+			{{/if}}
+		</button>
+	</div>
+</template>
+
+<template name="setup-welcome">
+	<div class="header">
+		Hey!
+	</div>
+
+	<div class="body">
+		simplyHomework is een automatische huiswerkplanner die je leven makkelijker maakt.
+		<br><br>
+		Het haalt automatisch je huiswerk van magister, zoekt de juiste woordenlijsten bij het huiswerk, plant automatisch voor proefwerken en nog veel meer.
+		<br><br>
+		Voordat we beginnen hebben we nog een paar vraagjes.
+	</div>
+
+	{{> setupFooter}}
+</template>
+
+<template name="setup-externalServices">
+	<div class="header">
+		Integraties
+	</div>
+
+	<div class="body">
+		{{> externalServices}}
+	</div>
+
+	{{> setupFooter}}
+</template>
+
+<template name="setup-extractInfo">
+	<div class="header">
+		Data importeren
+	</div>
+
+	<div class="body" id="extractInfo">
+		{{!
+			import classes, picture, course info and stuff
+			in a nice visual selector.
+		}}
+
+		{{#with pictures}}
+			<h2>Profielfoto</h2>
+			<div id="pictureSelector" class="selector">
+				{{#each this}}
+				<img src="{{value}}" title="{{fetchedBy}}" alt="{{fetchedBy}}" height="100" width="100" class="{{isSelected}}"/>
+				{{/each}}
+			</div>
+			<hr>
+		{{/with}}
+
+		{{#unless hasSchool}}
+			<h2>School</h2>
+			<form class="vertical full-width">
+				<div id="schoolGroup" class="group">
+					<label for="schoolInput">Schoolnaam</label>
+					<input type="text" id="schoolInput" />
+				</div>
+			</form>
+			<hr>
+		{{/unless}}
+
+		<h2>Profielinfo</h2>
+		{{#with courseInfos}}
+			<div id="courseInfoSelector" class="selector">
+				{{#each this}}
+					<div class="{{isSelected}}">
+						{{value.profile}}
+						<br>
+						{{value.year}} {{value.schoolVariant}}
+					</div>
+				{{/each}}
+			</div>
+		{{else}}
+			<form class="vertical full-width">
+				<div id="courseGroup" class="group">
+					<label for="courseInput">Schooljaar en type</label>
+					<input type="text" id="courseInput" placeholder="5 VWO"/>
+				</div>
+			</form>
+		{{/with}}
+		<hr>
+
+		<h2>Naam</h2>
+		<form class="vertical full-width">
+			<div id="firstNameGroup" class="group">
+				<label for="firstNameInput">Voornaam</label>
+				<input type="text" id="firstNameInput" value="{{firstName}}"/>
+			</div>
+			<div id="lastNameGroup" class="group">
+				<label for="lastNameInput">Achternaam</label>
+				<input type="text" id="lastNameInput" value="{{lastName}}"/>
+			</div>
+		</form>
+
+	</div>
+
+	{{> setupFooter}}
+</template>
+
+<template name="plannerPrefsDay">
+	<div class="group select">
+		<label>{{name}}</label>
+		<select>
+			{{#each weightOptions}}
+				<option data-day-index="{{index}}" selected="{{selected}}">{{name}}</option>
+			{{/each}}
+		</select>
+	</div>
+</template>
+
+<template name="setup-plannerPrefs">
+	<div class="header">
+		Planner voorkeuren
+	</div>
+
+	<div class="body">
+		<h4 style="text-align: center; margin-bottom: 20px;">Hoeveel tijd heb je op elke weekdag?<small><br><i>(schooltijd niet meegerekend)</i><br>Je kan dit altijd in je instellingen aanpassen.</small></h4>
+		<form class="vertical full-width">
+			{{#each weekdays}}
+				{{> plannerPrefsDay}}
+			{{/each}}
+		</form>
+	</div>
+
+	{{> setupFooter}}
+</template>
+
+<template name="setup-getExternalClasses">
+	<div class="header">
+		Vakken
+	</div>
+
+	<div class="body" id="getExternalClasses">
+		{{#unless externalClasses}}
+			<div style="position: relative; width: 100%; text-align: center; font-size: 16px">
+				Vakken aan het ophalen...<br>
+				<div id="spinner"></div>
+			</div>
+		{{else}}
+			<div>
+				We hebben geprobeerd zoveel mogelijk vakken automatisch op te halen.<br>
+				Verwijder overbodige vakken en wijzig onjuiste informatie, vakken kun je later toevoegen.
+			</div>
+			<div id="result">
+				{{#each externalClasses}}
+					<div id="{{_id.toHexString}}">
+						<i style="cursor: pointer" class="fa fa-times"></i>
+						<span class="input-group-addon"><i></i></span>
+						<div id="classTitle">{{name}}</div>
+						<input class="form-control" type="text" id="method" placeholder="Methode"/>
+					</div>
+				{{/each}}
+			</div>
+		{{/unless}}
+	</div>
+
+	{{> setupFooter}}
+</template>

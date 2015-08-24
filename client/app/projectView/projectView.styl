@@ -1,11 +1,11 @@
-@import '../../main'
-@import "jeet"
+@require '../../utils'
+@require "jeet"
 
-div.head1
-	col(8/12)
-
-div.head2
-	col(4/12)
+//div.head1
+//	col(8/12)
+//
+//div.head2
+//	col(4/12)
 
 div.projectInfoContainer
 	padding-top: 5px
@@ -163,18 +163,6 @@ div.projectHeader:hover span#changeProjectIcon
 +mobile()
 	span#changeProjectIcon
 		opacity: 1 !important
-
-button#leaveProjectButton
-	col(10/12)
-	shift(2/12)
-	float: initial
-	text-align: center
-
-	+mobile()
-		shift()
-		col()
-		width: 100%
-		float: initial
 
 +mobile()
 	div.projectHeader

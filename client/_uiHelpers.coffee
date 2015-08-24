@@ -26,6 +26,8 @@ http://tomsmeding.nl/
 	labels = _.extend { main: "oké", second: "annuleren" }, labels
 	styles = _.extend { main: "btn-default", second: "btn-default" }, styles
 
+	bootbox.hideAll()
+
 	bootbox.dialog
 		title: title
 		message: body.replace /\n/ig, "<br>"
@@ -84,16 +86,20 @@ http://tomsmeding.nl/
 # Sets the given `selector` to show an error state.
 #
 # @method setFieldError
-# @param selector {jQuery|String} The thing to show on error on.
+# @param selector {jQuery|String} The thing to show an error on.
 # @param message {String} The message to show as error.
 # @param [trigger="manual"] {String} When to trigger the bootstrap tooltip.
 # @param {jQuery} The given `selector`.
 ###
 @setFieldError = (selector, message, trigger = "manual") ->
 	(if selector.jquery? then selector else $(selector))
-		.addClass "error"
-		.tooltip placement: "bottom", title: message, trigger: trigger
-		.tooltip "show"
+		.addClass 'error'
+		.tooltip placement: 'bottom', title: message, trigger: trigger
+		.tooltip 'show'
+		.on 'input change', ->
+			$(this)
+				.removeClass 'error'
+				.tooltip 'destroy'
 
 	selector
 
@@ -101,16 +107,19 @@ http://tomsmeding.nl/
 # Checks if a given field is empty, if so returns true and displays an error message for the user.
 #
 # @method empty
-# @param inputId {String} The ID of the field.
-# @param groupId {String} The ID of the group of the field.
+# @param inputSelector {jQuery|String}
+# @param groupSelector {jQuery|String}
 # @param message {String} The error message to show to the user.
 # @return {Boolean} If the given field was empty.
 ###
-@empty = (inputId, groupId, message) ->
-	if $("##{inputId}").val() is ""
-		$("##{groupId}").addClass("error").tooltip(placement: "bottom", title: message).tooltip("show")
-		return true
-	return false
+@empty = (inputSelector, groupSelector, message) ->
+	$input = (if inputSelector.jquery? then inputSelector else $ inputSelector)
+	$group = (if groupSelector.jquery? then groupSelector else $ groupSelector)
+
+	if $input.val() is ''
+		setFieldError $group, message
+		yes
+	else no
 
 ###*
 # Force Beatrix to speak out the given `text`.
@@ -311,17 +320,6 @@ class @NotificationsManager
 @notify = (body, type = "default", time = 4000, dismissable = yes, priority = 0) -> NotificationsManager.notify { body: "<b>#{_.escape body}</b>", type, time, dismissable, priority, html: yes, allowDesktopNotifications: no }
 
 ###*
-# Gets the gravatar url of the given `userId`.
-# @method gravatar
-# @param [userId=Meteor.userId()] {User|ObjectID} The object or ID of the user to get the gravatar from.
-# @param [size=100] {Number} The size in pixels that the gravatar shall be.
-# @return {String} A string containing the URL of the gravatar.
-###
-@gravatar = (userId = Meteor.userId(), size = 100) ->
-	user = if _.isString(userId) then Meteor.users.findOne(userId) else userId
-	if user.hasGravatar or _.isEmpty(user.profile.magisterPicture) then "#{user.gravatarUrl}&s=#{size}" else user.profile.magisterPicture
-
-###*
 # 'Slides' the slider to the given destanation.
 # @method slide
 # @param id {String} The ID of the `.sidebarButton` to slide to.
@@ -357,53 +355,88 @@ class @NotificationsManager
 #   @param [options.useAppPrefix=true] {Boolean} Whether or not to use the app prefix ("simplyHomework").
 ###
 @setPageOptions = ({ title, headerTitle, color, useAppPrefix }) ->
-	check title, Match.Optional String
-	check headerTitle, Match.Optional String
-	check color, Match.Optional Match.OneOf String, null
-	check useAppPrefix, Match.Optional Boolean
+	check title,         Match.Optional String
+	check headerTitle,   Match.Optional String
+	check color,         Match.Optional Match.OneOf String,  null
+	check useAppPrefix,  Match.Optional Boolean
 
 	headerTitle ?= title
 	useAppPrefix ?= yes
 
 	if not title? and headerTitle?
-		Session.set "headerPageTitle", headerTitle
+		Session.set 'headerPageTitle', headerTitle
 	else if title? or headerTitle?
-		Session.set "documentPageTitle", if useAppPrefix then "simplyHomework | #{title}" else title
-		Session.set "headerPageTitle", headerTitle
+		Session.set 'documentPageTitle', if useAppPrefix then "simplyHomework | #{title}" else title
+		Session.set 'headerPageTitle', headerTitle
 
 	unless _.isUndefined color
-		Session.set "pageColor", color
+		Session.set 'pageColor', color
 
 ###*
 # Set the current bigNotice.
 # @method setBigNotice
-# @param [options] {Object} The options object. If null the notice will be removed.
+# @param options {Object|null} The options object. If null the notice will be removed.
 # @return {Object} An handle object: { hide, content, onClick, onDismissed }
 ###
 @setBigNotice = (options) ->
 	if options?
 		check options, Object
-		_.defaults options, { theme: "default", onClick: (->), onDismissed: (->), allowDismiss: yes }
+		_.defaults options,
+			theme: 'default'
+			allowDismiss: yes
+			onDismissed: -> setBigNotice null
 
 		currentBigNotice.set options
-		$("body").addClass "bigNoticeOpen"
+		$('body').addClass 'bigNoticeOpen'
 
-		return {
-			hide: -> setBigNotice null
-			content: (content) ->
-				if content?
-					currentBigNotice.set _.extend currentBigNotice.get(), { content }
-					return content
-				else
-					return currentBigNotice.get().content
+		hide: -> setBigNotice null
+		content: (content) ->
+			if content?
+				currentBigNotice.set _.extend currentBigNotice.get(), { content }
+				content
+			else
+				currentBigNotice.get().content
 
-			onClick: (callback) -> currentBigNotice.set _.extend currentBigNotice.get(), onClick: callback
-			onDismissed: (callback) -> currentBigNotice.set _.extend currentBigNotice.get(), onDismissed: callback
-		}
-	else
+		onClick: (onClick) ->
+			if _.isFunction onClick
+				currentBigNotice.set _.extend currentBigNotice.get(), { onClick }
+
+		onDismissed: (onDismissed) ->
+			if _.isFunction onDismissed
+				currentBigNotice.set _.extend currentBigNotice.get(), { onDismissed }
+
+	else if _.isNull options
 		currentBigNotice.set null
-		$("body").removeClass "bigNoticeOpen"
-		return undefined
+		$('body').removeClass 'bigNoticeOpen'
+		undefined
+
+###*
+# @method showModal
+# @param name {String} The ID of the modal, has to be the same as the template name.
+# @param [options] {Object}
+# @return {Function} When called, removes the newely spawned modal.
+###
+@showModal = (name, options, data) ->
+	check name, String
+	check options, Match.Optional Object
+
+	view = (
+		if data?
+			Blaze.renderWithData Template[name], data, document.body
+		else
+			Blaze.render Template[name], document.body
+	)
+	$modal = $ "##{name}"
+	$modal
+		.modal options
+		.on 'hidden.bs.modal', ->
+			Blaze.remove view
+			options?.onHide?()
+
+		.find('input[type="text"]:first-child')
+		.focus()
+
+	-> $modal.modal 'hide'
 
 Meteor.startup ->
 	Session.setDefault "pageTitle", "simplyHomework"
@@ -417,29 +450,27 @@ Meteor.startup ->
 
 	notification = null
 	Tracker.autorun ->
-		if Meteor.userId()? and htmlNotify.isSupported and !("ActiveXObject" of window)
+		if Meteor.userId()? and htmlNotify.isSupported and ('ActiveXObject' not of window)
 			switch htmlNotify.permissionLevel()
-				when "default"
+				when 'default'
 					notification = setBigNotice
-						content: "Wij hebben je toestemming nodig om bureaubladmeldingen weer te kunnen geven."
+						content: 'Wij hebben je toestemming nodig om bureaubladmeldingen weer te kunnen geven.'
 						onClick: ->
 							htmlNotify.requestPermission (result) ->
 								notification?.hide()
-								Session.set "allowNotifications", result is "granted"
-				when "granted"
+								Session.set 'allowNotifications', result is 'granted'
+				when 'granted'
 					notification?.hide()
-					Session.set "allowNotifications", yes
+					Session.set 'allowNotifications', yes
 
-	Session.set "isPhone", window.matchMedia("only screen and (max-width: 760px)").matches or /android|iphone|ipod|blackberry|windows phone/i.test navigator.userAgent
+	Session.set 'isPhone',
+		window.matchMedia?('only screen and (max-width: 760px)')?.matches or
+		/android|iphone|ipod|blackberry|windows phone/i.test navigator.userAgent
 
-	UI.registerHelper "isPhone", -> Session.get "isPhone"
-	UI.registerHelper "empty", -> return this is 0
-	UI.registerHelper "first", (arr) -> EJSON.equals this, _.first arr
-	UI.registerHelper "last", (arr) -> EJSON.equals this, _.last arr
-	UI.registerHelper "minus", (base, substraction) -> base - substraction
-	UI.registerHelper "gravatar", gravatar
-	UI.registerHelper "has", (feature) -> has feature
-	UI.registerHelper "currentYear", -> new Date().getUTCFullYear()
+	UI.registerHelper 'currentYear', -> new Date().getUTCFullYear()
+	UI.registerHelper 'gravatar', gravatar
+	UI.registerHelper 'has', has
+	UI.registerHelper 'isPhone', -> Session.get 'isPhone'
 
 	# TODO: Remove the console.infos.
 	disconnectedNotify = null
