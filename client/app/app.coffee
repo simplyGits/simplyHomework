@@ -124,6 +124,9 @@ classEngine = new Bloodhound
 
 # == Modals ==
 
+Template.addClassModal.helpers
+	externalClasses: -> externalClasses.get()
+
 Template.addClassModal.events
 	"click #goButton": (event) ->
 		name = Helpers.cap $("#classNameInput").val()
@@ -198,15 +201,22 @@ Template.addClassModal.onRendered ->
 
 	$('#classNameInput').typeahead null,
 		source: classEngine.ttAdapter()
-		displayKey: "name"
+		displayKey: 'name'
+
+	@subscribe 'scholieren.com'
+	@subscribe 'classes', yes
+	@autorun ->
+		classEngine.clear()
+		classEngine.add ScholierenClasses.find().fetch()
 
 	Meteor.call 'getExternalClasses', (e, r) -> externalClasses.set r unless e?
 
 Template.settingsModal.events
 	'click button': -> $('#settingsModal').modal 'hide'
-	'click #schedularPrefsButton': -> App.showModal 'plannerPrefsModal'
-	'click #accountInfoButton': -> App.showModal 'accountInfoModal'
-	'click #deleteAccountButton': -> App.showModal 'deleteAccountModal'
+	'click #schedularPrefsButton': -> showModal 'plannerPrefsModal'
+	'click #externalServicesButton': -> showModal 'externalServicesModal'
+	'click #accountInfoButton': -> showModal 'accountInfoModal'
+	'click #deleteAccountButton': -> showModal 'deleteAccountModal'
 	'click #startTourButton': -> App.runTour()
 	'click #logOutButton': -> App.logout()
 
@@ -393,21 +403,8 @@ Template.sidebar.helpers
 Template.sidebar.events
 	"click .bigSidebarButton": (event) -> slide $(event.target).attr "id"
 
-	"click .sidebarFooterSettingsIcon": -> App.showModal 'settingsModal'
-	"click #addClassButton": ->
-		# Reset AddClassModal inputs
-		$('#classNameInput').val ''
-		$('#courseInput').val ''
-		$('#bookInput').val ''
-		$('#colorInput').colorpicker 'setValue', '#333'
-
-		App.showModal 'addClassModal'
-
-		addClassComp = Tracker.autorun ->
-			Meteor.subscribe "scholieren.com"
-
-			classEngine.clear()
-			classEngine.add ScholierenClasses.find().fetch()
+	"click .sidebarFooterSettingsIcon": -> showModal 'settingsModal'
+	"click #addClassButton": -> showModal 'addClassModal'
 
 # == End Sidebar ==
 
@@ -474,16 +471,18 @@ Template.app.events
 	'click #bigNotice > #content': -> currentBigNotice.get().onClick? arguments...
 	'click #bigNotice > #dismissButton': -> currentBigNotice.get().onDismissed? arguments...
 
-Template.app.rendered = ->
+Template.app.onRendered ->
 	# REFACTOR THE SHIT OUT OF THIS.
 
-	if Meteor.userId()? and not Meteor.user().emails[0].verified and
-	not Session.get('showedMailVerificationWarning') and
+	mailVerified = Helpers.emboxValue ->
+		Meteor.userId() and Meteor.user().emails[0].verified
+
+	if not mailVerified and not Session.get('showedMailVerificationWarning') and
 	Helpers.daysRange(Meteor.user().creationDate, new Date(), no) >= 2
 		notify 'Je hebt je account nog niet geverifiëerd.\nCheck je email!', 'warning'
 		Session.set 'showedMailVerificationWarning', yes
 
-	val = Meteor.user().profile.birthDate
+	val = Helpers.emboxValue -> Meteor.user().profile.birthDate
 	now = new Date()
 	if not amplify.store('congratulated') and val? and Helpers.datesEqual now, val
 		swalert

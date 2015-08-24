@@ -15,13 +15,28 @@ body.bigNoticeOpen #app
 	absolute: left top right
 	height: noticeHeight
 	z-index: 300
+
 	text-align: center
+	+mobile()
+		text-align: left
 
 	#content
 		display: inline-block
-		cursor: pointer
+		height: 100%
+		overflow: hidden
 		line-height: noticeHeight
 		font-size: 20px
+		text-overflow: ellipsis
+		cursor: pointer
+
+		+mobile()
+			display: block
+			width: calc(100% - 60px)
+			margin-left: 15px
+			margin-top: 3px
+			font-size: 15px
+			text-align: left
+			line-height: initial
 
 	#content:hover
 		text-decoration: underline
@@ -34,28 +49,8 @@ body.bigNoticeOpen #app
 		line-height: 40px
 
 #bigNotice.default
-	textColor = white
-
 	background-color: #2ECC40
-	animation: bigNoticeDefaultAnimation 4s ease-in-out infinite
-
-	#content
-		color: textColor
-
-	#dismissButton
-		color: textColor
-
-@keyframes bigNoticeDefaultAnimation {
-	0% {
-		background-color: #2ECC40
-	}
-	50% {
-		background-color: #4AE25C
-	}
-	100% {
-		background-color: #2ECC40
-	}
-}
+	color: white
 
 #wrapper
 	absolute: top left 200px right 50px bottom

@@ -75,5 +75,15 @@ Debug = {
 				callback && callback.apply(this, arguments);
 			},
 		});
-	}
+	},
+
+	/**
+	 * Reloads the page the way Meteor does with a hot code push, thus saving
+	 * the state of packages, that use `Reload._onMigrate`.
+	 *
+	 * @method reload
+	 */
+	reload: function () {
+		Reload._reload();
+	},
 };

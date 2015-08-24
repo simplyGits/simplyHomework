@@ -1,0 +1,48 @@
+@require "../../utils"
+@require "jeet"
+
+.externalServiceButton, .externalServiceResult
+	margin-top: 10px
+
+.externalServiceButton
+	cursor: pointer
+	width: 100%
+	text-align: center
+	font-size: 17px
+
+	padding = 10px
+	padding-top: padding
+	padding-bottom: padding
+
+	border: 1px lightgray solid
+
+.externalServiceButton:hover
+	border-color: darkgray
+
+.externalServiceResult
+	position: relative
+	border: 1px lightgray solid
+	padding: 10px
+
+	.deleteButton
+		absolute: right 10px bottom 10px
+
+	h1
+		roboto(300)
+		text-align: center
+		margin-top: 0
+
+	#center
+		center(85%)
+
+		span
+			display: table-cell
+			margin-left: 15px
+			font-size: 20px
+			word-wrap: break-word
+			overflow-x: hidden
+			max-width: calc(100% - 115px)
+
+	#center > *
+		float: left
+

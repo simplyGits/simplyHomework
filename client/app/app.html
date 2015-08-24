@@ -40,6 +40,7 @@
 
 				<div class="modal-body">
 					<button class="btn btn-default" id="schedularPrefsButton">Planner Voorkeuren</button>
+					<button class="btn btn-default" id="externalServicesButton">Integraties beheren</button>
 					<button class="btn btn-default" id="accountInfoButton">Account info aanpassen</button>
 					<button class="btn btn-default" id="deleteAccountButton">Account verwijderen</button>
 					<button class="btn btn-default" id="startTourButton">Start rondleiding</button>
@@ -128,17 +129,15 @@
 					<h4 class="modal-title">Vak toevoegen</h4>
 				</div>
 				<div class="modal-body">
-					{{#with magisterClasses}}
-						{{#unless empty}}
-							<h3>Kies een vak van Magister</h3>
-							{{#each this}}
-								<div class="classRow">
-									<div class="classname"></div>
-									<button type="button" class="btn btn-primary">toevoegen</button>
-								</div>
-							{{/each}}
-							<h3>Of maak zelf een vak</h3>
-						{{/unless}}
+					{{#with externalClasses}}
+						<h3>Kies een extern vak</h3>
+						{{#each this}}
+							<div class="classRow">
+								<div class="classname"></div>
+								<button type="button" class="btn btn-primary">toevoegen</button>
+							</div>
+						{{/each}}
+						<h3>Of maak zelf een vak</h3>
 					{{/with}}
 					<form class="vertical full-width">
 						<div id="nameGroup" class="group">
@@ -356,6 +355,25 @@
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">Annuleren</button>
 					<button type="button" class="btn btn-danger" id="goButton">Verwijder</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</template>
+
+<template name="externalServicesModal">
+	<div class="modal fade" aria-hidden="true" id="externalServicesModal">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+					<h4 class="modal-title">Integraties</h4>
+				</div>
+				<div class="modal-body">
+					{{> externalServices}}
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary" data-dismiss="modal">Oké</button>
 				</div>
 			</div>
 		</div>

@@ -1,6 +1,4 @@
 <template name="classView">
-	{{> changeClassModal}}
-
 	<div class="container-fluid">
 		<div class="row">
 			<div class="robotoHeader overviewHeader" id="classHeader">
@@ -11,7 +9,7 @@
 		</div>
 		<div class="divider" style="border-color: {{classColor}}"></div>
 		<div class="gradeInfoContainer">
-			{{#if loadingGrades}}
+			{{#unless Template.subscriptionsReady}}
 				<div style="width: 100%; text-align: center; opacity: .7; position: absolute; top: 50%; transform: translateY(-50%); word-break: break-word">
 					Cijfers laden...
 				</div>
@@ -38,17 +36,17 @@
 						Geen cijfers gevonden.
 					</div>
 				{{/if}}
-			{{/if}}
+			{{/unless}}
 		</div>
 		<div class="row">
 			<div class="col-sm-6">
-				<div class="itemContainer studyGuides">
+				<div class="itemContainer studyUtils">
 					<div class="robotoThin itemContainerHeader">
 						Studiewijzers
 					</div>
 					<div class="itemContainerContent">
-						{{#each studyGuides}}
-							{{> studyGuide}}
+						{{#each studyUtils}}
+							{{> studyUtil}}
 						{{/each}}
 					</div>
 				</div>
@@ -99,18 +97,18 @@
 	</div>
 </template>
 
-<template name="studyGuide">
-	<div class="studyGuide">
-		<div class="studyGuideName">
+<template name="studyUtil">
+	<div class="studyUtil">
+		<div class="studyUtilName">
 			<span>{{name}}</span>
 		</div>
 		{{#each parts}}
-			<div class="studyGuidePart">
+			<div class="studyUtilPart">
 				{{name}}
-				<div class="studyGuidePartDescription">{{description}}</div>
-				{{#each _files}}
+				<div class="studyUtilPartDescription">{{description}}</div>
+				{{#each files}}
 					<a href="{{url}}" target="_blank">
-						<div class="studyGuidePartFile">
+						<div class="studyUtilPartFile">
 							{{name}}
 						</div>
 					</a>

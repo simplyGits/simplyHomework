@@ -1,13 +1,13 @@
 <template name="setup">
-	<div class="appNameHeader" style="position: fixed; top: 0; left: 5px; color: black; font-size: 1.5em"></div>
-	<div class="setup">
+	<div class="appNameHeader setupAppNameHeader"></div>
+	<div id="setup">
 		{{> Template.dynamic template=currentSetupItem}}
 	</div>
 </template>
 
 <template name="setupFooter">
 	<div class="footer">
-		<button class="btn btn-primary" data-action="nextItem">
+		<button class="btn btn-primary">
 			{{#if isLast}}
 				afronden
 			{{else}}
@@ -17,7 +17,7 @@
 	</div>
 </template>
 
-<template name="welcome">
+<template name="setup-welcome">
 	<div class="header">
 		Hey!
 	</div>
@@ -33,42 +33,19 @@
 	{{> setupFooter}}
 </template>
 
-<template name="externalServices">
+<template name="setup-externalServices">
 	<div class="header">
 		Integraties
 	</div>
 
 	<div class="body">
-		<div id="description">
-			Login met elke site waarmee je wilt.
-			Je kan met meerdere sites {{! (ook van dezelfde site) }}inloggen.
-		</div>
-
-		{{#each externalServices}}
-			{{#if loginNeeded}}
-				{{#if profileData}}
-					<div class="externalServiceResult">
-						<h1>{{friendlyName}}</h1>
-						<div id="center">
-							<img src="{{profileData.picture}}" width="100" height="100"/>
-
-							<span>Ingelogd als <strong>{{profileData.nameInfo.firstName}}</strong><br>
-							{{profileData.courseInfo.year}} {{profileData.courseInfo.schoolVariant}}</span>
-						</div>
-					</div>
-				{{else}}
-					<div class="externalServiceButton">
-						Inloggen met {{friendlyName}}
-					</div>
-				{{/if}}
-			{{/if}}
-		{{/each}}
+		{{> externalServices}}
 	</div>
 
 	{{> setupFooter}}
 </template>
 
-<template name="extractInfo">
+<template name="setup-extractInfo">
 	<div class="header">
 		Data importeren
 	</div>
@@ -83,11 +60,22 @@
 			<h2>Profielfoto</h2>
 			<div id="pictureSelector" class="selector">
 				{{#each this}}
-					<img src="{{value}}" height="100" width="100" class="{{isSelected}}"/>
+				<img src="{{value}}" title="{{fetchedBy}}" alt="{{fetchedBy}}" height="100" width="100" class="{{isSelected}}"/>
 				{{/each}}
 			</div>
 			<hr>
 		{{/with}}
+
+		{{#unless hasSchool}}
+			<h2>School</h2>
+			<form class="vertical full-width">
+				<div id="schoolGroup" class="group">
+					<label for="schoolInput">Schoolnaam</label>
+					<input type="text" id="schoolInput" />
+				</div>
+			</form>
+			<hr>
+		{{/unless}}
 
 		<h2>Profielinfo</h2>
 		{{#with courseInfos}}
@@ -138,7 +126,7 @@
 	</div>
 </template>
 
-<template name="plannerPrefs">
+<template name="setup-plannerPrefs">
 	<div class="header">
 		Planner voorkeuren
 	</div>
@@ -155,7 +143,7 @@
 	{{> setupFooter}}
 </template>
 
-<template name="getExternalClasses">
+<template name="setup-getExternalClasses">
 	<div class="header">
 		Vakken
 	</div>

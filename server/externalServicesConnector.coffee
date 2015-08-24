@@ -116,12 +116,12 @@ Meteor.methods
 			catch e
 				# TODO: Error pushing seems broken, if it's fixed remove the log line.
 				console.log 'error while fetching grades from service.', e
-				handleServiceError e
+				handleServiceError externalService.name, e
 				errors.push e
+				continue
 
 			for grade in result ? []
 				# Update the grade if we're on the server and if it's changed.
-				console.log not grade?
 				continue unless grade?
 				val = StoredGrades.findOne
 					ownerId: userId
@@ -163,8 +163,9 @@ Meteor.methods
 				result = externalService.getStudyUtils userId
 			catch e
 				console.log 'error while fetching studyUtils from service.', e
-				handleServiceError e
+				handleServiceError externalService.name, e
 				errors.push e
+				continue
 
 			for studyUtil in result ? []
 				val = StudyUtils.findOne
@@ -212,8 +213,9 @@ Meteor.methods
 				result = externalService.getCalendarItems userId, from, to
 			catch e
 				console.log 'error while fetching calendarItems from service.', e
-				handleServiceError e
+				handleServiceError externalService.name, e
 				errors.push e
+				continue
 
 			for calendarItem in result ? []
 				val = CalendarItems.findOne
@@ -281,7 +283,12 @@ Meteor.methods
 
 		services = _.filter Services, (s) -> s.getClasses? and s.active userId
 		for service in services
-			classes = service.getClasses userId
+			try
+				classes = service.getClasses userId
+			catch e
+				console.log 'error while fetching classes from service.', e
+				continue
+
 			result = result.concat classes.map (c) ->
 				_class = Classes.findOne
 					$or: [
@@ -357,7 +364,7 @@ Meteor.methods
 		try
 			result = service.getSchools query
 		catch e
-			handleServiceError e
+			handleServiceError service.name, e
 			throw new Meteor.Error 'externalError', "Error while retreiving schools from #{serviceName}"
 
 		for school in result
@@ -397,18 +404,27 @@ Meteor.methods
 		try
 			service.getProfileData userId
 		catch e
-			handleServiceError e
+			handleServiceError service.name, e
 			throw new Meteor.Error 'externalError', "Error while retreiving profile data from #{serviceName}", e.toString()
 
+	###*
+	# Gets the profile data for every enabled external service as an object. Key
+	# is set to the dbname of the service, the value is set to the profile data of
+	# that service.
+	#
+	# @method getProfileData
+	# @param [userId=this.userId] {String} The ID of the user to get the profile data for.
+	# @return {Object}
+	###
 	'getProfileData': (userId = @userId) ->
 		@unblock()
 		check userId, String
 
 		services = _.filter(Services, (s) -> s.active userId)
-		res = new Array services.length
+		res = {}
 
-		for service, i in services
-			res[i] = Meteor.call 'getServiceProfileData', serviceName, userId
+		for service in services
+			res[service.name] = Meteor.call 'getServiceProfileData', service.name, userId
 		res
 
 	###*
@@ -439,10 +455,22 @@ Meteor.methods
 				throw new Meteor.Error 'forbidden', 'Login credentials incorrect.'
 			else if _.isString res # other error
 				throw new Meteor.Error 'error', 'Other error.', res
-				handleServiceError res
+				handleServiceError service.name, res
 		else
 			throw new Meteor.Error 'notfound', "No module with the name '#{serviceName}' found."
 		Meteor.call 'getServiceProfileData', serviceName, @userId
+
+	'deleteServiceData': (serviceName, userId = @userId) ->
+		@unblock()
+
+		check serviceName, String
+		check userId, String
+
+		service = _.find Services, (s) -> s.name is serviceName
+		if service?
+			service.storedInfo userId, null
+		else
+			throw new Meteor.Error 'notfound', "No module with the name '#{serviceName}' found."
 
 handleServiceError = (serviceName, error) ->
 	ExternalServiceErrors.insert
@@ -473,7 +501,7 @@ Meteor.publish 'externalCalendarItems', (from, to) ->
 		startDate: $gte: from
 		endDate: $lte: to
 
-Meteor.publish 'externalGrades', ->
+Meteor.publish 'externalGrades', (classId) ->
 	unless @userId?
 		@ready()
 		return undefined
@@ -489,6 +517,25 @@ Meteor.publish 'externalGrades', ->
 
 	StoredGrades.find
 		ownerId: @userId
+		classId: classId
+
+Meteor.publish 'externalStudyUtils', (classId) ->
+	unless @userId?
+		@ready()
+		return undefined
+
+	@unblock()
+
+	handle = Helpers.interval (=>
+		Meteor.call 'updateStudyUtils', @userId, no, yes
+	), 1000 * 60 * 20 # 20 minutes
+
+	@onStop ->
+		Meteor.clearInterval handle
+
+	StudyUtils.find
+		ownerId: @userId
+		classId: classId
 
 Meteor.publish 'moduleInfo', ->
 	@unblock()

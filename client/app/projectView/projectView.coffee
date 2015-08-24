@@ -1,5 +1,6 @@
 currentProject = -> Router.current().data()
 cachedProjectFiles = new ReactiveVar {}
+addQueue = new ReactiveVar []
 
 # == Notes:
 # - 2 methods for basicly the same thing is a bit ugly.
@@ -72,7 +73,7 @@ Template.projectView.onRendered ->
 
 	Mousetrap.bind "a p", (e) ->
 		e.preventDefault()
-		$("#addParticipantModal").modal backdrop: no
+		showModal 'addParticipantModal'
 		$("#personNameInput").focus()
 
 Template.projectView.helpers
@@ -141,13 +142,14 @@ Template.projectView.events
 
 	"click #addPersonIcon": ->
 		subs.subscribe "usersData"
-		$("#personNameInput").val ""
-		$("#addParticipantModal").modal backdrop: no
+		showModal 'addParticipantModal'
 
 	"click #changeProjectIcon": ->
 		ga "send", "event", "button", "click", "projectInfoChange"
 
-		$("#changeDeadlineInput").datetimepicker
+		showModal 'changeProjectModal', undefined, currentProject
+
+		$('#changeDeadlineInput').datetimepicker
 			locale: moment.locale()
 			defaultDate: currentProject().deadline
 			icons:

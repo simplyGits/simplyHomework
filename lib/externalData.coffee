@@ -41,6 +41,11 @@
 	)
 	trans res if res?
 
+@getProfileDataPerService = ->
+	userId = _.find arguments, (a) -> _.isString a
+	callback = _.find arguments, (a) -> _.isFunction a
+	Meteor.call 'getProfileData', userId ? Meteor.userId(), callback
+
 @getServicePicture = (service, userId = Meteor.userId()) ->
 	check service, String
 	check userId, String
@@ -55,12 +60,45 @@
 # @return {String} A string containing the URL of the gravatar.
 ###
 @picture = (userId = Meteor.userId(), size = 100) ->
-	user = if _.isString(userId) then Meteor.users.findOne(userId) else userId
-	info = user.profile.pictureInfo
+	try
+		user = if _.isString(userId) then Meteor.users.findOne(userId) else userId
+		info = user.profile.pictureInfo
 
-	switch info.fetchedBy
-		when 'gravatar' then "#{info.url}&s=#{size}"
-		when 'magister' then info.url
-		else throw new Error "Don't know anything about '#{info.fetchedBy}'"
+		switch info.fetchedBy
+			when 'gravatar' then "#{info.url}&s=#{size}"
+			when 'magister' then info.url
+			else throw new Error "Don't know anything about '#{info.fetchedBy}'"
 
 @gravatar = @picture
+
+@getAvailableClasses = ->
+	clean = (s) -> s.replace(/\W/g, '').toLowerCase()
+
+	Meteor.subscribe 'scholieren.com'
+	Meteor.subscribe 'woordjesleren'
+
+	res = []
+	results = [
+		ScholierenClasses.find().fetch()
+		WoordjesLerenClasses.find().fetch()
+	]
+
+	for result in results
+		for c in result
+			classBase = _.find res, (x) -> clean(x.name) is clean(c.name)
+			if classBase?
+				_.defaults classBase, c
+			else
+				res.push c
+				classBase = c
+
+			for b in c.books ? []
+				bookBase = _.find classBase.books, (x) ->
+					console.log x, b
+					clean(x.title) is clean(b.title)
+				if bookBase?
+					_.defaults bookBase, b
+				else
+					classBase.books.push c
+
+	res

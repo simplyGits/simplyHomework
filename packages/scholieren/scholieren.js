@@ -7,6 +7,10 @@ if (settings == null) {
 }
 
 Scholieren = {
+	name: 'scholieren',
+	friendlyName: 'Scholieren.com',
+	loginNeeded: false,
+
 	getClasses: function (options) {
 		options = options || {};
 
