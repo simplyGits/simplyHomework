@@ -44,7 +44,7 @@
     "max_line_length": {
         "value": 100,
         "level": "warn",
-        "limitComments": false
+        "limitComments": true
     },
     "missing_fat_arrows": {
         "level": "ignore",
@@ -101,13 +101,13 @@
         "level": "ignore"
     },
     "no_unnecessary_fat_arrows": {
-        "level": "warn"
+        "level": "error"
     },
     "non_empty_constructor_needs_parens": {
         "level": "ignore"
     },
     "prefer_english_operator": {
-        "level": "error",
+        "level": "warn",
         "doubleNotLevel": "ignore"
     },
     "space_operators": {

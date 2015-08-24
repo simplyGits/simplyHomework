@@ -1,41 +1,26 @@
 currentDate = new ReactiveVar Date.today()
-cachedAppointments = ReactiveVar {}
-
-appointmentToMobileCalendar = (appointment) -> _.extend appointment,
-	__colorType: (
-		if appointment.scrapped() then "scrapped"
-		else switch appointment.infoType()
-			when 1 then "homework"
-			when 2, 3 then "quiz"
-			when 4, 5 then "test"
-
-			else ""
-	)
-
-	__classSchoolHour: appointment.beginBySchoolHour() ? ""
-	__className: (
-		if not appointment.classes()[0]?
-			appointment.description()
-		else if (val = Helpers.cap appointment.classes()[0]).length <= 24
-			val
-		else
-			appointment.description().split("-")[0].trim()
-	)
-	__classLocation: appointment.location() ? ""
-	__classTime: if appointment.fullDay() then "hele dag" else "#{moment(appointment.begin()).format("HH:mm")}-#{moment(appointment.end()).format("HH:mm")}"
 
 calendarItemToMobileCalendar = (calendarItem) -> _.extend calendarItem,
-	__colorType: ""
-	__classSchoolHour: ""
-	__className: if calendarItem.classId? then Classes.findOne(calendarItem.classId).name else ""
-	__classLocation: ""
-	__classTime: (
-		start = calendarItem.startDate
-		end = calendarItem.endDate
-		isFullDay = start.getHours() is 0 and start.getMinutes() is 0 and (end - start) is 86400000
+	__colorType: (
+		if calendarItem.scrapped then 'scrapped'
+		else switch calendarItem.content?.type
+			when 'homework' then 'homework'
+			when 'test', 'exam' then 'test'
+			when 'quiz', 'oral' then 'quiz'
 
-		if isFullDay then "hele dag"
-		else "#{moment(start).format("HH:mm")}-#{moment(end).format("HH:mm")}"
+			else ''
+	)
+	__classSchoolHour: calendarItem.schoolHour ? ''
+	__className: calendarItem.description ? Classes.findOne(calendarItem.classId)?.name ? ''
+	__classLocation: calendarItem.location ? ''
+	__classTime: (
+		if calendarItem.fullDay
+			'hele dag'
+		else
+			start = calendarItem.startDate
+			end = calendarItem.endDate
+
+			"#{moment(start).format("HH:mm")}-#{moment(end).format("HH:mm")}"
 	)
 
 Template.mobileCalendar.helpers
@@ -47,7 +32,7 @@ Template.mobileCalendarPage.helpers
 
 oldPage = 0
 Template.mobileCalendar.rendered = ->
-	@autorun -> Meteor.subscribe "calendarItems"
+	@subscribe 'externalCalendarItems', currentDate.get(), currentDate.get()
 
 	calendar = new SwipeView ".mobileCalendar"
 
@@ -55,14 +40,10 @@ Template.mobileCalendar.rendered = ->
 		Blaze.renderWithData Template.mobileCalendarPage, (->
 			current = $("#swipeview-slider > div").index calendar.masterPages[i]
 
-			res = []
-			res.pushMore magisterAppointment(currentDate.get().addDays current - 1, yes).map appointmentToMobileCalendar
-			res.pushMore CalendarItems.find(
-				startDate: currentDate.get().date()
-				endDate: currentDate.get().date().addDays 1
-			)
-
-			return res
+			CalendarItems.find {
+				startDate: $lte: currentDate.get().date()
+				endDate: $gt: currentDate.get().date()
+			}, transform: calendarItemToMobileCalendar
 		), calendar.masterPages[i]
 
 	calendar.onFlip ->

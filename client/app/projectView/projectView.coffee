@@ -1,21 +1,28 @@
-root = @
 currentProject = -> Router.current().data()
 cachedProjectFiles = new ReactiveVar {}
+addQueue = new ReactiveVar []
 
+# == Notes:
+# - 2 methods for basicly the same thing is a bit ugly.
+# - `__isOwner` is really badly designed, this looks like we specifiy if the
+# 	root user object is the owner, but we specifiy if `Meteor.user()` is the
+# 	owner.
 @getParticipants = ->
-	tmp = []
-	for participant, i in Meteor.users.find({_id: $in: currentProject().participants ? []}, sort: "profile.firstName": 1).fetch()
-		tmp.push _.extend participant,
-			__statusColor: if participant.status.idle then "#FF851B" else if participant.status.online then "#2ECC40" else "#FF4136"
+	return Meteor.users.find({ _id: $in: currentProject().participants ? [] },
+		sort: "profile.firstName": 1
+		transform: (u) -> _.extend u,
+			__status: (
+				if u.status.idle then "inactive"
+				else if u.status.online then "online"
+				else "offline"
+			)
 			__isOwner: Router.current().data().ownerId is Meteor.userId()
-	return tmp
+	).fetch()
 
 @getOthers = ->
-	tmp = []
-	for other, i in Meteor.users.find(_id: $nin: currentProject().participants ? []).fetch()
-		tmp.push _.extend other,
-			fullName: "#{other.profile.firstName} #{other.profile.lastName}"
-	return tmp
+	return Meteor.users.find { _id: $nin: currentProject().participants ? [] },
+		transform: (u) -> _.extend u,
+			fullName: "#{u.profile.firstName} #{u.profile.lastName}"
 
 fileTypes =
 	"application/vnd.google-apps.document":
@@ -40,10 +47,10 @@ fileTypes =
 	queryTokenizer: Bloodhound.tokenizers.whitespace
 	local: []
 
-Template.projectView.rendered = ->
+Template.projectView.onRendered ->
 	@autorun ->
-		root.personsEngine.clear()
-		root.personsEngine.add getOthers()
+		window.personsEngine.clear()
+		window.personsEngine.add getOthers()
 
 	loading = []
 	@autorun ->
@@ -66,7 +73,7 @@ Template.projectView.rendered = ->
 
 	Mousetrap.bind "a p", (e) ->
 		e.preventDefault()
-		$("#addParticipantModal").modal backdrop: no
+		showModal 'addParticipantModal'
 		$("#personNameInput").focus()
 
 Template.projectView.helpers
@@ -80,7 +87,9 @@ Template.projectView.helpers
 	persons: -> _.reject getParticipants(), (p) -> EJSON.equals p._id, Meteor.userId()
 	isOwner: -> Router.current().data().ownerId is Meteor.userId()
 
-	showRightHeader: -> if (currentProject().participants ? []).length is 1 then false else true
+	showRightHeader: ->
+		participants = currentProject().participants
+		participants? and participants.length isnt 1
 	overDue: -> if not currentProject().deadline? or currentProject().deadline > new Date() then "initial" else "darkred"
 	heightOffset: -> if has("noAds") then 260 else 315
 
@@ -133,22 +142,23 @@ Template.projectView.events
 
 	"click #addPersonIcon": ->
 		subs.subscribe "usersData"
-		$("#personNameInput").val ""
-		$("#addParticipantModal").modal backdrop: no
+		showModal 'addParticipantModal'
 
 	"click #changeProjectIcon": ->
 		ga "send", "event", "button", "click", "projectInfoChange"
 
-		$("#changeDeadlineInput").datetimepicker
+		showModal 'changeProjectModal', undefined, currentProject
+
+		$('#changeDeadlineInput').datetimepicker
 			locale: moment.locale()
 			defaultDate: currentProject().deadline
 			icons:
-				time: "fa fa-clock-o"
-				date: "fa fa-calendar"
-				up: "fa fa-arrow-up"
-				down: "fa fa-arrow-down"
-				previous: "fa fa-chevron-left"
-				next: "fa fa-chevron-right"
+				time: 'fa fa-clock-o'
+				date: 'fa fa-calendar'
+				up: 'fa fa-arrow-up'
+				down: 'fa fa-arrow-down'
+				previous: 'fa fa-chevron-left'
+				next: 'fa fa-chevron-right'
 
 		ownClassesEngine = new Bloodhound
 			name: "ownClasses"
@@ -163,34 +173,39 @@ Template.projectView.events
 			displayKey: "name"
 		).on "typeahead:selected", (obj, datum) -> Session.set "currentSelectedClassDatum", datum
 
-		$("#changeProjectModal").modal backdrop: false
-
-	"click .projectInfoChatQuoteContainer": -> ChatManager.openProjectChat @
+	"click .projectInfoChatQuoteContainer": -> ChatManager.openProjectChat this
 
 Template.changeProjectModal.events
-	"click #goButton": ->
-		name = $("#changeNameInput").val().trim()
-		description = $("#changeDescriptionInput").val().trim()
-		deadline = $("#changeDeadlineInput").data("DateTimePicker").getDate().toDate()
-		classId = Session.get("currentSelectedClassDatum")?._id ? currentProject().__class()?._id
+	'click #goButton': ->
+		name = $('#changeNameInput').val().trim()
+		description = $('#changeDescriptionInput').val().trim()
+		deadline = $('#changeDeadlineInput').data('DateTimePicker').getDate().toDate()
+		classId = Session.get('currentSelectedClassDatum')?._id ? currentProject().__class()?._id
 
-		Projects.update currentProject()._id, $set: { name, description, deadline, magisterId: currentProject().magisterId, classId }
+		Projects.update currentProject()._id, $set: {
+			name
+			description
+			deadline
+			classId
+		}
 
-		$("#changeProjectModal").modal "hide"
+		$('#changeProjectModal').modal 'hide'
 
-	"click #leaveProjectButton": ->
-		id = currentProject()._id
-		Router.go "app"
-		Projects.update id, $pull: participants: Meteor.userId()
+	'click #leaveProjectButton': ->
+		Router.go 'app'
+		Projects.update currentProject()._id, $pull: participants: Meteor.userId()
 
-Template.addParticipantModal.rendered = ->
+Template.addParticipantModal.helpers
+	addQueue: -> addQueue.get()
+
+Template.addParticipantModal.onRendered ->
 	personsEngine.initialize()
 
 	$("#personNameInput").typeahead(null,
 		source: personsEngine.ttAdapter()
 		displayKey: "fullName"
 		templates:
-			suggestion: (data) -> "<img class=\"lastChatSenderPicture\" src=\"#{gravatar data}\" width=\"50\" height=\"50\"><span class=\"personSuggestionName\"<b>#{data.fullName}</b>"
+			suggestion: (data) -> Blaze.toHTMLWithData Template.personSuggestion, data
 	).on "typeahead:selected", (obj, datum) -> Session.set "currentSelectedPersonDatum", datum
 
 addUser = ->
@@ -208,7 +223,9 @@ addUser = ->
 
 Template.addParticipantModal.events
 	"click #goButton": addUser
-	"keydown #personNameInput": (event) -> addUser() if event.which is 13
+	'keydown #personNameInput': (event) ->
+		return unless event.which is 13
+
 
 Template.fileRow.events
 	"click .removeFileButton": (event) ->
@@ -220,9 +237,16 @@ Template.fileRow.events
 			else notify "#{@title} verwijderd.", "notice"
 
 Template.personRow.events
-	"click": (event) -> Router.go "personView", @ unless $(event.target).hasClass "removePersonButton"
+	'click': (event) -> Router.go 'personView', this unless $(event.target).hasClass 'removePersonButton'
 
-	"click .removePersonButton": ->
-		alertModal "Zeker weten?", Locals["nl-NL"].ProjectPersonRemovalMessage(@profile.firstName), DialogButtons.OkCancel, { main: "Is de bedoeling", second: "heh!?" }, { main: "btn-danger" }, main: =>
-			Projects.update currentProject()._id, $pull: participants: @_id
-			notify Locals["nl-NL"].ProjectPersonRemovedNotice(@profile.firstName), "notice"
+	'click .removePersonButton': ->
+		alertModal(
+			'Zeker weten?',
+			Locals['nl-NL'].ProjectPersonRemovalMessage(@profile.firstName),
+			DialogButtons.OkCancel,
+			{ main: 'Is de bedoeling', second: 'heh!?' },
+			{ main: 'btn-danger' },
+			main: =>
+				Projects.update currentProject()._id, $pull: participants: @_id
+				notify Locals['nl-NL'].ProjectPersonRemovedNotice(@profile.firstName), 'notice'
+		)

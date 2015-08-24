@@ -46,4 +46,8 @@
 /
 /crypto-base64
 /meteorx
-/npm-container
+
+# npm-container
+npm-container/*
+!npm-container/index.js
+!npm-container/package.js

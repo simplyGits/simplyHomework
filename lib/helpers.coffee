@@ -1,7 +1,6 @@
-root = @
+root = this
 
-@uS = _ 	 # We need underscore sometimes; refer uS to underscore
-@_  = lodash # Shortcut for lo-dash. Replaces underscore.
+@_ = lodash # Shortcut for lo-dash. Replaces underscore.
 
 ###*
 # Returns today as an Date object.
@@ -24,65 +23,27 @@ Date::addDays = (days, newDate = false) ->
 	newDate = false unless Match.test newDate, Boolean
 
 	if newDate
-		return new Date @getTime() + (86400000 * days)
+		new Date @getTime() + (86400000 * days)
 	else
 		@setDate @getDate() + days
-		return @
+		this
 
-Date::date = -> return new Date @getUTCFullYear(), @getMonth(), @getDate()
+Date::date = -> new Date @getUTCFullYear(), @getMonth(), @getDate()
 
 Array::remove = (item) ->
 	if _.isObject(item) and _.contains _.keys(item), "_id"
-		_.remove @, (i) -> EJSON.equals item._id, i._id
+		_.remove this, (i) -> EJSON.equals item._id, i._id
 	else
-		_.remove @, (i) -> EJSON.equals item, i
+		_.remove this, (i) -> EJSON.equals item, i
 
-	return @
-Array::pushMore = (items) -> [].push.apply @, items; return @
-
-###*
-# Checks if the given `mail` is a valid address.
-# @method correctMail
-# @param mail {String} The address to check.
-# @return {Boolean} True if the given mail is valid, otherwise false.
-###
-@correctMail = (mail) -> /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/i.test mail
-
-###*
-# Converts a grade to a number, can be Dutch grade style or English. More can be added.
-# If the `grade` can't be converted it will return NaN.
-#
-# @method gradeConverter
-# @param grade {String|Number} The grade to convert.
-# @return {Number} `grade` converted to a number. Defaults to NaN.
-###
-@gradeConverter = (grade) ->
-	return undefined unless grade?
-	return grade if _.isNumber grade
-
-	# Normal dutch grades
-	val = grade.replace(",", ".").replace(/[^\d\.]/g, "")
-	unless val.length is 0 or _.isNaN(+val)
-		return +val
-
-	# English grades
-	englishGradeMap =
-		"F": 1.7
-		"E": 3.3
-		"D": 5.0
-		"C": 6.7
-		"B": 8.3
-		"A": 10.0
-
-	if _(englishGradeMap).keys().contains(grade.toUpperCase())
-		return englishGradeMap[grade.toUpperCase()]
-
-	return NaN
+	this
+Array::pushMore = (items) -> [].push.apply this, items; return this
 
 ###
 # Static class containing helper methods.
 #
 # @class Helpers
+# @static
 ###
 class @Helpers
 	###*
@@ -118,7 +79,7 @@ class @Helpers
 	# @param date {Date} The Date object to get the weekday from.
 	# @return {Number} The weekday of `date`.
 	###
-	@weekDay: (date) -> if (date.getDay() - 1) >= 0 then date.getDay() - 1 else DayEnum.Sunday
+	@weekDay: (date) -> if (date.getDay() - 1) >= 0 then date.getDay() - 1 else DayEnum.sunday
 
 	###*
 	# Converts the given date to a ISO 8601 format as YYYYMMDD.
@@ -127,7 +88,7 @@ class @Helpers
 	# @param date {Date} A date object to convert.
 	# @return {String} A date as ISO 8601 format as YYYYMMDD.
 	###
-	@dateToIso: (date) -> return date.getUTCFullYear() + Helpers.addZero(date.getUTCMonth() + 1) + Helpers.addZero(date.getUTCDate())
+	@dateToIso: (date) -> date.getUTCFullYear() + Helpers.addZero(date.getUTCMonth() + 1) + Helpers.addZero(date.getUTCDate())
 
 	###*
 	# Converts the given string as ISO 8601 format as YYYYMMDD to a Date object.
@@ -136,7 +97,7 @@ class @Helpers
 	# @param isoDate {String} A date as ISO 8601 format as YYYYMMDD to convert.
 	# @return {Date} The given ISO date as a Date object.
 	###
-	@isoToDate: (isoDate) -> return new Date isoDate[0...4], isoDate[4...6] - 1, isoDate[6...8]
+	@isoToDate: (isoDate) -> new Date isoDate[0...4], isoDate[4...6] - 1, isoDate[6...8]
 
 	###*
 	# Adds a zero in front of the original number if it doesn't yet.
@@ -145,7 +106,7 @@ class @Helpers
 	# @param original {Number|String} The number to add a zero in front to.
 	# @return {String} The number as string with a zero in front of it.
 	###
-	@addZero: (original) -> return if +original < 10 then "0#{original}" else original.toString()
+	@addZero: (original) -> if +original < 10 then "0#{original}" else original.toString()
 
 	###*
 	# Checks if the given original string contains the given query string.
@@ -157,7 +118,13 @@ class @Helpers
 	# @return {Boolean} Whether the original string contains the query string.
 	###
 	@contains: (original, query, ignoreCasing = false) ->
-		return if ignoreCasing then original.toUpperCase().indexOf(query.toUpperCase()) >= 0 else original.indexOf(query) >= 0
+		if ignoreCasing
+			original
+				.toUpperCase()
+				.indexOf(query.toUpperCase()) >= 0
+		else
+			original
+				.indexOf(query) >= 0
 
 	###*
 	# Returns all the matches of the given RegEx tested on the given string as strings.
@@ -174,7 +141,7 @@ class @Helpers
 
 		tmp = []
 		tmp.push item[0] while (item = regex.exec str)?
-		return tmp
+		tmp
 
 	###*
 	# Returns all the matches of the given RegEx tested on the given string with the details.
@@ -193,7 +160,7 @@ class @Helpers
 
 		while (item = regex.exec str)? then tmp.push _.extend item, lastIndex: item.index + item[0].length
 
-		return tmp
+		tmp
 
 	###*
 	# Returns the sum of the values in the given array.
@@ -206,7 +173,7 @@ class @Helpers
 	@getTotal: (arr, mapper) ->
 		sum = 0
 		sum += (if _.isFunction(mapper) then mapper i else i) for i in arr
-		return sum
+		sum
 
 	###*
 	# Returns the average of the values in the given array.
@@ -216,7 +183,7 @@ class @Helpers
 	# @param [mapper] {Function} The function to map the values in the array to before counting it to the average.
 	# @return {Number} The average of the given values.
 	###
-	@getAverage: (arr, mapper) -> return @getTotal(arr, mapper) / arr.length
+	@getAverage: (arr, mapper) -> @getTotal(arr, mapper) / arr.length
 
 	###*
 	# Caps the given string.
@@ -245,12 +212,11 @@ class @Helpers
 			"de"
 			"en"
 			"of"
-			"o'"
+			"o"
 		]
 
-		_(words)
-			.map (word) => if _.contains(nonCapped, word) then word else @cap word
-			.join " "
+		name.toLowerCase().replace /\w+/g, (match) =>
+			if match in nonCapped then match else @cap match
 
 	###*
 	# Find links in the given `string` and converts
@@ -262,16 +228,92 @@ class @Helpers
 	###
 	@convertLinksToAnchor: (string) ->
 		return undefined unless string?
-		return string.replace /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b((\/|\?)[-a-zA-Z0-9@:%_\+.~#?&//=]+)?\b/ig, (match) ->
+		string.replace /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b((\/|\?)[-a-zA-Z0-9@:%_\+.~#?&//=]+)?\b/ig, (match) ->
 			if /^https?:\/\/.+/i.test match
-				return "<a target=\"_blank\" href=\"#{match}\">#{match}</a>"
+				"<a target='_blank' href='#{match}'>#{match}</a>"
 			else
-				return "<a target=\"_blank\" href=\"http://#{match}\">#{match}</a>"
+				"<a target='_blank' href='http://#{match}'>#{match}</a>"
+
+	@interval: (func, interval, bind = yes) ->
+		if bind then func = _.bind func, stop: -> Meteor.clearInterval handle
+		Meteor.defer func
+		handle = Meteor.setInterval func, interval
+
+	###*
+	# Returns an array containg each day of the week starting on monday.
+	# Respects the current moment locale.
+	#
+	# @method weekdays
+	# @return {String[]}
+	###
+	@weekdays: ->
+		_weekdays = moment()._locale._weekdays
+		_(_weekdays)
+			.slice 1
+			.push _weekdays[0]
+			.value()
+
+	###
+	# Returns the strength of the given `password`, Rules (and their weight)
+	# stolen from http://www.passwordmeter.com/
+	#
+	# @method passwordStrength
+	# @param password {String} The password to chec
+	# @return {Number} The strength of `password`.
+	###
+	@passwordStrength: (password) ->
+		uppercaseChars = _.filter password, (c) -> c.toUpperCase() is c
+		lowercaseChars = _.filter password, (c) -> c.toLowerCase() is c
+		numbers = _.reject password, (c) -> isNaN c
+		symbols = _.filter password, (c) -> /[-!$%^&*()_+|~=`{}\[\]:";'<>?,.\/]/.test c
+		middleNumbersOrSymbols =
+			_.filter numbers.concat(symbols), (c, i) -> 0 < i < password.length-1
+		len = password.length
+
+		sum = 0
+		sum += len * 4
+		sum += numbers.length * 4
+		sum += symbols.length * 6
+		sum += middleNumbersOrSymbols.length * 2
+		sum += (len - uppercaseChars.length) * 2
+		sum += (len - lowercaseChars.length) * 2
+		sum
+
+	###*
+	# Checks if the given `mail` is a valid address.
+  #
+	# @method correctMail
+	# @param mail {String} The address to check.
+	# @return {Boolean} True if the given mail is valid, otherwise false.
+	###
+	@correctMail: (mail) -> /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/i.test mail
+
+	###*
+	# Tests if the months and dates of the given two date objects are the same.
+  #
+	# @method datesEqual
+	# @param a {Date}
+	# @param b {Date}
+	# @return {Boolean}
+	###
+	@datesEqual: (a, b) -> a.getMonth() is b.getMonth() and a.getDate() is b.getDate()
+
+	###*
+	# Emboxes the given `fn`, making the current computation only invalidate when
+	# the return value of the given `fn` changes, also makes the `fn` stop
+	# executing if it isn't used in any reactive computation.
+	#
+	# @method emboxValue
+	# @param fn {Function}
+	# @param [equals] {Function} An comperison value used instead of `EJSON.equals`.
+	# @return {any} The return value of `fn`.
+	###
+	@emboxValue: (fn, equals) -> emboxValue(fn, { equals, lazy: yes })()
 
 ###*
 # Checks if the given `user` is in the given `role`.
 # @method userIsInRole
-# @param [user=Meteor.user()] {User} The user to check.
+# @param [user=Meteor.user()] {User|String} The user or its ID to check.
 # @param [role="admin"] {String} The role to check.
 # @return {Boolean} True if the given `user` is in the given `role`.
 ###
@@ -291,10 +333,11 @@ class @Helpers
 # @return {Function} A getter/setter method for the given global class variable.
 ###
 @getset = (varName, pattern = Match.Any, allowChanges = yes, transformIn, transformOut) ->
-	return (newVar) ->
+	(newVar) ->
 		if newVar?
 			if allowChanges
 				@[varName] = if _.isFunction(transformIn) then transformIn newVar else newVar
 			else
-				throw new root.NotAllowedException "Changes on this property aren't allowed"
-		return if _.isFunction(transformOut) then transformOut @[varName] else @[varName]
+				throw new Error "Changes on this property aren't allowed"
+
+		if _.isFunction(transformOut) then transformOut @[varName] else @[varName]

@@ -1,8 +1,15 @@
 // == colors
 errorColor = #F44336
-errorFocusColor = #B61C1C
+errorFocusColor = darken(errorColor, 30%)
+warningColor = #E09D3B
+warningFocusColor = darken(warningColor, 30%)
 successColor = #4CAF50
-successFocusColor = #2E7D32
+successFocusColor = darken(successColor, 30%)
+
+// -- handpicked
+//errorFocusColor = #B61C1C
+//warningFocusColor = #BB7C21
+//successFocusColor = #2E7D32
 
 // == functions
 setFormColors(color, focusColor)
@@ -32,6 +39,7 @@ setFormColors(color, focusColor)
 // Dismiss buttons need to be less 'visible' than the 'main' button.
 // Also contains colored buttons which also don't need a border.
 .btn:not(.btn-trans)[data-dismiss],
+.btn:not(.btn-trans)[data-bb-handler="main"], // BootBox dimiss buttons
 .btn.btn-primary,
 .btn.btn-danger,
 .btn.btn-success {
@@ -66,6 +74,11 @@ setFormColors(color, focusColor)
 .form-control.error:focus
 	border-color: errorFocusColor
 
+.form-control.warning
+	border-color: warningColor
+.form-control.warning
+	border-color: warningFocusColor
+
 .form-control.success
 	border-color: successColor
 .form-control.success:focus
@@ -99,6 +112,23 @@ setFormColors(color, focusColor)
 .tooltip.right .tooltip-arrow
 	border-right-color: rgba(0, 0, 0, .8)
 
+kbd // Stolen from StackExchange's stylesheet.
+	display: inline-block
+	margin: 0 .1em
+	padding: .1em .6em
+
+	background-color: #f7f7f7
+	border: 1px solid #ccc
+	border-radius: 3px
+	box-shadow: 0 1px 0 rgba(0,0,0,0.2),0 0 0 2px #fff inset
+
+	font-size: 11px
+	font-family: Arial, Helvetica, sans-serif
+	text-shadow: 0 1px 0 #fff
+	color: #333
+	line-height: 1.4
+	white-space: nowrap
+
 // == custom forms
 form.vertical.full-width
 	div.group
@@ -109,7 +139,7 @@ form.vertical.full-width
 			width: 100%
 			font-size: 12px
 
-		input, select
+		input:not([type="checkbox"]), select
 			// Remove default vender styling:
 			-moz-appearance: none
 			-webkit-appearance: none
@@ -128,15 +158,6 @@ form.vertical.full-width
 
 		input:focus, select:focus
 			border-color: darkgray
-
-	div.group.no-margin
-		margin-bottom: 0px
-
-	div.group.success
-		setFormColors(successColor, successFocusColor)
-
-	div.group.error
-		setFormColors(errorColor, errorFocusColor)
 
 	div.group.checkbox
 		size = 15px
@@ -188,6 +209,18 @@ form.vertical.full-width
 		border-right: .35rem solid transparent
 		border-bottom: .35rem solid transparent
 		border-left: .35rem solid transparent
+
+	div.group.no-margin
+		margin-bottom: 0px
+
+	div.group.success
+		setFormColors(successColor, successFocusColor)
+
+	div.group.warning
+		setFormColors(warningColor, warningFocusColor)
+
+	div.group.error
+		setFormColors(errorColor, errorFocusColor)
 
 div.colorpicker
 	border-radius: 0

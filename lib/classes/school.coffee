@@ -1,5 +1,3 @@
-root = @
-
 ###*
 # Repesents a school.
 #
@@ -16,13 +14,16 @@ class @School
 	constructor: (@name, @url) ->
 		@_id = new Meteor.Collection.ObjectID()
 
+		@externalId = undefined
+		@fetchedBy = undefined
+
 	###*
 	# Return a cursor pointing to the books that this school uses.
 	#
 	# @method books
 	# @return {Cursor} Cursor pointing to the books this school uses.
 	###
-	getBooks: () -> return root.Books.find { _id: { $in: @_books }}
+	getBooks: -> Books.find { _id: { $in: @_books }}
 
 	###*
 	# Return a cursor pointing to the users that that are pupils of this school.
@@ -32,11 +33,4 @@ class @School
 	###
 	users: -> Meteor.users.find "profile.schoolId": @_id
 
-	getUtils: -> return root.Utils.find { _id: { $in: @_utils }}
-
-	addUtil: (util) ->
-		if util.binding?
-			util.binding.bind
-
-	timeToGetThere: (@currentLocation) ->
-		# use Google Maps to get the shizzle
+	getUtils: -> Utils.find { _id: { $in: @_utils }}

@@ -1,3 +1,3 @@
 Meteor.startup ->
 	Accounts.config
-		sendVerificationEmail: no
+		sendVerificationEmail: yes
