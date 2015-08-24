@@ -1,6 +1,6 @@
-height = -> $(".content").height() - if has("noAds") then 10 else 100
+height = -> $('.content').height() - if has('noAds') then 10 else 100
 
-currentEvents = []
+currentSub = null
 
 dblDate = null
 dblDateResetHandle = null
@@ -8,8 +8,8 @@ keydownSet = no
 
 calendarItemToEvent = (calendarItem) ->
 	type = calendarItem.content?.type
-	type = "quiz" if /\b((so)|((luister ?)?toets)|(schriftelijke overhoring))/i.test(calendarItem.description?.split(" ")?[0] ? "")
-	type = "test" if /\b((proefwerk)|(pw)|(examen)|(tentamen))/i.test(calendarItem.description?.split(" ")?[0] ? "")
+	type = 'quiz' if /^(so|schriftelijke overhoring|(luister\W?)?toets)\b/i.test calendarItem.description
+	type = 'test' if /^(proefwerk|pw|examen|tentamen)\b/i.test calendarItem.description
 
 	id: calendarItem._id
 	title: (
@@ -21,13 +21,13 @@ calendarItemToEvent = (calendarItem) ->
 	start: calendarItem.startDate
 	end: calendarItem.endDate
 	color: (
-		if calendarItem.scrapped then "gray"
+		if calendarItem.scrapped then 'gray'
 		else switch type
 			when 'homework' then '#32A8CE'
 			when 'test', 'exam' then '#FF4136'
 			when 'quiz', 'oral' then '#FF851B'
 
-			else "#3a87ad"
+			else '#3a87ad'
 	)
 	clickable: not calendarItem.scrapped
 	open: no
@@ -35,36 +35,41 @@ calendarItemToEvent = (calendarItem) ->
 	editable: not calendarItem.fetchedBy?
 	content: calendarItem.content
 
-Template.calendar.rendered = ->
-	$(".calendar").fullCalendar
-		defaultView: "agendaWeek"
+Template.calendar.onRendered ->
+	$('.calendar').fullCalendar
+		defaultView: 'agendaWeek'
 		height: height()
 		firstDay: 1
-		lang: "nl"
-		timezone: "local"
+		lang: 'nl'
+		timezone: 'local'
 		handleWindowResize: no
-		allDayText: "hele dag"
-		scrollTime: "07:00:00"
-		snapDuration: "00:05:00"
-		slotDuration: "00:30:00"
+		allDayText: 'hele dag'
+		scrollTime: '07:00:00'
+		snapDuration: '00:05:00'
+		slotDuration: '00:30:00'
 		titleFormat:
-			month: "MMMM YYYY"
-			week: "D MMMM YYYY"
-			day: "D MMMM YYYY"
+			month: 'MMMM YYYY'
+			week: 'D MMMM YYYY'
+			day: 'D MMMM YYYY'
 		buttonText:
-			today: "deze week"
-			month: "maand"
-			week: "week"
-			day: "dag"
+			today: 'deze week'
+			month: 'maand'
+			week: 'week'
+			day: 'dag'
 		columnFormat:
-			month: "ddd"
-			week: "ddd D-M"
-			day: "dddd"
+			month: 'ddd'
+			week: 'ddd D-M'
+			day: 'dddd'
 
 		events: (start, end, timezone, callback) ->
-			start = start.toDate(); end = end.toDate()
-			Session.set "currentDateRange", [start, end]
-			callback currentEvents
+			[ start, end ] = (d.toDate() for d in [ start, end ])
+
+			currentSub?.stop()
+			currentSub = Meteor.subscribe 'externalCalendarItems', start, end, ->
+				callback CalendarItems.find(
+					startDate: $gte: start
+					endDate: $lte: end
+				).map calendarItemToEvent
 
 		dayClick: (date, event, view) ->
 			clearTimeout dblDateResetHandle
@@ -73,12 +78,12 @@ Template.calendar.rendered = ->
 
 			if EJSON.equals date, dblDate
 				open()
-				$("textarea#appointmentInput")
+				$('textarea#appointmentInput')
 					.val(
 						if date.getHours() is 1 and date.getMinutes() is 0
-							"#{DateToDutch date, !sameYear} hele dag "
+							"#{DateToDutch date, not sameYear} hele dag "
 						else
-							"#{DateToDutch date, !sameYear} #{Helpers.addZero date.getHours()}:#{Helpers.addZero date.getMinutes()} "
+							"#{DateToDutch date, not sameYear} #{Helpers.addZero date.getHours()}:#{Helpers.addZero date.getMinutes()} "
 					)
 
 			dblDate = date
@@ -104,7 +109,7 @@ Template.calendar.rendered = ->
 			element.css cursor: "pointer"
 
 		dayRender: (date, cell) ->
-			_.defer ->
+			Meteor.defer ->
 				header = $ ".fc-left h2"
 				return if header.text().indexOf("week") isnt -1
 				header.html "#{$(".fc-left h2").text()} <small>week: #{date.week()}</small>"
@@ -129,35 +134,6 @@ Template.calendar.rendered = ->
 		$(window).keydown (event) ->
 			return if $("input, textarea").is(":focus") or $("body").hasClass "shepherd-active"
 			$(".calendar").fullCalendar if event.which is 39 then "next" else if event.which is 37 then "prev"
-
-	@autorun (c) -> # swagger nagger reactivity for FullCalendar.
-		currentEvents = []
-		[start, end] = Session.get("currentDateRange")
-		Meteor.subscribe 'externalCalendarItems', start, end
-
-		currentEvents.pushMore CalendarItems.find().map calendarItemToEvent
-
-#		currentEvents.pushMore CalendarItems.find({ $or: [
-#			{
-#				startDate: $gte: start
-#				endDate: $lte: end
-#			}
-#			{
-#				$where: ->
-#					targetDate = new Date @startDate.getTime() + @repeatInterval * 1000
-#					targetDate = new Date(
-#						targetDate.getUTCFullYear(),
-#						targetDate.getMonth(),
-#						targetDate.getDate()
-#					)
-#
-#					return targetDate >= start and targetDate <= end
-#			}
-#		] }).map calendarItemToEvent
-
-		### bla bla tasks bla bla ###
-
-		$(".calendar").fullCalendar "refetchEvents"
 
 open = ->
 	$("div.addAppointmentForm").addClass "transformIn"
