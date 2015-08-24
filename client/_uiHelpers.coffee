@@ -86,16 +86,20 @@ http://tomsmeding.nl/
 # Sets the given `selector` to show an error state.
 #
 # @method setFieldError
-# @param selector {jQuery|String} The thing to show on error on.
+# @param selector {jQuery|String} The thing to show an error on.
 # @param message {String} The message to show as error.
 # @param [trigger="manual"] {String} When to trigger the bootstrap tooltip.
 # @param {jQuery} The given `selector`.
 ###
 @setFieldError = (selector, message, trigger = "manual") ->
 	(if selector.jquery? then selector else $(selector))
-		.addClass "error"
-		.tooltip placement: "bottom", title: message, trigger: trigger
-		.tooltip "show"
+		.addClass 'error'
+		.tooltip placement: 'bottom', title: message, trigger: trigger
+		.tooltip 'show'
+		.on 'input change', ->
+			$(this)
+				.removeClass 'error'
+				.tooltip 'destroy'
 
 	selector
 
