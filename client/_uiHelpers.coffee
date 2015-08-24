@@ -355,53 +355,88 @@ class @NotificationsManager
 #   @param [options.useAppPrefix=true] {Boolean} Whether or not to use the app prefix ("simplyHomework").
 ###
 @setPageOptions = ({ title, headerTitle, color, useAppPrefix }) ->
-	check title, Match.Optional String
-	check headerTitle, Match.Optional String
-	check color, Match.Optional Match.OneOf String, null
-	check useAppPrefix, Match.Optional Boolean
+	check title,         Match.Optional String
+	check headerTitle,   Match.Optional String
+	check color,         Match.Optional Match.OneOf String,  null
+	check useAppPrefix,  Match.Optional Boolean
 
 	headerTitle ?= title
 	useAppPrefix ?= yes
 
 	if not title? and headerTitle?
-		Session.set "headerPageTitle", headerTitle
+		Session.set 'headerPageTitle', headerTitle
 	else if title? or headerTitle?
-		Session.set "documentPageTitle", if useAppPrefix then "simplyHomework | #{title}" else title
-		Session.set "headerPageTitle", headerTitle
+		Session.set 'documentPageTitle', if useAppPrefix then "simplyHomework | #{title}" else title
+		Session.set 'headerPageTitle', headerTitle
 
 	unless _.isUndefined color
-		Session.set "pageColor", color
+		Session.set 'pageColor', color
 
 ###*
 # Set the current bigNotice.
 # @method setBigNotice
-# @param [options] {Object} The options object. If null the notice will be removed.
+# @param options {Object|null} The options object. If null the notice will be removed.
 # @return {Object} An handle object: { hide, content, onClick, onDismissed }
 ###
 @setBigNotice = (options) ->
 	if options?
 		check options, Object
-		_.defaults options, { theme: "default", onClick: (->), onDismissed: (->), allowDismiss: yes }
+		_.defaults options,
+			theme: 'default'
+			allowDismiss: yes
+			onDismissed: -> setBigNotice null
 
 		currentBigNotice.set options
-		$("body").addClass "bigNoticeOpen"
+		$('body').addClass 'bigNoticeOpen'
 
-		return {
-			hide: -> setBigNotice null
-			content: (content) ->
-				if content?
-					currentBigNotice.set _.extend currentBigNotice.get(), { content }
-					return content
-				else
-					return currentBigNotice.get().content
+		hide: -> setBigNotice null
+		content: (content) ->
+			if content?
+				currentBigNotice.set _.extend currentBigNotice.get(), { content }
+				content
+			else
+				currentBigNotice.get().content
 
-			onClick: (callback) -> currentBigNotice.set _.extend currentBigNotice.get(), onClick: callback
-			onDismissed: (callback) -> currentBigNotice.set _.extend currentBigNotice.get(), onDismissed: callback
-		}
-	else
+		onClick: (onClick) ->
+			if _.isFunction onClick
+				currentBigNotice.set _.extend currentBigNotice.get(), { onClick }
+
+		onDismissed: (onDismissed) ->
+			if _.isFunction onDismissed
+				currentBigNotice.set _.extend currentBigNotice.get(), { onDismissed }
+
+	else if _.isNull options
 		currentBigNotice.set null
-		$("body").removeClass "bigNoticeOpen"
-		return undefined
+		$('body').removeClass 'bigNoticeOpen'
+		undefined
+
+###*
+# @method showModal
+# @param name {String} The ID of the modal, has to be the same as the template name.
+# @param [options] {Object}
+# @return {Function} When called, removes the newely spawned modal.
+###
+@showModal = (name, options, data) ->
+	check name, String
+	check options, Match.Optional Object
+
+	view = (
+		if data?
+			Blaze.renderWithData Template[name], data, document.body
+		else
+			Blaze.render Template[name], document.body
+	)
+	$modal = $ "##{name}"
+	$modal
+		.modal options
+		.on 'hidden.bs.modal', ->
+			Blaze.remove view
+			options?.onHide?()
+
+		.find('input[type="text"]:first-child')
+		.focus()
+
+	-> $modal.modal 'hide'
 
 Meteor.startup ->
 	Session.setDefault "pageTitle", "simplyHomework"
@@ -415,29 +450,27 @@ Meteor.startup ->
 
 	notification = null
 	Tracker.autorun ->
-		if Meteor.userId()? and htmlNotify.isSupported and !("ActiveXObject" of window)
+		if Meteor.userId()? and htmlNotify.isSupported and ('ActiveXObject' not of window)
 			switch htmlNotify.permissionLevel()
-				when "default"
+				when 'default'
 					notification = setBigNotice
-						content: "Wij hebben je toestemming nodig om bureaubladmeldingen weer te kunnen geven."
+						content: 'Wij hebben je toestemming nodig om bureaubladmeldingen weer te kunnen geven.'
 						onClick: ->
 							htmlNotify.requestPermission (result) ->
 								notification?.hide()
-								Session.set "allowNotifications", result is "granted"
-				when "granted"
+								Session.set 'allowNotifications', result is 'granted'
+				when 'granted'
 					notification?.hide()
-					Session.set "allowNotifications", yes
+					Session.set 'allowNotifications', yes
 
-	Session.set "isPhone", window.matchMedia("only screen and (max-width: 760px)").matches or /android|iphone|ipod|blackberry|windows phone/i.test navigator.userAgent
+	Session.set 'isPhone',
+		window.matchMedia?('only screen and (max-width: 760px)')?.matches or
+		/android|iphone|ipod|blackberry|windows phone/i.test navigator.userAgent
 
-	UI.registerHelper "isPhone", -> Session.get "isPhone"
-	UI.registerHelper "empty", -> return this is 0
-	UI.registerHelper "first", (arr) -> EJSON.equals this, _.first arr
-	UI.registerHelper "last", (arr) -> EJSON.equals this, _.last arr
-	UI.registerHelper "minus", (base, substraction) -> base - substraction
-	UI.registerHelper "gravatar", gravatar
-	UI.registerHelper "has", (feature) -> has feature
-	UI.registerHelper "currentYear", -> new Date().getUTCFullYear()
+	UI.registerHelper 'currentYear', -> new Date().getUTCFullYear()
+	UI.registerHelper 'gravatar', gravatar
+	UI.registerHelper 'has', has
+	UI.registerHelper 'isPhone', -> Session.get 'isPhone'
 
 	# TODO: Remove the console.infos.
 	disconnectedNotify = null

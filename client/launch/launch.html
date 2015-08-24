@@ -109,12 +109,18 @@
 						<div class="modal-body">
 							<div id="emailGroup" class="group">
 								<label for="emailInput">Email</label>
-								<input type="email" id="emailInput" placeholder="hello@simplyApps.nl">
+								<input type="email" id="emailInput" placeholder="hello@simplyApps.nl" autofocus>
 							</div>
 							<div id="passwordGroup" class="group">
 								<label for="passwordInput">Wachtwoord</label>
 								<input type="password" id="passwordInput" placeholder="●●●●●●●●●●">
 							</div>
+							{{#if creatingAccount}}
+								<div id="passwordRepeatGroup" class="group">
+									<label for="passwordRepeatInput">Wachtwoord herhalen</label>
+									<input type="password" id="passwordRepeatInput" placeholder="●●●●●●●●●●">
+								</div>
+							{{/if}}
 							<div class="group no-margin">
 								<a href="{{pathFor 'forgotPass'}}">Wachtwoord vergeten</a>
 							</div>

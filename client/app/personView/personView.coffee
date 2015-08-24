@@ -1,29 +1,29 @@
 sameUser = -> Meteor.userId() is Router.current().data()._id
 sharedHours = new ReactiveVar []
-
-status = ->
-	s = Router.current().data().status
-
-	res = (
-		if s.idle then "#FF9800"
-		else if s.online then "#4CAF50"
-		else "#EF5350"
-	)
-
-	setPageOptions color: res
-	return res
+pictures = new ReactiveVar []
+loadingPictures = new ReactiveVar yes
 
 Template.personView.helpers
-	backColor: -> status()
+	backColor: ->
+		res = (
+			if @status.idle then "#FF9800"
+			else if @status.online then "#4CAF50"
+			else "#EF5350"
+		)
+
+		setPageOptions color: res
+		res
 	sameUser: sameUser
 
 Template.personView.events
-	"click i#reportButton": ->
-		ga "send", "event", "button", "click", "reportButton"
+	'click .personPicture': ->
+		return unless sameUser()
+		ga 'send', 'event', 'button', 'click', 'personPicture'
+		showModal 'changePictureModal'
 
-		modal = $ "#reportUserModal"
-		modal.find("input[type='checkbox']").prop "checked", no
-		modal.modal()
+	'click i#reportButton': ->
+		ga 'send', 'event', 'button', 'click', 'reportButton'
+		showModal 'reportUserModal', undefined, Router.current().data
 
 	"click button#chatButton": -> ChatManager.openUserChat this
 

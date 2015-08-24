@@ -1,162 +1,153 @@
 bookComputation = null
-
-grades = new ReactiveVar []
-loadingGrades = new ReactiveVar yes
-selectedGrade = new ReactiveVar null
-
+selectedGradeId = new SReactiveVar Match.Optional Mongo.ObjectID
 digitalSchoolUtilities = new ReactiveVar []
-
 currentClass = -> Router.current().data()
-tasksAmount = -> Helpers.getTotal _.reject(GoaledSchedules.find(_homework: { $exists: true }, ownerId: Meteor.userId()).fetch(), (gS) -> !EJSON.equals(gS.classId(), currentClass()._id)), (gS) -> gS.tasksForToday().length
 
 bookEngine = new Bloodhound
-	name: "books"
+	name: 'books'
 	datumTokenizer: (d) -> Bloodhound.tokenizers.whitespace d.title
 	queryTokenizer: Bloodhound.tokenizers.whitespace
 	local: []
 
+grades = (options) ->
+	StoredGrades.find {
+		ownerId: Meteor.userId()
+		classId: currentClass()._id
+	}, options
+
 Template.classView.helpers
-	currentClass: currentClass
-	tasksAmount: -> currentClass().__taskAmount
-	tasksWord: -> if tasksAmount() is 1 then "taak" else "taken"
-	classColor: -> currentClass().__color()
-	textAlign: -> if Session.get "isPhone" then "left" else "right"
+	tasksAmount: -> @__taskAmount
+	tasksWord: -> if @__taskAmount is 1 then 'taak' else 'taken'
+	classColor: -> @__color()
+	textAlign: -> if Session.get 'isPhone' then 'left' else 'right'
 
 	gradeGroups: ->
-		return _(grades.get())
-			.uniq (g) -> g.gradePeriod().name()
-			.reject (g) -> g.type().type() is 2 or g.type().type() is 4
+		arr = StoredGrades.find(
+			classId: @_id
+			ownerId: Meteor.userId()
+			isEnd: no
+		).fetch()
+
+		_(arr)
+			.uniq (g) -> g.period.id
 			.map (g) ->
-				name: g.gradePeriod().name()
-				grades: _.filter grades.get(), (x) -> x.gradePeriod().name() is g.gradePeriod().name() and x.type().type() isnt 2
+				name: g.period.name
+				grades: (
+					_(arr)
+						.filter (x) -> x.period.id is g.period.id
+						.map (g) -> _.extend g, {
+							__insufficient: if g.passed then '' else 'insufficient'
+							grade: g.toString()
+						}
+						.value()
+				)
 			.filter (gp) -> gp.grades.length isnt 0
 			.value()
 
-	studyGuides: ->
-		return MagisterStudyGuides
-			.find {
-				_class: $exists: yes
-				"_class._id": currentClass().__classInfo().magisterId
-			}
-			.fetch()
+	studyUtils: -> StudyUtils.find classId: @_id
 
 	digitalSchoolUtilities: -> digitalSchoolUtilities.get()
 
-	loadingGrades: -> loadingGrades.get()
-	hasGrades: -> grades.get().length > 0
+	hasGrades: -> grades().count() > 0
 
-	selectedGrade: -> selectedGrade.get()
+	selectedGrade: -> StoredGrades.findOne selectedGradeId.get()
 
 	endGrade: ->
-		endGrade  = _.find grades.get(), (g) -> g.type().header()?.toLowerCase() is "e-jr"
-		endGrade ?= _.find grades.get(), (g) -> g.type().header()?.toLowerCase() is "eind"
-		endGrade ?= _.find grades.get(), (g) -> g.type().type() is 2
+		StoredGrades.findOne
+			classId: @_id
+			ownerId: Meteor.userId()
+			isEnd: yes
 
-		return endGrade
-
-Template.classView.rendered = ->
+Template.classView.onRendered ->
 	fetchedGrades = new ReactiveVar []
-
-	magisterResult "grades", (e, r) ->
-		return unless Router.current().route.getName() is "classView"
-		fetchedGrades.set r ? []
-		loadingGrades.set no
+	@subscribe 'externalGrades'
+	@subscribe 'externalStudyUtils', Blaze.getData()._id
 
 	@autorun ->
-		return if _.contains(grades.get(), selectedGrade.get())
-		selectedGrade.set grades.get()[0]
+		unless _.contains grades().fetch(), selectedGradeId.get()
+			selectedGradeId.set grades(limit: 1).fetch()[0]?._id
 
-	@autorun (c) ->
-		grades.set(_(fetchedGrades.get())
-			.filter((g) -> g.class().id() is currentClass().__classInfo().magisterId and g.grade()?)
-			.forEach (g) ->
-				converted = gradeConverter g.grade()
-
-				g.__insufficient = if converted < 5.5 then "insufficient" else ""
-				if converted is 10 then g._grade = "10" # A '10,0' is such an high grade it exceeds the amount the container can comprehend.
-			.value()
-		)
-
-		Tracker.nonreactive ->
-			p = _helpers.asyncResultWaiter grades.get().length, ->
-				grades.dep.changed()
-				selectedGrade.dep.changed()
-
-			for grade in grades.get() when not grade._filled
-				grade.fillGrade p
-
+	###
 	@autorun ->
 		Meteor.subscribe "magisterDigitalSchoolUtilties", currentClass().__classInfo().magisterDescription
 		digitalSchoolUtilities.set MagisterDigitalSchoolUtilties.find(
 			_class: $exists: yes
 			"_class._description": currentClass().__classInfo().magisterDescription
 		).fetch()
+	###
 
 Template.classView.events
 	"click #changeClassIcon": ->
 		ga "send", "event", "button", "click", "classInfoChange"
+
 		bookComputation = Tracker.autorun ->
-			Meteor.subscribe "scholieren.com"
-			Meteor.subscribe "books", currentClass()._id
+			Meteor.subscribe 'scholieren.com'
+			Meteor.subscribe 'books', @_id
 
-			books = Books.find(classId: currentClass()._id).fetch()
+			books = Books.find(classId: @_id).fetch()
 
-			scholierenClass = ScholierenClasses.findOne id: currentClass().__classInfo().scholierenId
+			scholierenClass = ScholierenClasses.findOne id: @__classInfo().scholierenId
 			books.pushMore _.filter scholierenClass?.books, (b) -> not _.contains (x.title for x in books), b.title
 
 			bookEngine.clear()
 			bookEngine.add books
 
-		$("#changeColorInput")
-			.colorpicker "destroy"
-			.colorpicker color: currentClass().__color()
+		showModal 'changeClassModal', {
+			onHide: -> bookComputation.stop(); console.log 'stopping comp..'
+		}, currentClass
 
-		$("#changeColorLabel").css color: currentClass().__color()
+		$("#changeColorInput").colorpicker color: @__color()
+		$("#changeColorLabel").css color: @__color()
 
-		$("#changeClassModal").modal backdrop: false
-
-Template.changeClassModal.rendered = ->
-	$("#changeColorInput").colorpicker color: currentClass().__color()
-	$("#changeColorInput").on "changeColor", -> $("#changeColorLabel").css color: $("#changeColorInput").val()
+Template.changeClassModal.onRendered ->
+	$('#changeColorInput')
+		.colorpicker color: @currentData().__color()
+		.on 'changeColor', -> $('#changeColorLabel').css color: $('#changeColorInput').val()
 	bookEngine.initialize()
 
-	$("#changeBookInput").typeahead(null,
+	$('#changeBookInput').typeahead(null,
 		source: bookEngine.ttAdapter()
-		displayKey: "title"
-	).on "typeahead:selected", (obj, datum) -> Session.set "currentSelectedBookDatum", datum
+		displayKey: 'title'
+	).on 'typeahead:selected', (obj, datum) -> Session.set 'currentSelectedBookDatum', datum
 
 Template.changeClassModal.events
-	"click #goButton": ->
-		_class = currentClass()
-
-		color = $("#changeColorInput").val()
-		bookName = $("#changeBookInput").val()
+	'click #goButton': ->
+		color = $('#changeColorInput').val()
+		bookName = $('#changeBookInput').val()
 
 		book = Books.findOne title: bookName
-		unless book? or bookName.trim() is ""
-			book = New.book bookName, undefined, Session.get("currentSelectedBookDatum")?.id, undefined, _class._id
+		unless book? or bookName.trim() is ''
+			book = new book bookName, undefined, val.id, undefined, c._id
+			Books.insert book
 
-		Meteor.users.update Meteor.userId(), { $pull: { classInfos: { id: _class._id }}}
-		Meteor.users.update Meteor.userId(), { $push: { classInfos: { id: _class._id, color, bookId: book._id }}}
+		Meteor.users.update Meteor.userId(), $pull: classInfos: id: @_id
+		Meteor.users.update Meteor.userId(), $push: classInfos:
+			id: @_id
+			color: color
+			bookId: book._id
 
-		$("meta[name='theme-color']").attr "content", color
-		$("#changeClassModal").modal "hide"
-		bookComputation.stop()
+		setPageOptions { color }
+		$('#changeClassModal').modal 'hide'
 
 	"click #deleteClassButton": ->
 		$("#changeClassModal").modal "hide"
 		alertModal(
-			"Zeker weten?",
-			"Als je dit vak verwijdert kunnen alle gegevens, zoals projecten verwijdert worden.\nDit laatste gebeurd alleen wanneer alle deelnemers van het project dit vak verwijderd hebben.\nDit kan niet ongedaan worden gemaakt.",
+			'Zeker weten?',
+			'''
+				Als je dit vak verwijdert kunnen alle gegevens, zoals projecten verwijdert worden.
+				Dit kan niet ongedaan worden gemaakt
+				Projecten worden alleen verwijderd wanneer alle deelnemers van het project dit vak verwijderd hebben.
+			''',
 			DialogButtons.OkCancel,
-			{ main: "Verwijderen", second: "Toch niet" },
-			{ main: "btn-danger" },
+			{ main: 'Verwijderen', second: 'Toch niet' },
+			{ main: 'btn-danger' },
 			main: ->
-				Router.go "app"
-				Meteor.users.update Meteor.userId(), $pull: classInfos: id: currentClass()._id
-			second: -> return
+				Router.go 'app'
+				Meteor.users.update Meteor.userId(), $pull: classInfos:
+					id: @._id
+			second: ->
 		)
 
-Template.gradeRow.events "click .gradeRow": -> selectedGrade.set @
+Template.gradeRow.events "click .gradeRow": -> selectedGradeId.set @_id
 
-Template.gradeRow.helpers selected: -> if selectedGrade.get() is @ then "selected" else ""
+Template.gradeRow.helpers selected: -> if selectedGradeId.get() is @_id then "selected" else ""

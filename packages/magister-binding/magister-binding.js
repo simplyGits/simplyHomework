@@ -36,6 +36,14 @@
 			check(password, String);
 			check(userId, String);
 
+			if (
+				schoolurl.length === 0 ||
+				username.length === 0 ||
+				password.length === 0
+			) {
+				return false;
+			}
+
 			MagisterBinding.storedInfo(userId, {
 				credentials: {
 					schoolurl: schoolurl,
@@ -50,7 +58,7 @@
 				// Remove the stored info.
 				MagisterBinding.storedInfo(userId, null);
 
-				// TODO: check if `|| e.Message` is needed.
+				// TODO: check in magister.js if `|| e.Message` is needed.
 				var message = e.message || e.Message;
 				if (message === 'Je gebruikersnaam en/of wachtwoord is niet correct.') {
 					return false;
@@ -493,10 +501,9 @@
 			picture: pictureFut.wait(),
 			courseInfo: {
 				year: courseInfo.type.year,
-				schoolVariant: courseInfo.type.schoolVariant.toLowerCase(),
+				schoolVariant: courseInfo.type.schoolVariant != null ? courseInfo.type.schoolVariant.toLowerCase() : undefined,
 				profile: courseInfo.profile
-			},
-			externalSchoolId: magister.magisterSchool.id
+			}
 		};
 	};
 

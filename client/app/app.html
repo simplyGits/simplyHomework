@@ -4,7 +4,9 @@
 			<div id="content">
 				{{content}}
 			</div>
-			<span id="dismissButton">&times;</span>
+			{{#if allowDismiss}}
+				<span id="dismissButton">&times;</span>
+			{{/if}}
 		</div>
 	{{/with}}
 
@@ -304,23 +306,24 @@
 					<form class="vertical full-width">
 						<div id="nameGroup" class="group">
 							<label for="nameInput">Naam</label>
-							<input type="text" class="form-control" id="nameInput" placeholder="Projectnaam" />
+							<input type="text" id="nameInput" placeholder="Projectnaam" />
 						</div>
 						<div id="descriptionGroup" class="group">
 							<label for="descriptionInput">Beschrijving</label>
-							<input type="text" class="form-control" id="descriptionInput" placeholder="Projectbeschrijving" />
+							<input type="text" id="descriptionInput" placeholder="Projectbeschrijving" />
 						</div>
 						<div id="deadlineGroup" class="group">
 							<label for="deadlineInput">Deadline</label>
-							<input type="text" class="form-control" id="deadlineInput" />
+							<input type="text" id="deadlineInput" />
 						</div>
 						<div id="classNameGroup" class="group">
 							<label for="classNameInput">Vak</label>
-							<input type="text" class="form-control" id="classNameInput" placeholder="Projectvak" />
+							<input type="text" id="classNameInput" placeholder="Projectvak" />
 						</div>
 					</form>
 				</div>
 				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Annuleren</button>
 					<button type="button" class="btn btn-primary" id="goButton">Aanmaken</button>
 				</div>
 			</div>

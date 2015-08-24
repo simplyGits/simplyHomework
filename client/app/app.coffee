@@ -1,29 +1,15 @@
 schoolSub = null
-addClassComp = null
-externalClasses = new SReactiveVar SchoolClass, null
+externalClasses = new ReactiveVar()
+externalAssignments = new ReactiveVar()
 @currentBigNotice = new SReactiveVar Match.OneOf(null, Object), null
 
 ###*
 # @class App
 ###
 class @App
-	###*
-	# @method showModal
-	# @param name {String} The ID of the modal, has to be the same as the template name.
-	# @param [options] {Object}
-	# @return {Function} When called, removes the newely spawned modal.
-	###
-	@showModal: (name, options) ->
-		check name, String
-		check options, Match.Optional Object
-
-		view = Blaze.render Template[name], document.body
-		$modal = $ "##{name}"
-		$modal
-			.modal options
-			.on 'hidden.bs.modal', -> Blaze.remove view
-
-		-> $modal.modal 'hide'
+	@logout: ->
+		Router.go 'launchPage'
+		Meteor.logout()
 
 	@runTour: ->
 		Router.go "app"
@@ -90,9 +76,10 @@ class @App
 			attachTo: "div.fc-right"
 
 		tour.on "show", (o) ->
-			Router.go (switch o.step.id
-				when "calendar" then "calendar"
-				else "app"
+			Router.go (
+				switch o.step.id
+					when "calendar" then "calendar"
+					else "app"
 			)
 
 			$(".tour-current-active").removeClass "tour-current-active"
@@ -145,48 +132,71 @@ Template.addClassModal.events
 		color = $("#colorInput").val()
 		{ year, schoolVariant } = Meteor.user().profile.courseInfo
 
-		_class = Classes.findOne { $or: [{ name: name }, { course: course }], schoolVariant: schoolVariant, year: year}
-		_class ?= New.class name, course, year, schoolVariant, ScholierenClasses.findOne(-> @name.toLowerCase().indexOf(name.toLowerCase()) > -1).id
+		_class = Classes.findOne
+			$or: [
+				{ name: $regex: name, $options: 'i' }
+				{ abbreviations: course.toLowerCase() }
+			]
+			schoolVariant: schoolVariant
+			year: year
+		unless _class?
+			scholierenClass = ScholierenClasses.findOne ->
+				@name
+					.toLowerCase()
+					.indexOf(name.toLowerCase()) > -1
+
+			_class = new SchoolClass(
+				name,
+				course,
+				year,
+				schoolVariant
+			)
+			_class.scholierenClassId = scholierenClassId?.id
+			Classes.insert _class, Debug.logArgs
 
 		book = Books.findOne title: bookName
 		unless book? or bookName.trim() is ""
-			book = New.book bookName, undefined, @id, undefined, _class._id
+			book = new Book bookName, undefined, @id, undefined, _class._id
+			Books.insert book
 
 		Meteor.users.update Meteor.userId(), $push: classInfos:
 			id: _class._id
 			color: color
-			bookId: book._id
+			bookId: book?._id
 
 		$("#addClassModal").modal "hide"
-		addClassComp.stop()
 
-	"keyup #classNameInput, #courseInput": (event) ->
-		val = Helpers.cap $("#classNameInput").val()
+	'keyup #classNameInput, #courseInput': (event) ->
+		name = Helpers.cap $('#classNameInput').val()
 
 		{ year, schoolVariant } = Meteor.user().profile.courseInfo
-		classId = Classes.findOne({_name: val, schoolVariant: schoolVariant, year: year})?._id
-
+		classId = Classes.findOne({ name, year, schoolVariant })?._id
 		books = Books.find({ classId }).fetch()
 
-		scholierenClass = ScholierenClasses.findOne -> @name.toLowerCase().indexOf(val.toLowerCase()) > -1
-		books.pushMore _.filter scholierenClass?.books, (b) -> not _.contains ( x.title for x in books ), b.title
+		scholierenClass = ScholierenClasses.findOne -> Helpers.contains @name, name, yes
+		books = _(scholierenClass?.books)
+			.filter (b) -> b.title not in ( x.title for x in books )
+			.concat books
+			.value()
 
 		bookEngine.clear()
 		bookEngine.add books
 
-Template.addClassModal.rendered = ->
-	$("#colorInput").colorpicker color: "#333"
-	$("#colorInput").on "changeColor", -> $("#colorLabel").css color: $("#colorInput").val()
+Template.addClassModal.onRendered ->
+	$colorInput = $ '#colorInput'
+	$colorInput
+		.colorpicker color: '#333'
+		.on 'changeColor', -> $('#colorLabel').css color: $colorInput.val()
 
 	bookEngine.initialize()
 	classEngine.initialize()
 
-	$("#bookInput").typeahead(null,
+	$('#bookInput').typeahead(null,
 		source: bookEngine.ttAdapter()
-		displayKey: "title"
-	).on "typeahead:selected", (obj, datum) -> obj.__method = datum
+		displayKey: 'title'
+	).on 'typeahead:selected', (obj, datum) -> obj.__method = datum
 
-	$("#classNameInput").typeahead null,
+	$('#classNameInput').typeahead null,
 		source: classEngine.ttAdapter()
 		displayKey: "name"
 
@@ -201,18 +211,19 @@ Template.settingsModal.events
 	'click #logOutButton': -> App.logout()
 
 Template.deleteAccountModal.events
-	"click #goButton": ->
-		input = $ "#deleteAccountModal #passwordInput"
-		captcha = $("#g-recaptcha-response").val()
+	'click #goButton': ->
+		$passwordInput = $ '#deleteAccountModal #passwordInput'
+		captcha = $('#g-recaptcha-response').val()
 
-		pass = Package.sha.SHA256 input.val()
-		Meteor.call "removeAccount", pass, captcha, (e) ->
-			if e.error is "wrongPassword"
-				setFieldError input, "Verkeerd wachtwoord"
-				grecaptcha.reset()
-			else if e.error is "wrongCaptcha"
-				shake "#deleteAccountModal"
-			else ga "send", "event", "action", "remove", "account"
+		hash = Package.sha.SHA256 $passwordInput.val()
+		Meteor.call 'removeAccount', hash, captcha, (e) ->
+			if e?
+				if e.error is 'wrongPassword'
+					setFieldError $passwordInput, 'Verkeerd wachtwoord'
+					grecaptcha.reset()
+				else if e.error is 'wrongCaptcha'
+					shake '#deleteAccountModal'
+			else ga 'send', 'event', 'action', 'remove', 'account'
 
 Template.newSchoolYearModal.helpers classes: -> classes()
 
@@ -228,13 +239,13 @@ Template.accountInfoModal.helpers currentMail: -> Meteor.user().emails[0].addres
 
 Template.accountInfoModal.events
 	"click #goButton": ->
-		mail = $("#mailInput").val().toLowerCase()
+		mail = $('#mailInput').val().toLowerCase()
 
-		firstName = Helpers.nameCap $("#firstNameInput").val()
-		lastName = Helpers.nameCap $("#lastNameInput").val()
+		firstName = Helpers.nameCap $('#firstNameInput').val()
+		lastName = Helpers.nameCap $('#lastNameInput').val()
 
-		oldPass = $("#oldPassInput").val()
-		newPass = $("#newPassInput").val()
+		oldPass = $('#oldPassInput').val()
+		newPass = $('#newPassInput').val()
 
 		profile = Meteor.user().profile
 
@@ -244,53 +255,50 @@ Template.accountInfoModal.events
 		# @param success {Boolean|null} If true show a success message, otherwise show an error message. If null, no message will be shown at all.
 		###
 		callback = (success) ->
+			if not success?
+				shake '#accountInfoModal'
+				return undefined
+
 			if success
 				swalert
-					title: ":D"
-					text: "Je aanpassingen zijn successvol opgeslagen"
-					type: "success"
+					title: ':D'
+					text: 'Je aanpassingen zijn successvol opgeslagen'
+					type: 'success'
 			else if success is no # sounds like sombody who sucks at English.
 				swalert
-					title: "D:"
-					text: "Er is iets fout gegaan tijdens het opslaan van je instellingen.\nWe zijn op de hoogte gesteld."
-					type: "error"
-			else if not success?
-				shake "#accountInfoModal"
+					title: 'D:'
+					text: 'Er is iets fout gegaan tijdens het opslaan van je instellingen.\nWe zijn op de hoogte gesteld.'
+					type: 'error'
 
-			$("#accountInfoModal").modal "hide"
+			$('#accountInfoModal').modal 'hide'
 			undefined
 
 		any = no # If this is false we will just close the modal later.
 		if mail isnt Meteor.user().emails[0].address
 			any = yes
-			Meteor.call "changeMail", mail, (e) -> callback not e?
+			Meteor.call 'changeMail', mail, (e) -> callback not e?
 
 		if profile.firstName isnt firstName or profile.lastName isnt lastName
 			any = yes
 			Meteor.users.update Meteor.userId(), {
 				$set:
-					"profile.firstName": firstName
-					"profile.lastName": lastName
+					'profile.firstName': firstName
+					'profile.lastName': lastName
 			}, (e) -> callback not e?
 
-		if oldPass isnt "" and newPass isnt ""
+		if oldPass isnt '' and newPass isnt ''
 			any = yes
 
-			if oldPass isnt newPass
-				Accounts.changePassword oldPass, newPass, (error) ->
-					if error?
-						if error.reason is "Incorrect password"
-							setFieldError "#oldPassInput", "Verkeerd wachtwoord"
-							callback null
-						else callback no
+			Accounts.changePassword oldPass, newPass, (error) ->
+				if error?
+					if error.reason is 'Incorrect password'
+						setFieldError '#oldPassGroup', 'Verkeerd wachtwoord'
+						callback null
+					else callback no
 
-					else
-						$("#accountInfoModal").modal "hide"
-						callback yes
-
-			else
-				setFieldError "#newPassInput", "Het nieuwe wachtwoord is hetzelfde als je oude wachtwoord."
-				callback null
+				else
+					$('#accountInfoModal').modal 'hide'
+					callback yes
 
 		unless any then callback null
 
@@ -344,7 +352,7 @@ Template.addProjectModal.events
 
 		$('#addProjectModal').modal 'hide'
 
-Template.addProjectModal.rendered = ->
+Template.addProjectModal.onRendered ->
 	ownClassesEngine = new Bloodhound
 		name: "ownClasses"
 		datumTokenizer: (d) -> Bloodhound.tokenizers.whitespace d.name
@@ -356,12 +364,12 @@ Template.addProjectModal.rendered = ->
 		ownClassesEngine.clear()
 		ownClassesEngine.add classes().fetch()
 
-	$('#projectClassNameInput').typeahead(null,
+	$('#classNameInput').typeahead(null,
 		source: ownClassesEngine.ttAdapter()
 		displayKey: 'name'
 	).on 'typeahead:selected', (obj, datum) -> Session.set 'currentSelectedClassDatum', datum
 
-	$('#projectDeadlineInput').datetimepicker
+	$('#deadlineInput').datetimepicker
 		locale: moment.locale()
 		defaultDate: new Date()
 		icons:
@@ -380,7 +388,7 @@ Template.addProjectModal.rendered = ->
 # == Sidebar ==
 
 Template.sidebar.helpers
-	"classes": -> classes()
+	'classes': -> classes()
 
 Template.sidebar.events
 	"click .bigSidebarButton": (event) -> slide $(event.target).attr "id"
@@ -404,7 +412,7 @@ Template.sidebar.events
 # == End Sidebar ==
 
 setMobileSettings = ->
-	snapper = new Snap
+	window.snapper = snapper = new Snap
 		element: document.getElementById 'wrapper'
 		minPosition: -200
 		maxPosition: 200
@@ -417,15 +425,15 @@ setMobileSettings = ->
 setKeyboardShortcuts = ->
 	Mousetrap.bind ['a', 'c'], ->
 		Router.go 'calendar'
-		return no
+		no
 
 	Mousetrap.bind 'o', ->
 		Router.go 'app'
-		return no
+		no
 
 	Mousetrap.bind ['/', '?'], ->
 		$('div.searchBox > input').focus()
-		return no
+		no
 
 	buttonGoto = (delta) ->
 		buttons = $('.sidebarButton').get()
@@ -440,15 +448,15 @@ setKeyboardShortcuts = ->
 
 	Mousetrap.bind ['shift+up', 'shift+k'], ->
 		buttonGoto -1
-		return no
+		no
 
 	Mousetrap.bind ['shift+down', 'shift+j'], ->
 		buttonGoto 1
-		return no
+		no
 
 	Mousetrap.bind ['ctrl+/', 'command+/', 'ctrl+?', 'command+?'], ->
 		alertModal 'Toetsenbord shortcuts', Locals['nl-NL'].KeyboardShortcuts(), DialogButtons.Ok, { main: 'Sluiten' }, { main: 'btn-primary' }
-		return no
+		no
 
 Template.app.helpers
 	pageColor: -> Session.get("pageColor") ? "lightgray"
@@ -511,14 +519,17 @@ Template.app.rendered = ->
 		# `try`.
 		Deps.autorun -> try UserStatus.startMonitor idleOnBlur: yes
 
-	if not amplify.store('allowCookies') and $('.cookiesContainer').length is 0
+	if not amplify.store('allowCookies') and $('#cookiesContainer').length is 0
 		Blaze.render Template.cookies, document.body
-		$cookiesContainer = $ '.cookiesContainer'
+		$cookiesContainer = $ '#cookiesContainer'
 
 		$cookiesContainer
-			.css visibility: 'initial'
-			.velocity { bottom: 0 }, 1200, 'easeOutExpo'
+			.addClass 'visible'
 
-		$cookiesContainer.find('#acceptCookiesButton').click ->
-			amplify.store 'allowCookies', yes
-			$cookiesContainer.velocity { bottom: '-500px' }, 2400, 'easeOutExpo', -> $(this).remove()
+			.find 'button'
+			.click ->
+				amplify.store 'allowCookies', yes
+				$cookiesContainer
+					.removeClass 'visible'
+					.on 'transitionend webkitTransitionEnd oTransitionEnd', ->
+						$(this).remove()

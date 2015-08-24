@@ -1,10 +1,10 @@
 englishGradeMap =
-	"F": 1.7
-	"E": 3.3
-	"D": 5.0
-	"C": 6.7
-	"B": 8.3
-	"A": 10.0
+	'F': 1.7
+	'E': 3.3
+	'D': 5.0
+	'C': 6.7
+	'B': 8.3
+	'A': 10.0
 
 ###*
 # Converts a grade to a number, can be Dutch grade style or English. More can be added.
@@ -17,15 +17,18 @@ englishGradeMap =
 @gradeConverter = (grade) ->
 	return grade if _.isNumber grade
 	check grade, String
+	number = parseInt grade.replace(',', '.').replace(/[^\d\.]/g, ''), 10
 
 	# Normal Dutch grades
-	val = grade.replace(",", ".").replace(/[^\d\.]/g, "")
-	unless val.length is 0 or _.isNaN(+val)
-		return +val
+	return number unless _.isNaN number
 
 	# English grades
 	if _(englishGradeMap).keys().contains(grade.toUpperCase())
 		return englishGradeMap[grade.toUpperCase()]
+
+	# Percentages
+	if _.isString(grade) and grade[-1..] is '%' and not _.isNaN number
+		return number
 
 	NaN
 
@@ -49,7 +52,7 @@ class @StoredGrade
 		# @type String
 		# @default ""
 		###
-		@description = ""
+		@description = ''
 
 		###*
 		# Whether or not @grade was sufficient to pass.

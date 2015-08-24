@@ -1,23 +1,4 @@
-currentSelectedSchool = null
-
-doneQueries = []
-schools = []
-getSchools = (query, callback) ->
-	if query.length < 3 or query in doneQueries
-		_.defer callback, _.filter schools, (school) ->
-			Helpers.contains school.name, query, yes
-	else
-		Meteor.call 'getServiceSchools', 'magister', query, (e, r) ->
-			if e?
-				callback []
-			else
-				doneQueries.push query
-				schools = _(schools)
-					.concat r
-					.uniq 'name'
-					.value()
-				callback r
-
+###
 Template.magisterInfoModal.events
 	'click #goButton': ->
 		$magisterInfoModal = $ '#magisterInfoModal'
@@ -25,11 +6,11 @@ Template.magisterInfoModal.events
 		$usernameInput     = $ '#magisterUsernameInput'
 		$passwordInput     = $ '#magisterPasswordInput'
 
-		error = no
-		error = yes if empty $schoolNameInput, '#schoolNameGroup', 'Schoolnaam is leeg'
-		error = yes if empty $usernameInput, '#usernameGroup', 'Gebruikersnaam is leeg'
-		error = yes if empty $passwordInput, '#passwordGroup', 'Wachtwoord is leeg'
-		return undefined if error
+		any = no
+		any = yes if empty $schoolNameInput, '#schoolNameGroup', 'Schoolnaam is leeg'
+		any = yes if empty $usernameInput, '#usernameGroup', 'Gebruikersnaam is leeg'
+		any = yes if empty $passwordInput, '#passwordGroup', 'Wachtwoord is leeg'
+		return undefined if any
 
 		schoolName = Helpers.cap $schoolNameInput.val()
 		school = currentSelectedSchool
@@ -80,3 +61,4 @@ Template.magisterInfoModal.onRendered ->
 			source: (query, callback) -> getSchools query, callback
 		}
 		.on 'typeahead:selected', (obj, datum) -> currentSelectedSchool = datum
+###

@@ -3,7 +3,7 @@ Package.describe({
 	version: '0.0.1',
 	summary: 'Simple serverside library for woordjesleren.nl.',
 	git: '',
-	//git: 'https://github.com/simplyGits/MagisterJS',
+	//git: 'https://github.com/simplyGits/WoordjesLeren',
 	documentation: 'README.md',
 });
 

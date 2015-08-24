@@ -51,16 +51,14 @@ Meteor.publish "chatMessages", (data, limit) ->
 		@ready()
 		return undefined
 
-	# Makes sure we're getting a number in a base of of 10.
-	#
-	# This shouldn't be needed since the client only increments
-	# the limit by ten, but we want to make sure it is server
-	# side too, we limit it to a power of ten to minimize the
-	# amount of unique cursors.
+	# Makes sure we're getting a number in a base of of 10. This is so that we
+	# minimize the amount of unique cursors in the publishments pool.
+	# This shouldn't be needed since the client only increments the limit by ten,
+	# but we want to make sure it is server side too.
 	limit = limit + 9 - (limit - 1) % 10
 
 	if data.userId?
-		ChatMessages.find({
+		ChatMessages.find {
 			$or: [
 				{
 					creatorId: data.userId
@@ -71,16 +69,16 @@ Meteor.publish "chatMessages", (data, limit) ->
 					to: data.userId
 				}
 			]
-		}, { limit, sort: "time": -1 } )
+		}, { limit, sort: "time": -1 }
 	else
 		# Check if the user is inside the project. #veiligheidje
 		if Projects.find(_id: data.projectId, participants: @userId).count() is 0
 			@ready()
 			return undefined
 
-		ChatMessages.find({
+		ChatMessages.find {
 			projectId: data.projectId
-		}, { limit, sort: "time": -1 })
+		}, { limit, sort: "time": -1 }
 
 Meteor.publish null, ->
 	unless @userId?
@@ -89,8 +87,11 @@ Meteor.publish null, ->
 
 	@unblock()
 
+	user = Meteor.users.findOne @userId
+
 	[
-		Meteor.users.find(@userId, fields:
+		Meteor.users.find @userId, fields:
+			askedExternalServices: 1
 			classInfos: 1
 			creationDate: 1
 			externalServices: 1
@@ -100,8 +101,9 @@ Meteor.publish null, ->
 			premiumInfo: 1
 			profile: 1
 			status: 1
-			studyGuidesHashes: 1)
-		Schools.find _id: Meteor.users.findOne(@userId).profile.schoolId
+			studyGuidesHashes: 1
+
+		Schools.find user.profile.schoolId
 
 		Projects.find { participants: @userId }, fields:
 			name: 1
@@ -110,34 +112,45 @@ Meteor.publish null, ->
 			deadline: 1
 
 		# All unread chatMessages.
-		ChatMessages.find({$or: [{ to: @userId }, { creatorId: @userId }], readBy: $ne: @userId}, sort: "time": -1)
+		ChatMessages.find {
+			# old, weird code imo, maybe im wrong.
+			#$or: [
+			#	{ to: @userId }
+			#	{ creatorId: @userId }
+			#]
+			#readBy: $ne: @userId
+
+			to: @userId
+			readBy: $ne: @userId
+		}, sort:
+			'time': -1
 	]
 
-Meteor.publish "classes", ->
+Meteor.publish 'classes', (all = no) ->
 	unless @userId?
 		@ready()
 		return undefined
 
 	@unblock()
 
-	coursInfo = Meteor.users.findOne(@userId).profile.courseInfo
-	if courseInfo?
+	user = Meteor.users.findOne @userId
+	classInfos = user.classInfos ? []
+	courseInfo = user.profile.courseInfo
+
+	if not all
+		Classes.find _id: $in: (x.id for x in classInfos)
+	else if courseInfo?
 		{ year, schoolVariant } = courseInfo
 		Classes.find { schoolVariant, year }
 	else
 		Classes.find()
 
-Meteor.publish "schools", ->
+Meteor.publish 'schools', (externalId) ->
 	@unblock()
-	Schools.find {}, fields: externalId: 1
-
-Meteor.publish "calendarItems", ->
-	unless @userId?
-		@ready()
-		return undefined
-
-	@unblock()
-	CalendarItems.find ownerId: @userId
+	if externalId?
+		Schools.find { externalId }, fields: externalId: 1
+	else
+		Schools.find {}, fields: name: 1
 
 Meteor.publish "goaledSchedules", -> GoaledSchedules.find { ownerId: @userId }
 Meteor.publish "projects", (id) ->
@@ -171,10 +184,6 @@ Meteor.publish "books", (classId) ->
 		Books.find _id: $in: (x.bookId for x in (Meteor.users.findOne(@userId).classInfos ? []))
 
 Meteor.publish "roles", ->
-	unless @userId?
-		@ready()
-		return undefined
-
 	@unblock()
 	Meteor.users.find(@userId, fields: roles: 1)
 
@@ -188,3 +197,9 @@ Meteor.publish "scholieren.com", ->
 		@ready()
 		return undefined
 	ScholierenClasses.find()
+
+Meteor.publish 'woordjesleren', ->
+	unless @userId?
+		@ready()
+		return undefined
+	WoordjesLeren.find()

@@ -1,6 +1,7 @@
-@import "jeet"
-@import "axis"
-@import "../main"
+@require "axis"
+@require "jeet"
+@require "rupture"
+@require "../utils"
 
 noticeHeight = 50px
 
@@ -167,8 +168,6 @@ div.itemContainerHeader
 	border-bottom: 1px lightgray solid
 
 div.itemContainerContent
-	@extend .smoothScroll
-
 	text-rendering: optimizeLegibility
 	roboto(600)
 
@@ -178,6 +177,10 @@ div.itemContainerContent
 
 	a
 		text-decoration: none !important
+
+	+mobile()
+		overflow-y: scroll
+		-webkit-overflow-scrolling: touch
 // \\ Item Container
 
 +mobile()

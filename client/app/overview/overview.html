@@ -1,6 +1,6 @@
 <template name="appOverview">
 	<div class="container-fluid">
-		<div class="row" style="margin-top: -10px">
+		<div class="row">
 			{{#if isPhone}}
 				<div class="robotoHeader overviewHeader head1">{{weekNumber}}e <span class="robotoThin">week</span></div>
 			{{else}}
@@ -55,7 +55,7 @@
 
 <template name="taskRow">
 	<div class="taskRow">
-		{{#if isDone}}
+		{{#if __isDone}}
 			<label style="text-decoration: line-through; opacity: .4">
 				<input taskid="{{__id}}" type="checkbox" id="checkbox" checked>
 				<span taskid="{{__id}}" id="checkboxLabel" class="robotoThin" style="font-weight: 300; font-size: 15px">

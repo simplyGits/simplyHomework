@@ -37,14 +37,14 @@ Template.appOverview.helpers
 	currentDate: -> DateToDutch()
 	currentDay: -> DayToDutch()
 	weekNumber: -> moment().week()
-	tasksAmount: tasksAmount
-	tasksWord: -> if tasksAmount() is 1 then "taak" else "taken"
+	tasksAmount: -> tasks().length
+	tasksWord: -> if tasks().length is 1 then 'taak' else 'taken'
 
 	itemContainerMargin: ->
-		d = 350
-		if has "noAds" then d -= 90
-		if not hasAppointments() then d -= 170
-		return "#{d}px"
+		margin = 350
+		margin -= 90 if has 'noAds'
+		margin -= 170 unless hasAppointments()
+		"#{margin}px"
 
 	tasks: getTasks
 	projects: -> projects()
@@ -56,18 +56,16 @@ Template.appOverview.helpers
 @originals = {}
 
 Template.taskRow.events
-	"change": (event) ->
-		t = $ event.target
-		checked = t.is(":checked")
-		taskId = t.attr "taskid"
+	'change': (event) ->
+		$target = $ event.target
+		checked = $target.is ':checked'
 
-		@isDone checked
-		homeworkItems.dep.changed()
+		@__isDone checked
 
-		t.parent()
-			.stop()
-			.css(textDecoration: if checked then "line-through" else "initial")
-			.velocity(opacity: if checked then .4 else 1)
+		#$target.parent()
+		#	.stop()
+		#	.css textDecoration: if checked then 'line-through' else 'initial'
+		#	.velocity opacity: if checked then .4 else 1
 
 Template.infoNextDay.helpers
 	firstHour: -> appointmentsTommorow.get()[0].beginBySchoolHour()

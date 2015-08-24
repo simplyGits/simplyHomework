@@ -1,68 +1,103 @@
 login = ->
-	if not Session.get 'creatingAccount'
-		Meteor.loginWithPassword $('#emailInput').val().toLowerCase(), $('#passwordInput').val(), (error) ->
-			if error? and error.reason is 'Incorrect password'
-				setFieldError '#passwordGroup', 'Wachtwoord is fout'
-	else
-		Meteor.call 'mailExists', $('#emailInput').val().toLowerCase(), (error, result) ->
-			if result
-				Session.set 'creatingAccount', no
-				login()
-			else
-				okay = true
-				if empty 'emailInput', 'emailGroup', 'Email is leeg' then okay = false
-				if empty 'passwordInput', 'passwordGroup', 'Wachtwoord is leeg' then okay = false
-				if empty 'betaCodeInput', 'betaCodeGroup', 'Voornaam is leeg' then okay = false
-				unless correctMail $('#emailInput').val()
-					group = $('#emailGroup').tooltip 'destroy'
-					setFieldError group, 'Ongeldig email adres'
-					okay = false
-				if okay
-					Accounts.createUser {
-						password: $('#passwordInput').val()
-						email: $('#emailInput').val().toLowerCase()
-						profile:
-							firstName: ''
-							lastName: ''
-					}, (e, r) ->
-						if e? then shake '#signupModal'
-						else Meteor.call 'callMailVerification', -> Router.go 'app'
+	$emailInput = $ '#emailInput'
+	$passwordInput = $ '#passwordInput'
+	$passwordRepeatInput = $ '#passwordRepeatInput'
 
-	Router.go 'app' if Meteor.userId()? or Meteor.loggingIn()
+	Meteor.call 'mailExists', $emailInput.val().toLowerCase(), (error, result) ->
+		if result
+			Meteor.loginWithPassword $emailInput.val().toLowerCase(), $passwordInput.val(), (error) ->
+				if error?
+					if error.reason is 'Incorrect password'
+						setFieldError '#passwordGroup', 'Wachtwoord is fout'
+					else
+						shake '#signupModal'
+				else Router.go 'app'
 
-Template.page1.helpers showQuickLoginhint: -> amplify.store('allowCookies')?
+		else
+			error = no
+			if empty $emailInput, '#emailGroup', 'Email is leeg' then error = yes
+			else if not Helpers.correctMail $emailInput.val()
+				setFieldError '#emailGroup', 'Ongeldig email adres'
+				error = yes
 
-Template.signupModal.helpers creatingAccount: -> Session.get 'creatingAccount'
+			if empty $passwordInput, '#passwordGroup', 'Wachtwoord is leeg' then error = yes
+			else if empty $passwordRepeatInput, '#passwordRepeatGroup', 'Wachtwoord is leeg' then error = yes
+			else unless $passwordRepeatInput.val() is $passwordInput.val()
+				setFieldError '#passwordRepeatGroup', 'Wachtwoorden komen niet overéén'
+				error = yes
 
+			unless error
+				Accounts.createUser {
+					password: $passwordInput.val()
+					email: $emailInput.val().toLowerCase()
+					profile:
+						firstName: ''
+						lastName: ''
+				}, (e, r) ->
+					if e?
+						shake '#signupModal'
+						notify 'Onbekende fout, we zijn op de hoogte gesteld.', 'error'
+						Kadira.trackError 'create-account', e.message, stacks: e.stack
+					else
+						$('#signupModal').modal 'hide'
+						Router.go 'setup'
+
+Template.page1.helpers
+	showQuickLoginhint: -> amplify.store('allowCookies')?
+
+Template.signupModal.helpers
+	creatingAccount: -> Session.get 'creatingAccount'
+
+checkedMails = {}
 Template.signupModal.events
 	'keyup': (event) ->
-		value = event.target.value
+		$emailInput = $ '#emailInput'
+		$emailGroup = $ '#emailGroup'
+		value = $emailInput.val().toLowerCase()
 
 		unless event.which is 13
-			if correctMail $('#emailInput').val()
-				$('#emailGroup')
+			if Helpers.correctMail value
+				$emailGroup
 					.removeClass 'error'
 					.addClass 'success'
 			else
-				$('#emailGroup')
+				$emailGroup
 					.removeClass 'success'
 					.addClass 'error'
 
-			unless value.length < 4
-				Meteor.call 'mailExists', $('#emailInput').val().toLowerCase(), (error, result) -> Session.set 'creatingAccount', not result
+			if (val = checkedMails[value])?
+				Session.set 'creatingAccount', val
+			else if value.length > 3
+				Meteor.call 'mailExists', value, (error, result) ->
+					checkedMails[value] = not result
+					Session.set 'creatingAccount', not result
 
 	'keyup #passwordInput': (event) ->
-		if event.which is 13 then login()
+		strength = Helpers.passwordStrength event.target.value
+		len = event.target.value.length
+		$('#passwordGroup')
+			.removeClass 'error warning success'
+			.addClass switch
+				when not Session.get('creatingAccount') then ''
+
+				when len is 0 then ''
+				when 0 <= strength < 20 then 'error'
+				when 20 <= strength < 60 then 'warning'
+				else 'success'
+
+	'keyup #passwordRepeatInput': (event) ->
+		password = $('#passwordInput').val()
+		return unless password.length > 0
+
+		$passwordRepeatGroup = $ '#passwordRepeatGroup'
+		if event.target.value is password
+			$passwordRepeatGroup
+				.removeClass 'error'
+				.addClass 'success'
 		else
-			strength = Helpers.passwordStrength event.target.value
-			len = event.target.value.length
-			$('#passwordGroup')
-				.removeClass 'error warning success'
-				.addClass switch
-					when len is 0 then ''
-					when 0 <= strength < 20 then 'error'
-					when 20 <= strength < 60 then 'warning'
-					else 'success'
+			$passwordRepeatGroup
+				.removeClass 'success'
+				.addClass 'error'
 
 	'submit form': (event) ->
 		event.preventDefault()
@@ -71,9 +106,12 @@ Template.signupModal.events
 Template.page1.events
 	'click #signupButton': ->
 		Session.set 'creatingAccount', false
-		$('#signupModal').modal()
+		showModal 'signupModal'
 
-	'click #moreInfoButton': -> $('body').stop().animate {scrollTop: $('#page2').offset().top}, 1200, 'easeOutExpo'
+	'click #moreInfoButton': ->
+		$('body').stop().animate {
+			scrollTop: $('#page2').offset().top
+		}, 1200, 'easeOutExpo'
 
 	'keyup input#password': (event) ->
 		$('.signupForm > .enterHint').velocity opacity: .7
@@ -92,7 +130,11 @@ Template.page1.events
 			else Router.go 'app'
 
 Template.launchPage.events
-	'click #page1': -> if $('#page2').hasClass('topShadow') then $('body').stop().animate {scrollTop: 0}, 600, 'easeOutExpo'
+	'click #page1': ->
+		if $('#page2').hasClass 'topShadow'
+			$('body').stop().animate {
+				scrollTop: 0
+			}, 600, 'easeOutExpo'
 
 Template.launchPage.rendered = ->
 	@subscribe 'userCount'
@@ -107,17 +149,18 @@ Template.launchPage.rendered = ->
 		$signUpForm.css( 'visibility': 'initial' )
 		$('.Center, .signupForm').addClass('active')
 		_.delay ( ->
-			$signUpForm.find('input#username').val(String.fromCharCode event.which).focus()
+			$signUpForm
+				.find 'input#username'
+				.val String.fromCharCode event.which
+				.focus()
 		), 45
 
 	$('body').on 'input', (event) ->
-		Meteor.setTimeout (->
-			return unless $('.signupForm input#username').val() is '' and $('.signupForm input#password').val() is ''
-			$signUpForm.find('input').blur()
+		return unless $('.signupForm input#username').val() is '' and $('.signupForm input#password').val() is ''
+		$signUpForm.find('input').blur()
 
-			$signUpForm.css( 'visibility': 'hidden' )
-			$('.Center, .signupForm').removeClass('active')
-		), 500
+		$signUpForm.css( 'visibility': 'hidden' )
+		$('.Center, .signupForm').removeClass('active')
 
 	# sexy shadow, you like that, don't ya ;)
 	page2 = $ '#page2'
