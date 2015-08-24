@@ -107,16 +107,19 @@ http://tomsmeding.nl/
 # Checks if a given field is empty, if so returns true and displays an error message for the user.
 #
 # @method empty
-# @param inputId {String} The ID of the field.
-# @param groupId {String} The ID of the group of the field.
+# @param inputSelector {jQuery|String}
+# @param groupSelector {jQuery|String}
 # @param message {String} The error message to show to the user.
 # @return {Boolean} If the given field was empty.
 ###
-@empty = (inputId, groupId, message) ->
-	if $("##{inputId}").val() is ""
-		$("##{groupId}").addClass("error").tooltip(placement: "bottom", title: message).tooltip("show")
-		return true
-	return false
+@empty = (inputSelector, groupSelector, message) ->
+	$input = (if inputSelector.jquery? then inputSelector else $ inputSelector)
+	$group = (if groupSelector.jquery? then groupSelector else $ groupSelector)
+
+	if $input.val() is ''
+		setFieldError $group, message
+		yes
+	else no
 
 ###*
 # Force Beatrix to speak out the given `text`.
