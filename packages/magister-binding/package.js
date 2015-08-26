@@ -11,8 +11,7 @@ Package.onUse(function(api) {
 
 	api.use([
 		"erasaur:meteor-lodash",
-		"magisterjs",
-		//"simply:magisterjs",
+		"simply:magisterjs",
 		"ejson"
 	], "server");
 	api.use([
