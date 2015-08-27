@@ -4,7 +4,7 @@
  * @module planner
  */
 
-var deepcopy=require("deepcopy");
+var _ = _ || require('lodash');
 
 var assert = function (val) {
 	if (!val) throw new Error("AssertionError: false == true");
@@ -102,12 +102,12 @@ Planner=function(){
 	};
 
 	this.persistable=function(){
-		return deepcopy(subjects);
+		return _.cloneDeep(subjects);
 	};
 	this.frompersistable=function(subj){
 		if(subj.isPlannerObject===true) //they persisted the whole object ._.
 			subjects=subj.persistable();
-		else subjects=deepcopy(subj);
+		else subjects=_.cloneDeep(subj);
 	};
 
 	this.availableTimeConvert=function(code){
@@ -120,7 +120,7 @@ Planner=function(){
 	//  on that day of the plan region.
 	//`today` is a Date which the planner uses as "today"
 	this.plan=function(items,available,today){
-		items=deepcopy(items); //we'll modify them for our own needs
+		items=_.cloneDeep(items); //we'll modify them for our own needs
 		var ndays=available.length;
 		var needed=new Array(ndays);
 		var i;
@@ -178,7 +178,7 @@ Planner=function(){
 
 
 
-	if(arguments.length==1)subjects=deepcopy(arguments[0]); //from a persist source
+	if(arguments.length==1)subjects=_.cloneDeep(arguments[0]); //from a persist source
 };
 
 

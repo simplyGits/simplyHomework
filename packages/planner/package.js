@@ -7,15 +7,17 @@ Package.describe({
 	git: '',
 	// By default, Meteor will default to using README.md for documentation.
 	// To avoid submitting documentation, set this field to null.
-	documentation: 'README.md'
+	documentation: 'README.md',
 });
 
 Package.onUse(function(api) {
 	api.versionsFrom('1.1.0.2');
+	api.use('erasaur:meteor-lodash');
+
 	api.addFiles('planner.js');
 
-	api.export("HomeworkDescription");
-	api.export("Planner");
+	api.export('HomeworkDescription');
+	api.export('Planner');
 });
 
 Package.onTest(function(api) {
