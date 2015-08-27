@@ -3,7 +3,11 @@ Package.describe({
 	version: '0.0.1',
 	summary: 'Magister binding for simplyHomework.',
 	git: '',
-	documentation: 'README.md'
+	documentation: 'README.md',
+});
+
+Npm.depends({
+	request: '2.61.0',
 });
 
 Package.onUse(function(api) {
@@ -11,20 +15,19 @@ Package.onUse(function(api) {
 
 	api.use([
 		"erasaur:meteor-lodash",
-		"magisterjs",
-		//"simply:magisterjs",
-		"ejson"
+		"simply:magisterjs@1.8.0",
+		"ejson",
 	], "server");
 	api.use([
 		"coffeescript",
 		"templating",
-		"handlebars"
+		"handlebars",
 	], "client");
 
 	api.addFiles("magister-binding.js", "server");
 	api.addFiles([
 		"modal.html",
-		"modal.coffee"
+		"modal.coffee",
 	], "client");
 
 	api.export("MagisterBinding", "server");

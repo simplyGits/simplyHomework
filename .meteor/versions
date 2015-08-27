@@ -51,7 +51,6 @@ livedata@1.0.13
 localstorage@1.0.3
 logging@1.0.7
 magister-binding@0.0.1
-magisterjs@1.7.2
 markdown@1.0.4
 mdg:reload-on-resume@1.0.4
 meteor@1.1.6
@@ -102,6 +101,7 @@ sha@1.0.3
 simply-debug-tools@0.0.1
 simply:fullcalendar@2.4.0
 simply:lazy-code-push@0.0.1
+simply:magisterjs@1.8.0
 simply:strict-reactive-var@1.0.4
 simply:woordjesleren@0.0.1
 spacebars@1.0.6

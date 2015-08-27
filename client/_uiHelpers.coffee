@@ -153,7 +153,7 @@ _text = null
 class @NotificationsManager
 	@_notifications: []
 
-	@notify = (options) ->
+	@notify: (options) ->
 		check options, Object
 		_.defaults options, { type: "default", time: 4000, dismissable: yes, labels: [], styles: [], callbacks: [], html: no, priority: 0, allowDesktopNotifications: yes, image: "" }
 		{ body, type, time, dismissable, labels, styles, callbacks, html, onClick, priority, onDismissed, allowDesktopNotifications, image, onHide } = options
@@ -235,9 +235,11 @@ class @NotificationsManager
 				d.draggable
 					axis: "x"
 					start: (event, helper) ->
-						$(this)
-							.css width: $(this).outerWidth()
-							.addClass "noclick"
+						$this = $ this
+						pos = $this.position().left
+						$this
+							.css width: $this.outerWidth()
+							.addClass 'noclick'
 					stop: (event, helper) ->
 						$this = $ this
 						if $this.position().left - pos > MIN

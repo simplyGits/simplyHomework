@@ -49,4 +49,4 @@
 			}
 		}
 	};
-})(Npm.require("fibers/future"), Meteor.npmRequire("request"));
+})(Npm.require("fibers/future"), Npm.require("request"));

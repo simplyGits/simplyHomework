@@ -548,4 +548,4 @@
 
 		return fut.wait();
 	}
-})(Magister, Npm.require("fibers/future"), Meteor.npmRequire("request"));
+})(Magister, Npm.require("fibers/future"), Npm.require("request"));
