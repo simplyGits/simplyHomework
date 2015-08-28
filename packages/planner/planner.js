@@ -7,6 +7,10 @@
 require("js-object-clone");
 var util=require("util");
 
+
+var MIN_TIME_TASK_DAY=450; //minimum of 7.5 minutes for one task on a day (except if expected time is <7.5 min)
+
+
 var assert = function (val) {
 	if (!val) throw new Error("AssertionError: false == true");
 };
@@ -16,7 +20,12 @@ function subjectGrade(subjid){
 }
 
 HomeworkDescription=function(){
-	if(!(this instanceof HomeworkDescription))return new HomeworkDescription(arguments[0],arguments[1],arguments[2]);
+	if(!(this instanceof HomeworkDescription)){
+		return new (Function.prototype.bind.apply(
+			HomeworkDescription,
+			[null].concat(Array.prototype.slice.call(arguments))
+		));
+	}
 
 	//A unique identifier for a subject. Can be pretty much anything, lest it's a primitive type
 	//  and unique and fixed, i.e. there is only one identifier per subject and only one subject per identifier.
@@ -30,11 +39,14 @@ HomeworkDescription=function(){
 	//In general, anything that can be expressed in a sequence of integers that specifies the location.
 	//  (Actually, they should be index paths — think NSIndexPath)
 	//The `location` property contains an array of those, because homework can be multiple exercises, for example.
-	//Please make the array contiguous, though; don't mix indexing conventions! (!) (!!)
+	//Per subject, please use just one index convention. If you need to, add ones where you don't have entries.
 	this.location=arguments.length>1?arguments[1]:[];
 
 	//A Date indicating when this homework is due
 	this.duedate=arguments.length>2?arguments[2]:null;
+
+	//Some id that the outside world can decide on
+	this.id=arguments.length>3?arguments[3]:null;
 };
 
 Planner=function(){
@@ -163,7 +175,10 @@ Planner=function(){
 			}
 			if(day<it.item.duediff){
 				console.log(" -> planned on day "+day);
-				schedule[day].push(it.item);
+				itemcopy=Object.clone(it.item,true);
+				itemcopy.timepart=it.needed;
+				itemcopy.timefraction=1;
+				schedule[day].push(itemcopy);
 				daylength[day]+=it.needed;
 			} else { //the item didn't fit anywhere
 				console.log(" -> no fit found; distributing");
@@ -173,6 +188,7 @@ Planner=function(){
 				for(day=0;day<it.item.duediff;day++){
 					itemcopy=Object.clone(it.item,true);
 					itemcopy.timepart=Math.min(available[day]-daylength[day],it.needed-total);
+					if(itemcopy.timepart<it.needed-total&&itemcopy.timepart<MIN_TIME_TASK_DAY)continue; //almost no time left
 					if(itemcopy.timepart<=0)continue;
 					itemcopy.timefraction=itemcopy.timepart/it.needed;
 					if(firstUsedDay==-1)firstUsedDay=day;
@@ -187,7 +203,10 @@ Planner=function(){
 					console.log(" -> distributing left "+(it.needed-total)+" excess; putting on first used day");
 					if(firstUsedDay==-1){ //HELP we didn't plan ANYTHING yet at all
 						console.log(" -> NO FIRST USED DAY, so just plugging everything on day 0");
-						schedule[0].push(it.item);
+						itemcopy=Object.clone(it.item,true);
+						itemcopy.timepart=it.needed;
+						itemcopy.timefraction=1;
+						schedule[0].push(itemcopy);
 						daylength[0]+=it.needed;
 						continue; //skip all the fraction stuff
 					} else {
@@ -214,7 +233,7 @@ Planner=function(){
 		var ret={};
 		for(i=0;i<schedule.length;i++){
 			if(schedule[i].length==0)continue;
-			ret[addDays(today,i)]=schedule[i];
+			ret[addDays(today,i).getTime()]=schedule[i];
 		}
 		return ret;
 	};

@@ -16,11 +16,12 @@ p.estimate(H("ne",[[1,5]]))
 p.estimate(H("ne",[[1,4]]))
 var schedule=p.plan(
 	[
-		H("ne",[[1,2]],addDays(startOfDay(new Date),2)),
-		H("ne",[[1,1],[1,5]],addDays(startOfDay(new Date),1)),
-		H("ne",[[1,9]],addDays(startOfDay(new Date),2))
+		H("ne",[[1,2]],addDays(startOfDay(new Date),2),"id 1"),
+		H("ne",[[1,1],[1,5]],addDays(startOfDay(new Date),1),"id 2"),
+		H("ne",[[1,9]],addDays(startOfDay(new Date),2),"id 3")
 	],
 	[1,1,1,1].map(p.availableTimeConvert),
 	new Date
 )
 inspect(schedule)
+console.log(JSON.stringify(schedule))
