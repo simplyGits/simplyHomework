@@ -4,7 +4,8 @@
  * @module planner
  */
 
-var _ = _ || require('lodash');
+require("js-object-clone");
+var util=require("util");
 
 var assert = function (val) {
 	if (!val) throw new Error("AssertionError: false == true");
@@ -95,19 +96,19 @@ Planner=function(){
 
 	this.estimate=function(hwdesc){
 		var subj,loc;
-		//assert(hwdesc instanceof HomeworkDescription);
+		assert(hwdesc instanceof HomeworkDescription);
 		return sum(hwdesc.location.map(function(loc){
 			return estimateSingle(HomeworkDescription(hwdesc.subject,[loc]));
 		}));
 	};
 
 	this.persistable=function(){
-		return _.cloneDeep(subjects);
+		return Object.clone(subjects,true);
 	};
 	this.frompersistable=function(subj){
 		if(subj.isPlannerObject===true) //they persisted the whole object ._.
 			subjects=subj.persistable();
-		else subjects=_.cloneDeep(subj);
+		else subjects=Object.clone(subj,true);
 	};
 
 	this.availableTimeConvert=function(code){
@@ -118,14 +119,12 @@ Planner=function(){
 	//`items` is an Array of HomeworkDescriptions
 	//`available` is an Array of ints, specifying how much time (in the time unit) there is available
 	//  on that day of the plan region.
-	//`today` is a Date which the planner uses as "today"
+	//`today` is a Date which the planner uses as "today"; will be rounded to start of day
 	this.plan=function(items,available,today){
-		items=_.cloneDeep(items); //we'll modify them for our own needs
-		var ndays=available.length;
-		var needed=new Array(ndays);
+		items=Object.clone(items,true); //we'll modify them for our own needs
+		var needed=new Array(items.length);
 		var i;
-		for(i=0;i<ndays;i++){
-			available[i]=this.availableTimeConvert(available[i]);
+		for(i=0;i<items.length;i++){
 			needed[i]=this.estimate(items[i]);
 		}
 		console.log("available =",available," needed =",needed);
@@ -143,7 +142,7 @@ Planner=function(){
 			dueInDays[items[i].duediff].push({item:items[i],needed:needed[i]});
 		}
 		for(i=0;i<dueInDays.length;i++){
-			dueInDays[i].sort(function(a,b){return a.needed<b.needed;}); //descending sort on needed time
+			dueInDays[i].sort(function(a,b){return a.needed<b.needed;}); //descending sort on needed time, per day
 		}
 		var schedule=new Array(maxdiff);
 		var daylength=new Array(maxdiff);
@@ -152,22 +151,66 @@ Planner=function(){
 			daylength[i]=0;
 		}
 		var workingForDay;
-		var day,it;
+		var day,it,total,itemcopy,fractions,firstUsedDay,lastUsedDay,firstDayItem,lastDayItem;
 		workingForDay=0;
 		while(true){
 			while(workingForDay<dueInDays.length&&dueInDays[workingForDay].length==0)workingForDay++;
 			if(workingForDay>=dueInDays.length)break; //done!
-			console.log("day:",dueInDays[workingForDay]);
 			it=dueInDays[workingForDay].shift();
-			console.log("it =",it);
-			console.log("daylength[0]="+daylength[0]+" it.needed="+it.needed+" available[0]="+available[0]);
+			console.log("daylength="+util.inspect(daylength)+" item={\""+it.item.subject+"\" - "+util.inspect(it.item.location)+" - due in "+it.item.duediff+" day"+(it.item.duediff==1?"":"s")+"} it.needed="+it.needed);
 			for(day=0;day<it.item.duediff;day++){
 				if(daylength[day]+it.needed<=available[day])break;
 			}
-			if(day==it.item.duediff)assert(false); //TODO FIX STUFF THAT DOESN'T FIT
-			schedule[day].push(it.item);
-			daylength[day]+=it.needed;
+			if(day<it.item.duediff){
+				console.log(" -> planned on day "+day);
+				schedule[day].push(it.item);
+				daylength[day]+=it.needed;
+			} else { //the item didn't fit anywhere
+				console.log(" -> no fit found; distributing");
+				total=0;
+				fractions=[];
+				firstUsedDay=-1;
+				for(day=0;day<it.item.duediff;day++){
+					itemcopy=Object.clone(it.item,true);
+					itemcopy.timepart=Math.min(available[day]-daylength[day],it.needed-total);
+					if(itemcopy.timepart<=0)continue;
+					itemcopy.timefraction=itemcopy.timepart/it.needed;
+					if(firstUsedDay==-1)firstUsedDay=day;
+					lastUsedDay=day;
+					schedule[day].push(itemcopy);
+					daylength[day]+=itemcopy.timepart;
+					total+=itemcopy.timepart;
+					fractions.push({timepart:itemcopy.timepart,day:day});
+					if(total>=it.needed)break;
+				}
+				if(total<it.needed){
+					console.log(" -> distributing left "+(it.needed-total)+" excess; putting on first used day");
+					if(firstUsedDay==-1){ //HELP we didn't plan ANYTHING yet at all
+						console.log(" -> NO FIRST USED DAY, so just plugging everything on day 0");
+						schedule[0].push(it.item);
+						daylength[0]+=it.needed;
+						continue; //skip all the fraction stuff
+					} else {
+						firstDayItem=schedule[firstUsedDay][schedule[firstUsedDay].length-1];
+						firstDayItem.timepart+=it.needed-total;
+						firstDayItem.timefraction=firstDayItem.timepart/it.needed;
+					}
+					total=it.needed;
+				}
+				//NOT REACHED IF SHIT WAS JUST THROWN ON DAY 0 DUE TO continue ABOVE
+				fractions.sort(function(a,b){a.timepart>b.timepart;}); //descending sort on timepart
+				lastDayItem=schedule[lastUsedDay][schedule[lastUsedDay].length-1];
+				while(fractions[0].timepart<available[lastUsedDay]-daylength[lastUsedDay]){
+					schedule[fractions[0].day].pop();
+					daylength[fractions[0].day]-=fractions[0].timepart;
+					lastDayItem.timepart+=fractions[0].timepart;
+					lastDayItem.timefraction=lastDayItem.timepart/it.needed;
+					daylength[lastUsedDay]+=fractions[0].timepart;
+					fractions.shift();
+				}
+			}
 		}
+		console.log("daylength="+util.inspect(daylength));
 		var ret={};
 		for(i=0;i<schedule.length;i++){
 			if(schedule[i].length==0)continue;
@@ -178,7 +221,7 @@ Planner=function(){
 
 
 
-	if(arguments.length==1)subjects=_.cloneDeep(arguments[0]); //from a persist source
+	if(arguments.length==1)subjects=Object.clone(arguments[0],true); //from a persist source
 };
 
 
