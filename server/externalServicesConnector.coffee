@@ -335,7 +335,7 @@ Meteor.methods
 		check userId, String
 
 		user = Meteor.users.findOne userId
-		reslt = []
+		result = []
 
 		unless user?
 			throw new Meteor.Error 'unauthorized'
