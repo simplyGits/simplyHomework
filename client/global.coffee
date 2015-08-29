@@ -86,17 +86,6 @@
 @has = (feature) -> Helpers.emboxValue ->
 	Meteor.user()?.premiumInfo?[feature]?.deadline > new Date()
 
-###*
-# Gets info of the current Internet Explorer.
-# @method getInternetExplorerInfo
-# @return {Array} 0: {Boolean} Whether or not the browser is old, 1: {Number|Null} The version of the current IE, if the user is not on IE; null.
-###
-getInternetExplorerInfo = ->
-	if navigator.appName is 'Microsoft Internet Explorer'
-		version = parseFloat RegExp.$1 if /MSIE ([0-9]{1,}[\.0-9]{0,})/.exec(navigator.userAgent)?
-		return [ version < 9.0, version ]
-	return [ false, null ]
-
 @minuteTracker = new Tracker.Dependency
 Meteor.startup ->
 	$body = $ 'body'
@@ -111,17 +100,11 @@ Meteor.startup ->
 
 	window.viewportUnitsBuggyfill.init()
 
-	[ oldBrowser, version ] = getInternetExplorerInfo()
-
-	if navigator.appVersion.indexOf('Win') isnt -1
+	if navigator.platform is 'Win32' or navigator.userAgent.indexOf('win') > -1
 		$body.addClass 'win'
 
-	if oldBrowser # old Internet Explorer versions don't even support fast-render with iron-router :')
-		$body.text ''
-		Blaze.render Template.oldBrowser, $body.get()[0]
-		ga 'send', 'event', 'reject',  'old-browser', '' + version
-	else if "ActiveXObject" of window
-		$body.addClass 'ie'
+		if "ActiveXObject" of window
+			$body.addClass 'ie'
 
 	$.getScript '/js/advertisement.js' # simple adblock detection trick ;D
 

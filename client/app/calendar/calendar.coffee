@@ -14,7 +14,6 @@ calendarItemToEvent = (calendarItem) ->
 	id: calendarItem._id
 	title: (
 		if calendarItem.classId? then Classes.findOne(calendarItem.classId).name
-		else if calendarItem.description.length > 12 then "#{calendarItem.description.substring(0, 9)}..."
 		else calendarItem.description
 	)
 	allDay: calendarItem.fullDay
