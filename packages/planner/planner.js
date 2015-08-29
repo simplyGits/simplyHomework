@@ -11,10 +11,6 @@ var assert = require('assert');
 
 var MIN_TIME_TASK_DAY = 450; // minimum of 7.5 minutes for one task on a day (except if expected time is <7.5 min)
 
-function subjectGrade(subjid){
-	return Math.random()*9+1; //TODO:: Get average grade of student for this subject
-}
-
 HomeworkDescription=function(){
 	if(!(this instanceof HomeworkDescription)){
 		return new (Function.prototype.bind.apply(
@@ -78,16 +74,16 @@ Planner=function(){
 		}
 	};
 
-	this.generalSubjectEstimate=function(subjid){
-		var grade=subjectGrade(subjid);
-		return 3600*3/2-3600*grade;
+	this.generalSubjectEstimate=function(subjid,gradeFn){
+		var grade=gradeFn(subjid);
+		return 3600*3/2-3600*grade/10;
 	};
 
-	function estimateSingle(hwdesc){
+	this.estimateSingle=function(hwdesc,gradeFn){
 		assert(hwdesc instanceof HomeworkDescription);
 		assert(hwdesc.location.length==1);
 		if(!subjects[hwdesc.subject]){
-			return this.generalSubjectEstimate(hwdesc.subject);
+			return this.generalSubjectEstimate(hwdesc.subject,gradeFn);
 		}
 		var i,itemref=subjects[hwdesc.subject];
 		for(i=0;i<hwdesc.location[0].length;i++){
@@ -100,14 +96,14 @@ Planner=function(){
 			timearr.push(itemref[key]);
 		}
 		return rms(timearr);
-	}
+	};
 
-	this.estimate=function(hwdesc){
+	this.estimate=function(hwdesc,gradeFn){
 		var subj,loc;
 		assert(hwdesc instanceof HomeworkDescription);
 		return sum(hwdesc.location.map(function(loc){
-			return estimateSingle(HomeworkDescription(hwdesc.subject,[loc]));
-		}));
+			return this.estimateSingle(HomeworkDescription(hwdesc.subject,[loc]),gradeFn);
+		}.bind(this)));
 	};
 
 	this.persistable=function(){
@@ -128,7 +124,8 @@ Planner=function(){
 	//`availableFn` is a Function(Date) returning int, specifying the code for how much time (in the
 	//  time unit) there is available on the given day
 	//`today` is a Date which the planner uses as "today"; will be rounded to start of day
-	this.plan=function(items,availableFn,today){
+	//`gradeFn` is a Function(String) taking a subject identifier and returning the average grade of the student for that subject
+	this.plan=function(items,availableFn,today,gradeFn){
 		today=startOfDay(today);
 		var availableCache=[];
 		var available=(function(day){
@@ -136,7 +133,7 @@ Planner=function(){
 			if(day<0)assert(false);
 			while(day>=availableCache.length){
 				targetday=addDays(today,availableCache.length);
-				availableCache.push(this.availableTimeConvert(availableFn(targetday)));
+				availableCache.push(availableFn(targetday));
 			}
 			return availableCache[day];
 		}).bind(this);
@@ -144,7 +141,7 @@ Planner=function(){
 		var needed=new Array(items.length);
 		var i;
 		for(i=0;i<items.length;i++){
-			needed[i]=this.estimate(items[i]);
+			needed[i]=this.estimate(items[i],gradeFn);
 		}
 		console.log(" needed =",needed);
 		var maxdiff=0;

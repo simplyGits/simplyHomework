@@ -23,7 +23,8 @@ var schedule=p.plan(
 		H("ne",[[1,9]],addDays(today,2),"id 3")
 	],
 	function(day){return [1,1,1,1,1,1,1,1,1,1,1,1,1,1][diffDays(today,day)];},
-	now //any date on this day; `plan` applies startOfDay
+	now, //any date on this day; `plan` applies startOfDay
+	function(subjid){return 7;} //this student has averages of 7 for each subject.
 )
 inspect(schedule)
 console.log(JSON.stringify(schedule))
