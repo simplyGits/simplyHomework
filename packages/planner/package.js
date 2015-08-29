@@ -10,14 +10,17 @@ Package.describe({
 	documentation: 'README.md',
 });
 
+Npm.depends({
+	'js-object-clone': '0.4.2',
+});
+
 Package.onUse(function(api) {
 	api.versionsFrom('1.1.0.2');
-	api.use('erasaur:meteor-lodash');
 
-	api.addFiles('planner.js');
+	api.addFiles('planner.js', 'server');
 
-	api.export('HomeworkDescription');
-	api.export('Planner');
+	api.export('HomeworkDescription', 'server');
+	api.export('Planner', 'server');
 });
 
 Package.onTest(function(api) {

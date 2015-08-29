@@ -9,6 +9,6 @@
   "author": "simply <hello@simplyApps.nl> (http://www.simplyApps.nl/)",
   "license": "UNLICENSED",
   "dependencies": {
-    "lodash": "^3.10.1"
+    "js-object-clone": "^0.4.2"
   }
 }

@@ -4,16 +4,12 @@
  * @module planner
  */
 
+var require = require || Npm.require;
 require("js-object-clone");
-var util=require("util");
+var util = require("util");
+var assert = require('assert');
 
-
-var MIN_TIME_TASK_DAY=450; //minimum of 7.5 minutes for one task on a day (except if expected time is <7.5 min)
-
-
-var assert = function (val) {
-	if (!val) throw new Error("AssertionError: false == true");
-};
+var MIN_TIME_TASK_DAY = 450; // minimum of 7.5 minutes for one task on a day (except if expected time is <7.5 min)
 
 function subjectGrade(subjid){
 	return Math.random()*9+1; //TODO:: Get average grade of student for this subject
