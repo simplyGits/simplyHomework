@@ -1,0 +1,39 @@
+<template name="fullscreenChatWindow">
+	<div class="fullscreenChatWindow">
+		<div class="headerAsides"> {{! Just here for keeping everything clean.}}
+			<div class="userStatus {{chatInfo.status}}">
+				{{chatInfo.friendlyStatus}}
+			</div>
+			<div class="closeChat">
+				&times;
+			</div>
+		</div>
+
+		<div class="header">
+			{{#if sidebarIcon}}
+				<img class="profilePicture" src="{{chatInfo.sidebarIcon}}" width="75">
+			{{else}}
+				<div class="profilePicture">
+					{{#each participants}}
+						<img src="{{gravatar this 50}}" width="25">
+					{{/each}}
+				</div>
+			{{/if}}
+			<div class="name">{{chatInfo.friendlyName}}</div>
+		</div>
+
+		<div class="messages sticky">
+			{{#each chatInfo.messages}}
+				{{> messageRow}}
+			{{/each}}
+		</div>
+
+		<div class="footer">
+			<button class="sendButton">
+				<span class="sendText">verzenden</span>
+				<i class="fa fa-angle-double-right sendIcon"></i>
+			</button>
+			<input type="text" class="messageInput" placeholder="Typ bericht, Enter om te versturen." autofocus/>
+		</div>
+	</div>
+</template>

@@ -1,0 +1,28 @@
+@require "jeet"
+@require "axis"
+@require "../../utils"
+
+#eventDetailsTooltip
+	fixed: left top
+	width: 250px
+	height: 200px
+	z-index: 99
+
+	.tooltipContent
+		absolute: top left right bottom
+		font-size: 15px
+		background-color: white
+
+		.expandHeader
+			absolute: left top right
+			height: 50px
+
+			roboto(300)
+			color: #fff
+
+			background-color: red
+			text-align: center
+
+		.className
+			color: #222
+			font-size: 20px

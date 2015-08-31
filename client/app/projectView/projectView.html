@@ -1,7 +1,4 @@
 <template name="projectView">
-	{{> addParticipantModal}}
-	{{> changeProjectModal}}
-
 	<div class="container-fluid">
 		<div class="row">
 			<div class="robotoHeader overviewHeader head1 projectHeader">
@@ -9,9 +6,7 @@
 				<span id="changeProjectIcon" class="fa fa-pencil"></span>
 			</div>
 			{{#if showRightHeader}}
-				{{#with participants}}
-					<div class="robotoHeader overviewHeader head2 projectHeader" style="text-align: right">{{length}} <span class="robotoThin" style="margin-left: 5px">personen</span></div>
-				{{/with}}
+				<div class="robotoHeader overviewHeader head2 projectHeader" style="text-align: right">{{participants.length}} <span class="robotoThin" style="margin-left: 5px">personen</span></div>
 			{{/if}}
 		</div>
 		<div class="divider"></div>
@@ -25,14 +20,14 @@
 				<b>Beschrijving</b>: <span class="projectInfoDescription">{{description}}</span>
 			</div>
 
-			{{#with __lastChatMessage}}
-				<div class="projectInfoChatQuoteContainer">
+			<div class="projectInfoChatQuoteContainer">
+				{{#with __lastChatMessage}}
 					<img class="lastChatSenderPicture" src="{{gravatar __sender 100}}" width="50" height="50"/>
 					<span class="robotoThin lastChatSenderName">{{__sender.profile.firstName}}</span>
 					<span class="robotoThin lastChatMessage">{{content}}</span>
-					<span class="robotoThin lastChatHeader">Chat</span>
-				</div>
-			{{/with}}
+				{{/with}}
+				<span class="robotoThin lastChatHeader">Chat</span>
+			</div>
 		</div>
 
 		<div class="row">
@@ -94,7 +89,7 @@
 
 <template name="personRow">
 	<div class="personRow">
-		<img src="{{gravatar this 100}}" width="63" height="60" class="personImage" style="border-color: {{__statusColor}}">
+		<img src="{{gravatar this 100}}" width="63" height="60" class="personImage {{__status}}">
 		<span class="personName"><span style="color: black">{{profile.firstName}}</span> {{profile.lastName}}</span>
 		{{#if __isOwner}}
 			<span class="removePersonButton">&times;</span>
@@ -104,7 +99,7 @@
 
 <template name="selfRow">
 	<div class="personRow">
-		<img src="{{gravatar currentUser 100}}" width="63" height="60" class="personImage" style="border-color: #2ECC40">
+		<img src="{{gravatar currentUser 100}}" width="63" height="60" class="personImage online">
 		<span class="personName" style="color: black">Jij</span>
 	</div>
 </template>
@@ -118,18 +113,24 @@
 					<h4 class="modal-title">Persoon Toevoegen</h4>
 				</div>
 				<div class="modal-body">
-					<form class="form-horizontal">
-						<div id="personNameGroup" class="form-group">
-							<label for="personNameInput" class="col-sm-2 control-label" style="text-align: left">Naam</label>
-							<div class="col-sm-10">
-								<input type="text" class="form-control" id="personNameInput" placeholder="Adolf">
+					<div id="addQueue">
+						{{#each addQueue}}
+							<div>
+								<img src="{{gravatar this}}" width="50" height="50" />
+								<span>{{data.fullName}}</span>
 							</div>
+						{{/each}}
+					</div>
+					<form class="vertical full-width">
+						<div id="personNameGroup" class="group">
+							<label for="personNameInput">Naam</label>
+							<input type="text" id="personNameInput" placeholder="Henk">
 						</div>
 					</form>
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">Annuleren</button>
-					<button type="button" class="btn btn-primary" id="goButton">Opslaan</button>
+					<button type="button" class="btn btn-primary" id="goButton">Toevoegen</button>
 				</div>
 			</div>
 		</div>
@@ -145,33 +146,25 @@
 					<h4 class="modal-title">Project instellingen</h4>
 				</div>
 				<div class="modal-body">
-					<form class="form-horizontal">
-						<div id="changeNameGroup" class="form-group">
-							<label for="changeNameInput" class="col-sm-2 control-label" style="text-align: left">Naam</label>
-							<div class="col-sm-10">
-								<input type="text" class="form-control" id="changeNameInput" value="{{name}}">
-							</div>
+					<form class="vertical full-width">
+						<div id="changeNameGroup" class="group">
+							<label for="changeNameInput">Naam</label>
+							<input type="text" id="changeNameInput" value="{{name}}">
 						</div>
-						<div id="changeDescriptionGroup" class="form-group">
-							<label for="changeDescriptionInput" class="col-sm-2 control-label" style="text-align: left">Beschrijving</label>
-							<div class="col-sm-10">
-								<input type="text" class="form-control" id="changeDescriptionInput" value="{{description}}">
-							</div>
+						<div id="changeDescriptionGroup" class="group">
+							<label for="changeDescriptionInput">Beschrijving</label>
+							<input type="text" id="changeDescriptionInput" value="{{description}}">
 						</div>
-						<div id="changeDeadlineGroup" class="form-group">
-							<label for="changeDeadlineInput" class="col-sm-2 control-label" style="text-align: left">Deadline</label>
-							<div class="col-sm-10">
-								<input type="text" class="form-control" id="changeDeadlineInput">
-							</div>
+						<div id="changeDeadlineGroup" class="group">
+							<label for="changeDeadlineInput">Deadline</label>
+							<input type="text" id="changeDeadlineInput">
 						</div>
-						<div id="changeClassGroup" class="form-group">
-							<label for="changeClassInput" class="col-sm-2 control-label" style="text-align: left">Vak</label>
-							<div class="col-sm-10">
-								<input type="text" class="form-control" id="changeClassInput" value="{{__class.name}}">
-							</div>
+						<div id="changeClassGroup" class="group">
+							<label for="changeClassInput">Vak</label>
+							<input type="text" id="changeClassInput" value="{{__class.name}}">
 						</div>
 					</form>
-					<button class="btn btn-danger" id="leaveProjectButton">Verlaat project</button>
+					<button class="btn btn-danger" id="leaveProjectButton" style="width: 100%">Verlaat project</button>
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">Annuleren</button>

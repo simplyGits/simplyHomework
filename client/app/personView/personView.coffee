@@ -1,37 +1,39 @@
 sameUser = -> Meteor.userId() is Router.current().data()._id
 sharedHours = new ReactiveVar []
-
-status = ->
-	s = Router.current().data().status
-
-	res = null
-	if s.idle
-		res = "#FF9800"
-	else if s.online
-		res = "#4CAF50"
-	else
-		res = "#EF5350"
-
-	$("meta[name='theme-color']").attr "content", res.backColor
-
-	return res
+pictures = new ReactiveVar []
+loadingPictures = new ReactiveVar yes
 
 Template.personView.helpers
-	backColor: -> status()
+	backColor: ->
+		res = (
+			if @status.idle then "#FF9800"
+			else if @status.online then "#4CAF50"
+			else "#EF5350"
+		)
+
+		setPageOptions color: res
+		res
 	sameUser: sameUser
 
 Template.personView.events
-	"click i#reportButton": ->
-		modal = $ "#reportUserModal"
-		modal.find("input[type='checkbox']").prop "checked", no
-		modal.modal()
+	'click .personPicture': ->
+		return unless sameUser()
+		ga 'send', 'event', 'button', 'click', 'personPicture'
+		showModal 'changePictureModal'
 
-	"click button#chatButton": -> ChatManager.openUserChat @
+	'click i#reportButton': ->
+		ga 'send', 'event', 'button', 'click', 'reportButton'
+		showModal 'reportUserModal', undefined, Router.current().data
 
-Template.personView.rendered = ->
+	"click button#chatButton": -> ChatManager.openUserChat this
+
+Template.personView.onRendered ->
 	@autorun ->
 		Router.current()._paramsDep.depend()
-		Meteor.defer -> $('[data-toggle="tooltip"]').tooltip container: "body"
+		Meteor.defer ->
+			$('[data-toggle="tooltip"]')
+				.tooltip "destroy"
+				.tooltip container: "body"
 
 Template.personSharedHours.helpers
 	days: ->
@@ -57,27 +59,61 @@ Template.personSharedHours.rendered = ->
 			return currentUserHasHour and personHasHour
 
 Template.reportUserModal.events
-	"click button#goButton": ->
+	'click button#goButton': ->
+		ga 'send', 'event', 'action', 'report'
 		reportItem = new ReportItem Meteor.userId(), Router.current().data()._id
 
-		checked = $ "div#checkboxes input:checked"
+		checked = $ 'div#checkboxes input:checked'
 		for checkbox in checked
-			reportItem.reportGrounds.push checkbox.closest("div").id
+			reportItem.reportGrounds.push checkbox.closest('div').id
 
 		if reportItem.reportGrounds.length is 0
-			shake "#reportUserModal"
+			shake '#reportUserModal'
 			return
 
-		Meteor.call "reportUser", reportItem, (e, r) ->
-			$("#reportUserModal").modal "hide"
-
+		$('#reportUserModal').modal 'hide'
+		Meteor.call 'reportUser', reportItem, (e, r) ->
 			name = Router.current().data().profile.firstName
 			if e?
 				message = switch e.error
-					when "rateLimit" then "#{name} is niet gerapporteerd,\nJe rapporteert teveel mensen."
-					else "Onbekende fout tijdens het rapporteren"
+					when 'rateLimit' then "#{name} is niet gerapporteerd,\nJe rapporteert teveel mensen."
+					else 'Onbekende fout tijdens het rapporteren'
 
-				notify message, "error"
+				notify message, 'error'
 
 			else
-				notify "#{name} gerapporteerd.", "notice"
+				notify "#{name} gerapporteerd.", 'notice'
+
+Template.changePictureModal.onRendered ->
+	getProfileDataPerService (e, r) ->
+		if e?
+			notify "Fout tijdens het ophalen van de foto's", 'error'
+			Kadira.trackError 'ChangePictureModal', e.toString(), stacks: EJSON.stringify e
+			$('#changePictureModal').modal 'hide'
+		else
+			pictures.set(
+				_(r)
+					.pairs()
+					.map ([ key, val ]) ->
+						fetchedBy: key
+						value: val.picture
+						selected: ->
+							if key is Meteor.user().profile.pictureInfo.fetchedBy
+								'selected'
+							else
+								''
+					.value()
+			)
+
+Template.changePictureModal.helpers
+	pictures: -> pictures.get()
+	loadingPictures: -> _.isEmpty pictures.get()
+
+Template.pictureSelectorItem.events
+	'click': (event) ->
+		Meteor.users.update Meteor.userId(), $set:
+			'profile.pictureInfo':
+				url: @value
+				fetchedBy: @fetchedBy
+
+		$('#changePictureModal').modal 'hide'

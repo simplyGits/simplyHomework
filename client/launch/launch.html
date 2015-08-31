@@ -1,5 +1,4 @@
 <template name="launchPage">
-	{{> signupModal}}
 	<div id="page1" class="unselectable">
 		{{> page1}}
 	</div>
@@ -27,13 +26,13 @@
 		{{/if}}
 	</div>
 
-	<div class="signUpForm">
+	<div class="signupForm">
 		<input type="text" id="username" autocomplete="off"/>
 		<input type="password" id="password" autocomplete="off"/>
 		<div class="enterHint robotoHeader">druk op enter om in te loggen</div>
 	</div>
 
-	<div class="launchpageMoreInfoBottom">info<br>\/</div>
+	<div id="moreInfoButton">info<br>\/</div>
 </template>
 
 <template name="page2">
@@ -80,7 +79,7 @@
 		</div>
 	</div>
 	<div id="page2footer">
-		2015 simplyApps
+		{{currentYear}} simplyApps
 		<div class="pull-right">
 			{{#linkTo route="privacy"}}
 				Privacybeleid
@@ -109,16 +108,16 @@
 						<div class="modal-body">
 							<div id="emailGroup" class="group">
 								<label for="emailInput">Email</label>
-								<input type="email" id="emailInput" placeholder="hello@simplyApps.nl">
+								<input type="email" id="emailInput" placeholder="hello@simplyApps.nl" autofocus>
 							</div>
 							<div id="passwordGroup" class="group">
 								<label for="passwordInput">Wachtwoord</label>
 								<input type="password" id="passwordInput" placeholder="●●●●●●●●●●">
 							</div>
 							{{#if creatingAccount}}
-								<div id="betaCodeGroup" class="group">
-									<label for="betaCodeInput">Beta toeganscode</label>
-									<input type="text" id="betaCodeInput">
+								<div id="passwordRepeatGroup" class="group">
+									<label for="passwordRepeatInput">Wachtwoord herhalen</label>
+									<input type="password" id="passwordRepeatInput" placeholder="●●●●●●●●●●">
 								</div>
 							{{/if}}
 							<div class="group no-margin">

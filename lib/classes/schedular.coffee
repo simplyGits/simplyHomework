@@ -1,4 +1,4 @@
-root = @
+root = this
 
 ###*
 # Calculates the difficulty for the given `paragraph` in relation
@@ -81,6 +81,7 @@ root = @
 		when _.contains [60..90], avgCompared then 6
 
 	return avgPoints + exceptionPoints + 7
+	# TODO:
 	# Should actually be `avgPoints + exceptionPoints + understanding + difficulty` later.
 	#
 	# We fill it now in with 7 points so that we won't get a real issue / gap between data later

@@ -3,12 +3,14 @@
 		"browser",
 		"jquery",
 		"underscore",
-		"lodash",
 		"amplify"
 	],
 	"loadEagerly": [ "*.js", "*/*.js", "*/*/*.js", "*/*/*/*.js" ],
 	"dontLoad": [ ".meteor" ],
 	"plugins": {
-		"meteor": {}
+		"meteor": {},
+		"node": {
+			"load": "server"
+		}
 	}
 }
