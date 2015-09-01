@@ -11,6 +11,10 @@ var assert = require('assert');
 
 var MIN_TIME_TASK_DAY = 450; // minimum of 7.5 minutes for one task on a day (except if expected time is <7.5 min)
 
+var log = function () {
+	//console.log.apply(console, arguments);
+};
+
 /**
  * @class HomeworkDescription
  * @constructor
@@ -229,7 +233,7 @@ Planner=function(){
 		for(i=0;i<items.length;i++){
 			needed[i]=this.estimate(items[i],gradeFn);
 		}
-		console.log(" needed =",needed);
+		log(" needed =",needed);
 		var maxdiff=0;
 		for(i=0;i<items.length;i++){
 			items[i].duedate=startOfDay(items[i].duedate);
@@ -239,7 +243,7 @@ Planner=function(){
 		}
 		var dueInDays=new Array(maxdiff+1);
 		for(i=0;i<=maxdiff;i++)available(i);
-		console.log("available =",availableCache);
+		log("available =",availableCache);
 		for(i=0;i<=maxdiff;i++)dueInDays[i]=[];
 		for(i=0;i<items.length;i++){
 			dueInDays[items[i].duediff].push({item:items[i],needed:needed[i]});
@@ -260,19 +264,19 @@ Planner=function(){
 			while(workingForDay<dueInDays.length&&dueInDays[workingForDay].length==0)workingForDay++;
 			if(workingForDay>=dueInDays.length)break; //done!
 			it=dueInDays[workingForDay].shift();
-			console.log("daylength="+util.inspect(daylength)+" item={\""+it.item.subject+"\" - "+util.inspect(it.item.location)+" - due in "+it.item.duediff+" day"+(it.item.duediff==1?"":"s")+"} it.needed="+it.needed);
+			log("daylength="+util.inspect(daylength)+" item={\""+it.item.subject+"\" - "+util.inspect(it.item.location)+" - due in "+it.item.duediff+" day"+(it.item.duediff==1?"":"s")+"} it.needed="+it.needed);
 			for(day=0;day<it.item.duediff;day++){
 				if(daylength[day]+it.needed<=available(day))break;
 			}
 			if(day<it.item.duediff){
-				console.log(" -> planned on day "+day);
+				log(" -> planned on day "+day);
 				itemcopy=Object.clone(it.item,true);
 				itemcopy.timepart=it.needed;
 				itemcopy.timefraction=1;
 				schedule[day].push(itemcopy);
 				daylength[day]+=it.needed;
 			} else { //the item didn't fit anywhere
-				console.log(" -> no fit found; distributing");
+				log(" -> no fit found; distributing");
 				total=0;
 				fractions=[];
 				firstUsedDay=-1;
@@ -291,9 +295,9 @@ Planner=function(){
 					if(total>=it.needed)break;
 				}
 				if(total<it.needed){
-					console.log(" -> distributing left "+(it.needed-total)+" excess; putting on first used day");
+					log(" -> distributing left "+(it.needed-total)+" excess; putting on first used day");
 					if(firstUsedDay==-1){ //HELP we didn't plan ANYTHING yet at all
-						console.log(" -> NO FIRST USED DAY, so just plugging everything on day 0");
+						log(" -> NO FIRST USED DAY, so just plugging everything on day 0");
 						itemcopy=Object.clone(it.item,true);
 						itemcopy.timepart=it.needed;
 						itemcopy.timefraction=1;
@@ -320,7 +324,7 @@ Planner=function(){
 				}
 			}
 		}
-		console.log("daylength="+util.inspect(daylength));
+		log("daylength="+util.inspect(daylength));
 		var ret={};
 		for(i=0;i<schedule.length;i++){
 			if(schedule[i].length==0)continue;
