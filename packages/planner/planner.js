@@ -11,6 +11,14 @@ var assert = require('assert');
 
 var MIN_TIME_TASK_DAY = 450; // minimum of 7.5 minutes for one task on a day (except if expected time is <7.5 min)
 
+/**
+ * @class HomeworkDescription
+ * @constructor
+ * @param {any} subject Must be primitive, unique and fixed
+ * @param {int[][]} locations
+ * @param {Date} duedate
+ * @param {any} id
+ */
 HomeworkDescription=function(){
 	if(!(this instanceof HomeworkDescription)){
 		return new (Function.prototype.bind.apply(
@@ -19,38 +27,76 @@ HomeworkDescription=function(){
 		));
 	}
 
-	//A unique identifier for a subject. Can be pretty much anything, lest it's a primitive type
-	//  and unique and fixed, i.e. there is only one identifier per subject and only one subject per identifier.
+	/**
+	 * A unique identifier for a subject. Can be pretty much anything, lest it's
+	 * a primitive type and unique and fixed, i.e. there is only one identifier
+	 * per subject and only one subject per identifier.
+	 *
+	 * @property subject
+	 * @type any
+	 */
 	this.subject=arguments.length>0?arguments[0]:null;
 
-	//Items in `location` can be multiple things, e.g.
-	//- [chapter,paragraph,exercise]
-	//- [bookid,page,exercise]
-	//- [chapter,exercise]
-	//- [bookid,page]
-	//In general, anything that can be expressed in a sequence of integers that specifies the location.
-	//  (Actually, they should be index paths — think NSIndexPath)
-	//The `location` property contains an array of those, because homework can be multiple exercises, for example.
-	//Per subject, please use just one index convention. If you need to, add ones where you don't have entries.
+	/**
+	 * Items in `location` can be multiple things, e.g.
+	 *   - [chapter,paragraph,exercise]
+	 *   - [bookid,page,exercise]
+	 *   - [chapter,exercise]
+	 *   - [bookid,page]
+	 *
+	 * In general, anything that can be expressed in a sequence of integers that
+	 * specifies the location.  (Actually, they should be index paths — think
+	 * NSIndexPath) The `location` property contains an array of those, because
+	 * homework can be multiple exercises, for example.  Per subject, please use
+	 * just one index convention. If you need to, add ones where you don't have
+	 * entries.
+	 *
+	 * @property location
+	 * @type int[][]
+	 */
 	this.location=arguments.length>1?arguments[1]:[];
 
-	//A Date indicating when this homework is due
+	/**
+	 * A Date indicating when this homework is due
+	 * @prototype duedate
+	 * @type Date
+	 */
 	this.duedate=arguments.length>2?arguments[2]:null;
 
-	//Some id that the outside world can decide on
+	/**
+	 * Some id that the outside world can decide on
+	 * @property id
+	 * @type any
+	 */
 	this.id=arguments.length>3?arguments[3]:null;
 };
 
+/**
+ * @class Planner
+ * @constructor
+ * @param {Object} [persisted] Result from `Planner::persistable`.
+ */
 Planner=function(){
 	if(!(this instanceof Planner))return new Planner(arguments[0]);
 
+	/**
+	 * @property isPlannerObject
+	 * @type Boolean
+	 * @final
+	 * @default true
+	 */
 	this.isPlannerObject=true;
 
 	//PREV: Object[subject id][location index path item][value of the loc. idxp. item][samples of time taken]
 	//Object[subject id][loc item 0][loc item 1]...[loc item n] = time taken for that index path
 	var subjects={}; //The Cache
 
-	//`timetaken` in any unit you find convenient; but please be consistent. Suggestion: seconds.
+	/**
+	 * Learn.
+	 * @method learn
+	 * @param {HomeworkDescription} hwdesc The `HomeworkDescription` that was done.
+	 * @param {Number} timetaken Number in time unit that specifies how long the given description took.
+	 */
 	this.learn=function(hwdesc,timetaken){
 		var i,j,idx,subj,loc;
 		assert(hwdesc instanceof HomeworkDescription);
@@ -74,12 +120,26 @@ Planner=function(){
 		}
 	};
 
+	/**
+	 * @method generalSubjectEstimate
+	 * @param {any} subjid
+	 * @param {Function} gradeFn
+	 * @return {Number}
+	 */
 	this.generalSubjectEstimate=function(subjid,gradeFn){
 		var grade=gradeFn(subjid);
 		return 3600*3/2-3600*grade/10;
 	};
 
-	this.estimateSingle=function(hwdesc,gradeFn){
+	/**
+	 * Guesses the time needed for the given `hwdesc` with a single location.
+	 * @private
+	 * @method _estimateSingle
+	 * @param {HomeworkDescription} hwdesc
+	 * @param {Function} gradeFn
+	 * @return {Number}
+	 */
+	this._estimateSingle=function(hwdesc,gradeFn){
 		assert(hwdesc instanceof HomeworkDescription);
 		assert(hwdesc.location.length==1);
 		if(!subjects[hwdesc.subject]){
@@ -98,33 +158,59 @@ Planner=function(){
 		return rms(timearr);
 	};
 
+	/**
+	 * Guesses the time needed for the given `hwdesc`.
+	 * @method estimate
+	 * @param {HomeworkDescription} hwdesc
+	 * @param {Function} gradeFn
+	 * @return {Number}
+	 */
 	this.estimate=function(hwdesc,gradeFn){
 		var subj,loc;
 		assert(hwdesc instanceof HomeworkDescription);
 		return sum(hwdesc.location.map(function(loc){
-			return this.estimateSingle(HomeworkDescription(hwdesc.subject,[loc]),gradeFn);
+			return this._estimateSingle(HomeworkDescription(hwdesc.subject,[loc]),gradeFn);
 		}.bind(this)));
 	};
 
+	/**
+	 * Converts the current Planner to a persistable object.
+	 * @method persistable
+	 * @return {Object}
+	 */
 	this.persistable=function(){
 		return Object.clone(subjects,true);
 	};
+
+	/**
+	 * Loads in an object created by `Planner::persistable`.
+	 * @method frompersistable
+	 * @param {Object} subj The object created by `Planner:persistable` to load.
+	 */
 	this.frompersistable=function(subj){
 		if(subj.isPlannerObject===true) //they persisted the whole object ._.
 			subjects=subj.persistable();
 		else subjects=Object.clone(subj,true);
 	};
 
+	/**
+	 * @method availableTimeConvert
+	 * @param {Number} code
+	 * @return Number
+	 */
 	this.availableTimeConvert=function(code){
 		// return [0,30*60,90*60,180*60][code];
 		return (15*code*code+15*code)*60;
 	};
 
-	//`items` is an Array of HomeworkDescriptions
-	//`availableFn` is a Function(Date) returning int, specifying the code for how much time (in the
-	//  time unit) there is available on the given day
-	//`today` is a Date which the planner uses as "today"; will be rounded to start of day
-	//`gradeFn` is a Function(String) taking a subject identifier and returning the average grade of the student for that subject
+	/**
+	 * @method plan
+	 * @param {HomeworkDescription[]} items
+	 * @param {Function(Date) Number} availableFn Specifies the code for how much time (in time unit) there is available for the given day.
+	 * @param {Date} today The date which the planner uses as "today"; will be rounded to start of day.
+	 * @param {Function(String) Number} gradeFn Gets a subject identifier and must return the average grade of the student for that subject.
+	 * @return {Object} The schedule.
+	 */
 	this.plan=function(items,availableFn,today,gradeFn){
 		today=startOfDay(today);
 		var availableCache=[];
