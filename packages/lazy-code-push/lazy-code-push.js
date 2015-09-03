@@ -19,10 +19,15 @@ Reload._onMigrate('lazy-code-push', function (retry) {
 		// isn't available for some reason.
 		typeof setBigNotice !== 'function' ||
 
-		// Or if we are on the launchPage, where setBigNotice doesn't work,
+		// Or if we are on a route where setBigNotice doesn't work,
 		// really, and where it doesn't really matter if the user gets
 		// distracted.
-		(Router && Router.current().route.getName() === 'launchPage')
+		(
+			Router && [
+				'launchPage',
+				'setup',
+			].indexOf(Router.current().route.getName()) > -1
+		)
 	) {
 		return [true];
 	}
