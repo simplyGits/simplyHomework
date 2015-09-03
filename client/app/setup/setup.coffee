@@ -121,7 +121,7 @@ setupItems =
 						.map (s) -> s.profileData()?.birthDate
 						.find _.isDate
 
-				askedExternalServices: yes
+				'externalServices.asked': yes
 			}, ->
 				cb()
 				schoolEngineSub?.stop()
@@ -245,7 +245,7 @@ setupItems =
 	setupItems.externalServices.done =
 	setupItems.extractInfo.done =
 	setupItems.getExternalClasses.done =
-		Meteor.user().askedExternalServices
+		Meteor.user().externalServices?.asked ? no
 	setupItems.plannerPrefs.done = not _.isEmpty Meteor.user().plannerPrefs
 	setupItems.newSchoolYear.done = yes # TODO: Dunno how're going to do this shit
 

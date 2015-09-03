@@ -34,6 +34,7 @@ Meteor.users.allow
 	update: (userId, doc, fields, modifier) ->
 		allowed = [
 			'classInfos'
+			'externalServices'
 			'mailSignup'
 			'schedular'
 			'privacyOptions'
@@ -41,7 +42,6 @@ Meteor.users.allow
 			'hasGravatar'
 			'studyGuidesHashes'
 			'gradeNotificationDismissTime'
-			'askedExternalServices'
 		]
 		userId is doc._id and not _.any fields, (f) -> not _.contains allowed, f
 

@@ -91,7 +91,7 @@ Meteor.publish null, ->
 
 	[
 		Meteor.users.find @userId, fields:
-			askedExternalServices: 1
+			'externalServices.asked': 1
 			classInfos: 1
 			creationDate: 1
 			externalServices: 1
