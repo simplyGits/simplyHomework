@@ -34,6 +34,19 @@
 	res
 
 ###*
+# @method tasksCount
+# @return {Object}
+###
+@tasksCount = ->
+	Helpers.emboxValue ->
+		tasks = @tasks()
+		finishedTasks = _.filter tasks, (t) -> t.__isDone()
+
+		total: tasks.length
+		finished: finishedTasks.length
+		unfinished: tasks.length - finishedTasks.length
+
+###*
 # Get the classes for the current user, converted and sorted.
 # @method classes
 # @return {Cursor} A cursor pointing to the classes.

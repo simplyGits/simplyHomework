@@ -3,15 +3,16 @@ nextAppointmentToday = new ReactiveVar null
 currentAppointment = new ReactiveVar null
 
 hasAppointments = ->
-	_.any([currentAppointment, nextAppointmentToday], (x) -> x.get()?) or
+	currentAppointment.get()? or
+	nextAppointmentToday.get()? or
 	appointmentsTommorow.get().length > 0
 
 Template.appOverview.helpers
 	currentDate: -> DateToDutch()
 	currentDay: -> DayToDutch()
 	weekNumber: -> moment().week()
-	tasksAmount: -> tasks().length
-	tasksWord: -> if tasks().length is 1 then 'taak' else 'taken'
+	tasksAmount: -> tasksCount().total
+	tasksWord: -> if tasksCount().total is 1 then 'taak' else 'taken'
 
 	itemContainerMargin: ->
 		margin = 350
@@ -41,59 +42,68 @@ Template.taskRow.events
 		#	.velocity opacity: if checked then .4 else 1
 
 Template.infoNextDay.helpers
-	firstHour: -> appointmentsTommorow.get()[0].beginBySchoolHour()
-	lastHour: -> _.last(appointmentsTommorow.get()).beginBySchoolHour()
+	firstHour: -> _.first(appointmentsTommorow.get()).schoolHour
+	lastHour: -> _.last(appointmentsTommorow.get()).schoolHour
 	people: ->
 		return [] if Session.get 'isPhone'
-		groupsTommorow = _(Meteor.user().profile.groupInfos)
-			.filter (info) -> _.any appointmentsTommorow.get(), (a) -> a.description is info.group
-			.pluck 'group'
+		userIds = _(appointmentsTommorow.get())
+			.pluck 'userIds'
+			.flatten()
+			.uniq()
+			.reject (id) -> id is Meteor.userId()
 			.value()
 
+		res = Meteor.users.find _id: $in: userIds
 		Meteor.defer -> $('[data-toggle="tooltip"]').tooltip container: '.overviewImportantContainer' # Render the shit out of them
-
-		Meteor.users.find(
-			_id: $ne: Meteor.userId()
-			'profile.groupInfos': $elemMatch: group: $in: groupsTommorow
-		).fetch()
+		res
 
 Template.infoNextLesson.helpers
-	hours: ->   val = nextAppointmentToday.get()?.begin().getHours()  ; if val? then Helpers.addZero(val) else ""
-	minutes: -> val = nextAppointmentToday.get()?.begin().getMinutes(); if val? then ":#{Helpers.addZero(val)}" else ""
+	hours: ->
+		val = nextAppointmentToday.get()?.startDate.getHours()
+		if val? then Helpers.addZero(val) else ''
+	minutes: ->
+		val = nextAppointmentToday.get()?.startDate.getMinutes()
+		if val? then ":#{Helpers.addZero(val)}" else ''
 	appointment: -> nextAppointmentToday.get()
 
 Template.infoCurrentLesson.helpers
-	hours: ->   val = currentAppointment.get()?.end().getHours()  ; if val? then Helpers.addZero(val) else ""
-	minutes: -> val = currentAppointment.get()?.end().getMinutes(); if val? then ":#{Helpers.addZero(val)}" else ""
+	hours: ->
+		val = currentAppointment.get()?.endDate.getHours()
+		if val? then Helpers.addZero(val) else ''
+	minutes: ->
+		val = currentAppointment.get()?.endDate.getMinutes()
+		if val? then ":#{Helpers.addZero(val)}" else ''
 	appointment: -> currentAppointment.get()
 
 Template.appOverview.events
 	'click #addProjectIcon': -> showModal 'addProjectModal'
 
 Template.appOverview.onRendered ->
-	@subscribe 'externalCalendarItems', new Date(), new Date().addDays 1
+	@subscribe 'externalCalendarItems', Date.today(), Date.today().addDays 2
 
 	@autorun ->
 		minuteTracker.depend()
 
 		today = CalendarItems.find(
-			ownerId: Meteor.userId()
-			startdate:
-				$gte: Date.today()
-				$in: [5..19]
+			userIds: Meteor.userId()
+			startDate: $gte: Date.today()
 			endDate: $lte: Date.today().addDays 1
 			classId: $exists: yes
 		).fetch()
 		tomorrow = CalendarItems.find(
-			ownerId: Meteor.userId()
-			startdate:
-				$gte: Date.today().addDays 1
-				$in: [5..19]
+			userIds: Meteor.userId()
+			startDate: $gte: Date.today().addDays 1
 			endDate: $lte: Date.today().addDays 2
 			classId: $exists: yes
 		).fetch()
 
-		currentAppointment.set _.find today, (a) -> a.startDate < new Date() and s.endDate > new Date()
+		filterfn = (x) -> x.startDate.getHours() in [5..19]
+		today = _.filter today, filterfn
+		tomorrow = _.filter tomorrow, filterfn
+
+		console.log today, tomorrow
+
+		currentAppointment.set _.find today, (a) -> a.startDate < new Date() and a.endDate > new Date()
 		nextAppointmentToday.set _.find today, (a) -> new Date() < a.startDate
 		appointmentsTommorow.set tomorrow
 
