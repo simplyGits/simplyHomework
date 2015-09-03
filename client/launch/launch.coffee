@@ -89,15 +89,16 @@ Template.signupModal.events
 		password = $('#passwordInput').val()
 		return unless password.length > 0
 
-		$passwordRepeatGroup = $ '#passwordRepeatGroup'
-		if event.target.value is password
-			$passwordRepeatGroup
-				.removeClass 'error'
-				.addClass 'success'
-		else
-			$passwordRepeatGroup
-				.removeClass 'success'
-				.addClass 'error'
+		$(event.target.parentNode)
+			.removeClass 'error success'
+			.addClass (
+				if event.target.value.length is 0
+					''
+				else if event.target.value is password
+					'success'
+				else
+					'error'
+			)
 
 	'submit form': (event) ->
 		event.preventDefault()

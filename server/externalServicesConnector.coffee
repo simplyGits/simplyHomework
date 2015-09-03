@@ -355,7 +355,6 @@ Meteor.methods
 
 		check query, String
 
-		result = []
 		service = _.find Services, (s) -> s.name is serviceName
 
 		unless service?
@@ -376,7 +375,10 @@ Meteor.methods
 				fetchedBy: school.fetchedBy
 			Schools.insert(school) unless val?
 
-		Schools.find({ fetchedBy: serviceName, name: $regex: query, $options: 'i' }).fetch()
+		Schools.find(
+			fetchedBy: serviceName
+			name: $regex: query, $options: 'i'
+		).fetch()
 
 	'getSchools': (query) ->
 		@unblock()
@@ -384,11 +386,12 @@ Meteor.methods
 		check query, String
 
 		services = _.filter Services, (s) -> s.getSchools?
-		result = []
 		for service in services
-			try result.pushMore Meteor.call 'getServiceSchools', service.name, query
+			Meteor.call 'getServiceSchools', service.name, query
 
-		Schools.find({ name: $regex: query, $options: 'i' }).fetch()
+		Schools.find(
+			name: $regex: query, $options: 'i'
+		).fetch()
 
 	'getServiceProfileData': (serviceName, userId = @userId) ->
 		@unblock()

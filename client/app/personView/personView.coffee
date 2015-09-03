@@ -5,9 +5,9 @@ loadingPictures = new ReactiveVar yes
 Template.personView.helpers
 	backColor: ->
 		res = (
-			if @status.idle then "#FF9800"
-			else if @status.online then "#4CAF50"
-			else "#EF5350"
+			if @status.idle then '#FF9800'
+			else if @status.online then '#4CAF50'
+			else '#EF5350'
 		)
 
 		setPageOptions color: res

@@ -88,6 +88,7 @@
 			// var useSessionId = data.lastLogin &&
 			// 	_.now() - data.lastLogin.time.getTime() <= SESSIONID_INVALIDATE_TIME;
 
+			// REVIEW:
 			// Currently not invalidating sessionIds, since it's unknown when
 			// they retire at Magister's servers. Maybe they're even infinite.
 			var useSessionId = !_.isEmpty(data.lastLogin);
@@ -100,11 +101,6 @@
 				password: data.credentials.password,
 				keepLoggedIn: true,
 				sessionId: useSessionId ? data.lastLogin.sessionId : undefined
-			});
-
-			console.log({ // debug info
-				magister: magister,
-				useSessionId: useSessionId
 			});
 
 			if (!useSessionId) { // Update login info

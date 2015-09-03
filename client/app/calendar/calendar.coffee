@@ -35,7 +35,8 @@ calendarItemToEvent = (calendarItem) ->
 	content: calendarItem.content
 
 Template.calendar.onRendered ->
-	$('.calendar').fullCalendar
+	$calendar = @$ '.calendar'
+	$calendar.fullCalendar
 		defaultView: 'agendaWeek'
 		height: height()
 		firstDay: 1
@@ -120,13 +121,13 @@ Template.calendar.onRendered ->
 
 		eventResize: (event) -> CalendarItems.update event.calendarItem._id, $set: startDate: event.start.toDate(), endDate: event.end.toDate()
 
-	$("div.addAppointmentForm").detach().prependTo "body"
-	$("button.fc-button").removeClass("fc-button fc-state-default").addClass "btn btn-default"
-	$(".fc-right").prepend "<button id=\"newAppointmentButton\" class=\"btn btn-primary\">toevoegen</button>"
-	$("button#newAppointmentButton").click open
-	Mousetrap.bind "shift+n", (e) -> open(); e.preventDefault()
+	@$('.addAppointmentForm').detach().prependTo "body"
+	$calendar.find('button.fc-button').removeClass('fc-button fc-state-default').addClass 'btn btn-default'
+	$calendar.find('.fc-right').prepend '<button id="newAppointmentButton" class="btn btn-primary">toevoegen</button>'
+	$calendar.find('button#newAppointmentButton').click open
+	Mousetrap.bind 'shift+n', (e) -> open(); e.preventDefault()
 
-	$(window).resize -> $('.calendar').fullCalendar('option', 'height', height())
+	$(window).resize -> $calendar.fullCalendar('option', 'height', height())
 
 	unless keydownSet
 		keydownSet = yes

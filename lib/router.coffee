@@ -211,7 +211,7 @@ Router.map ->
 		path: "/app/person/:_id"
 
 		subscriptions: ->
-			return [
+			[
 				subs.subscribe("usersData", [ @params._id ])
 				subs.subscribe("classes")
 				Meteor.subscribe("usersData")

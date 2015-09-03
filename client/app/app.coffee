@@ -431,10 +431,10 @@ Template.sidebar.helpers
 	'classes': -> classes()
 
 Template.sidebar.events
-	"click .bigSidebarButton": (event) -> slide $(event.target).attr "id"
+	'click .bigSidebarButton': (event) -> slide event.target.id
 
-	"click .sidebarFooterSettingsIcon": -> showModal 'settingsModal'
-	"click #addClassButton": -> showModal 'addClassModal'
+	'click .sidebarFooterSettingsIcon': -> showModal 'settingsModal'
+	'click #addClassButton': -> showModal 'addClassModal'
 
 # == End Sidebar ==
 
