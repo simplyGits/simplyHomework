@@ -473,6 +473,7 @@ Meteor.startup ->
 	UI.registerHelper 'gravatar', gravatar
 	UI.registerHelper 'has', has
 	UI.registerHelper 'isPhone', -> Session.get 'isPhone'
+	UI.registerHelper 'toUpperCase', (str) -> str.toUpperCase()
 
 	# TODO: Remove the console.infos.
 	disconnectedNotify = null

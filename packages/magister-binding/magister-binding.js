@@ -504,7 +504,8 @@
 				year: courseInfo.type.year,
 				schoolVariant: courseInfo.type.schoolVariant != null ? courseInfo.type.schoolVariant.toLowerCase() : undefined,
 				profile: courseInfo.profile
-			}
+			},
+			mainGroup: courseInfo.group
 		};
 	};
 
