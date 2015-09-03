@@ -23,30 +23,28 @@
 ]
 
 @DayToDutch = (day) ->
-	Helpers.emboxValue ->
-		minuteTracker?.depend()
-		day ?= Helpers.currentDay()
+	minuteTracker?.depend()
+	day ?= Helpers.currentDay()
 
-		dutchDays[day]
+	dutchDays[day]
 
 @DateToDutch = (date, includeYear = yes) ->
-	Helpers.emboxValue ->
-		minuteTracker?.depend()
-		date ?= new Date
+	minuteTracker?.depend()
+	date ?= new Date
 
-		month = switch date.getMonth()
-			when 0 then 'januari'
-			when 1 then 'februari'
-			when 2 then 'maart'
-			when 3 then 'april'
-			when 4 then 'mei'
-			when 5 then 'juni'
-			when 6 then 'juli'
-			when 7 then 'augustus'
-			when 8 then 'september'
-			when 9 then 'oktober'
-			when 10 then 'november'
-			when 11 then 'december'
+	month = switch date.getMonth()
+		when 0 then 'januari'
+		when 1 then 'februari'
+		when 2 then 'maart'
+		when 3 then 'april'
+		when 4 then 'mei'
+		when 5 then 'juni'
+		when 6 then 'juli'
+		when 7 then 'augustus'
+		when 8 then 'september'
+		when 9 then 'oktober'
+		when 10 then 'november'
+		when 11 then 'december'
 
-		if includeYear then "#{date.getDate()} #{month} #{date.getFullYear()}"
-		else "#{date.getDate()} #{month}"
+	if includeYear then "#{date.getDate()} #{month} #{date.getFullYear()}"
+	else "#{date.getDate()} #{month}"
