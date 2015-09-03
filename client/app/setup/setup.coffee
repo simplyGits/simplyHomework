@@ -193,9 +193,9 @@ setupItems =
 				color = $("div##{c._id.toHexString()}").attr 'colorHex'
 
 				if (method = c.__method)?
-					book = Books.findOne title: val.title
+					book = Books.findOne title: method.title
 					unless book?
-						book = new book val.title, undefined, val.id, undefined, c._id
+						book = new book method.title, undefined, method.id, undefined, c._id
 						Books.insert book
 
 				Meteor.users.update Meteor.userId(), $push: classInfos:
