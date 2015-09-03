@@ -1,5 +1,16 @@
 var canReload = false;
 var notice;
+var onReconnected;
+
+Tracker.autorun(function () {
+	var connected = Meteor.status().connected;
+	if (connected) {
+		onReconnected && onReconnected();
+	} else if (notice !== undefined) {
+		notice.hide();
+		notice = undefined;
+	}
+});
 
 Reload._onMigrate('lazy-code-push', function (retry) {
 	// Just reload if...
@@ -27,6 +38,8 @@ Reload._onMigrate('lazy-code-push', function (retry) {
 				retry();
 			},
 		});
+
+		onReconnected = retry;
 	}
 	return [canReload];
 });
