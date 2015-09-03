@@ -302,7 +302,7 @@ Meteor.methods
 					year: year
 
 				unless _class?
-					scholierenClass = _.find ScholierenClasses.get(), (sc) ->
+					scholierenClass = ScholierenClasses.findOne do (c) -> (sc) ->
 						sc.name
 							.toLowerCase()
 							.indexOf(c.name.toLowerCase()) > -1
