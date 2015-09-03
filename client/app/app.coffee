@@ -216,6 +216,7 @@ Template.settingsModal.events
 	'click #schedularPrefsButton': -> showModal 'plannerPrefsModal'
 	'click #externalServicesButton': -> showModal 'externalServicesModal'
 	'click #accountInfoButton': -> showModal 'accountInfoModal'
+	'click #privacySettingsButton': -> showModal 'privacySettingsModal'
 	'click #deleteAccountButton': -> showModal 'deleteAccountModal'
 	'click #startTourButton': -> App.runTour()
 	'click #logOutButton': -> App.logout()
@@ -311,6 +312,35 @@ Template.accountInfoModal.events
 					callback yes
 
 		unless any then callback null
+
+privacyOptions = new ReactiveVar []
+Template.privacyOption.events
+	'change': (event) -> @enabled = not @enabled
+
+Template.privacySettingsModal.helpers
+	privacyOptions: -> privacyOptions.get()
+
+Template.privacySettingsModal.events
+	'click #goButton': ->
+		x = {}
+		for item in privacyOptions.get()
+			x[item.short] = item.enabled
+
+		Meteor.users.update Meteor.userId(), $set: 'privacyOptions': x
+		$('#privacySettingsModal').modal 'hide'
+
+Template.privacySettingsModal.onRendered ->
+	options = getPrivacyOptions()
+
+	arr = [{
+		description: 'Anderen toestaan je rooster te bekijken.'
+		short: 'publishCalendarItems'
+	}]
+	for item in arr
+		item.enabled = options[item.short]
+		item.checked = if item.enabled then 'checked' else ''
+
+	privacyOptions.set arr
 
 Template.addProjectModal.helpers
 	assignments: ->

@@ -99,6 +99,7 @@ Meteor.publish null, ->
 			magisterCredentials: 1
 			plannerPrefs: 1
 			premiumInfo: 1
+			privacyOptions: 1
 			profile: 1
 			status: 1
 			studyGuidesHashes: 1

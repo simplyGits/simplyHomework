@@ -36,6 +36,7 @@ Meteor.users.allow
 			'classInfos'
 			'mailSignup'
 			'schedular'
+			'privacyOptions'
 			'profile'
 			'hasGravatar'
 			'studyGuidesHashes'

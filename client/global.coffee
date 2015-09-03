@@ -86,6 +86,18 @@
 @has = (feature) -> Helpers.emboxValue ->
 	Meteor.user()?.premiumInfo?[feature]?.deadline > new Date()
 
+###*
+# Gets the current user's privacy options, with defalt values if an options
+# hasn't been set yet.
+#
+# @method getPrivacyOptions
+# @return {Object}
+###
+@getPrivacyOptions = ->
+	options = Helpers.emboxValue -> Meteor.user().privacyOptions ? {}
+	_.defaults options,
+		publishCalendarItems: yes
+
 @minuteTracker = new Tracker.Dependency
 Meteor.startup ->
 	$body = $ 'body'

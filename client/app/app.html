@@ -42,6 +42,7 @@
 					<button class="btn btn-default" id="schedularPrefsButton">Planner Voorkeuren</button>
 					<button class="btn btn-default" id="externalServicesButton">Integraties beheren</button>
 					<button class="btn btn-default" id="accountInfoButton">Account info aanpassen</button>
+					<button class="btn btn-default" id="privacySettingsButton">Privacy instellingen aanpassen</button>
 					<button class="btn btn-default" id="deleteAccountButton">Account verwijderen</button>
 					<button class="btn btn-default" id="startTourButton">Start rondleiding</button>
 					<button class="btn btn-danger" id="logOutButton">Uitloggen</button>
@@ -228,6 +229,35 @@
 						</div>
 						{{! todo: insert captcha here (just like deleteAccountModal)}}
 					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Annuleren</button>
+					<button type="button" class="btn btn-primary" id="goButton">Opslaan</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</template>
+
+<template name="privacyOption">
+	<label>
+		<input type="checkbox" {{checked}}>
+		<span style="font-weight: normal">{{description}}</span>
+	</label>
+</template>
+
+<template name="privacySettingsModal">
+	<div class="modal fade" aria-hidden="true" id="privacySettingsModal">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+					<h4 class="modal-title">Privacy instellingen</h4>
+				</div>
+				<div class="modal-body">
+					{{#each privacyOptions}}
+						{{> privacyOption}}
+					{{/each}}
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">Annuleren</button>
