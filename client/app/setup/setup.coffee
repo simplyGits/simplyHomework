@@ -121,7 +121,7 @@ setupItems =
 						.map (s) -> s.profileData()?.birthDate
 						.find _.isDate
 
-				askedExternalServices: yes
+				'externalServices.asked': yes
 			}, ->
 				cb()
 				schoolEngineSub?.stop()
@@ -193,9 +193,9 @@ setupItems =
 				color = $("div##{c._id.toHexString()}").attr 'colorHex'
 
 				if (method = c.__method)?
-					book = Books.findOne title: val.title
+					book = Books.findOne title: method.title
 					unless book?
-						book = new book val.title, undefined, val.id, undefined, c._id
+						book = new book method.title, undefined, method.id, undefined, c._id
 						Books.insert book
 
 				Meteor.users.update Meteor.userId(), $push: classInfos:
@@ -245,7 +245,7 @@ setupItems =
 	setupItems.externalServices.done =
 	setupItems.extractInfo.done =
 	setupItems.getExternalClasses.done =
-		Meteor.user().askedExternalServices
+		Meteor.user().externalServices?.asked ? no
 	setupItems.plannerPrefs.done = not _.isEmpty Meteor.user().plannerPrefs
 	setupItems.newSchoolYear.done = yes # TODO: Dunno how're going to do this shit
 

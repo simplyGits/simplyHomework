@@ -342,9 +342,9 @@ class @NotificationsManager
 ###
 @shake = (selector) ->
 	(if selector.jquery? then selector else $ selector)
-		.addClass "animated shake"
+		.addClass 'animated shake'
 		.one 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', ->
-			$(this).removeClass "animated shake"
+			$(this).removeClass 'animated shake'
 
 ###*
 # Sets various meta data for the current page. (eg: the document title)
@@ -473,6 +473,7 @@ Meteor.startup ->
 	UI.registerHelper 'gravatar', gravatar
 	UI.registerHelper 'has', has
 	UI.registerHelper 'isPhone', -> Session.get 'isPhone'
+	UI.registerHelper 'toUpperCase', (str) -> str.toUpperCase()
 
 	# TODO: Remove the console.infos.
 	disconnectedNotify = null

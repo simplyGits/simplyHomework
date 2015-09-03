@@ -2,14 +2,14 @@
 # @method tasks
 # @return {Object[]}
 ###
-@tasks = -> # Also mix homework for tommorow and homework for days where the day before has no time. Unless today has no time.
+@tasks = -> # TODO: Also mix homework for tommorow and homework for days where the day before has no time. Unless today has no time.
 	tasks = []
 	#for gS in GoaledSchedules.find(dueDate: $gte: new Date).fetch()
 	#	tasks.pushMore _.filter gS.tasks, (t) -> EJSON.equals t.plannedDate.date(), Date.today()
 
 	res = []
 	res = res.concat CalendarItems.find({
-		'ownerId': Meteor.userId()
+		'userIds': Meteor.userId()
 		'content': $exists: yes
 		'content.type': 'homework'
 		'content.description': $exists: yes
@@ -17,9 +17,9 @@
 		'endDate': $lte: Date.today().addDays 2
 	}, {
 		transform: (item) -> _.extend item,
-			__id: item._id.toHexString()
+			__id: item._id
 			__taskDescription: item.content.description
-			__className: Classes.findOne(item.classid)?.name ? ''
+			__className: Classes.findOne(item.classId)?.name ? ''
 			__isDone: (d) ->
 				if d? then CalendarItems.update item._id, $set: isDone: d
 				item.isDone
@@ -32,6 +32,19 @@
 
 	console.log 'getTasks result', res
 	res
+
+###*
+# @method tasksCount
+# @return {Object}
+###
+@tasksCount = ->
+	Helpers.emboxValue ->
+		tasks = @tasks()
+		finishedTasks = _.filter tasks, (t) -> t.__isDone()
+
+		total: tasks.length
+		finished: finishedTasks.length
+		unfinished: tasks.length - finishedTasks.length
 
 ###*
 # Get the classes for the current user, converted and sorted.
@@ -86,6 +99,18 @@
 @has = (feature) -> Helpers.emboxValue ->
 	Meteor.user()?.premiumInfo?[feature]?.deadline > new Date()
 
+###*
+# Gets the current user's privacy options, with defalt values if an options
+# hasn't been set yet.
+#
+# @method getPrivacyOptions
+# @return {Object}
+###
+@getPrivacyOptions = ->
+	options = Helpers.emboxValue -> Meteor.user().privacyOptions ? {}
+	_.defaults options,
+		publishCalendarItems: yes
+
 @minuteTracker = new Tracker.Dependency
 Meteor.startup ->
 	$body = $ 'body'
@@ -105,8 +130,6 @@ Meteor.startup ->
 
 		if "ActiveXObject" of window
 			$body.addClass 'ie'
-
-	$.getScript '/js/advertisement.js' # simple adblock detection trick ;D
 
 	# Don't use `Meteor.user()` inside of a computation in here. Or expect a lot
 	# of lag.

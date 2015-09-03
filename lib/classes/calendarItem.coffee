@@ -19,8 +19,15 @@
 # @constructor
 ###
 class @CalendarItem
-	constructor: (@ownerId, @description, @startDate, @endDate, @classId) ->
+	constructor: (ownerId, @description, @startDate, @endDate, @classId) ->
 		@endDate ?= moment(@startDate).add(1, "hour").toDate()
+
+		###*
+		# @property userIds
+		# @type String[]
+		# @default [ ownerId ]
+		###
+		@userIds = [ ownerId ]
 
 		###*
 		# @property isDone
@@ -97,3 +104,5 @@ class @CalendarItem
 		# @default null
 		###
 		@location = null
+
+	class: -> Classes.findOne @classId

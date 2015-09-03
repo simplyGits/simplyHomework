@@ -12,13 +12,14 @@ class @SchoolClass
 
 		@name = Helpers.cap name if name?
 		@schoolVariant = @schoolVariant?.toLowerCase()
+		abbreviation = abbreviation.toLowerCase().trim()
 
 		###*
 		# @property abbreviations
 		# @type String[]
 		###
 		@abbreviations = []
-		@abbreviations.push abbreviation.toLowerCase() unless _.isEmpty abbreviation
+		@abbreviations.push abbreviation unless _.isEmpty abbreviation
 
 		@schedules = [] # Contains schedule ID's.
 

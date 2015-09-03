@@ -9,5 +9,6 @@ Package.describe({
 Package.onUse(function(api) {
 	api.versionsFrom('1.1.0.3');
 	api.use('reload', 'client');
+	api.use('tracker', 'client');
 	api.addFiles('lazy-code-push.js', 'client');
 });

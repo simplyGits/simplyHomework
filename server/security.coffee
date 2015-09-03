@@ -34,13 +34,14 @@ Meteor.users.allow
 	update: (userId, doc, fields, modifier) ->
 		allowed = [
 			'classInfos'
+			'externalServices'
 			'mailSignup'
 			'schedular'
+			'privacyOptions'
 			'profile'
 			'hasGravatar'
 			'studyGuidesHashes'
 			'gradeNotificationDismissTime'
-			'askedExternalServices'
 		]
 		userId is doc._id and not _.any fields, (f) -> not _.contains allowed, f
 
@@ -52,7 +53,7 @@ Books.allow
 
 CalendarItems.allow
 	insert: (userId, doc) -> doc.ownerId is userId
-	update: (userId, doc, fields, modifier) -> userId is doc.ownerId
+	update: (userId, doc, fields, modifier) -> userId in doc.userIds
 	remove: (userId, doc) -> userId is doc.ownerId
 
 Projects.allow

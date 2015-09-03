@@ -1,14 +1,13 @@
 sameUser = -> Meteor.userId() is Router.current().data()._id
-sharedHours = new ReactiveVar []
 pictures = new ReactiveVar []
 loadingPictures = new ReactiveVar yes
 
 Template.personView.helpers
 	backColor: ->
 		res = (
-			if @status.idle then "#FF9800"
-			else if @status.online then "#4CAF50"
-			else "#EF5350"
+			if @status.idle then '#FF9800'
+			else if @status.online then '#4CAF50'
+			else '#EF5350'
 		)
 
 		setPageOptions color: res
@@ -28,6 +27,8 @@ Template.personView.events
 	"click button#chatButton": -> ChatManager.openUserChat this
 
 Template.personView.onRendered ->
+	@subscribe 'externalCalendarItems', Date.today(), Date.today().addDays 7
+
 	@autorun ->
 		Router.current()._paramsDep.depend()
 		Meteor.defer ->
@@ -37,26 +38,27 @@ Template.personView.onRendered ->
 
 Template.personSharedHours.helpers
 	days: ->
-		return _(sharedHours.get())
-			.uniq (a) -> a.begin().date().getTime()
-			.sortBy (a) -> a.begin().getDay() + 1
+		return [] if sameUser()
+
+		sharedCalendarItems = CalendarItems.find(
+			$and: [
+				{ userIds: Meteor.userId() }
+				{ userIds: Router.current().data()._id }
+			]
+			startDate: $gte: Date.today()
+			endDate: $lte: Date.today().addDays 7
+			schoolHour:
+				$exists: yes
+				$ne: null
+		).fetch()
+
+		_(sharedCalendarItems)
+			.uniq (a) -> a.startDate.date().getTime()
+			.sortBy (a) -> a.startDate.getDay() + 1
 			.map (a) ->
-				return {
-					name: Helpers.cap DayToDutch Helpers.weekDay a.begin().date()
-					hours: _.filter sharedHours.get(), (x) -> EJSON.equals x.begin().date(), a.begin().date()
-				}
+				name: Helpers.cap DayToDutch Helpers.weekDay a.startDate.date()
+				hours: _.filter sharedCalendarItems, (x) -> EJSON.equals x.startDate.date(), a.startDate.date()
 			.value()
-
-Template.personSharedHours.rendered = ->
-	@autorun ->
-		return if sameUser()
-		appointments = magisterAppointment new Date(), new Date().addDays(7)
-
-		sharedHours.set _.filter appointments, (a) ->
-			currentUserHasHour = a.__groupInfo()?
-			personHasHour = _.any Router.current().data().profile.groupInfos, (gi) -> gi.group is a.description()
-
-			return currentUserHasHour and personHasHour
 
 Template.reportUserModal.events
 	'click button#goButton': ->

@@ -88,6 +88,7 @@
 			// var useSessionId = data.lastLogin &&
 			// 	_.now() - data.lastLogin.time.getTime() <= SESSIONID_INVALIDATE_TIME;
 
+			// REVIEW:
 			// Currently not invalidating sessionIds, since it's unknown when
 			// they retire at Magister's servers. Maybe they're even infinite.
 			var useSessionId = !_.isEmpty(data.lastLogin);
@@ -100,11 +101,6 @@
 				password: data.credentials.password,
 				keepLoggedIn: true,
 				sessionId: useSessionId ? data.lastLogin.sessionId : undefined
-			});
-
-			console.log({ // debug info
-				magister: magister,
-				useSessionId: useSessionId
 			});
 
 			if (!useSessionId) { // Update login info
@@ -365,9 +361,10 @@
 				fut.throw(e);
 			} else {
 				fut.return(r.map(function (a) {
-					var classId = _.filter(user.classInfos, function (i) {
-						return i.externalInfo.abbreviation === a.classes()[0];
-					}).id;
+					var classInfo = _.find(user.classInfos, function (i) {
+						return i.externalInfo.name === a.classes()[0];
+					})
+					var classId = classInfo && classInfo.id;
 
 					var calendarItem = new CalendarItem(
 						userId,
@@ -503,7 +500,8 @@
 				year: courseInfo.type.year,
 				schoolVariant: courseInfo.type.schoolVariant != null ? courseInfo.type.schoolVariant.toLowerCase() : undefined,
 				profile: courseInfo.profile
-			}
+			},
+			mainGroup: courseInfo.group
 		};
 	};
 

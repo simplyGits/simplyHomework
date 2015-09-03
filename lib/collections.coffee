@@ -18,6 +18,7 @@
 @WoordjesLerenClasses  = new Meteor.Collection 'woordjesleren'
 @ExternalServiceErrors = new Meteor.Collection 'externalServiceErrors'
 
+###
 Schemas.Classes = new SimpleSchema
 	_id:
 		type: Meteor.Collection.ObjectID
@@ -45,6 +46,7 @@ Schemas.Classes = new SimpleSchema
 	scholierenClassId:
 		type: Number
 		optional: yes
+###
 
 Schemas.Books = new SimpleSchema
 	_id:
@@ -287,9 +289,6 @@ Schemas.StudyUtils = new SimpleSchema
 	classInfo = ->
 		classInfos = Helpers.emboxValue -> Meteor.user()?.classInfos
 		_.find classInfos, (info) -> EJSON.equals info.id, c._id
-
-	groupInfos = Helpers.emboxValue -> Meteor.user()?.profile.groupInfos
-	groupInfo = _.find groupInfos, (info) -> EJSON.equals info.id, c._id
 
 	_.extend c,
 		#__taskAmount: _.filter(homeworkItems.get(), (a) -> groupInfo?.group is a.description() and not a.isDone()).length

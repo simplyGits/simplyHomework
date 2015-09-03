@@ -216,6 +216,7 @@ Template.settingsModal.events
 	'click #schedularPrefsButton': -> showModal 'plannerPrefsModal'
 	'click #externalServicesButton': -> showModal 'externalServicesModal'
 	'click #accountInfoButton': -> showModal 'accountInfoModal'
+	'click #privacySettingsButton': -> showModal 'privacySettingsModal'
 	'click #deleteAccountButton': -> showModal 'deleteAccountModal'
 	'click #startTourButton': -> App.runTour()
 	'click #logOutButton': -> App.logout()
@@ -312,6 +313,35 @@ Template.accountInfoModal.events
 
 		unless any then callback null
 
+privacyOptions = new ReactiveVar []
+Template.privacyOption.events
+	'change': (event) -> @enabled = not @enabled
+
+Template.privacySettingsModal.helpers
+	privacyOptions: -> privacyOptions.get()
+
+Template.privacySettingsModal.events
+	'click #goButton': ->
+		x = {}
+		for item in privacyOptions.get()
+			x[item.short] = item.enabled
+
+		Meteor.users.update Meteor.userId(), $set: 'privacyOptions': x
+		$('#privacySettingsModal').modal 'hide'
+
+Template.privacySettingsModal.onRendered ->
+	options = getPrivacyOptions()
+
+	arr = [{
+		description: 'Anderen toestaan je rooster te bekijken.'
+		short: 'publishCalendarItems'
+	}]
+	for item in arr
+		item.enabled = options[item.short]
+		item.checked = if item.enabled then 'checked' else ''
+
+	privacyOptions.set arr
+
 Template.addProjectModal.helpers
 	assignments: ->
 		externalAssignments.get()?.map (a) -> _.extend a,
@@ -401,10 +431,10 @@ Template.sidebar.helpers
 	'classes': -> classes()
 
 Template.sidebar.events
-	"click .bigSidebarButton": (event) -> slide $(event.target).attr "id"
+	'click .bigSidebarButton': (event) -> slide event.target.id
 
-	"click .sidebarFooterSettingsIcon": -> showModal 'settingsModal'
-	"click #addClassButton": -> showModal 'addClassModal'
+	'click .sidebarFooterSettingsIcon': -> showModal 'settingsModal'
+	'click #addClassButton': -> showModal 'addClassModal'
 
 # == End Sidebar ==
 
@@ -489,24 +519,6 @@ Template.app.onRendered ->
 			title: 'Gefeliciteerd!'
 			text: "Gefeliciteerd met je #{moment().diff val, 'years'}e verjaardag!"
 		amplify.store 'congratulated', yes, expires: 172800000 # 2 days, just to make sure.
-
-	Deps.autorun ->
-		# Disabled for now. It isn't working probably, and heck, we should even
-		# refactor it too, since the logic now spans 3 files in unlogical places.
-		return undefined
-		if Meteor.status().connected and Meteor.userId()? and not has 'noAds'
-			setTimeout (-> Meteor.defer ->
-				unless Session.get 'adsAllowed'
-					App.logout()
-					swalert
-						title: 'Adblock :c'
-						html: '''
-							Om simplyHomework gratis beschikbaar te kunnen houden zijn we afhankelijk van reclame-inkomsten.
-							Om simplyHomework te kunnen gebruiken, moet je daarom je AdBlocker uitzetten.
-							Wil je simplyHomework toch zonder reclame gebruiken, dan kan je <a href="/">premium</a> nemen.
-						'''
-						type: 'error'
-			), 3000
 
 	if Session.get('isPhone') then setMobileSettings()
 	else

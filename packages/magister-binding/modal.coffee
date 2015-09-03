@@ -77,6 +77,6 @@ Template.magisterInfoModal.onRendered ->
 			minLength: 2
 		}, {
 			displayKey: 'name'
-			source: (query, callback) -> getSchools query, callback
+			source: getSchools
 		}
 		.on 'typeahead:selected', (obj, datum) -> currentSelectedSchool = datum

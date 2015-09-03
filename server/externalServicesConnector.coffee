@@ -219,12 +219,15 @@ Meteor.methods
 
 			for calendarItem in result ? []
 				val = CalendarItems.findOne
-					ownerId: userId
 					fetchedBy: calendarItem.fetchedBy
 					externalId: calendarItem.externalId
 
 				if val? and Meteor.isServer
 					delete calendarItem._id
+					calendarItem.userIds = _(val.userIds)
+						.concat calendarItem.userIds
+						.uniq()
+						.value()
 					CalendarItems.update val._id, { $set: calendarItem }, modifier: no
 				else
 					CalendarItems.insert calendarItem
@@ -299,7 +302,7 @@ Meteor.methods
 					year: year
 
 				unless _class?
-					scholierenClass = _.find ScholierenClasses.get(), (sc) ->
+					scholierenClass = ScholierenClasses.findOne do (c) -> (sc) ->
 						sc.name
 							.toLowerCase()
 							.indexOf(c.name.toLowerCase()) > -1
@@ -311,13 +314,13 @@ Meteor.methods
 						schoolVariant
 					)
 					_class.scholierenClassId = scholierenClass?.id
-					Classes.insert _class
+					_class.fetchedBy = service.name
+					_class.externalInfo =
+						id: c.id
+						abbreviation: c.abbreviation
+						name: c.name
 
-				_class.fetchedBy = service.name
-				_class.externalInfo =
-					id: c.id
-					abbreviation: c.abbreviation
-					name: c.name
+					Classes.insert _class
 
 				_class
 
@@ -352,7 +355,6 @@ Meteor.methods
 
 		check query, String
 
-		result = []
 		service = _.find Services, (s) -> s.name is serviceName
 
 		unless service?
@@ -373,7 +375,10 @@ Meteor.methods
 				fetchedBy: school.fetchedBy
 			Schools.insert(school) unless val?
 
-		Schools.find({ fetchedBy: serviceName, name: $regex: query, $options: 'i' }).fetch()
+		Schools.find(
+			fetchedBy: serviceName
+			name: $regex: query, $options: 'i'
+		).fetch()
 
 	'getSchools': (query) ->
 		@unblock()
@@ -381,11 +386,12 @@ Meteor.methods
 		check query, String
 
 		services = _.filter Services, (s) -> s.getSchools?
-		result = []
 		for service in services
-			try result.pushMore Meteor.call 'getServiceSchools', service.name, query
+			Meteor.call 'getServiceSchools', service.name, query
 
-		Schools.find({ name: $regex: query, $options: 'i' }).fetch()
+		Schools.find(
+			name: $regex: query, $options: 'i'
+		).fetch()
 
 	'getServiceProfileData': (serviceName, userId = @userId) ->
 		@unblock()
@@ -497,7 +503,7 @@ Meteor.publish 'externalCalendarItems', (from, to) ->
 		Meteor.clearInterval handle
 
 	CalendarItems.find
-		ownerId: @userId
+		userIds: @userId
 		startDate: $gte: from
 		endDate: $lte: to
 

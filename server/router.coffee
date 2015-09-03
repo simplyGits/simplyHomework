@@ -1,3 +1,4 @@
+# oldbrowser warning.
 WebApp.connectHandlers.use (req, res, next) ->
 	version = /\bMSIE ([\d.]+)\b/i.exec(req.headers['user-agent'])?[1]
 	if not version? or parseFloat(version) >= 9
