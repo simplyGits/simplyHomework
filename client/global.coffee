@@ -106,8 +106,6 @@ Meteor.startup ->
 		if "ActiveXObject" of window
 			$body.addClass 'ie'
 
-	$.getScript '/js/advertisement.js' # simple adblock detection trick ;D
-
 	# Don't use `Meteor.user()` inside of a computation in here. Or expect a lot
 	# of lag.
 	Deps.autorun -> # User Login/Logout
