@@ -2,14 +2,14 @@
 # @method tasks
 # @return {Object[]}
 ###
-@tasks = -> # Also mix homework for tommorow and homework for days where the day before has no time. Unless today has no time.
+@tasks = -> # TODO: Also mix homework for tommorow and homework for days where the day before has no time. Unless today has no time.
 	tasks = []
 	#for gS in GoaledSchedules.find(dueDate: $gte: new Date).fetch()
 	#	tasks.pushMore _.filter gS.tasks, (t) -> EJSON.equals t.plannedDate.date(), Date.today()
 
 	res = []
 	res = res.concat CalendarItems.find({
-		'ownerId': Meteor.userId()
+		'userIds': Meteor.userId()
 		'content': $exists: yes
 		'content.type': 'homework'
 		'content.description': $exists: yes
@@ -17,9 +17,9 @@
 		'endDate': $lte: Date.today().addDays 2
 	}, {
 		transform: (item) -> _.extend item,
-			__id: item._id.toHexString()
+			__id: item._id
 			__taskDescription: item.content.description
-			__className: Classes.findOne(item.classid)?.name ? ''
+			__className: Classes.findOne(item.classId)?.name ? ''
 			__isDone: (d) ->
 				if d? then CalendarItems.update item._id, $set: isDone: d
 				item.isDone

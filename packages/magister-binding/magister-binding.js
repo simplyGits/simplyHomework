@@ -365,9 +365,10 @@
 				fut.throw(e);
 			} else {
 				fut.return(r.map(function (a) {
-					var classId = _.filter(user.classInfos, function (i) {
-						return i.externalInfo.abbreviation === a.classes()[0];
-					}).id;
+					var classInfo = _.find(user.classInfos, function (i) {
+						return i.externalInfo.name === a.classes()[0];
+					})
+					var classId = classInfo && classInfo.id;
 
 					var calendarItem = new CalendarItem(
 						userId,

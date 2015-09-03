@@ -219,12 +219,15 @@ Meteor.methods
 
 			for calendarItem in result ? []
 				val = CalendarItems.findOne
-					ownerId: userId
 					fetchedBy: calendarItem.fetchedBy
 					externalId: calendarItem.externalId
 
 				if val? and Meteor.isServer
 					delete calendarItem._id
+					calendarItem.userIds = _(val.userIds)
+						.concat calendarItem.userIds
+						.uniq()
+						.value()
 					CalendarItems.update val._id, { $set: calendarItem }, modifier: no
 				else
 					CalendarItems.insert calendarItem
@@ -311,13 +314,13 @@ Meteor.methods
 						schoolVariant
 					)
 					_class.scholierenClassId = scholierenClass?.id
-					Classes.insert _class
+					_class.fetchedBy = service.name
+					_class.externalInfo =
+						id: c.id
+						abbreviation: c.abbreviation
+						name: c.name
 
-				_class.fetchedBy = service.name
-				_class.externalInfo =
-					id: c.id
-					abbreviation: c.abbreviation
-					name: c.name
+					Classes.insert _class
 
 				_class
 
@@ -497,7 +500,7 @@ Meteor.publish 'externalCalendarItems', (from, to) ->
 		Meteor.clearInterval handle
 
 	CalendarItems.find
-		ownerId: @userId
+		userIds: @userId
 		startDate: $gte: from
 		endDate: $lte: to
 

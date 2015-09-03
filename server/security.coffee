@@ -52,7 +52,7 @@ Books.allow
 
 CalendarItems.allow
 	insert: (userId, doc) -> doc.ownerId is userId
-	update: (userId, doc, fields, modifier) -> userId is doc.ownerId
+	update: (userId, doc, fields, modifier) -> userId in doc.userIds
 	remove: (userId, doc) -> userId is doc.ownerId
 
 Projects.allow
