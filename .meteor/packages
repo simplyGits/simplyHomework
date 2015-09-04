@@ -34,7 +34,6 @@ percolate:synced-cron
 mousetrap:mousetrap
 percolate:paginated-subscription
 aldeed:collection2
-markdown
 qnub:emojione
 twbs:bootstrap-noglyph
 mizzao:bootboxjs
@@ -54,3 +53,4 @@ simply:woordjesleren
 cryptoquick:stylus-multi
 simply:fullcalendar
 simply:lazy-code-push
+chuangbo:marked
