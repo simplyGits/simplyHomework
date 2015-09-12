@@ -1,8 +1,9 @@
+INITIAL_MESSAGE_COUNT = 20
 stayOpen = no
 searchTerm = new ReactiveVar ""
 
 @userChatTransform = (u) ->
-	subs.subscribe "chatMessages", { userId: u._id }, 10
+	subs.subscribe "chatMessages", { userId: u._id }, INITIAL_MESSAGE_COUNT
 
 	return _.extend u,
 		__initial: null
@@ -10,11 +11,20 @@ searchTerm = new ReactiveVar ""
 		__type: "private"
 
 		__lastInteraction: -> ChatMessages.findOne({ $or: [ { to: u._id }, { creatorId: u._id } ] }, sort: "time": -1)?.time
-		__status: (
+		__status: ->
+			u = Meteor.users.findOne u._id
 			if u.status.idle then "inactive"
 			else if u.status.online then "online"
 			else "offline"
-		)
+		__friendlyStatus: ->
+			u = Meteor.users.findOne u._id
+			if u.status.idle then "inactief"
+			else if u.status.online then "online"
+			else "offline"
+		__lastOnline: ->
+			u = Meteor.users.findOne u._id
+			if u.status.offline then u.status.lastLogin.date
+			else undefined
 		__friendlyName: "#{u.profile.firstName} #{u.profile.lastName}"
 
 		__markRead: -> Meteor.call "markChatMessagesRead", "direct", u._id
@@ -22,7 +32,7 @@ searchTerm = new ReactiveVar ""
 		__close: -> ChatManager.closeChat u
 
 		_fetching: no
-		__topMessages: 10
+		__topMessages: INITIAL_MESSAGE_COUNT
 		__fetchNextPage: ->
 			return if @_fetching
 			@_fetching = yes
@@ -35,7 +45,7 @@ searchTerm = new ReactiveVar ""
 		}, transform: chatMessageTransform, sort: "time": 1).fetch()
 
 @projectChatTransform = (p) ->
-	subs.subscribe "chatMessages", { projectId: p._id }, 10
+	subs.subscribe "chatMessages", { projectId: p._id }, INITIAL_MESSAGE_COUNT
 
 	return _.extend p,
 		__initial: p.name[0].toUpperCase()
@@ -51,7 +61,7 @@ searchTerm = new ReactiveVar ""
 		__close: -> ChatManager.closeChat p
 
 		_fetching: no
-		__topMessages: 10
+		__topMessages: INITIAL_MESSAGE_COUNT
 		__fetchNextPage: ->
 			return if @_fetching
 			@_fetching = yes
@@ -65,7 +75,8 @@ searchTerm = new ReactiveVar ""
 # @class ChatManager
 ###
 class @ChatManager
-	@openChats: new ReactiveVar []
+	@_openChat: null
+	@_openChatView: null
 
 	###*
 	# Opens a chat window for the given user.
@@ -102,23 +113,24 @@ class @ChatManager
 			else if object.__type is "project"
 				Router.go "mobileChatWindow", _id: object._id.toHexString()
 
-		else
-			stayOpen = yes
-			$("body").addClass "chatSidebarOpen"
-
 		object.__markRead()
-		unless _.any(@openChats.get(), (c) -> EJSON.equals c._id, object._id)
-			@openChats.set @openChats.get().concat [object]
+		@_openChatView = Blaze.renderWithData Template.fullscreenChatWindow, object, document.body
+		@_openChat = object
+
+		$(".fullscreenChatWindow > .messageInput").focus() # Put focus on the messageInput
 
 	###*
-	# Closes the open chat window for the given object.
-	# Does nothing if there isn't a chatWindow open for the given `object`.
+	# Closes the currently open chat.
 	#
 	# @method closeChat
-	# @param object {Object} The chatSidebar context object to close the open chatWindow for.
 	###
-	@closeChat: (object) ->
-		@openChats.set _.without @openChats.get(), object
+	@closeChat: ->
+		@_openChat = null
+		$(".fullscreenChatWindow").addClass "fadeOut"
+		Meteor.setTimeout (=>
+			Blaze.remove @_openChatView
+			@_openChatView = null
+		), 300
 
 ###*
 # Get the current chats, based on search term, if one.
@@ -163,40 +175,41 @@ Template.chatSidebar.events
 
 		searchTerm.set event.target.value
 
-	"click .chatSidebarItem": (event) -> ChatManager.openChat @, event.currentTarget
+	"click .chatSidebarItem": (event) -> console.log @; ChatManager.openChat @, event.currentTarget
 
 Template.chatSidebar.helpers
-	openChats: -> ChatManager.openChats.get()
 	chats: chats
 
 Template.chatSidebar.rendered = ->
+	# some of that caching, yo.
+	$body = $ "body"
+	$chats = @$ ".chats"
+	$input = @$ "input"
+
 	unless Session.get "isPhone"
 		# Attach classes to body on chatSidebar hover / blur
 		$("div.chatSidebar").hover (->
-			if ChatManager.openChats.get().length > 0
-				stayOpen = yes
-
-			$("body").addClass "chatSidebarOpen"
+			$body.addClass "chatSidebarOpen"
 		), (->
 			return if stayOpen
-			$("body").removeClass "chatSidebarOpen"
-			$("div.chatSidebar > div.chats").animate scrollTop: 0
+			$body.removeClass "chatSidebarOpen"
+			$chats.animate scrollTop: 0
 
 			searchTerm.set ""
-			$("div.searchBox > input").val ""
+			$input.val ""
 		)
 
-		$("body").on "focus", "div.searchBox > input, .messageInput", ->
+		$input.on "focus", ->
 			stayOpen = yes
-			$("body").addClass "chatSidebarOpen"
+			$body.addClass "chatSidebarOpen"
 
-		$("body").on "blur", "div.searchBox > input, .messageInput", ->
+		$input.on "blur", ->
 			stayOpen = no
-			$("body").removeClass "chatSidebarOpen"
-			$("div.chatSidebar > div.chats").animate scrollTop: 0
+			$body.removeClass "chatSidebarOpen"
+			$chats.animate scrollTop: 0
 
 			searchTerm.set ""
-			$("div.searchBox > input").val ""
+			$input.val ""
 
 	loadingObserve = yes
 

@@ -1,0 +1,36 @@
+<template name="externalServices">
+	<div id="description">
+		Login met elke site waarmee je wilt.
+		Je kan met meerdere sites {{! (ook van dezelfde site) }}inloggen.
+	</div>
+
+	{{#each externalServices}}
+		{{#if loginNeeded}}
+			{{#if profileData}}
+				{{> externalServiceResult}}
+			{{else}}
+				<div class="externalServiceButton">
+					Inloggen met {{friendlyName}}
+				</div>
+			{{/if}}
+		{{/if}}
+	{{/each}}
+</template>
+
+<template name="externalServiceResult">
+	<div class="externalServiceResult">
+		<h1>{{friendlyName}}</h1>
+
+		<div id="center">
+			<img src="{{profileData.picture}}" width="100" height="100" alt="profielfoto"/>
+
+			<span>
+				Ingelogd als {{profileData.nameInfo.firstName}}<br>
+				{{profileData.courseInfo.year}} {{toUpperCase profileData.courseInfo.schoolVariant}}<br>
+				{{profileData.mainGroup}}
+			</span>
+		</div>
+
+		<button type="button" class="btn btn-danger deleteButton">Uitloggen</button>
+	</div>
+</template>

@@ -3,7 +3,7 @@
 	box-shadow: 0 -20px 150px 10px #000000;
 }
 
-.launchpageMoreInfoBottom {
+#moreInfoButton {
 	font-family: 'Roboto', sans-serif;
 	color: white;
 	text-align: center;
@@ -13,7 +13,6 @@
 	bottom: 0;
 	width: 100%;
 	font-weight: 300;
-	-webkit-font-smoothing: antialiased;
 	cursor: pointer;
 }
 

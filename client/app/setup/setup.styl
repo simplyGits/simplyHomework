@@ -1,0 +1,116 @@
+@require "../../utils"
+
+.setupAppNameHeader
+	fixed: top left 5px
+	color: black !important
+	font-size: 1.5em
+
+	+mobile()
+		position: relative
+
+#extractInfo
+	h2
+		roboto(300)
+
+	#courseInfoSelector
+		height: 80px
+
+#getExternalClasses
+	text-align: center
+
+	#spinner
+		height: 60px
+
+	#result
+		margin-top: 15px
+		width: 100%
+
+	#result > div
+		width: 100%
+		height: 30px
+		margin-bottom: 7px
+
+		i.fa-times
+			opacity: .5
+			transition: .25s opacity linear
+
+			float: left
+			margin-right: 10px
+			margin-top: 3px
+
+		i.fa-times:hover
+			opacity: 1
+
+		.twitter-typeahead
+			display: initial !important
+
+			.tt-dropdown-menu
+				width: 175px
+
+		.input-group-addon
+			float: left
+			display: inline-block
+			margin-right: 10px
+			height: 25px
+
+			i
+				margin-left: -8px
+				margin-top: -3px
+
+		div#classTitle
+			text-transform: lowercase
+			font-size: 15px
+			float: left
+			max-width: calc(100% - 240px)
+			white-space: nowrap
+			overflow: hidden
+			text-overflow: ellipsis
+
+		input#method, .twitter-typeahead
+			float: right
+			width: auto
+
+		+mobile()
+			height: 75px
+			border-bottom: 1px lightgray solid
+			margin-bottom: 15px
+
+			div#classTitle
+				max-width: calc(100% - 60px)
+
+			input#method
+				width: 100%
+				margin-top: 10px
+				margin-bottom: 10px
+
+#setup
+	max-width: 650px
+	margin-left: auto
+	margin-right: auto
+
+	animation: 2s fadeIn ease-out-expo
+
+	padTop = 15px
+	padding-top: padTop
+	padding-bottom: padTop
+
+	padSide = 45px
+	padding-left: padSide
+	padding-right: padSide
+
+	div.header
+		width: 100%
+		roboto(300)
+		font-size: 35px
+		margin-bottom: 15px
+		border-bottom: 1px #DFDFDF solid
+
+	div.content
+		font-size: 15px
+
+	div.footer
+		text-align: right
+		width: 100%
+		border-top: 1px #DFDFDF solid
+		margin-top: 25px
+		padding-top: 10px

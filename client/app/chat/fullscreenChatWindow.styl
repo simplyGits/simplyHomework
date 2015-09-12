@@ -1,0 +1,177 @@
+@import "jeet"
+
+div.fullscreenChatWindow
+	fixed: top left right bottom
+	z-index: 999
+	paddingSides = 200px // This is going to get messy.
+
+	padding-top: 50px
+
+	background-color: rgba(255, 255, 255, 0.9)
+	animation: .5s fadeIn ease-out-expo // Fade in animation
+	transition: .5s opacity ease-out-expo // For the fade out animation
+
+	div.headerAsides
+		div.userStatus
+			absolute top 70px left 100px
+			font-size: 25px
+			font-weight: 300
+			color: black
+			opacity: .7
+
+		div.userStatus.online
+			color: #2ECC40
+		div.userStatus.inactive
+			color: #FF851B
+		div.userStatus.offline
+			color: #FF4136
+
+		div.closeChat
+			absolute: top 30px right 70px
+			opacity: .7
+			font-size: 50px
+			font-weight: 300
+			color: black
+			cursor: pointer
+
+	div.header
+		position: relative
+		height: 75px
+		margin-bottom: 25px
+		cursor: pointer
+
+		margin-left: paddingSides
+		margin-right: paddingSides
+
+		div.profilePicture
+			size = 75px
+			width: size
+			height: size
+
+			border: 1px lightgray solid
+
+			img
+				float: left
+				margin: -.5px
+
+		div.name
+			absolute: top 15px left 90px
+			display: inline-block
+			font-weight: 300
+			font-size: 30px
+
+	div.messages
+		height: calc(100% - 175px)
+		overflow: hidden
+		overflow-y: scroll
+
+		div.message
+			padding: 5px
+			font-size: 17px
+			position: relative
+			margin-left: paddingSides
+			margin-right: paddingSides
+
+			aside
+				position: absolute
+				opacity: .3
+				width: 115px
+
+				transition: .1s opacity linear
+
+				left: -120px
+				right: initial
+
+				text-align: right
+
+				.edited
+					float: left
+					margin-right: 5px
+
+			aside:hover
+				opacity: .8
+
+			img.senderImage
+				pointer-events all
+
+			div.messageContent
+				display: inline-block
+				width: calc(100% - 40px)
+
+				margin-left: 5px
+				word-wrap: break-word
+
+				text-align: left
+
+		div.message.own
+			aside
+				left: initial
+				right: -120px
+
+				text-align: left
+
+			img.senderImage
+				float: right
+
+			div.messageContent
+				margin-left: 0px
+				margin-right: 5px
+
+				text-align: right
+
+	div.footer
+		position: relative
+		inputWidth = 65%
+		center(inputWidth)
+		max-width: initial
+		width: inputWidth
+		border: 1px lightgray solid
+
+		absolute: bottom 25px left right
+
+		input
+			width: 100%
+			padding-left: 15px
+			padding-right: 50px
+
+			transition: .1s padding-right linear
+
+			font-size: 20px
+			outline: none !important
+			border: none
+			background-color: transparent
+
+		button
+			-webkit-appearance: none
+			background-color: transparent
+			absolute: top bottom right
+			overflow: hidden
+			width: 35px
+
+			transition: .1s opacity, .1s width linear
+
+			padding = 10px
+			padding-left: padding
+			padding-right: padding
+
+			border: none
+			border-left: 1px lightgray solid
+
+			font-size: 20px
+			line-height: 1
+
+			span
+				absolute: right 35px top 7px
+				font-size: 15px
+
+			.fa
+				absolute: right 10px top 3px
+
+		button:hover
+			width: 115px
+
+		button:hover ~ input
+			padding-right: 130px
+
+div.fullscreenChatWindow.fadeOut
+	opacity: 0

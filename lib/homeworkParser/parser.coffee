@@ -6,6 +6,8 @@ class @Parser
 		"from"
 	]
 
+	@ignoreCharsRegexp = /[,:\s;\.]/ig
+
 	###*
 	# Parses the given description for tests, homework and quizzes.
 	# As well as the paragraphs, chapters and exercises.
@@ -28,6 +30,7 @@ class @Parser
 			type = "quiz" if /^((so)|((luister ?)?toets)|(schriftelijke overhoring))/i.test description
 			type = "test" if /^((proefwerk)|(pw)|(examen)|(tentamen))/i.test description
 
+		# FIXME: Clean this shit up.
 		# TODO: This parsing algorithm is still pretty dumb. Could be smarter, no?
 
 		chapterData = @_extractData description, "chapter"
@@ -55,7 +58,7 @@ class @Parser
 					isBeforeParagraph = words[..firstWordIndex].join(" ").indexOf(data.origin) > -1
 
 					# Gets the last word of the chapter info and checks if its close (3 indexes away).
-					isClose = firstWordIndex - _.lastIndexOf(words, _.last(data.origin.split(" "))) <= 3
+					isClose = firstWordIndex - _.lastIndexOf(words, _.last(data.origin.split(" ").remove(Parser.ignoreCharsRegexp, ""))) <= 3
 
 					return isBeforeParagraph and isClose
 
@@ -81,7 +84,7 @@ class @Parser
 					isBeforeExercise = words[..firstWordIndex].join(" ").indexOf(data.origin) > -1
 
 					# Gets the last word of the exercise info and checks if its close (3 indexes away).
-					isClose = firstWordIndex - _.lastIndexOf(words, _.last(data.origin.split(" "))) <= 3
+					isClose = firstWordIndex - _.lastIndexOf(words, _.last(data.origin.split(" ").remove(Parser.ignoreCharsRegexp, ""))) <= 3
 
 					return isBeforeExercise and isClose
 

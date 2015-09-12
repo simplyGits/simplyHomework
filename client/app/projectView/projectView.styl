@@ -1,11 +1,11 @@
-@import '../../main'
-@import "jeet"
+@require '../../utils'
+@require "jeet"
 
-div.head1
-	col(8/12)
-
-div.head2
-	col(4/12)
+//div.head1
+//	col(8/12)
+//
+//div.head2
+//	col(4/12)
 
 div.projectInfoContainer
 	padding-top: 5px
@@ -103,11 +103,24 @@ div.fileRow, div.personRow
 	white-space: nowrap
 
 div.personRow
-	height: 60px
+	rowHeight = 60px
+	height: rowHeight
+
+	.removePersonButton
+		line-height: rowHeight
 
 img.personImage
 	border-left: 3px black solid
 	absolute: top left bottom
+
+img.personImage.online
+	border-color: #2ECC40
+
+img.personImage.inactive
+	border-color: #FF851B
+
+img.personImage.offline
+	border-color: #FF4136
 
 span.personName
 	margin-left: 65px
@@ -150,18 +163,6 @@ div.projectHeader:hover span#changeProjectIcon
 +mobile()
 	span#changeProjectIcon
 		opacity: 1 !important
-
-button#leaveProjectButton
-	col(10/12)
-	shift(2/12)
-	float: initial
-	text-align: center
-
-	+mobile()
-		shift()
-		col()
-		width: 100%
-		float: initial
 
 +mobile()
 	div.projectHeader

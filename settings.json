@@ -1,14 +1,10 @@
 {
-	"public": {
-		"ga": {
-			"id": "UA-52373748-1",
-			"require": {
-				"displayfeatures": null
-			}
-		},
-		"kadira": {
-			"appId": "EkKhbLvn5zD6ksYep",
-			"appSecret": "8f122814-954d-4c41-b771-a050f0e21354"
-		}
+	"kadira": {
+		"appId": "EkKhbLvn5zD6ksYep",
+		"appSecret": "ba8ab5e5-6562-4af3-9317-710317d3549c"
+	},
+	"scholieren": {
+		"client_id": "32c8014e0e49363bce563d940859dade",
+		"client_pw": "a56c98c29403f35d7e6152caf12e5c5e"
 	}
 }

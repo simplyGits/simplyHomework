@@ -1,6 +1,6 @@
 <template name="appOverview">
 	<div class="container-fluid">
-		<div class="row" style="margin-top: -10px">
+		<div class="row">
 			{{#if isPhone}}
 				<div class="robotoHeader overviewHeader head1">{{weekNumber}}e <span class="robotoThin">week</span></div>
 			{{else}}
@@ -24,7 +24,7 @@
 		{{/if}}
 		<div class="row">
 			<div class="col-sm-6">
-				<div class="itemContainer" id="overviewTaskContainer" style="height: calc(100vh - {{itemContainerMargin}})">
+				<div class="itemContainer" id="overviewTaskContainer" style="height: 100%">
 					<div class="robotoThin itemContainerHeader">
 						Vandaag
 					</div>
@@ -37,7 +37,7 @@
 			</div>
 
 			<div class="col-sm-6">
-				<div class="itemContainer" id="overviewProjectContainer" style="height: calc(100vh - {{itemContainerMargin}})">
+				<div class="itemContainer" id="overviewProjectContainer" style="height: 100%">
 					<div class="robotoThin itemContainerHeader">
 						<span class="fa fa-plus" id="addProjectIcon"></span>
 						Projecten
@@ -55,7 +55,7 @@
 
 <template name="taskRow">
 	<div class="taskRow">
-		{{#if isDone}}
+		{{#if __isDone}}
 			<label style="text-decoration: line-through; opacity: .4">
 				<input taskid="{{__id}}" type="checkbox" id="checkbox" checked>
 				<span taskid="{{__id}}" id="checkboxLabel" class="robotoThin" style="font-weight: 300; font-size: 15px">
@@ -109,7 +109,7 @@
 		<span>{{hours}}</span>{{minutes}}
 	</div>
 	<div class="robotoHeader overviewClassLocation">
-		{{appointment._location}}
+		{{appointment.location}}
 	</div>
 	<div class="robotoHeader overviewClassDescription">
 		{{appointment.__className}}

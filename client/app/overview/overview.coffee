@@ -1,52 +1,26 @@
-@homeworkItems = new ReactiveVar []
 appointmentsTommorow = new ReactiveVar []
 nextAppointmentToday = new ReactiveVar null
 currentAppointment = new ReactiveVar null
 
-getTasks = -> # Also mix homework for tommorow and homework for days where the day before has no time. Unless today has no time.
-	tasks = []
-	for gS in GoaledSchedules.find(dueDate: $gte: new Date).fetch()
-		tasks.pushMore _.filter gS.tasks, (t) -> EJSON.equals t.plannedDate.date(), Date.today()
+hasAppointments = ->
+	currentAppointment.get()? or
+	nextAppointmentToday.get()? or
+	appointmentsTommorow.get().length > 0
 
-	tmp = []
-	for task in tasks
-		tmp.push _.extend task,
-			__id: task._id.toHexString()
-			__taskDescription: task.content
-			__className: "" # Should be set correctly.
-
-	tmp.pushMore homeworkItems.get()
-
-	for calendarItem in CalendarItems.find(_ownerId: Meteor.userId()).fetch()
-		tmp.push _.extend calendarItem,
-			__id: calendarItem._id.toHexString()
-			__taskDescription: calendarItem.description()
-			__className: Classes.findOne(calendarItem.classId())?.name() ? ""
-			isDone: (d) ->
-				if d?
-					CalendarItems.update calendarItem._id, $set: _isDone: d
-					calendarItem._isDone = d
-				else calendarItem._isDone
-
-	return tmp
-
-tasksAmount = -> getTasks().length
-
-hasAppointments = -> appointmentsTommorow.get().length > 0 or _.any [nextAppointmentToday, currentAppointment], (x) -> x.get()?
 Template.appOverview.helpers
 	currentDate: -> DateToDutch()
 	currentDay: -> DayToDutch()
 	weekNumber: -> moment().week()
-	tasksAmount: tasksAmount
-	tasksWord: -> if tasksAmount() is 1 then "taak" else "taken"
+	tasksAmount: -> tasksCount().total
+	tasksWord: -> if tasksCount().total is 1 then 'taak' else 'taken'
 
 	itemContainerMargin: ->
-		d = 350
-		if has "noAds" then d -= 90
-		if not hasAppointments() then d -= 170
-		return "#{d}px"
+		margin = 350
+		margin -= 90 if has 'noAds'
+		margin -= 170 unless hasAppointments()
+		"#{margin}px"
 
-	tasks: getTasks
+	tasks: -> tasks()
 	projects: -> projects()
 
 	foundAppointment: hasAppointments
@@ -56,62 +30,93 @@ Template.appOverview.helpers
 @originals = {}
 
 Template.taskRow.events
-	"change": (event) ->
-		t = $ event.target
-		checked = t.is(":checked")
-		taskId = t.attr "taskid"
+	'change': (event) ->
+		$target = $ event.target
+		checked = $target.is ':checked'
 
-		@isDone checked
-		homeworkItems.dep.changed()
+		@__isDone checked
 
-		t.parent()
-			.stop()
-			.css(textDecoration: if checked then "line-through" else "initial")
-			.velocity(opacity: if checked then .4 else 1)
+		#$target.parent()
+		#	.stop()
+		#	.css textDecoration: if checked then 'line-through' else 'initial'
+		#	.velocity opacity: if checked then .4 else 1
 
 Template.infoNextDay.helpers
-	firstHour: -> appointmentsTommorow.get()[0].beginBySchoolHour()
-	lastHour: -> _.last(appointmentsTommorow.get()).beginBySchoolHour()
+	firstHour: -> _.first(appointmentsTommorow.get()).schoolHour
+	lastHour: -> _.last(appointmentsTommorow.get()).schoolHour
 	people: ->
-		return [] if Session.get "isPhone"
-		subs.subscribe "usersData"
-		groupsTommorow = (x.group for x in _.filter Meteor.user().profile.groupInfos, (gi) -> _.any appointmentsTommorow.get(), (a) -> a.description() is gi.group)
-		Meteor.defer -> $('[data-toggle="tooltip"]').tooltip container: ".overviewImportantContainer" # Render the shit out of them
-		return Meteor.users.find(_id: { $ne: Meteor.userId() }, "profile.groupInfos": $elemMatch: group: $in: groupsTommorow).fetch()
+		return [] if Session.get 'isPhone'
+		userIds = _(appointmentsTommorow.get())
+			.pluck 'userIds'
+			.flatten()
+			.uniq()
+			.reject (id) -> id is Meteor.userId()
+			.value()
+
+		res = Meteor.users.find _id: $in: userIds
+		Meteor.defer -> $('[data-toggle="tooltip"]').tooltip container: '.overviewImportantContainer' # Render the shit out of them
+		res
 
 Template.infoNextLesson.helpers
-	hours: ->   val = nextAppointmentToday.get()?.begin().getHours()  ; if val? then Helpers.addZero(val) else ""
-	minutes: -> val = nextAppointmentToday.get()?.begin().getMinutes(); if val? then ":#{Helpers.addZero(val)}" else ""
+	hours: ->
+		val = nextAppointmentToday.get()?.startDate.getHours()
+		if val? then Helpers.addZero(val) else ''
+	minutes: ->
+		val = nextAppointmentToday.get()?.startDate.getMinutes()
+		if val? then ":#{Helpers.addZero(val)}" else ''
 	appointment: -> nextAppointmentToday.get()
 
 Template.infoCurrentLesson.helpers
-	hours: ->   val = currentAppointment.get()?.end().getHours()  ; if val? then Helpers.addZero(val) else ""
-	minutes: -> val = currentAppointment.get()?.end().getMinutes(); if val? then ":#{Helpers.addZero(val)}" else ""
+	hours: ->
+		val = currentAppointment.get()?.endDate.getHours()
+		if val? then Helpers.addZero(val) else ''
+	minutes: ->
+		val = currentAppointment.get()?.endDate.getMinutes()
+		if val? then ":#{Helpers.addZero(val)}" else ''
 	appointment: -> currentAppointment.get()
 
 Template.appOverview.events
-	"click #addProjectIcon": ->
-		$("#projectNameInput").val ""
-		$("#projectDescriptionInput").val ""
-		$("#projectClassNameInput").val ""
+	'click #addProjectIcon': -> showModal 'addProjectModal'
 
-		$("#addProjectModal").modal()
+Template.appOverview.onRendered ->
+	@subscribe 'externalCalendarItems', Date.today(), Date.today().addDays 2
 
-Template.appOverview.rendered = ->
 	@autorun ->
 		minuteTracker.depend()
 
-		today = magisterAppointment new Date()
-		tommorow = magisterAppointment new Date().addDays 1
+		today = CalendarItems.find(
+			userIds: Meteor.userId()
+			startDate: $gte: Date.today()
+			endDate: $lte: Date.today().addDays 1
+			classId: $exists: yes
+		).fetch()
+		tomorrow = CalendarItems.find(
+			userIds: Meteor.userId()
+			startDate: $gte: Date.today().addDays 1
+			endDate: $lte: Date.today().addDays 2
+			classId: $exists: yes
+		).fetch()
 
-		appointmentsTommorow.set _.filter tommorow, (a) -> not a.fullDay() and a.classes().length > 0 and _.contains [5..19], a.begin().getHours()
+		filterfn = (x) -> x.startDate.getHours() in [5..19]
+		today = _.filter today, filterfn
+		tomorrow = _.filter tomorrow, filterfn
 
-		nextAppointmentToday.set _.find today, (a) -> not a.fullDay() and new Date() < a.begin() and a.classes().length > 0
-		currentAppointment.set _.find today, (a) -> not a.fullDay() and new Date() > a.begin() and new Date() < a.end() and a.classes().length > 0
+		console.log today, tomorrow
 
-		$("#currentDate > span").tooltip placement: "bottom", html: true, title: "<h4>Week: #{moment().week()}</h4>"
+		currentAppointment.set _.find today, (a) -> a.startDate < new Date() and a.endDate > new Date()
+		nextAppointmentToday.set _.find today, (a) -> new Date() < a.startDate
+		appointmentsTommorow.set tomorrow
 
+		$('#currentDate > span').tooltip
+			placement: 'bottom'
+			html: true
+			title: "<h4>Week: #{moment().week()}</h4>"
+
+	###
 	@autorun ->
+		# TODO: REFACTOR THE SHIT OUT OF THIS.
+		return
+
 		return if Get.schedular()?.biasToday() is 0
 		grades = magisterResult("grades").result ? []
 
@@ -158,3 +163,4 @@ Template.appOverview.rendered = ->
 				exerciseData = calculateExercisePriority endGrade, lastGrade, exercises.length
 
 				return Date.today() >= h.begin().date().addDays(-exerciseData.daysInfront) and h.begin().date() > Date.today()
+	###
