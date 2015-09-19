@@ -80,8 +80,10 @@ HomeworkDescription=function(){
  * @constructor
  * @param {Object} [persisted] Result from `Planner::persistable`.
  */
-Planner=function(){
-	if(!(this instanceof Planner))return new Planner(arguments[0]);
+Planner = function (persisted) {
+	if (!(this instanceof Planner)) {
+		return new Planner(persisted);
+	}
 
 	/**
 	 * @property isPlannerObject
@@ -333,9 +335,10 @@ Planner=function(){
 		return ret;
 	};
 
-
-
-	if(arguments.length==1)subjects=Object.clone(arguments[0],true); //from a persist source
+	if (persisted != null) {
+		// from a persist source
+		subjects = Object.clone(persistable, true);
+	}
 };
 
 
