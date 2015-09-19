@@ -1,0 +1,14 @@
+{
+  "name": "planner",
+  "version": "0.0.1",
+  "description": "The plan algorithm of simplyHomework.",
+  "main": "planner.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "simply <hello@simplyApps.nl> (http://www.simplyApps.nl/)",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "js-object-clone": "^0.4.2"
+  }
+}
