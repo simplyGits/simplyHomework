@@ -115,7 +115,7 @@ Template.page1.events
 		}, 1200, 'easeOutExpo'
 
 	'keyup input#password': (event) ->
-		$('.signupForm > .enterHint').velocity opacity: .7
+		$('signUpForm > .enterHint').addClass 'visible'
 		return unless event.which is 13
 
 		$input    = $ '.signupForm input'

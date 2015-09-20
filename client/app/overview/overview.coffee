@@ -39,7 +39,7 @@ Template.taskRow.events
 		#$target.parent()
 		#	.stop()
 		#	.css textDecoration: if checked then 'line-through' else 'initial'
-		#	.velocity opacity: if checked then .4 else 1
+		#	.animate opacity: if checked then .4 else 1
 
 Template.infoNextDay.helpers
 	firstHour: -> _.first(appointmentsTommorow.get()).schoolHour

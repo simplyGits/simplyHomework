@@ -84,7 +84,6 @@ ordered-dict@1.0.3
 particle4dev:cheerio@0.18.0
 percolate:paginated-subscription@0.2.4
 percolate:synced-cron@1.2.1
-percolate:velocityjs@1.2.1_1
 qnub:emojione@0.0.3
 random@1.0.3
 reactive-dict@1.1.0

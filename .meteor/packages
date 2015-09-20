@@ -18,7 +18,6 @@ iron:router
 meteorhacks:fast-render
 reywood:iron-router-ga
 natestrauser:animate-css
-percolate:velocityjs
 reactive-var
 tsega:bootstrap3-datetimepicker
 meteorhacks:unblock

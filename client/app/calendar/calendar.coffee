@@ -150,7 +150,7 @@ open = ->
 close = ->
 	$("div.addAppointmentForm").removeClass "transformIn"
 	$("div.backdrop").removeClass "dimmed"
-	$("textarea#appointmentInput").val("").velocity { height: "54px" }, 500, "easeOutExpo"
+	$("textarea#appointmentInput").val("").animate { height: "54px" }, 500, "easeOutExpo"
 
 add = ->
 	input = $("textarea#appointmentInput").val().trim()

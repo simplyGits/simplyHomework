@@ -247,7 +247,7 @@ class @NotificationsManager
 								width: "initial"
 								opacity: 1
 						else
-							$this.velocity opacity: 0
+							$this.animate opacity: 0
 							notHandle.hide()
 							onDismissed?()
 							onHide?()
