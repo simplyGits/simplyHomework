@@ -16,10 +16,10 @@ Package.onUse(function(api) {
 	api.use('appcache', 'server', { weak: true });
 	api.use('momentjs:moment', 'client');
 
-	api.addFiles([
+	api.addAssets([
 		'fullcalendar/dist/fullcalendar.js',
 		'fullcalendar/dist/fullcalendar.css',
 		'fullcalendar/dist/lang/nl.js',
-	], 'client', { isAsset: true });
+	], 'client');
 	api.addFiles('inject.js', 'server');
 });

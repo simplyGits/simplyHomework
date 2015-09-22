@@ -22,10 +22,6 @@ reactive-var
 tsega:bootstrap3-datetimepicker
 meteorhacks:unblock
 meteorhacks:subs-manager
-meteorhacks:npm
-
-
-npm-container
 mdg:reload-on-resume
 mizzao:user-status
 fastclick
@@ -53,3 +49,6 @@ cryptoquick:stylus-multi
 simply:fullcalendar
 simply:lazy-code-push
 chuangbo:marked
+standard-minifiers
+meteorhacks:npm
+npm-container
