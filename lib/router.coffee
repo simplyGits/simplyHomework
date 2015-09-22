@@ -33,7 +33,7 @@ Router.map ->
 
 	@route 'referalLanchPage',
 		fastRender: yes
-		path: 'refd'
+		path: '/refd'
 		layoutTemplate: 'referalLanchPage'
 		onBeforeAction: ->
 			Meteor.defer =>
