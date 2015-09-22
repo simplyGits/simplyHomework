@@ -50,10 +50,15 @@ div.signupForm
 
 	div.enterHint
 		font-weight: 100
-		opacity: 0
 		text-align: center
 		margin-top: 10px
 		font-size: 30px
+
+		opacity: 0
+		transition: .4s opacity linear
+
+	div.enterHint.visible
+		opacity: .7
 
 div.signupForm.active
 	opacity: 1
