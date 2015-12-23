@@ -2,58 +2,8 @@
 	<div class="container-fluid">
 		{{> searchBar}}
 		<div id="overviewNotices">
-			{{#each notices}}
-				<div class="notice {{clickable}}">
-					{{#if header}}
-						<div class="header">
-							{{header}}
-
-							{{#if subheader}}
-								<div class="subheader">
-									{{subheader}}
-								</div>
-							{{/if}}
-						</div>
-					{{/if}}
-					{{> Template.dynamic template=template data=data}}
-				</div>
-			{{else}}
-				{{#if Template.subscriptionsReady}}
-					<div id="nocardsnotice">
-						{{timeGreeting}} {{currentUser.profile.firstName}}!<br>
-						Momenteel hebben we geen kaarten voor je.
-					</div>
-				{{else}}
-					{{> loading}}
-				{{/if}}
-			{{/each}}
+			{{> notices}}
 		</div>
-	</div>
-</template>
-
-<template name="tasks">
-	{{#each tasks}}
-		{{> taskRow}}
-	{{/each}}
-</template>
-
-<template name="taskRow">
-	<div class="taskRow">
-		{{#if __isDone}}
-			<label style="text-decoration: line-through; opacity: .4">
-				<input type="checkbox" id="checkbox" checked>
-				<span id="checkboxLabel" class="robotoThin" style="font-weight: 300; font-size: 15px">
-					<b>{{{__taskDescription}}}</b> voor {{__className}}
-				</span>
-			</label>
-		{{else}}
-			<label>
-				<input type="checkbox" id="checkbox">
-				<span id="checkboxLabel" class="robotoThin" style="font-weight: 300; font-size: 15px">
-					<b>{{{__taskDescription}}}</b> voor {{__className}}
-				</span>
-			</label>
-		{{/if}}
 	</div>
 </template>
 
@@ -84,29 +34,5 @@
 				Misschien kan je iemand <a href="mailto:?to=&subject=Zie%20deze%20hippe%20app">uitnodigen</a>?
 			</div>
 		{{/each}}
-	</div>
-</template>
-
-<template name="infoNextLesson">
-	Over {{timeLeft}}<br>
-	{{time startDate}} - {{time endDate}}<br>
-	Locatie: {{location}}
-</template>
-
-<template name="infoCurrentAppointment">
-	Nog {{timeLeft}} (tot {{time endDate}})<br>
-	Locatie: {{location}}
-</template>
-
-<template name="recentGrades">
-	{{#each gradeGroups}}
-		{{> recentGradeGroup}}
-	{{/each}}
-</template>
-
-<template name="recentGradeGroup">
-	<div class="recentGradeGroup">
-		<div class="back" style="background-color: {{class.__color}}"></div>
-		{{class.name}}: {{{grades}}}
 	</div>
 </template>
