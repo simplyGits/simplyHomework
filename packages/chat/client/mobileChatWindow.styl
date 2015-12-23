@@ -14,24 +14,24 @@ div.chatWindow
 
 div.mobileChatWindow
 	absolute: top left right bottom
-	border: 3px white solid
-	transition: 1s border-color ease
 
-// Swag™ style borders for activity of other person.
-div.mobileChatWindow.online
-	border-color: rgb(0, 150, 30)
-div.mobileChatWindow.inactive
-	border-color: rgb(195, 90, 1)
-div.mobileChatWindow.offline
-	border-color: rgb(150, 0, 30)
+// Swag™ colors for activity of other person.
+div.mobileChatWindow.online > .header
+	background-color: #4CAF50
+div.mobileChatWindow.inactive > .header
+	background-color: #FF9800
+div.mobileChatWindow.offline > .header
+	background-color: #EF5350
 
-div.chatWindow, div.mobileChatWindow
+div.mobileChatWindow
 	div.header
 		position: relative
 		height: 40px
 		padding: 3px
 		font-size: 15px
 		border-bottom: 1px lightgray solid
+
+		color: white
 
 		img
 			absolute: left top bottom
@@ -55,35 +55,32 @@ div.chatWindow, div.mobileChatWindow
 			font-size: 20px
 			text-align: center
 
-	div.messages
+	div#messages
 		absolute: top 40px bottom 30px left right
 		overflow: hidden
 		overflow-y: scroll
 
 		div.message
-			padding: 5px
+			margin-top: 2px
 			font-size: 15px
 
+			aside
+				display: none
+
 			img.senderImage
-				border-radius: 50%
 				pointer-events: all
 
 			div.messageContent
 				display: inline-flex
-				width: calc(100% - 35px)
+				width: calc(100% - 40px)
 				margin-left: 5px
+				margin-right: 5px
 
 				word-wrap: break-word
-
-				text-align: justify
 
 		div.message.own
 			img.senderImage
 				float: right
-
-			div.messageContent
-				margin-left: 0
-				margin-right: 5px
 
 	div.footer
 		absolute: left bottom right

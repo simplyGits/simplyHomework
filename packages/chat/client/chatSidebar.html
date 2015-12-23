@@ -1,0 +1,51 @@
+<template name="chatSidebar">
+	<div class="chatSidebar">
+		<div class="searchBox">
+			<i class="fa fa-search"></i>
+			<input type="text" placeholder="zoeken...">
+			<button id="toggleChatNotify">
+				{{#if chatNotifyEnabled}}
+					<i class="fa fa-bell"></i>
+				{{else}}
+					<i class="fa fa-bell-slash"></i>
+				{{/if}}
+			</button>
+		</div>
+		<div class="chats smoothScroll">
+			{{#each chats}}
+				{{> chatSidebarItem}}
+			{{else}}
+				{{#unless Template.subscriptionsReady}}
+					<div class="notice">
+						Recente chats laden...
+					</div>
+				{{else}}
+					<div class="notice">
+						Geen recente chats.
+					</div>
+				{{/unless}}
+			{{/each}}
+		</div>
+	</div>
+</template>
+
+<template name="chatSidebarItem">
+	<div class="chatSidebarItem" id="{{_id}}">
+		<div class="icon">
+			{{#if unreadMessagesCount}}
+				<div class="notificationBadge {{status}}">{{unreadMessagesCount}}</div>
+			{{/if}}
+
+			{{#if sidebarIcon}}
+				<img src="{{sidebarIcon}}" width="40" height="40" onerror='this.style.display = "none"'/>
+			{{else}}
+				<div class="iconInitial">
+					{{initial}}
+				</div>
+			{{/if}}
+		</div>
+		<div class="name">
+			{{friendlyName}}
+		</div>
+	</div>
+</template>

@@ -79,6 +79,7 @@ Meteor.publish null, ->
 			magisterId: 1
 			classId: 1
 			deadline: 1
+			participants: 1
 
 		Notifications.find
 			userIds: userId

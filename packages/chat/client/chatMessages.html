@@ -1,0 +1,39 @@
+<template name="chatMessages">
+	{{! TODO: use a better solution than a 'chat' class.}}
+	<div id="messages" class="chat">
+		{{#if hasMore}}
+			{{#if isLoading}}
+				<div class="message loadMore loading">Berichten aan het ophalen...</div>
+			{{else}}
+				<div class="message loadMore">Scroll naar boven om oudere berichten op te halen.</div>
+			{{/if}}
+		{{/if}}
+
+		{{#each messages}}
+			{{> messageRow}}
+		{{/each}}
+
+		{{#if newMessages}}
+			<div class="message newMessages">Er zijn {{newMessages}} nieuwe berichte(n). Klik hier om ze te lezen</div>
+		{{/if}}
+	</div>
+</template>
+
+<template name="messageRow">
+	<div class="message {{__own}} {{__new}}"> {{! we will purely use the __own class to style the message (change the color and location of the image and stuff. }}
+		<aside>
+			{{#if __changedOn}}
+				<div class="edited" title="Bewerkt op {{__changedOn}}" data-toggle="tooltip">
+					<i class="fa fa-pencil"></i>
+				</div>
+			{{/if}}
+			<div class="time">{{__time}}</div>
+		</aside>
+		{{#with __sender}}
+			<a href="{{pathFor 'personView' _id=_id}}">
+				<img class="senderImage" src="{{picture this 100}}" width="25" height="25" title="{{profile.firstName}} {{profile.lastName}}" data-toggle="tooltip"/>
+			</a>
+		{{/with}}
+		<div class="messageContent">{{{content}}}</div>
+	</div>
+</template>

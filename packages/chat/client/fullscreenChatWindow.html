@@ -1,0 +1,42 @@
+<template name="stashedFile">
+	<div class="stashedFile">
+		{{name}}
+		<i class="fa fa-times" data-action="deleteFile"></i>
+	</div>
+</template>
+
+<template name="fullscreenChatWindow">
+	<div id="fullscreenChatWindow">
+		<div id="headerAsides"> {{! wrapping div is just here to keep everything clean. }}
+			<div class="userStatus {{status}}">
+				{{friendlyStatus}}
+			</div>
+			<div class="closeChat">
+				&times;
+			</div>
+		</div>
+
+		<div id="header">
+			{{#if sidebarIcon}}
+				<img class="profilePicture" src="{{sidebarIcon}}" width="75">
+			{{else}}
+				<div class="profilePicture">
+					{{#each participants}}
+						<img src="{{picture this 50}}" width="25">
+					{{/each}}
+				</div>
+			{{/if}}
+			<div class="name">{{friendlyName}}</div>
+		</div>
+
+		{{> chatMessages}}
+
+		<div id="footer">
+			<button class="sendButton">
+				<span id="sendText">verzenden</span>
+				<i id="sendIcon" class="fa fa-angle-double-right"></i>
+			</button>
+			<input type="text" id="messageInput" placeholder="Typ bericht, enter om te versturen." autofocus/>
+		</div>
+	</div>
+</template>
