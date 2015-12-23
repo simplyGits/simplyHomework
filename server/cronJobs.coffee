@@ -71,6 +71,7 @@ SyncedCron.add
 					.map (b) ->
 						scholierenId: b.id
 						title: b.title
+				c.books = c.books.value() if c.books.value?
 
 				# Update or, if it doesn't currently exist, the scholierenClass in
 				# the database.

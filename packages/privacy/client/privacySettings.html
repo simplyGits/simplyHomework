@@ -1,0 +1,17 @@
+<template name="privacyOption">
+	<div>
+		<label>
+			<input type="checkbox" checked="{{enabled}}"/>
+			<span style="font-weight: normal">{{description}}</span>
+		</label>
+	</div>
+</template>
+
+<template name="privacySettings">
+	<div>
+		{{! TODO: add some text here? }}
+	</div>
+	{{#each privacyOptions}}
+		{{> privacyOption}}
+	{{/each}}
+</template>

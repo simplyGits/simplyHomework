@@ -2,21 +2,22 @@ currentSelectedSchool = null
 
 doneQueries = []
 schools = []
-getSchools = (query, callback) ->
+getSchools = (query, syncCallback, asyncCallback) ->
+	asyncCallback ?= syncCallback
 	if query.length < 3 or query in doneQueries
-		_.defer callback, _.filter schools, (school) ->
+		syncCallback _.filter schools, (school) ->
 			Helpers.contains school.name, query, yes
 	else
 		Meteor.call 'getServiceSchools', 'magister', query, (e, r) ->
 			if e?
-				callback []
+				asyncCallback []
 			else
 				doneQueries.push query
 				schools = _(schools)
 					.concat r
 					.uniq 'name'
 					.value()
-				callback r
+				asyncCallback r
 
 Template.magisterInfoModal.events
 	'click #goButton': ->
@@ -76,7 +77,8 @@ Template.magisterInfoModal.onRendered ->
 		.typeahead {
 			minLength: 2
 		}, {
-			displayKey: 'name'
+			async: yes
 			source: getSchools
+			display: 'name'
 		}
 		.on 'typeahead:selected', (obj, datum) -> currentSelectedSchool = datum

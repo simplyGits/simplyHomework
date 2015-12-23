@@ -7,15 +7,17 @@ Package.describe({
 });
 
 Npm.depends({
-	request: '2.61.0',
+	request: '2.67.0',
+	'lru-cache': '3.2.0',
 });
 
 Package.onUse(function(api) {
 	api.versionsFrom('1.1.0.1');
 
 	api.use([
-		"erasaur:meteor-lodash",
-		"simply:magisterjs@1.8.0",
+		"stevezhu:lodash",
+		"simply:magisterjs@1.14.2",
+		"simply:external-services-connector",
 		"ejson",
 	], "server");
 	api.use([
@@ -30,7 +32,7 @@ Package.onUse(function(api) {
 		"modal.coffee",
 	], "client");
 
-	api.export("MagisterBinding", "server");
+	//api.export("MagisterBinding", "server");
 });
 
 Package.onTest(function(api) {

@@ -1,3 +1,19 @@
+serverMailExists = _.throttle ((mail, callback) ->
+	Meteor.call 'mailExists', mail, (error, result) -> callback result
+), 150
+
+checkedMails = {}
+mailExists = (mail, callback) ->
+	checked = checkedMails[mail]
+	if checked? then callback checked
+
+	else if mail.length > 3
+		serverMailExists mail, (exists) ->
+			checkedMails[mail] = exists
+			callback exists
+
+	undefined
+
 login = ->
 	$emailInput = $ '#emailInput'
 	$passwordInput = $ '#passwordInput'
@@ -11,7 +27,7 @@ login = ->
 						setFieldError '#passwordGroup', 'Wachtwoord is fout'
 					else
 						shake '#signupModal'
-				else Router.go 'app'
+				else FlowRouter.go 'overview'
 
 		else
 			error = no
@@ -40,15 +56,14 @@ login = ->
 						Kadira.trackError 'create-account', e.message, stacks: e.stack
 					else
 						$('#signupModal').modal 'hide'
-						Router.go 'setup'
+						FlowRouter.go 'overview'
 
 Template.page1.helpers
-	showQuickLoginhint: -> amplify.store('allowCookies')?
+	showQuickLoginhint: -> not Session.equals('deviceType', 'phone') and localStorage['appUsedBefore']?
 
 Template.signupModal.helpers
 	creatingAccount: -> Session.get 'creatingAccount'
 
-checkedMails = {}
 Template.signupModal.events
 	'keyup': (event) ->
 		$emailInput = $ '#emailInput'
@@ -65,12 +80,7 @@ Template.signupModal.events
 					.removeClass 'success'
 					.addClass 'error'
 
-			if (val = checkedMails[value])?
-				Session.set 'creatingAccount', val
-			else if value.length > 3
-				Meteor.call 'mailExists', value, (error, result) ->
-					checkedMails[value] = not result
-					Session.set 'creatingAccount', not result
+			mailExists value, (exists) -> Session.set 'creatingAccount', not exists
 
 	'keyup #passwordInput': (event) ->
 		strength = Helpers.passwordStrength event.target.value
@@ -128,7 +138,7 @@ Template.page1.events
 			else if error?
 				shake $input
 
-			else Router.go 'app'
+			else FlowRouter.go 'overview'
 
 Template.launchPage.events
 	'click #page1': ->
@@ -137,8 +147,14 @@ Template.launchPage.events
 				scrollTop: 0
 			}, 600, 'easeOutExpo'
 
-Template.launchPage.rendered = ->
+Template.launchPage.onCreated ->
 	@subscribe 'userCount'
+
+Template.launchPage.onRendered ->
+	setPageOptions
+		title: 'simplyHomework'
+		useAppPrefix: no
+		color: null
 
 	$signUpForm = @$ '.signupForm'
 	$('body').keypress (event) ->

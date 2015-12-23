@@ -4,18 +4,27 @@
  * @module magister-binding
  */
 
-(function (m, Future, request) {
+// One heck of a binding this is.
+
+(function (Magister, Future, request, LRU) {
 	"use strict";
 
 	var SESSIONID_INVALIDATE_TIME = 1000*60*60*24; // 24 hours
 	var ONLY_RECENT_LIMIT = 1000*60*60*24*6; // 6 days
+
+	var cache = LRU({
+		max: 50,
+		// we cache magister objects infinitely currently since we also uesr
+		// sessionIds infinitely, so we stay in style ;)
+		maxAge: null,
+	});
 
 	/*
 	 * A simplyHomework binding to Magister.
 	 * @class MagisterBinding
 	 * @static
 	 */
-	MagisterBinding = {
+	var MagisterBinding = {
 		name: "magister",
 		friendlyName: "Magister",
 		loginNeeded: true,
@@ -28,7 +37,7 @@
 		 * @param {String} username
 		 * @param {String} password
 		 * @param {String} userId The ID of the user to save the info to.
-		 * @return {undefined|Boolean|String} undefined if the data was stored, false if the login credentials are incorrect. Returns a string containg more info when an error occured.
+		 * @return {undefined|Boolean|Error} undefined if the data was stored, false if the login credentials are incorrect. Returns an error containg more info when an error occured.
 		 */
 		createData: function (schoolurl, username, password, userId) {
 			check(schoolurl, String);
@@ -59,11 +68,16 @@
 				MagisterBinding.storedInfo(userId, null);
 
 				// TODO: check in magister.js if `|| e.Message` is needed.
-				var message = e.message || e.Message;
-				if (message === 'Je gebruikersnaam en/of wachtwoord is niet correct.') {
+				var message = e.toString();
+				if (
+					[
+						'Ongeldig account of verkeerde combinatie van gebruikersnaam en wachtwoord. Probeer het nog eens of neem contact op met de applicatiebeheerder van de school.',
+						'Je gebruikersnaam en/of wachtwoord is niet correct.',
+					].indexOf(message) > -1
+				) {
 					return false;
 				} else {
-					return message;
+					return new Error(message);
 				}
 			}
 		}
@@ -82,8 +96,14 @@
 		var fut = new Future();
 		var data = MagisterBinding.storedInfo(userId);
 		if (_.isEmpty(data)) {
+			cache.del(userId);
 			throw new Error("No credentials found.");
 		} else {
+			var m = cache.get(userId);
+			if (m !== undefined) {
+				return m;
+			}
+
 			// // We invalidate the sessionId after SESSIONID_INVALIDATE_TIME.
 			// var useSessionId = data.lastLogin &&
 			// 	_.now() - data.lastLogin.time.getTime() <= SESSIONID_INVALIDATE_TIME;
@@ -93,7 +113,7 @@
 			// they retire at Magister's servers. Maybe they're even infinite.
 			var useSessionId = !_.isEmpty(data.lastLogin);
 
-			var magister = new m.Magister({
+			var magister = new Magister.Magister({
 				school: {
 					url: data.credentials.schoolurl
 				},
@@ -120,7 +140,9 @@
 				}
 			});
 
-			return fut.wait();
+			m = fut.wait();
+			cache.set(userId, m);
+			return m;
 		}
 	}
 
@@ -152,7 +174,7 @@
 
 		var magister = getMagisterObject(userId);
 		var user = Meteor.users.findOne(userId);
-		var lastUpdateTime = user.lastGradeUpdateTime;
+		var lastUpdateTime = user.events.gradeUpdate;
 		var onlyRecent = options.onlyRecent ||
 			lastUpdateTime && (_.now() - lastUpdateTime.getTime() <= ONLY_RECENT_LIMIT);
 
@@ -170,9 +192,9 @@
 				})
 				.forEach(function (g, i) {
 					// HACK: WET (unDRY, ;)) code.
-					var stored = StoredGrades.findOne({
+					var stored = Grades.findOne({
 						fetchedBy: MagisterBinding.name,
-						externalId: g.id(),
+						externalId: magister.magisterSchool.id + '_' + g.id(),
 						weight: g.counts() ? g.weight() : 0,
 						grade: gradeConverter(g.grade())
 					});
@@ -187,10 +209,12 @@
 							if (e) {
 								gradeFut.throw(e);
 							} else  {
+								// REVIEW: Do we want a seperate weight field?
 								var weight = g.counts() ? g.weight() : 0;
-								var classId = _.find(user.classInfos, function (i) {
+								var classInfo = _.find(user.classInfos, function (i) {
 									return i.externalInfo.id === g.class().id;
-								}).id;
+								});
+								var classId = classInfo && classInfo.id;
 
 								var storedGrade = new StoredGrade(
 									gradeConverter(g.grade()),
@@ -199,13 +223,18 @@
 									userId
 								);
 
+								// REVIEW: Better way to check percentages than
+								// this?
+								if (g.type().header() === '%') {
+									storedGrade.gradeType = 'percentage';
+								}
 								storedGrade.fetchedBy = MagisterBinding.name;
-								storedGrade.externalId = g.id();
+								storedGrade.externalId = magister.magisterSchool.id + '_' + g.id();
 								storedGrade.description = g.description().trim();
 								storedGrade.passed = g.passed() || storedGrade.passed;
 								storedGrade.dateFilledIn = g.dateFilledIn();
 								storedGrade.dateTestMade = g.testDate();
-								storedGrade.isEnd = g.type().type() === 2;
+								storedGrade.isEnd = g.type().isEnd();
 								storedGrade.period = new GradePeriod(
 									g.gradePeriod().id,
 									g.gradePeriod().name
@@ -322,7 +351,8 @@
 		check(type, Match.Optional(String));
 
 		var fut = new Future();
-		getMagisterObject(userId).getPersons(query, type, function (e, r) {
+		var magister = getMagisterObject(userId);
+		magister.getPersons(query, type, function (e, r) {
 			if (e) {
 				fut.error(e);
 			} else {
@@ -338,7 +368,7 @@
 					person.teacherCode = p.teacherCode();
 					person.group = p.group();
 
-					person.externalId = p.id();
+					person.externalId = magister.magisterSchool.id + '_' + p.id();
 					person.fetchedBy = MagisterBinding.name;
 
 					return person;
@@ -356,14 +386,15 @@
 		var fut = new Future();
 		var user = Meteor.users.findOne(userId);
 
-		getMagisterObject(userId).appointments(from, to, false, function (e, r) {
+		var magister = getMagisterObject(userId);
+		magister.appointments(from, to, false, function (e, r) {
 			if (e) {
 				fut.throw(e);
 			} else {
 				fut.return(r.map(function (a) {
 					var classInfo = _.find(user.classInfos, function (i) {
 						return i.externalInfo.name === a.classes()[0];
-					})
+					});
 					var classId = classInfo && classInfo.id;
 
 					var calendarItem = new CalendarItem(
@@ -374,8 +405,8 @@
 						classId
 					);
 
-					calendarItem.isDone = a.isDone();
-					calendarItem.externalId = a.id();
+					calendarItem.usersDone = a.isDone() ? [ Meteor.userId() ] : [];
+					calendarItem.externalId = magister.magisterSchool.id + '_' + a.id();
 					calendarItem.fetchedBy = MagisterBinding.name;
 					if (!_.isEmpty(a.content())) {
 						calendarItem.content = {
@@ -387,6 +418,16 @@
 					calendarItem.fullDay = a.fullDay();
 					calendarItem.schoolHour = a.beginBySchoolHour();
 					calendarItem.location = a.location();
+
+					var absenceInfo = a.absenceInfo();
+					if (absenceInfo != null) {
+						calendarItem.absenceInfo = {
+							externalId: magister.magisterSchool.id + '_' + absenceInfo.id(),
+							type: absenceInfo.typeString(),
+							permitted: absenceInfo.permitted(),
+							description: absenceInfo.description(),
+						};
+					}
 
 					return calendarItem;
 				}));
@@ -439,16 +480,11 @@
 
 		var fut = new Future();
 
-		m.MagisterSchool.getSchools(query, function (e, r) {
+		Magister.MagisterSchool.getSchools(query, function (e, r) {
 			if (e) {
 				fut.throw(e);
 			} else {
-				fut.return(r.map(function (s) {
-					var school = new School(s.name, s.url);
-					school.fetchedBy = MagisterBinding.name;
-					school.externalId = s.id;
-					return school;
-				}));
+				fut.return(r);
 			}
 		});
 
@@ -459,7 +495,7 @@
 		check(userId, String);
 
 		var magister = getMagisterObject(userId);
-		var pictureUrl = magister.profileInfo().profilePicture(200, 200, true);
+		var pictureUrl = magister.profileInfo().profilePicture(350, 350, true);
 
 		var pictureFut = new Future();
 		var courseInfoFut = new Future();
@@ -489,12 +525,13 @@
 		});
 
 		var courseInfo = courseInfoFut.wait();
+		var pf = magister.profileInfo();
 		return {
 			nameInfo: {
-				firstName: magister.profileInfo().firstName(),
-				lastName: magister.profileInfo().lastName()
+				firstName: pf.firstName(),
+				lastName: (pf.namePrefix() || '') + ' ' + pf.lastName()
 			},
-			birthDate: magister.profileInfo().birthDate(),
+			birthDate: pf.birthDate(),
 			picture: pictureFut.wait(),
 			courseInfo: {
 				year: courseInfo.type.year,
@@ -505,11 +542,12 @@
 		};
 	};
 
+	// TODO: add docs here.
 	MagisterBinding.getAssignments = function (userId) {
 		check (userId, String);
 
 		var fut = new Future();
-		var magister = getMagisterObject(userId);
+		var user = Meteor.users.findOne(userId);
 
 		//# @method assignments
 		//# @async
@@ -520,12 +558,13 @@
 		//# @param callback {Function} A standard callback.
 		//# 	@param [callback.error] {Object} The error, if it exists.
 		//# 	@param [callback.result] {Assignment[]} An array containing Assignments.
+		var magister = getMagisterObject(userId);
 		magister.assignments(function (e, r) {
 			if (e) {
 				fut.throw(e);
 			} else {
 				fut.return(r.map(function (a) {
-					var classInfo = _.filter(user.classInfos, function (i) {
+					var classInfo = _.find(user.classInfos, function (i) {
 						return i.externalInfo.id === a.class().id();
 					});
 
@@ -536,7 +575,7 @@
 					);
 
 					assignment.description = a.description();
-					assignment.externalId = a.id();
+					assignment.externalId = magister.magisterSchool.id + '_' + a.id();
 					assignment.fetchedBy = MagisterBinding.name;
 
 					return assignment;
@@ -545,5 +584,7 @@
 		});
 
 		return fut.wait();
-	}
-})(Magister, Npm.require("fibers/future"), Npm.require("request"));
+	};
+
+	ExternalServicesConnector.pushExternalService(MagisterBinding);
+})(Magister, Npm.require("fibers/future"), Npm.require("request"), Npm.require("lru-cache"));

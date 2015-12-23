@@ -1,6 +1,17 @@
 @require "jeet"
 @require "../../utils"
 
+.row.classHeader
+	margin-left: -25px
+	margin-right: -25px
+	padding-left: 10px
+	padding-right: 10px
+
+	height: 75px
+	line-height: 75px
+
+	border-bottom: 1px lightgray solid
+
 .overviewHeader#classHeader
 	width: calc(100% - 120px)
 	white-space: nowrap
@@ -8,7 +19,6 @@
 	overflow: hidden
 
 span#changeClassIcon
-	color: lightgray
 	vertical-align: middle
 	font-size: 20px
 	cursor: pointer
@@ -26,7 +36,7 @@ span#changeClassIcon
 		span#changeClassIcon
 			opacity: 1 !important
 
-button#deleteClassButton
+button#hideClassButton
 	col(10/12)
 	shift(2/12)
 	float: initial
@@ -41,9 +51,16 @@ button#deleteClassButton
 div.gradeInfoContainer
 	margin-top: 10px
 	border: 1px lightgray solid
-	border-radius: 5px
 	height: 175px
 	position: relative
+
+	div.notice
+		absolute: top 50%
+		width: 100%
+		text-align: center
+		opacity: .7
+		transform: translateY(-50%)
+		word-break: break-word
 
 	div.gradeContainer
 		span(1/3)
@@ -117,14 +134,8 @@ div.gradeInfoContainer
 			padding-top: 7px
 
 			border: 1px lightgray solid
-			border-bottom-right-radius: 15%
-
-			border-radius: 15%
 			border-top: none
 			border-left: none
-			border-bottom-left-radius: 0
-			border-top-left-radius: 0
-			border-top-right-radius: 0
 
 			float: left
 
@@ -133,7 +144,6 @@ div.gradeInfoContainer
 				center(75px)
 
 				border-left: 1px lightgray solid
-				border-bottom-left-radius: 15%
 
 		div.gradeSquare.insufficient
 			color: white
@@ -161,7 +171,7 @@ div.gradeInfoContainer
 			+mobile()
 				width: 100%
 
-		+above(760px)
+		+mobile()
 			div.gradeInfoRow:nth-child(5)
 				margin-top: 6px
 
@@ -182,12 +192,7 @@ div.gradeInfoContainer
 			padding-top: 7px
 
 			border: 1px lightgray solid
-			border-bottom-right-radius: 15%
-
-			border-radius: 15%
 			border-top: none
-			border-top-left-radius: 0
-			border-top-right-radius: 0
 
 		div.gradeSquare.insufficient
 			color: white

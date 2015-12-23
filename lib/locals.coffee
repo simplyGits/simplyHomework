@@ -19,8 +19,9 @@
 				Gebruik simplyHomework als een pro met deze keyboard shortcuts:
 
 				<b>Overzicht</b>: <kbd>o</kbd>
-				<b>Agenda</b>: <kbd>c</kbd> of <kbd>a</kbd>
-				<b>Chatbalk zoeken</b>: <kbd>/</kbd> of <kbd>?</kbd>
+				<b>Agenda</b>: <kbd>a</kbd>
+				<b>Zoeken</b>: <kbd>/</kbd> of <kbd>?</kbd>
+				<b>Chatbalk zoeken</b>: <kbd>c</kbd>
 				<b>Vorige zijbalk item</b>: <kbd>shift</kbd> + <kbd>pijltje boven</kbd>
 				<b>Volgende zijbalk item</b>: <kbd>shift</kbd> + <kbd>pijltje beneden</kbd>
 			'''

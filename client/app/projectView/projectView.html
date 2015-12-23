@@ -1,13 +1,16 @@
 <template name="projectView">
+{{#with project}}
 	<div class="container-fluid">
 		<div class="row">
 			<div class="robotoHeader overviewHeader head1 projectHeader">
 				{{name}}
 				<span id="changeProjectIcon" class="fa fa-pencil"></span>
 			</div>
+			<!--
 			{{#if showRightHeader}}
 				<div class="robotoHeader overviewHeader head2 projectHeader" style="text-align: right">{{participants.length}} <span class="robotoThin" style="margin-left: 5px">personen</span></div>
 			{{/if}}
+			-->
 		</div>
 		<div class="divider"></div>
 
@@ -15,18 +18,22 @@
 			<div class="projectInfoSubContainer">
 				<b>Deadline</b>: <span style="color: {{overDue}}">{{__friendlyDeadline}}</span>
 				<br>
-				<b>Vak</b>: {{__class.name}}
-				<br>
+				{{#with __class.name}}
+					<b>Vak</b>: {{this}}
+					<br>
+				{{/with}}
 				<b>Beschrijving</b>: <span class="projectInfoDescription">{{description}}</span>
 			</div>
 
-			<div class="projectInfoChatQuoteContainer">
+			<div id="chatButton">
 				{{#with __lastChatMessage}}
-					<img class="lastChatSenderPicture" src="{{gravatar __sender 100}}" width="50" height="50"/>
-					<span class="robotoThin lastChatSenderName">{{__sender.profile.firstName}}</span>
-					<span class="robotoThin lastChatMessage">{{content}}</span>
+					<img id="senderPicture" src="{{picture __sender 100}}" width="70" height="70"/>
+					<div id="middle">
+						<span id="senderName" class="robotoThin">{{__sender.profile.firstName}}</span>
+						<span id="messageContent" class="robotoThin">{{content}}</span>
+					</div>
 				{{/with}}
-				<span class="robotoThin lastChatHeader">Chat</span>
+				<div id="header" class="robotoThin">Chat</div>
 			</div>
 		</div>
 
@@ -40,10 +47,6 @@
 					<div class="itemContainerContent">
 						{{#each files}}
 							{{> fileRow}}
-
-							{{#unless last files}}
-								<div class="itemContainerSmallDivider"></div>
-							{{/unless}}
 						{{/each}}
 					</div>
 				</div>
@@ -52,15 +55,13 @@
 			<div class="col-sm-6">
 				<div class="itemContainer projectViewItemContainer" style="height: calc(100vh - {{heightOffset}}px)">
 					<div class="robotoThin itemContainerHeader">
-						{{#if isOwner}}
-							<span class="fa fa-plus" id="addPersonIcon"></span>
-						{{/if}}
+						<span class="fa fa-plus" id="addPersonIcon"></span>
 						Mensen
 					</div>
 					<div class="itemContainerContent">
-						{{#linkTo route="personView" data=currentUser}}
+						<a href="{{pathFor 'personView' id=currentUser._id}}">
 							{{> selfRow}}
-						{{/linkTo}}
+						</a>
 						{{#each persons}}
 							{{> personRow}}
 						{{/each}}
@@ -69,6 +70,9 @@
 			</div>
 		</div>
 	</div>
+{{else}}
+	{{> loading}}
+{{/with}}
 </template>
 
 <template name="fileRow">
@@ -89,18 +93,16 @@
 
 <template name="personRow">
 	<div class="personRow">
-		<img src="{{gravatar this 100}}" width="63" height="60" class="personImage {{__status}}">
-		<span class="personName"><span style="color: black">{{profile.firstName}}</span> {{profile.lastName}}</span>
-		{{#if __isOwner}}
-			<span class="removePersonButton">&times;</span>
-		{{/if}}
+		<img src="{{picture this 100}}" width="63" height="60" class="{{__status}}">
+		<span class="name">{{profile.firstName}} {{profile.lastName}}</span>
+		<span class="removePersonButton">&times;</span>
 	</div>
 </template>
 
 <template name="selfRow">
 	<div class="personRow">
-		<img src="{{gravatar currentUser 100}}" width="63" height="60" class="personImage online">
-		<span class="personName" style="color: black">Jij</span>
+		<img src="{{picture currentUser 100}}" width="63" height="60" class="online">
+		<span class="name">Jij</span>
 	</div>
 </template>
 
@@ -116,7 +118,7 @@
 					<div id="addQueue">
 						{{#each addQueue}}
 							<div>
-								<img src="{{gravatar this}}" width="50" height="50" />
+								<img src="{{picture this}}" width="50" height="50" />
 								<span>{{data.fullName}}</span>
 							</div>
 						{{/each}}
@@ -124,7 +126,11 @@
 					<form class="vertical full-width">
 						<div id="personNameGroup" class="group">
 							<label for="personNameInput">Naam</label>
-							<input type="text" id="personNameInput" placeholder="Henk">
+							<input
+								type="text" id="personNameInput" placeholder="Henk"
+								spellcheck="off" autocomplete="off" autofocus
+								data-source="persons" data-value-key="fullName" data-template="personSuggestion"
+							/>
 						</div>
 					</form>
 				</div>
@@ -159,9 +165,23 @@
 							<label for="changeDeadlineInput">Deadline</label>
 							<input type="text" id="changeDeadlineInput">
 						</div>
+
+						<hr>
+
+						<h2>Verbindingen</h2>
+						<div id="externalAssignment">
+							{{#with externalInfo}}
+								Dit project is gekoppeld met: <b>{{name}}</b> van <b>{{fetchedBy}}</b>
+							{{else}}
+								<button class="btn btn-primary">Kies iets uit ofzo, (ja Thomas, dit is niet final.)</button>
+							{{/with}}
+						</div>
 						<div id="changeClassGroup" class="group">
 							<label for="changeClassInput">Vak</label>
-							<input type="text" id="changeClassInput" value="{{__class.name}}">
+							<input
+								type="text" id="changeClassInput" value="{{__class.name}}"
+								spellcheck="off" autocomplete="off" data-source="classes" data-value-key="name"
+							/>
 						</div>
 					</form>
 					<button class="btn btn-danger" id="leaveProjectButton" style="width: 100%">Verlaat project</button>

@@ -1,54 +1,52 @@
 <template name="app">
+{{#if runningSetup}}
+	{{> setup}}
+{{else}}
 	{{#with currentBigNotice}}
-		<div id="bigNotice" class="{{theme}}">
-			<div id="content">
-				{{content}}
-			</div>
-			{{#if allowDismiss}}
-				<span id="dismissButton">&times;</span>
-			{{/if}}
-		</div>
+		{{> bigNotice}}
 	{{/with}}
 
 	<div id="app">
 		{{> sidebar}}
 
 		<div id="wrapper">
-			{{#if isPhone}}
+			{{#unless isDesktop}}
 				<div id="mobileHeader" style="border-color: {{pageColor}}">
 					<i class="fa fa-bars headerIcon" data-snap-side="left"></i>
 					<div id="title">{{pageTitle}}</div>
 					<i class="fa fa-users headerIcon" data-snap-side="right"></i>
 				</div>
+			{{/unless}}
+			{{#if has "noAds"}}
+				<div class="content unselectable smoothScroll">
+					{{> Template.dynamic template=main}}
+				</div>
+			{{else}}
+				{{! TODO: Cleaner way to do this? }}
+				<div class="content unselectable smoothScroll" style="bottom: 90px">
+					{{> Template.dynamic template=main}}
+				</div>
+				<div id="adbar"></div>
 			{{/if}}
-			<div class="content unselectable smoothScroll">
-				{{> yield}}
-			</div>
 		</div>
 		{{> chatSidebar}}
+
+		{{#with chat}}
+			{{> fullscreenChatWindow}}
+		{{/with}}
 	</div>
 	<div class="backdrop"></div>
+{{/if}}
 </template>
 
-<template name="settingsModal">
-	<div class="modal fade" aria-hidden="true" id="settingsModal">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h4 class="modal-title">Instellingen</h4>
-				</div>
-
-				<div class="modal-body">
-					<button class="btn btn-default" id="schedularPrefsButton">Planner Voorkeuren</button>
-					<button class="btn btn-default" id="externalServicesButton">Integraties beheren</button>
-					<button class="btn btn-default" id="accountInfoButton">Account info aanpassen</button>
-					<button class="btn btn-default" id="privacySettingsButton">Privacy instellingen aanpassen</button>
-					<button class="btn btn-default" id="deleteAccountButton">Account verwijderen</button>
-					<button class="btn btn-default" id="startTourButton">Start rondleiding</button>
-					<button class="btn btn-danger" id="logOutButton">Uitloggen</button>
-				</div>
-			</div>
+<template name="bigNotice">
+	<div id="bigNotice" class="{{theme}}">
+		<div id="content">
+			{{content}}
 		</div>
+		{{#if allowDismiss}}
+			<span id="dismissButton">&times;</span>
+		{{/if}}
 	</div>
 </template>
 
@@ -90,6 +88,7 @@
 	</div>
 </template>
 
+<!--
 <template name="plannerPrefsModal">
 	<div class="modal fade" aria-hidden="true" id="plannerPrefsModal">
 		<div class="modal-dialog">
@@ -120,6 +119,7 @@
 		</div>
 	</div>
 </template>
+-->
 
 <template name="addClassModal">
 	<div class="modal fade" aria-hidden="true" id="addClassModal">
@@ -134,7 +134,8 @@
 						<h3>Kies een extern vak</h3>
 						{{#each this}}
 							<div class="classRow">
-								<div class="classname"></div>
+								<div class="classname">{{name}}</div>
+								<input type="text" placeholder="Methode" class="methodInput form-control" />
 								<button type="button" class="btn btn-primary">toevoegen</button>
 							</div>
 						{{/each}}
@@ -143,7 +144,11 @@
 					<form class="vertical full-width">
 						<div id="nameGroup" class="group">
 							<label for="classNameInput">Vaknaam</label>
-							<input type="text" id="classNameInput" placeholder="Engels">
+							<input
+								type="text" id="classNameInput" placeholder="Engels"
+								spellcheck="off" autocomplete="off"
+								data-source="scholierenClasses" data-value-key="name"
+							/>
 						</div>
 						<div id="courseGroup" class="group">
 							<label for="courseInput">Vakafkorting</label>
@@ -151,7 +156,11 @@
 						</div>
 						<div id="bookGroup" class="group">
 							<label for="bookInput">Methode</label>
-							<input type="text" id="bookInput" placeholder="New Interface">
+							<input
+								type="text" id="bookInput" placeholder="Solutions"
+								spellcheck="off" autocomplete="off"
+								data-source="books" data-value-key="title"
+							/>
 						</div>
 						<div id="colorGroup" class="group">
 							<label for="colorInput" id="colorLabel">Kleur</label>
@@ -197,116 +206,6 @@
 	</div>
 </template>
 
-<template name="accountInfoModal">
-	<div class="modal fade" aria-hidden="true" id="accountInfoModal">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-					<h4 class="modal-title">Account info</h4>
-				</div>
-				<div class="modal-body">
-					<form class="vertical full-width">
-						<div id="mailGroup" class="group">
-							<label for="mailInput">Email</label>
-							<input type="text" id="mailInput" placeholder="hello@simplyApps.nl" value="{{currentMail}}">
-						</div>
-						<div id="firstNameGroup" class="group">
-							<label for="firstNameInput">Voornaam</label>
-							<input type="text" id="firstNameInput" placeholder="Henk" value="{{currentUser.profile.firstName}}">
-						</div>
-						<div id="lastNameGroup" class="group">
-							<label for="lastNameInput">Achternaam</label>
-							<input type="text" id="lastNameInput" placeholder="Jansen" value="{{currentUser.profile.lastName}}">
-						</div>
-						<div id="oldPassGroup" class="group">
-							<label for="oldPassInput">Oud wachtwoord</label>
-							<input type="password" id="oldPassInput" placeholder="●●●●●●●●●●">
-						</div>
-						<div id="newPassGroup" class="group">
-							<label for="newPassInput">Nieuw wachtwoord</label>
-							<input type="password" id="newPassInput" placeholder="●●●●●●●●●●">
-						</div>
-						{{! todo: insert captcha here (just like deleteAccountModal)}}
-					</form>
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-default" data-dismiss="modal">Annuleren</button>
-					<button type="button" class="btn btn-primary" id="goButton">Opslaan</button>
-				</div>
-			</div>
-		</div>
-	</div>
-</template>
-
-<template name="privacyOption">
-	<label>
-		<input type="checkbox" {{checked}}>
-		<span style="font-weight: normal">{{description}}</span>
-	</label>
-</template>
-
-<template name="privacySettingsModal">
-	<div class="modal fade" aria-hidden="true" id="privacySettingsModal">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-					<h4 class="modal-title">Privacy instellingen</h4>
-				</div>
-				<div class="modal-body">
-					{{#each privacyOptions}}
-						{{> privacyOption}}
-					{{/each}}
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-default" data-dismiss="modal">Annuleren</button>
-					<button type="button" class="btn btn-primary" id="goButton">Opslaan</button>
-				</div>
-			</div>
-		</div>
-	</div>
-</template>
-
-<template name="notificationSettingsModal">
-	<div class="modal fade" aria-hidden="true" id="accountInfoModal">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-					<h4 class="modal-title">Account info</h4>
-				</div>
-				<div class="modal-body">
-					<form class="form-horizontal">
-						<div id="mailGroup" class="form-group">
-							<label for="mailInput" class="col-sm-2 control-label" style="text-align: left">Email</label>
-							<div class="col-sm-10">
-								<input type="text" class="form-control" id="mailInput" placeholder="hello@simplyApps.nl" value="{{currentMail}}">
-							</div>
-						</div>
-						<div id="oldPassGroup" class="form-group">
-							<label for="oldPassInput" class="col-sm-2 control-label" style="text-align: left">Oud wachtwoord</label>
-							<div class="col-sm-10">
-								<input type="password" class="form-control" id="oldPassInput" placeholder="●●●●●●●●●●">
-							</div>
-						</div>
-						<div id="newPassGroup" class="form-group">
-							<label for="newPassInput" class="col-sm-2 control-label" style="text-align: left">Nieuw wachtwoord</label>
-							<div class="col-sm-10">
-								<input type="password" class="form-control" id="newPassInput" placeholder="●●●●●●●●●●">
-							</div>
-						</div>
-					</form>
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-default" data-dismiss="modal">Annuleren</button>
-					<button type="button" class="btn btn-primary" id="goButton">Opslaan</button>
-				</div>
-			</div>
-		</div>
-	</div>
-</template>
-
 <template name="addProjectModal">
 	<div class="modal fade" aria-hidden="true" id="addProjectModal">
 		<div class="modal-dialog">
@@ -320,7 +219,7 @@
 						<h3>Kies een externe opdracht</h3>
 						{{#each this}}
 							<div class="assignmentRow">
-								<div class="className">{{__class.abbreviation}}</div>
+								<div class="className">{{__abbreviation}}</div>
 								<div class="assignmentName">{{name}}</div>
 
 								{{#if __project}}
@@ -347,63 +246,17 @@
 						</div>
 						<div id="classNameGroup" class="group">
 							<label for="classNameInput">Vak</label>
-							<input type="text" id="classNameInput" placeholder="Projectvak" />
+							<input
+								type="text" id="classNameInput" placeholder="Projectvak"
+								spellcheck="off" autocomplete="off"
+								data-source="classes" data-value-key="name" data-select="selected"
+							/>
 						</div>
 					</form>
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">Annuleren</button>
 					<button type="button" class="btn btn-primary" id="goButton">Aanmaken</button>
-				</div>
-			</div>
-		</div>
-	</div>
-</template>
-
-<template name="deleteAccountModal">
-	<div class="modal fade" aria-hidden="true" id="deleteAccountModal">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-					<h4 class="modal-title">Account verwijderen</h4>
-				</div>
-				<div class="modal-body">
-					<div>
-						Je staat op het punt om je gehele account te verwijderen.
-						Dit kan <b>niet</b> worden teruggedraaid.
-						Om aan te geven dat je zeker weet dat je je account wilt
-						verwijderen moet je beneden je wachtwoord en een captcha invoren.
-					</div>
-					<br>
-					<input type="password" class="form-control" id="passwordInput" placeholder="●●●●●●●●●●" autocomplete="off">
-
-					<div style="margin-top: 15px">
-						{{> reCAPTCHA}}
-					</div>
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-default" data-dismiss="modal">Annuleren</button>
-					<button type="button" class="btn btn-danger" id="goButton">Verwijder</button>
-				</div>
-			</div>
-		</div>
-	</div>
-</template>
-
-<template name="externalServicesModal">
-	<div class="modal fade" aria-hidden="true" id="externalServicesModal">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-					<h4 class="modal-title">Integraties</h4>
-				</div>
-				<div class="modal-body">
-					{{> externalServices}}
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-primary" data-dismiss="modal">Oké</button>
 				</div>
 			</div>
 		</div>

@@ -1,25 +1,14 @@
 Meteor.methods
-	###*
-	# Marks chatMessages as read.
-	# @method markChatMessagesRead
-	# @param type {String} The type, possible values: "project", "direct", "group"
-	# @param id {ObjectID} The ID of `type` (eg. if `type` is `"project"` then `id` is the ID of the Project).
-	###
-	markChatMessagesRead: (type, id) ->
-		query = switch type
-			when "direct"
-				{
-					$or: [
-						{ creatorId: @userId, to: id }
-						{ creatorId: id, to: @userId }
-					],
-					readBy: $ne: @userId
-				}
+	markNotificationRead: (id, clicked) ->
+		check id, String
+		check clicked, Boolean
 
-			when "project"
-				{
-					projectId: id
-					readBy: $ne: @userId
-				}
+		push = {}
+		push['done'] = @userId
+		push['clicked'] = @userId if clicked
+		Notifications.update id, $push: push
 
-		ChatMessages.update query, { $push: readBy: @userId }, multi: yes
+	markUserEvent: (name) ->
+		check name, String
+		Meteor.users.update @userId, $set: "events.#{name}": new Date
+		undefined

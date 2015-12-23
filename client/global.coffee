@@ -11,18 +11,24 @@
 	res = res.concat CalendarItems.find({
 		'userIds': Meteor.userId()
 		'content': $exists: yes
-		'content.type': 'homework'
+		'content.type': $ne: 'information'
 		'content.description': $exists: yes
 		'startDate': $gte: Date.today().addDays 1
 		'endDate': $lte: Date.today().addDays 2
 	}, {
+		sort:
+			startDate: 1
 		transform: (item) -> _.extend item,
 			__id: item._id
 			__taskDescription: item.content.description
 			__className: Classes.findOne(item.classId)?.name ? ''
 			__isDone: (d) ->
-				if d? then CalendarItems.update item._id, $set: isDone: d
-				item.isDone
+				if d?
+					CalendarItems.update item._id, (
+						if d then $push: usersDone: Meteor.userId()
+						else $pull: usersDone: Meteor.userId()
+					)
+				Meteor.userId() in item.usersDone
 	}).fetch()
 
 	res = res.concat _.map tasks, (task) -> _.extend task,
@@ -38,7 +44,9 @@
 # @return {Object}
 ###
 @tasksCount = ->
+	return total: 0, finished: 0, unfinished: 0
 	Helpers.emboxValue ->
+		console.trace 'invalidate taskCount()'
 		tasks = @tasks()
 		finishedTasks = _.filter tasks, (t) -> t.__isDone()
 
@@ -52,13 +60,15 @@
 # @return {Cursor} A cursor pointing to the classes.
 ###
 @classes = ->
-	classInfos = Helpers.emboxValue -> Meteor.user()?.classInfos ? []
+	console?.trace? 'classes()'
 	Classes.find {
-		_id: $in: (info.id for info in classInfos)
-	}, {
-		transform: classTransform
-		sort: 'name': 1
-	}
+		_id: $in: (
+			_(getClassInfos())
+				.reject 'hidden'
+				.pluck 'id'
+				.value()
+		)
+	}, sort: 'name': 1
 
 ###*
 # Get the projects for the current user, converted and sorted.
@@ -67,7 +77,6 @@
 ###
 @projects = ->
 	Projects.find {},
-		transform: projectTransform
 		sort:
 			'deadline': 1
 			'name': 1
@@ -96,22 +105,12 @@
 # @param feature {String} The feature to check for.
 # @return {Boolean}
 ###
-@has = (feature) -> Helpers.emboxValue ->
-	Meteor.user()?.premiumInfo?[feature]?.deadline > new Date()
-
-###*
-# Gets the current user's privacy options, with defalt values if an options
-# hasn't been set yet.
-#
-# @method getPrivacyOptions
-# @return {Object}
-###
-@getPrivacyOptions = ->
-	options = Helpers.emboxValue -> Meteor.user().privacyOptions ? {}
-	_.defaults options,
-		publishCalendarItems: yes
+@has = (feature) ->
+	deadline = getUserField Meteor.userId(), "premiumInfo.#{feature}.deadline"
+	deadline > new Date
 
 @minuteTracker = new Tracker.Dependency
+@dateTracker = new Tracker.Dependency
 Meteor.startup ->
 	$body = $ 'body'
 
@@ -123,38 +122,34 @@ Meteor.startup ->
 		theme: "light"
 		publickey: "6LejzwQTAAAAAJ0blWyasr-UPxQjbm4SWOni22SH"
 
-	window.viewportUnitsBuggyfill.init()
-
 	if navigator.platform is 'Win32' or navigator.userAgent.indexOf('win') > -1
 		$body.addClass 'win'
 
-		if "ActiveXObject" of window
+		if 'ActiveXObject' of window
 			$body.addClass 'ie'
 
-	# Don't use `Meteor.user()` inside of a computation in here. Or expect a lot
-	# of lag.
-	Deps.autorun -> # User Login/Logout
-		if Meteor.userId()?
-			ga 'set', '&uid', Meteor.userId()
-			followSetupPath()
-		else
-			NotificationsManager.hideAll()
-			Router.go 'launchPage'
+	Tracker.autorun ->
+		if Meteor.userId()? # login
+			runSetup()
+			localStorage['appUsedBefore'] = yes
+
+	console.log 'global() deviceType', Session.get 'deviceType'
+
+	unless Session.equals 'deviceType', 'desktop'
+		document.addEventListener 'visibilitychange', ->
+			if document.hidden then Meteor.disconnect()
+			else Meteor.reconnect()
 
 	window.onbeforeunload = ->
 		NotificationsManager.hideAll()
-
-		for x in $('input.messageInput').get()
-			unless _.isEmpty x.value.trim()
-				name = $(x)
-					.closest('.chatWindow')
-					.find('.name')
-					.text()
-					.split(' ')[0]
-				return (
-					if name? then "Je was een chatberichtje naar #{name} aan het typen! D:"
-					else 'Je was een chatberichtje aan het typen! D:'
-				)
 		undefined
 
-	Meteor.setInterval (-> minuteTracker.changed()), 60000
+	prevDate = new Date().getDate()
+	Meteor.setInterval (->
+		minuteTracker.changed()
+
+		currentDate = new Date().getDate()
+		if prevDate isnt currentDate
+			prevDate = currentDate
+			dateTracker.changed()
+	), 60000

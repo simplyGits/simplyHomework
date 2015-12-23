@@ -1,6 +1,9 @@
-currentProject = -> Router.current().data()
 cachedProjectFiles = new ReactiveVar {}
 addQueue = new ReactiveVar []
+
+currentProject = ->
+	id = new Meteor.Collection.ObjectID FlowRouter.getParam 'id'
+	Projects.findOne _id: id
 
 # == Notes:
 # - 2 methods for basicly the same thing is a bit ugly.
@@ -8,56 +11,69 @@ addQueue = new ReactiveVar []
 # 	root user object is the owner, but we specifiy if `Meteor.user()` is the
 # 	owner.
 @getParticipants = ->
-	return Meteor.users.find({ _id: $in: currentProject().participants ? [] },
-		sort: "profile.firstName": 1
+	Meteor.users.find {
+		_id:
+			$in: currentProject().participants ? []
+			$ne: Meteor.userId()
+	}, {
+		sort: 'profile.firstName': 1
 		transform: (u) -> _.extend u,
 			__status: (
-				if u.status.idle then "inactive"
-				else if u.status.online then "online"
-				else "offline"
+				if u.status?.idle then 'inactive'
+				else if u.status?.online then 'online'
+				else 'offline'
 			)
-			__isOwner: Router.current().data().ownerId is Meteor.userId()
-	).fetch()
+			#__isOwner: Router.current().data().ownerId is Meteor.userId()
+	}
 
 @getOthers = ->
-	return Meteor.users.find { _id: $nin: currentProject().participants ? [] },
+	Meteor.users.find {
+		_id: $nin: currentProject().participants ? []
+	}, {
 		transform: (u) -> _.extend u,
 			fullName: "#{u.profile.firstName} #{u.profile.lastName}"
+	}
 
 fileTypes =
-	"application/vnd.google-apps.document":
-		fileTypeIconClass: "file-text-o"
-		fileTypeColor: "#32A8CE"
-	"application/vnd.google-apps.presentation":
-		fileTypeIconClass: "file-powerpoint-o"
-		fileTypeColor: "#F4B400"
-	"application/vnd.google-apps.spreadsheet":
-		fileTypeIconClass: "file-excel-o"
-		fileTypeColor: "#0F9D58"
-	"application/pdf":
-		fileTypeIconClass: "file-pdf-o"
-		fileTypeColor: "#CF1312"
-	"image/":
-		fileTypeIconClass: "file-image-o"
-		fileTypeColor: "#85144B"
+	'application/vnd.google-apps.document':
+		fileTypeIconClass: 'file-text-o'
+		fileTypeColor: '#32A8CE'
+	'application/vnd.google-apps.presentation':
+		fileTypeIconClass: 'file-powerpoint-o'
+		fileTypeColor: '#F4B400'
+	'application/vnd.google-apps.spreadsheet':
+		fileTypeIconClass: 'file-excel-o'
+		fileTypeColor: '#0F9D58'
+	'application/pdf':
+		fileTypeIconClass: 'file-pdf-o'
+		fileTypeColor: '#CF1312'
+	'image/':
+		fileTypeIconClass: 'file-image-o'
+		fileTypeColor: '#85144B'
 
-@personsEngine = new Bloodhound
-	name: "persons"
-	datumTokenizer: (d) -> Bloodhound.tokenizers.whitespace d.fullName
-	queryTokenizer: Bloodhound.tokenizers.whitespace
-	local: []
+Template.projectView.onCreated ->
+	@autorun =>
+		id = new Meteor.Collection.ObjectID FlowRouter.getParam 'id'
+		@subscribe 'project', id, onReady: =>
+			p = Projects.findOne _id: id
+			if p?
+				@subscribe 'usersData', p.participants
+				@subscribe 'status', _.reject p.participants, Meteor.userId()
 
-Template.projectView.onRendered ->
-	@autorun ->
-		window.personsEngine.clear()
-		window.personsEngine.add getOthers()
+				c = p.__class()
+				slide c._id if c?
+				setPageOptions
+					title: p.name
+					color: c?.__color
+			else
+				notFound()
 
 	loading = []
-	@autorun ->
+	@autorun =>
 		return unless driveLoaded.get()
 
 		x = cachedProjectFiles.get()
-		fileIds = _.reject currentProject().driveFileIds, (s) -> s in x or _.contains loading, s
+		fileIds = _.reject @driveFileIds, (s) -> s in x or _.contains loading, s
 		needed = fileIds.length
 
 		push = (r) ->
@@ -71,34 +87,36 @@ Template.projectView.onRendered ->
 
 				_.remove loading, r.id
 
-	Mousetrap.bind "a p", (e) ->
-		e.preventDefault()
+	Mousetrap.bind 'a p', ->
 		showModal 'addParticipantModal'
-		$("#personNameInput").focus()
+		false
+
+Template.projectView.onDestroyed ->
+	Mousetrap.unbind 'a p'
 
 Template.projectView.helpers
+	project: currentProject
+
 	files: ->
 		_(cachedProjectFiles.get())
 			.values()
-			.filter((f) -> _.contains currentProject().driveFileIds, f.id)
-			.sortBy((f) -> new Date(Date.parse f.modifiedDate).getTime())
+			.filter (f) => _.contains @driveFileIds, f.id
+			.sortBy (f) -> new Date(f.modifiedDate).getTime()
 			.reverse()
 			.value()
-	persons: -> _.reject getParticipants(), (p) -> EJSON.equals p._id, Meteor.userId()
-	isOwner: -> Router.current().data().ownerId is Meteor.userId()
+	persons: -> getParticipants()
+	#isOwner: -> Router.current().data().ownerId is Meteor.userId()
 
-	showRightHeader: ->
-		participants = currentProject().participants
-		participants? and participants.length isnt 1
-	overDue: -> if not currentProject().deadline? or currentProject().deadline > new Date() then "initial" else "darkred"
-	heightOffset: -> if has("noAds") then 260 else 315
+	showRightHeader: -> @participants?.length > 0
+	overDue: -> if not @deadline? or @deadline > new Date() then "initial" else "darkred"
+	heightOffset: 260
 
 Template.projectView.events
 	"click #addFileIcon": ->
-		onPickerResult (r) ->
+		onPickerResult (r) =>
 			return unless r.action is "picked"
-			cb = ->
-				Projects.update currentProject()._id, $push: driveFileIds: r.docs[0].id, (e) ->
+			cb = =>
+				Projects.update @_id, $addToSet: driveFileIds: r.docs[0].id, (e) ->
 					if e?
 						notify "Bestand kan niet worden toegevoegd", "error"
 						Kadira.trackError "Remove-add-file", e.message, stacks: e.stack
@@ -141,17 +159,16 @@ Template.projectView.events
 						setPermissions()
 
 	"click #addPersonIcon": ->
-		subs.subscribe "usersData"
 		showModal 'addParticipantModal'
 
 	"click #changeProjectIcon": ->
-		ga "send", "event", "button", "click", "projectInfoChange"
+		analytics?.track 'Open ChangeProjectModal'
 
-		showModal 'changeProjectModal', undefined, currentProject
+		showModal 'changeProjectModal', undefined, currentProject()
 
 		$('#changeDeadlineInput').datetimepicker
 			locale: moment.locale()
-			defaultDate: currentProject().deadline
+			defaultDate: @deadline
 			icons:
 				time: 'fa fa-clock-o'
 				date: 'fa fa-calendar'
@@ -160,72 +177,66 @@ Template.projectView.events
 				previous: 'fa fa-chevron-left'
 				next: 'fa fa-chevron-right'
 
-		ownClassesEngine = new Bloodhound
-			name: "ownClasses"
-			datumTokenizer: (d) -> Bloodhound.tokenizers.whitespace d.name
-			queryTokenizer: Bloodhound.tokenizers.whitespace
-			local: classes().fetch()
+	"click #chatButton": -> ChatManager.openProjectChat this
 
-		ownClassesEngine.initialize()
-
-		$("#changeClassInput").typeahead(null,
-			source: ownClassesEngine.ttAdapter()
-			displayKey: "name"
-		).on "typeahead:selected", (obj, datum) -> Session.set "currentSelectedClassDatum", datum
-
-	"click .projectInfoChatQuoteContainer": -> ChatManager.openProjectChat this
+Template.changeProjectModal.helpers
+	classes: -> classes()
 
 Template.changeProjectModal.events
 	'click #goButton': ->
 		name = $('#changeNameInput').val().trim()
 		description = $('#changeDescriptionInput').val().trim()
-		deadline = $('#changeDeadlineInput').data('DateTimePicker').getDate().toDate()
-		classId = Session.get('currentSelectedClassDatum')?._id ? currentProject().__class()?._id
+		deadline = $('#changeDeadlineInput').data('DateTimePicker').date().toDate()
+		classId = Session.get('currentSelectedClassDatum')?._id ? @__class()?._id
 
-		Projects.update currentProject()._id, $set: {
+		Projects.update @_id, $set: {
 			name
 			description
 			deadline
 			classId
 		}
 
+		analytics?.track 'Project Details Changed'
 		$('#changeProjectModal').modal 'hide'
 
 	'click #leaveProjectButton': ->
-		Router.go 'app'
-		Projects.update currentProject()._id, $pull: participants: Meteor.userId()
+		FlowRouter.go 'overview'
+		Projects.update @_id, $pull: participants: Meteor.userId()
+
+Template.changeProjectModal.onRendered ->
+	Meteor.typeahead.inject '#changeClassInput'
 
 Template.addParticipantModal.helpers
 	addQueue: -> addQueue.get()
+	persons: -> getOthers().fetch()
+
+Template.addParticipantModal.onCreated ->
+	@subscribe 'usersData'
 
 Template.addParticipantModal.onRendered ->
-	personsEngine.initialize()
-
-	$("#personNameInput").typeahead(null,
-		source: personsEngine.ttAdapter()
-		displayKey: "fullName"
-		templates:
-			suggestion: (data) -> Blaze.toHTMLWithData Template.personSuggestion, data
-	).on "typeahead:selected", (obj, datum) -> Session.set "currentSelectedPersonDatum", datum
+	Meteor.typeahead.inject '#personNameInput'
 
 addUser = ->
 	# Handle cases where the user didn't select an autocomplete
-	if Session.get("currentSelectedPersonDatum").fullName.toLowerCase().indexOf($("#personNameInput").val().toLowerCase()) is -1
-		if (val = _.find getOthers(), (p) -> p.fullName.toLowerCase().indexOf($("#personNameInput").val().toLowerCase()) is 0)?
-			Session.set "currentSelectedPersonDatum", val
-		else
-			shake "#addParticipantModal"
+	selected = Session.get 'currentSelectedPersonDatum'
+	$personNameInput = $ '#personNameInput'
+
+	val = null
+	if Helpers.contains selected?.fullName, $personNameInput.val(), yes
+		val = selected
+	else
+		val = _.find getOthers().fetch(), (p) -> Helpers.contains p.fullName, $personNameInput.val(), yes
+		unless val?
+			shake '#addParticipantModal'
 			return
 
-	Projects.update currentProject()._id, $push: participants: Session.get("currentSelectedPersonDatum")._id
-	$("#addParticipantModal").modal "hide"
-	notify Locals["nl-NL"].ProjectPersonAddedNotice(Session.get("currentSelectedPersonDatum").profile.firstName), "notice"
+	Projects.update currentProject()._id, $push: participants: val._id
+	$('#addParticipantModal').modal 'hide'
+	notify Locals['nl-NL'].ProjectPersonAddedNotice(val.profile.firstName), 'notice'
 
 Template.addParticipantModal.events
 	"click #goButton": addUser
-	'keydown #personNameInput': (event) ->
-		return unless event.which is 13
-
+	'keydown #personNameInput': (event) -> addUser() if event.which is 13
 
 Template.fileRow.events
 	"click .removeFileButton": (event) ->
@@ -237,7 +248,9 @@ Template.fileRow.events
 			else notify "#{@title} verwijderd.", "notice"
 
 Template.personRow.events
-	'click': (event) -> Router.go 'personView', this unless $(event.target).hasClass 'removePersonButton'
+	'click': (event) ->
+		unless $(event.target).hasClass 'removePersonButton'
+			FlowRouter.go 'personView', id: @_id
 
 	'click .removePersonButton': ->
 		alertModal(

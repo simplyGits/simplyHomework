@@ -1,4 +1,17 @@
 ###*
+# Normalizes the given `variant`.
+# @method normalizeSchoolVariant
+# @param {String} variant
+# @return {String}
+###
+@normalizeSchoolVariant = (variant) ->
+	check variant, String
+	variant = variant.toLowerCase().trim()
+	switch variant
+		when 'gymnasium', 'atheneum' then 'vwo'
+		else variant
+
+###*
 # @class SchoolClass
 # @constructor
 # @param name {String}
@@ -7,11 +20,9 @@
 # @param schoolVariant {String} e.g VWO
 ###
 class @SchoolClass
-	constructor: (name, abbreviation, @year, @schoolVariant) ->
-		@_id = new Meteor.Collection.ObjectID
-
+	constructor: (name, abbreviation, @year, schoolVariant) ->
 		@name = Helpers.cap name if name?
-		@schoolVariant = @schoolVariant?.toLowerCase()
+		@schoolVariant = normalizeSchoolVariant schoolVariant
 		abbreviation = abbreviation.toLowerCase().trim()
 
 		###*

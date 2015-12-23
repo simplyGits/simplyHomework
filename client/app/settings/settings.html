@@ -1,0 +1,51 @@
+<template name="settings">
+	<div id="settings">
+		{{> settings_sidebar}}
+		{{#with page}}
+			<div class="page">
+				<div class="header">
+					{{friendlyName}}
+					<span id="closeButton">&times;</span>
+				</div>
+				<div class="settingsContent">
+					{{> Template.dynamic template=templateName}}
+				</div>
+			</div>
+		{{/with}}
+		{{!
+			when the user is on desktop or on a tablet we need to autoselect the
+			first option.
+
+			when the user is on a phone though, we don't autoselect the first
+			option, and the 'main content' is set with css to overlap the sidebar,
+			where now both fill the whole screen when open, the main content (on
+			mobile) should have the title on top and a close button, which just
+			unsets the current open main content view.
+		}}
+	</div>
+</template>
+
+<template name="settings_sidebar">
+	<div class="settingsSidebar">
+		<div class="header">
+			Instellingen
+		</div>
+		<div class="items">
+			{{#each items}}
+				{{> settings_sidebar_item}}
+			{{/each}}
+			{{! TODO: Start tour button. }}
+			<div id="logout">
+				Uitloggen
+			</div>
+		</div>
+	</div>
+</template>
+
+<template name="settings_sidebar_item">
+	<a href="{{pathFor 'settings' page=name}}">
+		<div class="item {{current}}">
+			{{friendlyName}}
+		</div>
+	</a>
+</template>

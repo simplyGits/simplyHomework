@@ -10,7 +10,7 @@ span.removePersonButton:hover, span.removeFileButton:hover {
 	opacity: .8 !important;
 }
 
-@media only screen and (max-width: 760px) {
+@media only screen and (max-width: 800px) {
 	div.projectInfoChatQuoteContainer {
 		display: flex !important;
 	}

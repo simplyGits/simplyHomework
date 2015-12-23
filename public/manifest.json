@@ -1,0 +1,27 @@
+{
+	"short_name": "simplyHomework",
+	"name": "simplyHomework",
+	"lang": "nl-NL",
+	"background_color": "#34A8CE",
+	"theme_color": "#34A8CE",
+	"icons": [
+		{
+			"src": "/images/simplyLogo-white.png",
+			"sizes": "96x96",
+			"type": "image/png"
+		},
+		{
+			"src": "/images/simplyLogo-white.png",
+			"sizes": "144x144",
+			"type": "image/png"
+		},
+		{
+			"src": "/images/simplyLogo-white.png",
+			"sizes": "192x192",
+			"type": "image/png"
+		}
+	],
+	"start_url": "/app?utm_source=web_app_manifest&ajs_event=open&ajs_prop_source=web_app_manifest",
+	"display": "standalone",
+	"orientation": "portrait"
+}

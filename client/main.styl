@@ -44,6 +44,9 @@ body
 
 	-webkit-overflow-scrolling: auto
 
+body.noscroll
+	overflow-y: hidden
+
 button.btn-trans
 	background-color: transparent
 	color: white !important
@@ -105,6 +108,8 @@ div.modal
 
 .container-fluid
 	margin-top: -10px
+
+// UA and platform specefic style tweaks.
 
 body.win
 	@extend .noFontSmoothing

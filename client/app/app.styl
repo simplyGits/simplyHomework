@@ -1,4 +1,4 @@
-@require "axis"
+//@require "axis"
 @require "jeet"
 @require "rupture"
 @require "../utils"
@@ -21,35 +21,47 @@ body.bigNoticeOpen #app
 		text-align: left
 
 	#content
-		display: inline-block
-		height: 100%
+		align(vertical)
+
+		max-height: 100%
+		width: calc(100% - 45px)
+		padding-left: 10px
+
 		overflow: hidden
-		line-height: noticeHeight
-		font-size: 20px
+		font-size: 1.4em
+		white-space: nowrap
 		text-overflow: ellipsis
 		cursor: pointer
 
 		+mobile()
-			display: block
-			width: calc(100% - 60px)
-			margin-left: 15px
-			margin-top: 3px
-			font-size: 15px
-			text-align: left
-			line-height: initial
+			font-size: 1.2em
+			white-space: initial
 
 	#content:hover
 		text-decoration: underline
 
 	#dismissButton
-		absolute: top bottom right 15px
+		float: right
+		padding-right: 15px
+
 		cursor: pointer
 		font-weight: 300
 		font-size: 40px
 		line-height: 40px
 
+#bigNotice.noclick
+	#content
+		cursor: default
+
+	#content:hover
+		text-decoration: initial
+
 #bigNotice.default
 	background-color: #2ECC40
+	color: white
+
+#bigNotice.error
+	background-color: #EA4444
 	color: white
 
 #wrapper
@@ -180,11 +192,11 @@ div.itemContainerContent
 
 +mobile()
 	.chatSidebar, .sidebar
-		display: none
+		visibility: hidden
 
 	.snapjs-left .sidebar,
 	.snapjs-right .chatSidebar {
-		display: block
+		visibility: visible
 	}
 
 div.classRemoveRow
@@ -204,6 +216,24 @@ span#checkboxLabel
 
 	button:not(:last-child)
 		margin-bottom: 5px
+
+#addClassModal .classRow
+	height: 40px
+	line-height: 2
+	overflow: hidden
+
+	.classname
+		col(1/3)
+		white-space: nowrap
+		text-overflow: ellipsis
+		overflow: hidden
+
+	.methodInput
+		col(1/2.4)
+
+	button
+		text-align: center !important
+		col(1/4)
 
 #addProjectModal .modal-body
 	h3:first-child

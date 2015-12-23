@@ -11,7 +11,7 @@
 }
 
 div#adbar {
-	position: fixed;
+	position: absolute;
 	left: 0;
 	right: 0;
 	bottom: 0;
@@ -30,7 +30,7 @@ div#adbar {
     color: #999
 }
 
-.tt-dropdown-menu {
+.tt-menu {
 	background-color: white;
 
 	padding: 0;
@@ -43,6 +43,7 @@ div#adbar {
 .tt-suggestion {
     padding: 3px 20px;
     font-size: 18px;
+	cursor: pointer;
     line-height: 24px;
 }
 
@@ -55,7 +56,6 @@ div#adbar {
 
 .tt-suggestion.tt-cursor {
     background-color: rgb(236, 236, 236);
-    cursor: pointer;
 }
 
 .tt-suggestion p {

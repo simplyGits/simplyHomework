@@ -1,0 +1,53 @@
+sideMargin = 25px
+
+#searchBar
+	height: 50px
+	margin-left: -1 * sideMargin
+	margin-right: -1 * sideMargin
+
+	.twitter-typeahead
+		height: 100%
+		width: 100%
+
+		.tt-menu
+			border: none
+			border-bottom: 1px gray solid
+
+	i
+		absolute: top 18px left 23px
+		opacity: .8
+		z-index: 10
+		pointer-events: none
+
+	input
+		border: 0
+		outline: 0
+		border-bottom: 1px lightgray solid
+		height: 100%
+		width: 100%
+		padding-left: 30px + sideMargin
+		font-size: 20px
+		transition: .2s background-color, .2s border-color linear
+
+	input:focus
+		//background-color: #F9F9F9
+		background-color: #F3F3F3 !important
+		border-color: gray
+
+.searchSuggestion
+	height = 55px
+	height: height
+	overflow: hidden
+	padding: 0 !important
+	line-height: height !important
+
+	.box
+		float: left
+		height: height
+		width: height
+
+		background-position: center
+		background-size: cover
+
+	.title
+		margin-left: 15px

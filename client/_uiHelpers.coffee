@@ -153,6 +153,9 @@ _text = null
 class @NotificationsManager
 	@_notifications: []
 
+	# TODO: Make it possible to update the handlers using the notification handle?
+	# TODO: Clean this method up. Please.
+	# TODO: `options.onHide` not called on timeout for onfocus notifications?
 	@notify: (options) ->
 		check options, Object
 		_.defaults options, { type: "default", time: 4000, dismissable: yes, labels: [], styles: [], callbacks: [], html: no, priority: 0, allowDesktopNotifications: yes, image: "" }
@@ -324,13 +327,13 @@ class @NotificationsManager
 ###*
 # 'Slides' the slider to the given destanation.
 # @method slide
-# @param id {String} The ID of the `.sidebarButton` to slide to.
+# @param {String} [id] The ID of the `.sidebarButton` to slide to.
 ###
 @slide = (id) ->
-	$("div.sidebarButton.selected").removeClass "selected"
-	$("div.sidebarButton##{id}").addClass "selected"
-
 	closeSidebar?()
+	Meteor.defer ->
+		$('.sidebarButton.selected').removeClass 'selected'
+		$(".sidebarButton##{id}").addClass 'selected' if id?
 
 ###*
 # Start a animate.css shake animation on the elements which match the
@@ -414,13 +417,16 @@ class @NotificationsManager
 
 ###*
 # @method showModal
-# @param name {String} The ID of the modal, has to be the same as the template name.
-# @param [options] {Object}
+# @param {String} name The ID of the modal, has to be the same as the template name.
+# @param {Object} [options]
+# 	@param {Function} [options.onHide]
+# @param {any} [data]
 # @return {Function} When called, removes the newely spawned modal.
 ###
 @showModal = (name, options, data) ->
 	check name, String
 	check options, Match.Optional Object
+	check data, Match.Optional Match.Any
 
 	view = (
 		if data?
@@ -441,7 +447,7 @@ class @NotificationsManager
 	-> $modal.modal 'hide'
 
 Meteor.startup ->
-	Session.setDefault "pageTitle", "simplyHomework"
+	Session.setDefault "documentPageTitle", "simplyHomework"
 	Session.setDefault "pageColor", "lightgray"
 	Session.setDefault "allowNotifications", no
 
@@ -450,41 +456,71 @@ Meteor.startup ->
 		document.title = Session.get "documentPageTitle"
 		colortag.attr "content", Session.get("pageColor") ? "#32A8CE"
 
-	notification = null
+	BlazeLayout.setRoot 'body'
+
+	notice = null
 	Tracker.autorun ->
-		if Meteor.userId()? and htmlNotify.isSupported and ('ActiveXObject' not of window)
-			switch htmlNotify.permissionLevel()
+		if Meteor.userId()? and window.Notification? and not window.ActiveXObject?
+			switch Notification.permission
 				when 'default'
-					notification = setBigNotice
+					notice = setBigNotice
 						content: 'Wij hebben je toestemming nodig om bureaubladmeldingen weer te kunnen geven.'
 						onClick: ->
-							htmlNotify.requestPermission (result) ->
-								notification?.hide()
+							Notification.requestPermission (result) ->
+								notice?.hide()
 								Session.set 'allowNotifications', result is 'granted'
 				when 'granted'
-					notification?.hide()
+					notice?.hide()
 					Session.set 'allowNotifications', yes
 
-	Session.set 'isPhone',
-		window.matchMedia?('only screen and (max-width: 760px)')?.matches or
-		/android|iphone|ipod|blackberry|windows phone/i.test navigator.userAgent
+	Template.registerHelper 'picture', (user, size) -> picture user, if _.isNumber(size) then size else undefined
+	Template.registerHelper 'has', has
+	Template.registerHelper 'toUpperCase', (str) -> str.toUpperCase()
 
-	UI.registerHelper 'currentYear', -> new Date().getUTCFullYear()
-	UI.registerHelper 'gravatar', gravatar
-	UI.registerHelper 'has', has
-	UI.registerHelper 'isPhone', -> Session.get 'isPhone'
-	UI.registerHelper 'toUpperCase', (str) -> str.toUpperCase()
+	Template.registerHelper 'isPhone', -> Session.equals 'deviceType', 'phone'
+	Template.registerHelper 'isTablet', -> Session.equals 'deviceType', 'tablet'
+	Template.registerHelper 'isDesktop', -> Session.equals 'deviceType', 'desktop'
+
+	Template.registerHelper 'currentYear', -> new Date().getFullYear()
+	Template.registerHelper 'dateFormat', (format, date) -> moment(date).format format
+	Template.registerHelper 'time', (date) -> moment(date).format 'HH:mm'
+
+	Template.registerHelper 'textColor', (color, fallback) ->
+		color ?= fallback
+		return '' unless color?
+		if chroma(color).luminance() > .45 then '#000' else '#fff'
+
+	Template.registerHelper 'pathFor', (path, view) ->
+		unless path?
+			throw new Error "`path` parameter is required."
+
+		if path.hash?.route?
+			view = path
+			path = view.hash.route
+			delete view.hash.route
+
+		query = (
+			if view.hash.query?
+				FlowRouter._qs.parse view.hash.query
+			else
+				{}
+		)
+		hashBang = view.hash.hash ? ''
+		FlowRouter.path(path, view.hash, query) + hashBang
 
 	# TODO: Remove the console.infos.
-	disconnectedNotify = null
-	_.delay ->
-		Deps.autorun ->
-			if Meteor.status().connected
-				console.info("Reconnected.") if disconnectedNotify?
+	disconnectedNotice = null
+	Tracker.autorun ->
+		status = Meteor.status()
 
-				disconnectedNotify?.hide()
-				disconnectedNotify = null
-			else unless disconnectedNotify?
-				disconnectedNotify = notify("Verbinding verbroken", "error", -1, no, 10)
-				console.info "Disconnected."
-	, 1200
+		if status.connected
+			console.info('Reconnected.') if disconnectedNotice?
+
+			disconnectedNotice?.hide()
+			disconnectedNotice = null
+		else unless disconnectedNotice? or status.retryCount < 2
+			disconnectedNotice = setBigNotice
+				content: 'Verbinding verbroken'
+				theme: 'error noclick'
+				allowDismiss: no
+			console.info 'Disconnected.'

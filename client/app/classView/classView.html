@@ -1,19 +1,23 @@
 <template name="classView">
+{{#with class}}
 	<div class="container-fluid">
-		<div class="row">
-			<div class="robotoHeader overviewHeader" id="classHeader">
-				{{name}}
-				<span id="changeClassIcon" class="fa fa-pencil"></span>
-			</div>
-			<div class="robotoHeader overviewHeader" style="position: absolute; top: 0; right: 10px; text-align: right">{{tasksAmount}} <span class="robotoThin" style="margin-left: 5px">{{tasksWord}}</span></div>
-		</div>
-		<div class="divider" style="border-color: {{classColor}}"></div>
-		<div class="gradeInfoContainer">
-			{{#unless Template.subscriptionsReady}}
-				<div style="width: 100%; text-align: center; opacity: .7; position: absolute; top: 50%; transform: translateY(-50%); word-break: break-word">
-					Cijfers laden...
+		{{#unless isPhone}}
+			<div class="row classHeader" style="background-color: {{__color}}; border-color: {{classBorderColor}}; color: {{textColor __color}}">
+				<div class="robotoHeader overviewHeader" id="classHeader">
+					{{name}}
+					<span id="changeClassIcon" class="fa fa-pencil"></span>
 				</div>
-			{{else}}
+				<div class="robotoHeader overviewHeader" style="position: absolute; top: 0; right: 10px; text-align: right">{{tasksAmount}} <span class="robotoThin" style="margin-left: 5px">{{tasksWord}}</span></div>
+			</div>
+		{{/unless}}
+		<!--<div class="divider" style="border-color: {{__color}}"></div>-->
+		{{#with nextLessonDate}}
+			VOLGENDE LES IS DAN: {{dateFormat 'dddd D MMMM' this}}<br>
+		{{/with}}
+		<!--VOLGENDE TOETS IS DAN: {{dateFormat 'D MMMM' nextTestDate}}<br>-->
+		Je docent: <a href="#">Malle Henk</a>
+		<div class="gradeInfoContainer">
+			{{#if Template.subscriptionsReady}}
 				{{#if hasGrades}}
 					{{#with endGrade}}
 						{{> endGradeTemplate}}
@@ -23,20 +27,26 @@
 							<div class="endGradeHint">Gemiddelde</div>
 						</div>
 					{{/with}}
+
 					<div class="gradeContainer">
 						{{#each gradeGroups}}
 							{{> gradeGroup}}
 						{{/each}}
 					</div>
+
 					{{#with selectedGrade}}
 						{{> gradeDetail}}
 					{{/with}}
 				{{else}}
-					<div style="width: 100%; text-align: center; opacity: .7; position: absolute; top: 50%; transform: translateY(-50%); word-break: break-word">
+					<div class="notice">
 						Geen cijfers gevonden.
 					</div>
 				{{/if}}
-			{{/unless}}
+			{{else}}
+				<div class="notice">
+					Cijfers laden...
+				</div>
+			{{/if}}
 		</div>
 		<div class="row">
 			<div class="col-sm-6">
@@ -65,6 +75,9 @@
 			</div>
 		</div>
 	</div>
+{{else}}
+	{{> loading}}
+{{/with}}
 </template>
 
 <template name="gradeGroup">
@@ -78,13 +91,13 @@
 
 <template name="gradeRow">
 	<div class="gradeRow {{selected}} {{__insufficient}}">
-		<span id="grade">{{grade}}</span> <span id="weight">{{weight}}</span>
+		<span id="grade">{{__grade}}</span> <span id="weight">{{weight}}</span>
 	</div>
 </template>
 
 <template name="gradeDetail">
 	<div class="gradeContainerGradeDetail">
-		<div class="gradeSquare {{__insufficient}}">{{grade}}</div>
+		<div class="gradeSquare {{__insufficient}}">{{__grade}}</div>
 		<div class="gradeInfoRow"><div>Beschrijving</div> {{description}}</div>
 		<div class="gradeInfoRow"><div>Gewicht</div> {{weight}}</div>
 	</div>
@@ -92,7 +105,7 @@
 
 <template name="endGradeTemplate">
 	<div class="gradeContainerEndGrade {{__insufficient}}">
-		<div class="gradeSquare {{__insufficient}}">{{grade}}</div>
+		<div class="gradeSquare {{__insufficient}}">{{__grade}}</div>
 		<div class="endGradeHint">Gemiddelde</div>
 	</div>
 </template>
@@ -140,14 +153,8 @@
 								<input type="text" class="form-control" id="changeBookInput" value="{{__book.title}}">
 							</div>
 						</div>
-						<div id="changeColorGroup" class="form-group">
-							<label for="changeColorInput" id="changeColorLabel" class="col-sm-2 control-label" style="text-align: left">Kleur</label>
-							<div class="col-sm-10">
-								<input type="text" class="form-control" id="changeColorInput" value="{{__color}}">
-							</div>
-						</div>
 					</form>
-					<button class="btn btn-danger" id="deleteClassButton">Verwijder vak</button>
+					<button class="btn btn-danger" id="hideClassButton">Verberg vak</button>
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">Annuleren</button>

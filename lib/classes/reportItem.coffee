@@ -8,8 +8,6 @@
 ###
 class @ReportItem
 	constructor: (@reporterId, @userId) ->
-		@_id = new Meteor.Collection.ObjectID()
-
 		###*
 		# For what the user has reported this time.
 		# @property reportGrounds
@@ -26,3 +24,13 @@ class @ReportItem
 		# @default new Date()
 		###
 		@time = new Date()
+
+		###*
+		# Whether or not this Report is resolved (taken a look at, and if needed,
+		# taken action) or not.
+		#
+		# @property resolved
+		# @type Boolean
+		# @default false
+		###
+		@resolved = no

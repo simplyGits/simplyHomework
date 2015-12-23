@@ -1,0 +1,16 @@
+<template name="searchBar">
+	<div id="searchBar">
+		<i class="fa fa-search"></i>
+		<input
+			type="search" placeholder="{{placeholder}}"
+			spellcheck="on" autocomplete="off"
+		/>
+	</div>
+</template>
+
+<template name="searchSuggestion">
+	<div class="searchSuggestion">
+		<div class="box" style="{{boxStyles}}"></div>
+		<span class="title">{{title}}</span>
+	</div>
+</template>

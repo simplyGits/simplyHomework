@@ -4,7 +4,7 @@
 
 	Meteor.call 'updateGrades', userId, no, yes
 
-	StoredGrades.find query
+	Grades.find query
 
 @getStudyUtilsCursor = (query, userId = Meteor.userId()) ->
 	if Meteor.isClient and userId isnt Meteor.userId()
@@ -46,6 +46,8 @@
 	callback = _.find arguments, (a) -> _.isFunction a
 	Meteor.call 'getProfileData', userId ? Meteor.userId(), callback
 
+# TODO: Fix this, we don't want to sent all the externalService data to the
+# client for security reasons.
 @getServicePicture = (service, userId = Meteor.userId()) ->
 	check service, String
 	check userId, String
@@ -53,11 +55,11 @@
 	Meteor.users.findOne(userId).externalServices[service].picture
 
 ###*
-# Gets the gravatar url of the given `userId`.
+# Gets the picture of the given `userId`.
 # @method picture
-# @param [userId=Meteor.userId()] {User|ObjectID} The object or ID of the user to get the  from.
+# @param [userId=Meteor.userId()] {User|ObjectID} The object or ID of the user to get the picture from.
 # @param [size=100] {Number} The size in pixels that the gravatar shall be.
-# @return {String} A string containing the URL of the gravatar.
+# @return {String} A string containing the URL or data string of the picture.
 ###
 @picture = (userId = Meteor.userId(), size = 100) ->
 	try
@@ -68,8 +70,6 @@
 			when 'gravatar' then "#{info.url}&s=#{size}"
 			when 'magister' then info.url
 			else throw new Error "Don't know anything about '#{info.fetchedBy}'"
-
-@gravatar = @picture
 
 @getAvailableClasses = ->
 	clean = (s) -> s.replace(/\W/g, '').toLowerCase()

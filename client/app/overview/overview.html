@@ -1,71 +1,55 @@
-<template name="appOverview">
+<template name="overview">
 	<div class="container-fluid">
-		<div class="row">
-			{{#if isPhone}}
-				<div class="robotoHeader overviewHeader head1">{{weekNumber}}e <span class="robotoThin">week</span></div>
-			{{else}}
-				<div class="robotoHeader overviewHeader head1" id="currentDate"><span>{{currentDay}} <span class="robotoThin">{{currentDate}}</span></span></div>
-			{{/if}}
-			<div class="robotoHeader overviewHeader head2" style="text-align: right">{{tasksAmount}} <span class="robotoThin" style="margin-left: 5px">{{tasksWord}}</span></div>
-		</div>
-		<div class="divider"></div>
-		{{#if foundAppointment}}
-			<div class="overviewImportantContainer">
-				{{#if inLesson}}
-					{{> infoCurrentLesson}}
-				{{else}}
-					{{#if dayOver}}
-						{{> infoNextDay}}
-					{{else}}
-						{{> infoNextLesson}}
-					{{/if}}
-				{{/if}}
-			</div>
-		{{/if}}
-		<div class="row">
-			<div class="col-sm-6">
-				<div class="itemContainer" id="overviewTaskContainer" style="height: 100%">
-					<div class="robotoThin itemContainerHeader">
-						Vandaag
-					</div>
-					<div class="itemContainerContent">
-						{{#each tasks}}
-							{{> taskRow}}
-						{{/each}}
-					</div>
-				</div>
-			</div>
+		{{> searchBar}}
+		<div id="overviewNotices">
+			{{#each notices}}
+				<div class="notice {{clickable}}">
+					{{#if header}}
+						<div class="header">
+							{{header}}
 
-			<div class="col-sm-6">
-				<div class="itemContainer" id="overviewProjectContainer" style="height: 100%">
-					<div class="robotoThin itemContainerHeader">
-						<span class="fa fa-plus" id="addProjectIcon"></span>
-						Projecten
-					</div>
-					<div class="itemContainerContent">
-						{{#each projects}}
-							{{> projectRow}}
-						{{/each}}
-					</div>
+							{{#if subheader}}
+								<div class="subheader">
+									{{subheader}}
+								</div>
+							{{/if}}
+						</div>
+					{{/if}}
+					{{> Template.dynamic template=template data=data}}
 				</div>
-			</div>
+			{{else}}
+				{{#if Template.subscriptionsReady}}
+					<div id="nocardsnotice">
+						{{timeGreeting}} {{currentUser.profile.firstName}}!<br>
+						Momenteel hebben we geen kaarten voor je.
+					</div>
+				{{else}}
+					{{> loading}}
+				{{/if}}
+			{{/each}}
 		</div>
 	</div>
+</template>
+
+<template name="tasks">
+	{{#each tasks}}
+		{{> taskRow}}
+	{{/each}}
 </template>
 
 <template name="taskRow">
 	<div class="taskRow">
 		{{#if __isDone}}
 			<label style="text-decoration: line-through; opacity: .4">
-				<input taskid="{{__id}}" type="checkbox" id="checkbox" checked>
-				<span taskid="{{__id}}" id="checkboxLabel" class="robotoThin" style="font-weight: 300; font-size: 15px">
+				<input type="checkbox" id="checkbox" checked>
+				<span id="checkboxLabel" class="robotoThin" style="font-weight: 300; font-size: 15px">
 					<b>{{{__taskDescription}}}</b> voor {{__className}}
 				</span>
 			</label>
 		{{else}}
 			<label>
-				<input taskid="{{__id}}" type="checkbox" id="checkbox">
-				<span taskid="{{__id}}" id="checkboxLabel" class="robotoThin" style="font-weight: 300; font-size: 15px">
+				<input type="checkbox" id="checkbox">
+				<span id="checkboxLabel" class="robotoThin" style="font-weight: 300; font-size: 15px">
 					<b>{{{__taskDescription}}}</b> voor {{__className}}
 				</span>
 			</label>
@@ -74,14 +58,14 @@
 </template>
 
 <template name="projectRow">
-	{{#linkTo route="projectView" projectId=this._id.toHexString}}
+	<a href="{{pathFor 'projectView' id=_id.toHexString}}">
 		<div class="projectRow">
 			<div class="projectRowBorder" style="background-color: {{__borderColor}}">
 				<span>{{__friendlyDeadline}}</span>
 			</div>
 			<span>{{name}}</span> {{__class.name}}
 		</div>
-	{{/linkTo}}
+	</a>
 </template>
 
 <template name="infoNextDay">
@@ -91,9 +75,9 @@
 	</div>
 	<div class="overviewPersons">
 		{{#each people}}
-			{{#linkTo route="personView" data=this}}
-				<img src="{{gravatar this 50}}" width="25" height="25" data-toggle="tooltip" title="{{profile.firstName}} {{profile.lastName}}"/>
-			{{/linkTo}}
+			<a href="{{pathFor 'personView' id=_id}}">
+				<img src="{{picture this 50}}" width="25" height="25" data-toggle="tooltip" title="{{profile.firstName}} {{profile.lastName}}"/>
+			</a>
 		{{else}}
 			<div style="text-align: center; opacity: .7">
 				Morgen heb je met geen ander simplyHomework lid les. :(<br>
@@ -104,24 +88,25 @@
 </template>
 
 <template name="infoNextLesson">
-	<div class="robotoHeader infoNextDayHeader">Volgend lesuur</div>
-	<div class="robotoHeader overviewTimeIndicator">
-		<span>{{hours}}</span>{{minutes}}
-	</div>
-	<div class="robotoHeader overviewClassLocation">
-		{{appointment.location}}
-	</div>
-	<div class="robotoHeader overviewClassDescription">
-		{{appointment.__className}}
-	</div>
+	Over {{timeLeft}}<br>
+	{{time startDate}} - {{time endDate}}<br>
+	Locatie: {{location}}
 </template>
 
-<template name="infoCurrentLesson">
-	<div class="robotoHeader infoNextDayHeader">Huidig lesuur</div>
-	<div class="robotoHeader overviewTimeIndicator wide">
-		tot <span>{{hours}}</span>{{minutes}}
-	</div>
-	<div class="robotoHeader overviewClassDescription">
-		{{appointment.__className}}
+<template name="infoCurrentAppointment">
+	Nog {{timeLeft}} (tot {{time endDate}})<br>
+	Locatie: {{location}}
+</template>
+
+<template name="recentGrades">
+	{{#each gradeGroups}}
+		{{> recentGradeGroup}}
+	{{/each}}
+</template>
+
+<template name="recentGradeGroup">
+	<div class="recentGradeGroup">
+		<div class="back" style="background-color: {{class.__color}}"></div>
+		{{class.name}}: {{{grades}}}
 	</div>
 </template>

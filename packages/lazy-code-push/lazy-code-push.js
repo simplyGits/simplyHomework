@@ -13,6 +13,15 @@ Tracker.autorun(function () {
 });
 
 Reload._onMigrate('lazy-code-push', function (retry) {
+	var onIgnoredRoute = false;
+	if (Package['kadira:flow-router']) {
+		var FlowRouter = Package['kadira:flow-router'].FlowRouter;
+		onIgnoredRoute = [
+			'launchPage',
+			undefined, // 404 route
+		].indexOf(FlowRouter.getRouteName()) > -1;
+	}
+
 	// Just reload if...
 	if (
 		// The reload is before we loaded setBigNotice, or if setBigNotice
@@ -22,12 +31,13 @@ Reload._onMigrate('lazy-code-push', function (retry) {
 		// Or if we are on a route where setBigNotice doesn't work,
 		// really, and where it doesn't really matter if the user gets
 		// distracted.
-		(
-			Router && [
-				'launchPage',
-				'setup',
-			].indexOf(Router.current().route.getName()) > -1
-		)
+		onIgnoredRoute ||
+
+		// Or in setup, where setBigNotice also doesn't work.
+		Session.get('runningSetup') ||
+
+		// Or the `justfuckingreload` option is `'true'`.
+		localStorage['justfuckingreload'] === 'true'
 	) {
 		return [true];
 	}

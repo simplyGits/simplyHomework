@@ -41,7 +41,7 @@
 	margin-bottom: 20px;
 }
 
-@media screen and (max-width: 760px) {
+@media screen and (max-width: 800px) {
 	.card {
 		width: 75%;
 		margin-left: 12.5%;

@@ -8,12 +8,15 @@ externalAssignments = new ReactiveVar()
 ###
 class @App
 	@logout: ->
-		Router.go 'launchPage'
-		Meteor.logout()
+		FlowRouter.go 'launchPage'
+		Meteor.defer ->
+			Meteor.logout()
+			NotificationsManager.hideAll()
 
 	@runTour: ->
-		Router.go "app"
+		FlowRouter.go 'overview'
 
+		# TODO: Remake tour.
 		tour = null
 		tour = new Shepherd.Tour
 			defaults:
@@ -76,17 +79,17 @@ class @App
 			attachTo: "div.fc-right"
 
 		tour.on "show", (o) ->
-			Router.go (
+			FlowRouter.go (
 				switch o.step.id
-					when "calendar" then "calendar"
-					else "app"
+					when 'calendar' then 'calendar'
+					else 'app'
 			)
 
 			$(".tour-current-active").removeClass "tour-current-active"
 			$(o.step.options.attachTo).addClass "tour-current-active"
 
 		tour.on "complete", ->
-			Router.go "app"
+			FlowRouter.go 'overview'
 
 			swalert
 				title: "Dit was de tour!"
@@ -106,35 +109,29 @@ class @App
 				else tour.back()
 			Mousetrap.bind "right", tour.next
 
-# == Bloodhounds ==
-
-bookEngine = new Bloodhound
-	name: "books"
-	datumTokenizer: (d) -> Bloodhound.tokenizers.whitespace d.title
-	queryTokenizer: Bloodhound.tokenizers.whitespace
-	local: []
-
-classEngine = new Bloodhound
-	name: "classes"
-	datumTokenizer: (d) -> Bloodhound.tokenizers.whitespace d.name
-	queryTokenizer: Bloodhound.tokenizers.whitespace
-	local: []
-
-# == End Bloodhounds ==
-
 # == Modals ==
+addClassModalBooks = new ReactiveVar []
 
 Template.addClassModal.helpers
-	externalClasses: -> externalClasses.get()
+	externalClasses: ->
+		# TODO: remove next line.
+		return externalClasses.get()
+
+		knownIds = (info.id for info in getClassInfos())
+		_.reject externalClasses.get(), (c) ->
+			_.any knownIds, (id) -> EJSON.equals c._id, id
+
+	scholierenClasses: -> ScholierenClasses.find().fetch()
+	books: -> addClassModalBooks.get()
 
 Template.addClassModal.events
 	"click #goButton": (event) ->
 		name = Helpers.cap $("#classNameInput").val()
 		course = $("#courseInput").val().toLowerCase()
 		bookName = $("#bookInput").val()
-		color = $("#colorInput").val()
-		{ year, schoolVariant } = Meteor.user().profile.courseInfo
+		{ year, schoolVariant } = getCourseInfo()
 
+		classId = undefined
 		_class = Classes.findOne
 			$or: [
 				{ name: $regex: name, $options: 'i' }
@@ -142,7 +139,8 @@ Template.addClassModal.events
 			]
 			schoolVariant: schoolVariant
 			year: year
-		unless _class?
+		if _class? then classId = _class._id
+		else
 			scholierenClass = ScholierenClasses.findOne ->
 				@name
 					.toLowerCase()
@@ -155,86 +153,45 @@ Template.addClassModal.events
 				schoolVariant
 			)
 			_class.scholierenClassId = scholierenClassId?.id
-			Classes.insert _class, Debug.logArgs
+			classId = Classes.insert _class, Debug.logArgs
 
 		book = Books.findOne title: bookName
-		unless book? or bookName.trim() is ""
+		unless book? or bookName.trim() is ''
 			book = new Book bookName, undefined, @id, undefined, _class._id
 			Books.insert book
 
 		Meteor.users.update Meteor.userId(), $push: classInfos:
-			id: _class._id
-			color: color
+			id: classId
 			bookId: book?._id
 
 		$("#addClassModal").modal "hide"
 
-	'keyup #classNameInput, #courseInput': (event) ->
+	'focus #bookInput': ->
 		name = Helpers.cap $('#classNameInput').val()
 
-		{ year, schoolVariant } = Meteor.user().profile.courseInfo
+		{ year, schoolVariant } = getCourseInfo()
 		classId = Classes.findOne({ name, year, schoolVariant })?._id
 		books = Books.find({ classId }).fetch()
 
 		scholierenClass = ScholierenClasses.findOne -> Helpers.contains @name, name, yes
 		books = _(scholierenClass?.books)
-			.filter (b) -> b.title not in ( x.title for x in books )
+			.reject (b) -> b.title in ( x.title for x in books )
 			.concat books
 			.value()
 
-		bookEngine.clear()
-		bookEngine.add books
+		addClassModalBooks.set books
+
+Template.addClassModal.onCreated ->
+	@subscribe 'scholieren.com'
+	@subscribe 'classes', all: yes
 
 Template.addClassModal.onRendered ->
-	$colorInput = $ '#colorInput'
-	$colorInput
-		.colorpicker color: '#333'
-		.on 'changeColor', -> $('#colorLabel').css color: $colorInput.val()
-
-	bookEngine.initialize()
-	classEngine.initialize()
-
-	$('#bookInput').typeahead(null,
-		source: bookEngine.ttAdapter()
-		displayKey: 'title'
-	).on 'typeahead:selected', (obj, datum) -> obj.__method = datum
-
-	$('#classNameInput').typeahead null,
-		source: classEngine.ttAdapter()
-		displayKey: 'name'
-
-	@subscribe 'scholieren.com'
-	@subscribe 'classes', yes
-	@autorun ->
-		classEngine.clear()
-		classEngine.add ScholierenClasses.find().fetch()
+	Meteor.typeahead.inject '#classNameInput, #bookInput'
 
 	Meteor.call 'getExternalClasses', (e, r) -> externalClasses.set r unless e?
 
-Template.settingsModal.events
-	'click button': -> $('#settingsModal').modal 'hide'
-	'click #schedularPrefsButton': -> showModal 'plannerPrefsModal'
-	'click #externalServicesButton': -> showModal 'externalServicesModal'
-	'click #accountInfoButton': -> showModal 'accountInfoModal'
-	'click #privacySettingsButton': -> showModal 'privacySettingsModal'
-	'click #deleteAccountButton': -> showModal 'deleteAccountModal'
-	'click #startTourButton': -> App.runTour()
-	'click #logOutButton': -> App.logout()
-
-Template.deleteAccountModal.events
-	'click #goButton': ->
-		$passwordInput = $ '#deleteAccountModal #passwordInput'
-		captcha = $('#g-recaptcha-response').val()
-
-		hash = Package.sha.SHA256 $passwordInput.val()
-		Meteor.call 'removeAccount', hash, captcha, (e) ->
-			if e?
-				if e.error is 'wrongPassword'
-					setFieldError $passwordInput, 'Verkeerd wachtwoord'
-					grecaptcha.reset()
-				else if e.error is 'wrongCaptcha'
-					shake '#deleteAccountModal'
-			else ga 'send', 'event', 'action', 'remove', 'account'
+Template.addClassModal.onDestroyed ->
+	addClassModalBooks.set []
 
 Template.newSchoolYearModal.helpers classes: -> classes()
 
@@ -246,107 +203,17 @@ Template.newSchoolYearModal.events
 
 		target.find("span").css color: if checked then "lightred" else "white"
 
-Template.accountInfoModal.helpers currentMail: -> Meteor.user().emails[0].address
-
-Template.accountInfoModal.events
-	"click #goButton": ->
-		mail = $('#mailInput').val().toLowerCase()
-
-		firstName = Helpers.nameCap $('#firstNameInput').val()
-		lastName = Helpers.nameCap $('#lastNameInput').val()
-
-		oldPass = $('#oldPassInput').val()
-		newPass = $('#newPassInput').val()
-
-		profile = Meteor.user().profile
-
-		###*
-		# Shows success / error message to the user.
-		# @method callback
-		# @param success {Boolean|null} If true show a success message, otherwise show an error message. If null, no message will be shown at all.
-		###
-		callback = (success) ->
-			if not success?
-				shake '#accountInfoModal'
-				return undefined
-
-			if success
-				swalert
-					title: ':D'
-					text: 'Je aanpassingen zijn successvol opgeslagen'
-					type: 'success'
-			else if success is no # sounds like sombody who sucks at English.
-				swalert
-					title: 'D:'
-					text: 'Er is iets fout gegaan tijdens het opslaan van je instellingen.\nWe zijn op de hoogte gesteld.'
-					type: 'error'
-
-			$('#accountInfoModal').modal 'hide'
-			undefined
-
-		any = no # If this is false we will just close the modal later.
-		if mail isnt Meteor.user().emails[0].address
-			any = yes
-			Meteor.call 'changeMail', mail, (e) -> callback not e?
-
-		if profile.firstName isnt firstName or profile.lastName isnt lastName
-			any = yes
-			Meteor.users.update Meteor.userId(), {
-				$set:
-					'profile.firstName': firstName
-					'profile.lastName': lastName
-			}, (e) -> callback not e?
-
-		if oldPass isnt '' and newPass isnt ''
-			any = yes
-
-			Accounts.changePassword oldPass, newPass, (error) ->
-				if error?
-					if error.reason is 'Incorrect password'
-						setFieldError '#oldPassGroup', 'Verkeerd wachtwoord'
-						callback null
-					else callback no
-
-				else
-					$('#accountInfoModal').modal 'hide'
-					callback yes
-
-		unless any then callback null
-
-privacyOptions = new ReactiveVar []
-Template.privacyOption.events
-	'change': (event) -> @enabled = not @enabled
-
-Template.privacySettingsModal.helpers
-	privacyOptions: -> privacyOptions.get()
-
-Template.privacySettingsModal.events
-	'click #goButton': ->
-		x = {}
-		for item in privacyOptions.get()
-			x[item.short] = item.enabled
-
-		Meteor.users.update Meteor.userId(), $set: 'privacyOptions': x
-		$('#privacySettingsModal').modal 'hide'
-
-Template.privacySettingsModal.onRendered ->
-	options = getPrivacyOptions()
-
-	arr = [{
-		description: 'Anderen toestaan je rooster te bekijken.'
-		short: 'publishCalendarItems'
-	}]
-	for item in arr
-		item.enabled = options[item.short]
-		item.checked = if item.enabled then 'checked' else ''
-
-	privacyOptions.set arr
-
 Template.addProjectModal.helpers
 	assignments: ->
-		externalAssignments.get()?.map (a) -> _.extend a,
-			__project: -> Projects.findOne externalId: a.externalId
-			__class: -> Classes.findOne a.classId
+		externalAssignments.get()?.map (a) ->
+			_class = -> Classes.findOne a.classId
+			_.extend a,
+				__project: -> Projects.findOne externalId: a.externalId
+				__class: _class
+				__abbreviation: -> _class().abbreviations[0]
+
+	classes: -> classes()
+	selected: (event, _class) -> Session.set 'currentSelectedClassDatum', _class
 
 Template.addProjectModal.events
 	'click #createButton': ->
@@ -356,13 +223,17 @@ Template.addProjectModal.events
 			@deadline,
 			Meteor.userId(),
 			@classId,
-			@externalId
+			{
+				id: @externalId
+				fetchedBy: @fetchedBy
+				name: @name
+			}
 		)
 		Projects.insert project
 		$('#addProjectModal').modal 'hide'
 
 	'click .goToProjectButton': (event) ->
-		Router.go 'projectView', projectId: @__project._id
+		FlowRouter.go 'projectView', id: @__project._id
 		$('#addProjectModal').modal 'hide'
 
 	'click #goButton': ->
@@ -371,7 +242,7 @@ Template.addProjectModal.events
 		deadline = $('#addProjectModal #deadlineInput').data('DateTimePicker').date().toDate()
 		classId = Session.get('currentSelectedClassDatum')?._id
 
-		return undefined if name is ''
+		return if name is ''
 		if Projects.findOne({ name })?
 			setFieldError '#projectNameGroup', 'Je hebt al een project met dezelfde naam'
 			return
@@ -393,21 +264,7 @@ Template.addProjectModal.events
 		$('#addProjectModal').modal 'hide'
 
 Template.addProjectModal.onRendered ->
-	ownClassesEngine = new Bloodhound
-		name: "ownClasses"
-		datumTokenizer: (d) -> Bloodhound.tokenizers.whitespace d.name
-		queryTokenizer: Bloodhound.tokenizers.whitespace
-		local: []
-	ownClassesEngine.initialize()
-
-	@autorun (c) ->
-		ownClassesEngine.clear()
-		ownClassesEngine.add classes().fetch()
-
-	$('#classNameInput').typeahead(null,
-		source: ownClassesEngine.ttAdapter()
-		displayKey: 'name'
-	).on 'typeahead:selected', (obj, datum) -> Session.set 'currentSelectedClassDatum', datum
+	Meteor.typeahead.inject '#classNameInput'
 
 	$('#deadlineInput').datetimepicker
 		locale: moment.locale()
@@ -427,13 +284,17 @@ Template.addProjectModal.onRendered ->
 
 # == Sidebar ==
 
+Template.sidebar.onCreated ->
+	@autorun =>
+		# We have to depend on the user's classInfos since the publishment isn't
+		# reactive. This will make the publishment run again with the added classes.
+		@subscribe 'classes' unless _.isEmpty getClassInfos()
+
 Template.sidebar.helpers
 	'classes': -> classes()
 
 Template.sidebar.events
-	'click .bigSidebarButton': (event) -> slide event.target.id
-
-	'click .sidebarFooterSettingsIcon': -> showModal 'settingsModal'
+	'click .sidebarFooterSettingsIcon': -> FlowRouter.go 'settings'
 	'click #addClassButton': -> showModal 'addClassModal'
 
 # == End Sidebar ==
@@ -447,31 +308,43 @@ setMobileSettings = ->
 		resistance: .9
 	window.closeSidebar = -> snapper.close()
 
-	$('body').addClass 'chatSidebarOpen'
-
 setKeyboardShortcuts = ->
-	Mousetrap.bind ['a', 'c'], ->
-		Router.go 'calendar'
+	Mousetrap.bind 'o', ->
+		FlowRouter.go 'overview'
 		no
 
-	Mousetrap.bind 'o', ->
-		Router.go 'app'
+	Mousetrap.bind 'a', ->
+		FlowRouter.go 'calendar'
+		no
+
+	Mousetrap.bind 'b', ->
+		FlowRouter.go 'messages'
+		no
+
+	Mousetrap.bind 'i', ->
+		FlowRouter.go 'settings'
 		no
 
 	Mousetrap.bind ['/', '?'], ->
-		$('div.searchBox > input').focus()
+		FlowRouter.go 'overview'
+		$('#searchBar > input, #searchBar .tt-input').focus()
+		no
+
+	Mousetrap.bind 'c', ->
+		$('.searchBox > input').focus()
 		no
 
 	buttonGoto = (delta) ->
 		buttons = $('.sidebarButton').get()
-		oldIndex = buttons.indexOf $('.sidebarButton.selected').get()[0]
+		oldIndex = buttons.indexOf $('.sidebarButton.selected').get 0
 		index = (oldIndex + delta) % buttons.length
 
 		id = buttons[if index is -1 then buttons.length - 1 else index].id
 		switch id
-			when 'overview' then Router.go 'app'
-			when 'calendar' then Router.go 'calendar'
-			else Router.go 'classView', classId: id
+			when 'overview' then FlowRouter.go 'overview'
+			when 'calendar' then FlowRouter.go 'calendar'
+			when 'messages' then FlowRouter.go 'messages'
+			else FlowRouter.go 'classView', { id }
 
 	Mousetrap.bind ['shift+up', 'shift+k'], ->
 		buttonGoto -1
@@ -489,6 +362,15 @@ Template.app.helpers
 	pageColor: -> Session.get("pageColor") ? "lightgray"
 	pageTitle: -> Session.get("headerPageTitle") ? ""
 
+	runningSetup: -> Session.get 'runningSetup'
+	chat: ->
+		ChatRooms.findOne {
+			_id: FlowRouter.getQueryParam('openChatId')
+		}, {
+			fields:
+				lastMessageTime: 0
+		}
+
 	currentBigNotice: -> currentBigNotice.get()
 
 Template.app.events
@@ -497,40 +379,133 @@ Template.app.events
 			window.snapper.open event.target.dataset.snapSide
 		else
 			window.snapper.close()
+	'click #title': -> $('.content').stop().animate scrollTop: 0
 
 	'click #bigNotice > #content': -> currentBigNotice.get().onClick? arguments...
 	'click #bigNotice > #dismissButton': -> currentBigNotice.get().onDismissed? arguments...
 
+Template.app.onCreated ->
+	# TODO: REFACTOR THE SHIT OUT OF THIS.
+	###
+	mailVerified = Meteor.user().emails[0].verified
+	if not mailVerified and
+	Helpers.daysRange(Meteor.user().createdAt, new Date(), no) >= 2
+		notify '''
+			Je hebt je account nog niet geverifiëerd.
+			Check je email!
+		''', 'warning'
+	###
+
+	@autorun ->
+		dateTracker.depend()
+		now = new Date
+		birthDate = getUserField Meteor.userId(), 'profile.birthDate'
+		event = getEvent 'congratulated'
+
+		if birthDate? and Helpers.datesEqual(now, birthDate) and
+		event?.getUTCFullYear() isnt now.getUTCFullYear()
+			swalert
+				title: 'Gefeliciteerd!'
+				text: "Gefeliciteerd met je #{moment().diff val, 'years'}e verjaardag!"
+			Meteor.call 'markUserEvent', 'congratulated'
+
+	@autorun ->
+		# Disabled for now. It isn't working probably, and heck, we should even
+		# refactor it too, since the logic now spans 3 files in unlogical places.
+		return undefined
+		if Meteor.status().connected and Meteor.userId()? and not has 'noAds'
+			setTimeout (-> Meteor.defer ->
+				unless Session.get 'adsAllowed'
+					App.logout()
+					swalert
+						title: 'Adblock :c'
+						html: '''
+							Om simplyHomework gratis beschikbaar te kunnen houden zijn we afhankelijk van reclame-inkomsten.
+							Om simplyHomework te kunnen gebruiken, moet je daarom je AdBlocker uitzetten.
+							Wil je simplyHomework toch zonder reclame gebruiken, dan kan je <a href="/">premium</a> nemen.
+						'''
+						type: 'error'
+			), 3000
+
+	###
+	@autorun ->
+		return unless Meteor.userId()?
+		lastUpdate = Meteor.user().profile.courseInfo.classGroupsUpdated
+		start = new Date
+		end = new Date().addDays 7
+
+		if lastUpdate? and
+		_.now() - lastUpdate.getTime() < 1000 * 60 * 60 * 24 # 24 hours
+			return
+
+		Meteor.subscribe 'externalCalendarItems', start, end
+
+		classGroups = Meteor.user().profile.courseInfo.classGroups
+		return unless classGroups?
+
+		res = []
+		for classInfo in Meteor.user().classInfos
+			group = CalendarItems.findOne(
+				classId: classInfo.id
+				description:
+					$exists: yes
+					$ne: ''
+			)?.description
+			continue unless group?
+
+			classGroup = _.find(classGroups, (i) -> i.id is classInfo.id) ? {}
+			res.push _.extend classGroup, group
+
+		Meteor.users.update Meteor.userId(), $set:
+			'profile.courseInfo.classGroups': res
+			'profile.courseInfo.classGroupsUpdated': new Date
+	###
+
+	# REVIEW: Maybe use a cleaner method using Blaze and stuff?
+	notifmap = {}
+	notifications = Notifications.find(
+		userIds: Meteor.userId()
+		done: $ne: Meteor.userId()
+	).observe
+		added: (doc) ->
+			notifmap[doc._id] = NotificationsManager.notify
+				body: doc.content
+				# REVIEW: Make sure we're escaping userdata in notifications correctly
+				# everywhere.
+				html: yes
+				dismissable: doc.dismissable
+				type: doc.type
+				time: doc.time
+				image: switch doc.topic?.type
+					when 'person' then picture doc.topic.id, 500
+					else doc.image
+				priority: doc.priority
+				onClick: ->
+					# TODO: ehm yeah ehm, do some action..? ^^'
+					Meteor.call 'markNotificationRead', doc._id, yes
+				onDismissed: ->
+					Meteor.call 'markNotificationRead', doc._id, no
+		changed: (newdoc, olddoc) ->
+			if newdoc.content isnt olddoc.content
+				notifmap[doc._id].content newdoc.content, yes
+		removed: (doc) ->
+			notifmap[doc._id].hide()
+			delete notifmap[doc._id]
+
 Template.app.onRendered ->
-	# REFACTOR THE SHIT OUT OF THIS.
+	setKeyboardShortcuts()
 
-	mailVerified = Helpers.emboxValue ->
-		Meteor.userId() and Meteor.user().emails[0].verified
-
-	if not mailVerified and not Session.get('showedMailVerificationWarning') and
-	Helpers.daysRange(Meteor.user().creationDate, new Date(), no) >= 2
-		notify 'Je hebt je account nog niet geverifiëerd.\nCheck je email!', 'warning'
-		Session.set 'showedMailVerificationWarning', yes
-
-	val = Helpers.emboxValue -> Meteor.user().profile.birthDate
-	now = new Date()
-	if not amplify.store('congratulated') and val? and Helpers.datesEqual now, val
-		swalert
-			title: 'Gefeliciteerd!'
-			text: "Gefeliciteerd met je #{moment().diff val, 'years'}e verjaardag!"
-		amplify.store 'congratulated', yes, expires: 172800000 # 2 days, just to make sure.
-
-	if Session.get('isPhone') then setMobileSettings()
-	else
-		setKeyboardShortcuts()
-
+	if Session.equals 'deviceType', 'desktop'
 		# `startMonitor` will throw an error when the time isn't synced yet, when
 		# the time is done syncing the current computation will invalidate, so to
 		# effectively enable the monitor ASAP we put it inside of an `autorun` and a
 		# `try`.
-		Deps.autorun -> try UserStatus.startMonitor idleOnBlur: yes
+		@autorun -> try UserStatus.startMonitor idleOnBlur: yes
+	else
+		setMobileSettings()
 
-	if not amplify.store('allowCookies') and $('#cookiesContainer').length is 0
+	if not getEvent('cookiesNotice')? and
+	$('#cookiesContainer').length is 0
 		Blaze.render Template.cookies, document.body
 		$cookiesContainer = $ '#cookiesContainer'
 
@@ -539,7 +514,7 @@ Template.app.onRendered ->
 
 			.find 'button'
 			.click ->
-				amplify.store 'allowCookies', yes
+				Meteor.call 'markUserEvent', 'cookiesNotice'
 				$cookiesContainer
 					.removeClass 'visible'
 					.on 'transitionend webkitTransitionEnd oTransitionEnd', ->

@@ -1,4 +1,5 @@
 const FUNC_STRINGS_KEY = 'sHdebug_startFuncs';
+var slice = [].slice;
 
 if (Meteor.isClient) {
 	Meteor.startup(function () {
@@ -10,9 +11,30 @@ if (Meteor.isClient) {
 			});
 		}
 	});
+} else if (Meteor.isServer) {
+	Meteor.methods({
+		log: function (message) {
+			check(message, String);
+			console.log(message);
+		},
+	});
 }
 
+/**
+ * @class Debug
+ * @static
+ */
 Debug = {
+	/**
+	 * Logs the given message on the server with the given type, regardless of
+	 * the platform this function is called on.
+	 * @method serverLog
+	 * @param {String} message
+	 */
+	serverLog: function (message) {
+		return Meteor.call('log', message);
+	},
+
 	/**
 	 * Logs all args, use as callback on an async function.
 	 * @property logArgs
@@ -85,5 +107,17 @@ Debug = {
 	 */
 	reload: function () {
 		Reload._reload();
+	},
+
+	justfuckingreload: function (val) {
+		if (!Meteor.isClient) return;
+
+		localStorage['justfuckingreload'] = val;
+		return localStorage['justfuckingreload'];
+	},
+
+	logThrough: function (val) {
+		console.log(val);
+		return val;
 	},
 };

@@ -1,15 +1,42 @@
 <template name="eventDetailsTooltip">
-	<div class="tooltipContent">
-		<div class="expandHeader">
-			Klik voor meer details.
+{{#if this}}
+	<div id="eventDetailsTooltip">
+		<div style="background-color: {{class.__color}}; color: {{textColor class.__color 'black'}}" class="className">
+			{{class.name}}
 		</div>
 
-		<div class="className">
-			{{__class.name}}
+		<div class="tooltipRow timeRow">
+			<div class="schoolHour left">
+				{{#with schoolHour}}
+					{{this}}<sup>e</sup>
+				{{/with}}
+			</div>
+			<div class="timeRange">
+				{{dateFormat "D MMMM" startDate}}
+				{{#unless fullDay}}
+					{{time startDate}} - {{time endDate}}
+				{{/unless}}
+			</div>
 		</div>
 
-		<div class="details">
-			<div>iets</div>
+		{{#if content}}
+			<div class="tooltipRow contentRow">
+				<div class="contentType left">{{contentTypeShort}}</div>
+				{{content.description}}
+			</div>
+		{{/if}}
+
+		{{! TODO: don't show this when location and __group are both null/undefined. }}
+		<div class="tooltipRow nomin">
+			{{! TODO }}
+			<div class="left"></div>
+			{{#if location}}
+				<b>locatie</b>: {{location}}<br>
+			{{/if}}
+			{{#if __group}}
+				<b>klas</b>: {{__group}}
+			{{/if}}
 		</div>
 	</div>
+{{/if}}
 </template>

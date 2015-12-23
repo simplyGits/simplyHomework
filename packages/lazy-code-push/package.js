@@ -8,7 +8,11 @@ Package.describe({
 
 Package.onUse(function(api) {
 	api.versionsFrom('1.1.0.3');
-	api.use('reload', 'client');
-	api.use('tracker', 'client');
+	api.use('kadira:flow-router', 'client', { weak: true });
+	api.use([
+		'reload',
+		'tracker',
+		'session',
+	], 'client')
 	api.addFiles('lazy-code-push.js', 'client');
 });

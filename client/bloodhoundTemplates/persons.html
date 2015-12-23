@@ -1,4 +1,6 @@
 <template name="personSuggestion">
-	<img class="lastChatSenderPicture" src="{{gravatar data}}" width="50" height="50">
-	<span class="personSuggestionName">{{data.fullName}}</span>
+	<div class="personSuggestion">
+		<img class="picture" src="{{picture this 100}}" width="60" height="60">
+		<span class="name">{{profile.firstName}} {{profile.lastName}}</span>
+	</div>
 </template>

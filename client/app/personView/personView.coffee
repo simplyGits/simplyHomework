@@ -1,11 +1,14 @@
-sameUser = -> Meteor.userId() is Router.current().data()._id
+currentPerson = -> Meteor.users.findOne FlowRouter.getParam 'id'
+sameUser = -> Meteor.userId() is FlowRouter.getParam 'id'
 pictures = new ReactiveVar []
-loadingPictures = new ReactiveVar yes
 
 Template.personView.helpers
+	person: currentPerson
+
 	backColor: ->
 		res = (
-			if @status.idle then '#FF9800'
+			if not @status? then '#000000'
+			else if @status.idle then '#FF9800'
 			else if @status.online then '#4CAF50'
 			else '#EF5350'
 		)
@@ -15,35 +18,77 @@ Template.personView.helpers
 	sameUser: sameUser
 
 Template.personView.events
-	'click .personPicture': ->
+	'click .personPicture, click #changePictureButton': ->
 		return unless sameUser()
-		ga 'send', 'event', 'button', 'click', 'personPicture'
+		analytics?.track 'Open ChangePictureModal'
 		showModal 'changePictureModal'
 
 	'click i#reportButton': ->
-		ga 'send', 'event', 'button', 'click', 'reportButton'
-		showModal 'reportUserModal', undefined, Router.current().data
+		analytics?.track 'Open ReportUserModal'
+		showModal 'reportUserModal', undefined, currentPerson
+	"click button#chatButton": ->
+		Meteor.call 'createPrivateChatRoom', @_id, (e, r) ->
+			ChatManager.openChat r
 
-	"click button#chatButton": -> ChatManager.openUserChat this
+Template.personView.onCreated ->
+	@autorun =>
+		unless sameUser()
+			@subscribe 'externalCalendarItems', Date.today(), Date.today().addDays 7
+
+		id = FlowRouter.getParam 'id'
+		@subscribe 'status', [ id ]
+		@subscribe 'usersData', [ id ], onReady: ->
+			person = Meteor.users.findOne id
+			if person?
+				setPageOptions
+					title: "#{person.profile.firstName} #{person.profile.lastName}"
+
+			else
+				notFound()
 
 Template.personView.onRendered ->
-	@subscribe 'externalCalendarItems', Date.today(), Date.today().addDays 7
+	slide()
 
 	@autorun ->
-		Router.current()._paramsDep.depend()
+		FlowRouter.watchPathChange()
 		Meteor.defer ->
 			$('[data-toggle="tooltip"]')
 				.tooltip "destroy"
 				.tooltip container: "body"
 
+# TODO: take a look if this can be thrown away.
+###
+Template.personsInClasses.helpers
+	people: ->
+		return []
+		calendarItems = CalendarItems.find(
+			userIds: Meteor.userId()
+			startDate: $gte: Date.today()
+			endDate: $lte: Date.today().addDays 7
+		).fetch()
+
+		userIds = _(calendarItems)
+			.filter (item) -> item.length > 1
+			.pluck 'userIds'
+			.flatten()
+			.uniq()
+			.reject (id) -> id is Meteor.userId()
+			.value()
+
+		Meteor.users.find {
+			_id: Meteor.userId()
+			#_id: $in: userIds
+		}, {
+			limit: if Session.get('isPhone') then 5 else 30
+		}
+###
+
 Template.personSharedHours.helpers
 	days: ->
-		return [] if sameUser()
-
 		sharedCalendarItems = CalendarItems.find(
 			$and: [
 				{ userIds: Meteor.userId() }
-				{ userIds: Router.current().data()._id }
+				{ userIds: Template.currentData()._id }
 			]
 			startDate: $gte: Date.today()
 			endDate: $lte: Date.today().addDays 7
@@ -57,28 +102,34 @@ Template.personSharedHours.helpers
 			.sortBy (a) -> a.startDate.getDay() + 1
 			.map (a) ->
 				name: Helpers.cap DayToDutch Helpers.weekDay a.startDate.date()
-				hours: _.filter sharedCalendarItems, (x) -> EJSON.equals x.startDate.date(), a.startDate.date()
+				hours: (
+					_(sharedCalendarItems)
+						.filter (x) -> EJSON.equals x.startDate.date(), a.startDate.date()
+						.sortBy 'startDate'
+						.value()
+				)
 			.value()
 
 Template.reportUserModal.events
 	'click button#goButton': ->
-		ga 'send', 'event', 'action', 'report'
-		reportItem = new ReportItem Meteor.userId(), Router.current().data()._id
+		analytics?.track 'User Reported'
 
 		checked = $ 'div#checkboxes input:checked'
-		for checkbox in checked
-			reportItem.reportGrounds.push checkbox.closest('div').id
+		reportGrounds = new Array checked.length
+		for checkbox, i in checked
+			reportGrounds[i] = $(checkbox).closest('div').attr 'id'
 
-		if reportItem.reportGrounds.length is 0
+		if reportGrounds.length is 0
 			shake '#reportUserModal'
 			return
 
+		name = @profile.firstName
 		$('#reportUserModal').modal 'hide'
-		Meteor.call 'reportUser', reportItem, (e, r) ->
-			name = Router.current().data().profile.firstName
+		Meteor.call 'reportUser', @_id, reportGrounds, (e, r) ->
 			if e?
 				message = switch e.error
-					when 'rateLimit' then "#{name} is niet gerapporteerd,\nJe rapporteert teveel mensen."
+					when 'rate-limit' then "Je hebt de afgelopen tijd téveel mensen gerapporteerd, probeer het later opnieuw."
+					when 'already-reported' then "Je hebt #{name} al gerapporteerd om dezelfde reden(en)."
 					else 'Onbekende fout tijdens het rapporteren'
 
 				notify message, 'error'
@@ -86,7 +137,7 @@ Template.reportUserModal.events
 			else
 				notify "#{name} gerapporteerd.", 'notice'
 
-Template.changePictureModal.onRendered ->
+Template.changePictureModal.onCreated ->
 	getProfileDataPerService (e, r) ->
 		if e?
 			notify "Fout tijdens het ophalen van de foto's", 'error'
@@ -96,11 +147,12 @@ Template.changePictureModal.onRendered ->
 			pictures.set(
 				_(r)
 					.pairs()
+					.filter ([key, val]) -> val.picture?
 					.map ([ key, val ]) ->
 						fetchedBy: key
 						value: val.picture
 						selected: ->
-							if key is Meteor.user().profile.pictureInfo.fetchedBy
+							if key is getUserField(Meteor.userId(), 'profile.pictureInfo.fetchedBy')
 								'selected'
 							else
 								''
@@ -118,4 +170,5 @@ Template.pictureSelectorItem.events
 				url: @value
 				fetchedBy: @fetchedBy
 
+		analytics?.track 'Profile Picture Changed'
 		$('#changePictureModal').modal 'hide'

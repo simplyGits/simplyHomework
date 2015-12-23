@@ -1,9 +1,8 @@
 <template name="notFound">
-	<div style="text-align: center">
-		<h1 class="robotoThin largeTextOptimize" style="font-size: 80px; font-weight: 300">Uh...</h1>
-		<div class="divider"></div>
-		<p class="robotoThin largeTextOptimize" style="font-size: 40px">
-			Hier is volgens mij niets te vinden{{#if currentUser}}, <span style="font-weight: 300">{{currentUser.profile.firstName}}</span>{{/if}}.
+	<div id="notFound">
+		<h1 class="largeTextOptimize">404</h1>
+		<p class="largeTextOptimize">
+			Hier is niets{{#if currentUser}}, <span style="font-weight: 300">{{currentUser.profile.firstName}}</span>{{/if}}.
 		</p>
 	</div>
 </template>

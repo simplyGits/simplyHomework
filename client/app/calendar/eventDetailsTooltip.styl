@@ -2,27 +2,51 @@
 @require "axis"
 @require "../../utils"
 
+leftWidth = 52px
+rowMinHeight = 45px
 #eventDetailsTooltip
-	fixed: left top
-	width: 250px
-	height: 200px
-	z-index: 99
+	absolute: left top
+	width: 300px
+	z-index: 199
 
-	.tooltipContent
-		absolute: top left right bottom
-		font-size: 15px
-		background-color: white
+	font-size: 15px
+	background-color: white
 
-		.expandHeader
-			absolute: left top right
-			height: 50px
+	border: 1px black solid
 
-			roboto(300)
-			color: #fff
+	.className
+		background-color: black
+		height: 28px
 
-			background-color: red
+		padding = 10px
+		padding-left: padding
+		padding-right: padding
+		overflow: hidden
+
+		color: white
+		font-size: 20px
+		text-align: center
+		text-overflow: ellipsis
+		white-space: nowrap
+
+	.tooltipRow
+		position: relative
+		min-height: rowMinHeight
+		border-bottom: 1px lightgray solid
+		overflow: hidden
+		padding-left: leftWidth + 5px
+
+		.left
+			absolute: top left bottom
+			width: leftWidth
+			padding: 5px
+			font-size: 25px
+			border-right: 1px lightgray solid
 			text-align: center
 
-		.className
-			color: #222
-			font-size: 20px
+	.tooltipRow.nomin
+		min-height: initial
+
+	.timeRow
+		.timeRange
+			line-height: rowMinHeight

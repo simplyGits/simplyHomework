@@ -1,22 +1,31 @@
 @Schemas               = {}
 @GoaledSchedules       = new Meteor.Collection 'goaledSchedules'
-@Classes               = new Meteor.Collection 'classes'
+@Classes               = new Meteor.Collection 'classes', transform: (c) -> classTransform c
 @Books                 = new Meteor.Collection 'books'
 @Schools               = new Meteor.Collection 'schools'
 @Schedules             = new Meteor.Collection 'schedules'
 @Votes                 = new Meteor.Collection 'votes'
 @Utils                 = new Meteor.Collection 'utils'
 @Tickets               = new Meteor.Collection 'tickets'
-@Projects              = new Meteor.Collection 'projects'
+@Projects              = new Meteor.Collection 'projects', transform: (p) -> projectTransform p
 @CalendarItems         = new Meteor.Collection 'calendarItems', transform: (c) -> _.extend new CalendarItem, c
-@ChatMessages          = new Meteor.Collection 'chatMessages'
 @ReportItems           = new Meteor.Collection 'reportItems'
-@StoredGrades          = new Meteor.Collection 'storedGrades', transform: (g) -> _.extend new StoredGrade, g
+@Grades                = new Meteor.Collection 'grades', transform: (g) ->
+	g = _.extend new StoredGrade, g
+	_.extend g,
+		__insufficient: if g.passed then '' else 'insufficient'
+		# TODO: do this on a i18n friendly way.
+		__grade: g.toString().replace '.', ','
+
 @StudyUtils            = new Meteor.Collection 'studyUtils',   transform: (s) -> _.extend new StudyUtil, s
 @Notifications         = new Meteor.Collection 'notifications'
 @ScholierenClasses     = new Meteor.Collection 'scholieren.com'
 @WoordjesLerenClasses  = new Meteor.Collection 'woordjesleren'
-@ExternalServiceErrors = new Meteor.Collection 'externalServiceErrors'
+@Analytics             = new Meteor.Collection 'analytics'
+
+Meteor.users._transform = (u) ->
+	u.hasRole = (roles) -> userIsInRole u._id, roles
+	u
 
 ###
 Schemas.Classes = new SimpleSchema
@@ -37,8 +46,10 @@ Schemas.Classes = new SimpleSchema
 		regEx: /^[\w&+-]*$/
 	year:
 		type: Number
+		index: 1
 	schoolVariant:
 		type: String
+		index: 1
 		regEx: /^[a-z]+$/
 	schedules:
 		type: [Object]
@@ -63,7 +74,7 @@ Schemas.Books = new SimpleSchema
 		type: Number
 		optional: yes
 	classId:
-		type: Meteor.Collection.ObjectID
+		type: String
 	utils:
 		type: [Object]
 		blackbox: yes
@@ -72,25 +83,23 @@ Schemas.Books = new SimpleSchema
 		blackbox: yes
 
 Schemas.Schools = new SimpleSchema
-	_id:
-		type: Meteor.Collection.ObjectID
 	name:
 		type: String
 	url:
 		type: String
 		regEx: SimpleSchema.RegEx.Url
-	externalId:
-		type: null
-		optional: yes
-	fetchedBy:
-		type: String
-		optional: yes
+	externalIds:
+		type: Object
+		blackbox: yes
 
 Schemas.Projects = new SimpleSchema
 	_id:
 		type: Meteor.Collection.ObjectID
 	name:
 		type: String
+		autoValue: ->
+			# Remove emojis.
+			@value.replace /[\uD83C-\uDBFF\uDC00-\uDFFF]+/g, '' if @value?
 		index: 1
 	description:
 		type: String
@@ -102,63 +111,23 @@ Schemas.Projects = new SimpleSchema
 		type: Number
 		optional: yes
 	classId:
-		type: Meteor.Collection.ObjectID
+		type: String
 		optional: yes
-	ownerId:
+	creatorId:
 		type: String
 		autoValue: ->
 			if not @isFromTrustedCode and @isInsert
 				@userId
-			else @unset()
+			else @value
 	participants:
 		type: [String]
+		index: 1
 		autoValue: ->
 			if not @isFromTrustedCode and @isInsert
 				[@userId]
-			else @unset()
+			else @value
 	driveFileIds:
 		type: [String]
-
-Schemas.ChatMessages = new SimpleSchema
-	_id:
-		type: Meteor.Collection.ObjectID
-	content:
-		type: String
-		autoValue: -> Helpers.convertLinksToAnchor @value
-	creatorId:
-		type: String
-		index: 1
-		autoValue: -> if not @isFromTrustedCode and @isInsert then @userId
-		denyUpdate: yes
-	time:
-		type: Date
-		index: -1
-		autoValue: -> if @isInsert then new Date()
-		denyUpdate: yes
-	projectId:
-		type: Meteor.Collection.ObjectID
-		index: 1
-		optional: yes
-	groupId:
-		type: Meteor.Collection.ObjectID
-		index: 1
-		optional: yes
-	to:
-		type: String
-		index: 1
-		optional: yes
-	readBy:
-		type: [String]
-	attachments:
-		type: [String]
-	changedOn:
-		type: Date
-		optional: yes
-		autoValue: ->
-			if not @isFromTrustedCode and @isInsert then null
-
-			# Force it to the change date when updating, we want to clearly show that an user changed a message.
-			else if not @isFromTrustedCode and @isUpdate then new Date()
 
 Schemas.GoaledSchedules = new SimpleSchema
 	_id:
@@ -169,7 +138,7 @@ Schemas.GoaledSchedules = new SimpleSchema
 	dueDate:
 		type: Date
 	classId:
-		type: Meteor.Collection.ObjectID
+		type: String
 	createTime:
 		type: Date
 		autoValue: -> if @isInsert then new Date()
@@ -188,20 +157,22 @@ Schemas.GoaledSchedules = new SimpleSchema
 		optional: yes
 
 Schemas.ReportItems = new SimpleSchema
-	_id:
-		type: Meteor.Collection.ObjectID
-	userId:
-		type: String
 	reporterId:
+		type: String
+	userId:
 		type: String
 	reportGrounds:
 		type: [String]
 		minCount: 1
 	time:
 		type: Date
+		autoValue: -> if @isInsert then new Date()
+		denyUpdate: yes
+	resolved:
+		type: Boolean
 
 ###
-Schemas.StoredGrades = new SimpleSchema
+Schemas.Grades = new SimpleSchema
 	_id:
 		type: Meteor.Collection.ObjectID
 	grade:
@@ -225,7 +196,7 @@ Schemas.StoredGrades = new SimpleSchema
 		index: 1
 		optional: yes
 	classId:
-		type: Meteor.Collection.ObjectID
+		type: String
 		# REVIEW: optional?
 		optional: yes
 	ownerId:
@@ -286,20 +257,18 @@ Schemas.StudyUtils = new SimpleSchema
 @[key].attachSchema Schemas[key] for key of Schemas
 
 @classTransform = (c) ->
-	classInfo = ->
-		classInfos = Helpers.emboxValue -> Meteor.user()?.classInfos
-		_.find classInfos, (info) -> EJSON.equals info.id, c._id
+	return c if Meteor.isServer
+	classInfo = _.find getClassInfos(), (info) -> EJSON.equals info.id, c._id
 
 	_.extend c,
 		#__taskAmount: _.filter(homeworkItems.get(), (a) -> groupInfo?.group is a.description() and not a.isDone()).length
 		__book: -> null# Books.findOne classInfo()?.bookId
-		__color: emboxValue -> classInfo()?.color
+		__color: classInfo?.color
 		__sidebarName: (
 			val = c.name
 			if val.length > 14 then c.abbreviations[0]
 			else val
 		)
-		__showBadge: c.name.length not in [11..14]
 
 		__classInfo: classInfo
 
@@ -307,13 +276,18 @@ Schemas.StudyUtils = new SimpleSchema
 	_.extend p,
 		__class: -> Classes.findOne p.classId, transform: classTransform
 		__borderColor: (
-			if p.deadline < new Date then '#FF4136'
+			now = new Date
+			switch
+				when p.deadline < now then '#FF4136'
+				when Helpers.daysRange(now, p.deadline, no) < 2 then '#FF8D00'
+				else '#2ECC40'
 		)
 		__friendlyDeadline: (
 			if p.deadline?
 				day = DayToDutch Helpers.weekDay p.deadline
 				time = "#{Helpers.addZero p.deadline.getHours()}:#{Helpers.addZero p.deadline.getMinutes()}"
 
+				sameYear = p.deadline.getUTCFullYear() is new Date().getUTCFullYear()
 				date = switch Helpers.daysRange new Date, p.deadline, no
 					when -6, -5, -4, -3 then "Afgelopen #{day}"
 					when -2 then 'Eergisteren'
@@ -322,61 +296,13 @@ Schemas.StudyUtils = new SimpleSchema
 					when 1 then 'Morgen'
 					when 2 then 'Overmorgen'
 					when 3, 4, 5, 6 then "Aanstaande #{day}"
-					else "#{Helpers.cap day} #{DateToDutch p.deadline, no}"
+					else "#{Helpers.cap day} #{DateToDutch p.deadline, not sameYear}"
 
 				"#{date} #{time}"
 		)
+		__chatRoom: -> ChatRooms.findOne projectId: p._id
 		__lastChatMessage: ->
 			ChatMessages.findOne {
-				projectId: p._id
-			}, {
-				transform: chatMessageTransform
-				sort:
-					'time': -1
-			}
-
-chatMessageReplaceMap =
-	':thumbsup:':     /\(y\)/ig
-	':thumbsdown:':   /\(n\)/ig
-	':innocent:':     /\(a\)/ig
-	':sunglasses:':   /\(h\)/ig
-	':sweat_smile:':  /\^\^'/ig
-
-###*
-# Returns the given `date` friendly formatted for chat.
-# If `date` is null or undefined, `undefined` will be returned.
-#
-# @method formatDate
-# @param date {Date|null|undefined} The date to format.
-# @return {String|void} The given `date` formatted.
-###
-formatDate = (date) ->
-	return undefined unless date?
-
-	check date, Date
-	now = new Date
-
-	moment(date).format (
-		if date.getUTCFullYear() isnt now.getUTCFullYear()
-			'DD-MM-YYYY HH:mm'
-		else if date.date().getTime() isnt now.date().getTime()
-			'DD-MM HH:mm'
-		else
-			'HH:mm'
-	)
-
-@chatMessageTransform = (cm) ->
-	_.extend cm,
-		__sender: Meteor.users.findOne cm.creatorId
-		__own: if Meteor.userId() is cm.creatorId then 'own' else ''
-		__time: formatDate cm.time
-		content: (
-			s = cm.content
-
-			for key of chatMessageReplaceMap
-				regex = chatMessageReplaceMap[key]
-				s = s.replace regex, key
-
-			s
-		)
-		__changedOn: formatDate cm.changedOn
+				chatRoomId: @__chatRoom()._id
+			}, sort:
+				'time': -1

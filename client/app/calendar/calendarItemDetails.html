@@ -1,0 +1,87 @@
+<template name="calendarItemDetails">
+	<div id="calendarItemDetails">
+		{{#if scrapped}}
+			<div id="scrapped">
+				Uitval
+			</div>
+		{{/if}}
+		<div id="peopleCarousel">
+			{{#each people}}
+				{{> calendarItemDetailsPerson}}
+			{{/each}}
+		</div>
+		{{#if class}}
+			<div class="row">
+				<div>Vak:</div>
+				<div>
+					<a href="{{pathFor 'classView' id=class._id}}">
+						{{class.name}}
+					</a>
+				</div>
+			</div>
+		{{else}}
+			<div class="row">
+				<div>Beschrijving:</div>
+				<div>{{description}}</div>
+			</div>
+		{{/if}}
+		{{#if schoolHour}}
+			<div class="row">
+				<div>Schooluur:</div>
+				<div>{{schoolHour}}<sup>e</sup></div>
+			</div>
+		{{/if}}
+		{{#if relativeTime}}
+			<div class="row">
+				<div>Relatief:</div>
+				<div>{{relativeTime}}</div>
+			</div>
+		{{/if}}
+		<div class="row">
+			<div>Begin:</div>
+			<div>{{dateFormat 'dddd D MMMM HH:mm' startDate}}</div>
+		</div>
+		<div class="row">
+			<div>Eind:</div>
+			<div>{{dateFormat 'dddd D MMMM HH:mm' endDate}}</div>
+		</div>
+		{{#if location}}
+			<div class="row">
+				<div>Locatie:</div>
+				<div>{{location}}</div>
+			</div>
+		{{/if}}
+		{{#if content}}
+			<div class="row">
+				<div>{{contentTypeLong}}:</div>
+				<div style="white-space: pre-wrap">{{content.description}}</div>
+			</div>
+		{{/if}}
+		{{#with absenceInfo}}
+			<div class="row">
+				<div>Absentie:</div>
+				<div>
+					{{description}}
+
+					{{#if permitted}}
+						(geoorloofd)
+					{{else}}
+						<span class="unpermitted">(ongeoorloofd)</span>
+					{{/if}}
+				</div>
+			</div>
+		{{/with}}
+		{{#if fetchedBy}}
+			<div class="row">
+				<div>Gehaald van:</div>
+				<div>{{fetchedBy}}</div>
+			</div>
+		{{/if}}
+	</div>
+</template>
+
+<template name="calendarItemDetailsPerson">
+	<a href="{{pathFor 'personView' id=_id}}">
+		<img src="{{picture this 50}}" width="25" height="25" data-toggle="tooltip" title="{{profile.firstName}} {{profile.lastName}}"/>
+	</a>
+</template>

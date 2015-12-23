@@ -1,27 +1,47 @@
 <template name="personView">
+{{#with person}}
 	<div class="personInfo" style="background-color: {{backColor}}">
 		{{#if sameUser}}
-			<img class="personPicture" style="cursor: pointer; pointer-events: initial" src="{{gravatar this 250}}" width="250" height="250" data-toggle="tooltip" data-placement="bottom" title="Klik hier om je foto aan te passen"/>
+			<img class="personPicture" style="cursor: pointer; pointer-events: initial" src="{{picture this 250}}" width="250" height="250" data-toggle="tooltip" data-placement="bottom" title="Klik om je foto aan te passen"/>
 		{{else}}
-			<img class="personPicture" src="{{gravatar this 250}}" width="250" height="250"/>
+			<img class="personPicture" src="{{picture this 250}}" width="250" height="250"/>
 		{{/if}}
 		<div class="course"><b>{{profile.courseInfo.year}}</b> {{profile.courseInfo.schoolVariant}}</div>
 		<div class="name">{{profile.firstName}} {{profile.lastName}}</div>
 
-		{{#unless sameUser}}
-			<div class="buttons">
+		<div class="buttons">
+			{{#unless sameUser}}
 				<i id="reportButton" class="fa fa-flag" data-toggle="tooltip" data-placement="top" title="Rapporteer {{profile.firstName}}"></i>
 				<button type="button" class="btn btn-trans noFontSmoothing" id="chatButton">chat</button>
-			</div>
-		{{/unless}}
+			{{else}}
+				{{#unless isDesktop}}
+					{{! Phone convenience, (tooltip isn't visisble on phone)}}
+					<button type="button" class="btn btn-trans noFontSmoothing" id="changePictureButton">Profielfoto aanpassen</button>
+				{{/unless}}
+			{{/unless}}
+		</div>
 	</div>
 	<div class="personDetailsContainer">
-		{{> personSharedHours}}
+		{{#if sameUser}}
+			{{> personStats}}
+		{{else}}
+			{{> personSharedHours}}
+		{{/if}}
 	</div>
+{{else}}
+	{{> loading}}
+{{/with}}
+</template>
+
+<template name="personStats">
+	Aantal tussenuren in één week: 500000<br>
+	Je behoort tot de top 3% van simplyHomework gebruikers in 5 vwo
 </template>
 
 <template name="personSharedHours">
+{{#if days}}
 	<div class="personSharedHours">
+		<b>Lessen van volgende week die je met {{profile.firstName}} deelt</b>
 		<ul>
 			{{#each days}}
 				{{name}}:
@@ -35,6 +55,7 @@
 			{{/each}}
 		</ul>
 	</div>
+{{/if}}
 </template>
 
 <template name="reportUserModal">
@@ -108,6 +129,20 @@
 								</span>
 							</label>
 						</div>
+					</div>
+					<br>
+					<div>
+						Wil je {{profile.firstName}} blokkeren?
+						Je ontvangt dan geen berichten meer van hem / haar.
+					</div>
+					<br>
+					<div id="block" style="text-align: initial">
+						<label>
+							<input type="checkbox"/>
+							<span style="font-weight: normal">
+								Deze persoon blokkeren.
+							</span>
+						</label>
 					</div>
 				</div>
 				<div class="modal-footer">

@@ -136,7 +136,7 @@ class @Parser
 
 				for s in tills
 					numbers = (+v for v in Helpers.allMatches /\d+/g, s)
-					values.pushMore [_.first(numbers).._.last(numbers)]
+					values = values.concat [_.first(numbers).._.last(numbers)]
 
 				data.push new ExtractedData match, _.sortBy values
 

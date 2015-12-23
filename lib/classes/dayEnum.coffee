@@ -23,14 +23,16 @@
 ]
 
 @DayToDutch = (day) ->
-	minuteTracker?.depend()
-	day ?= Helpers.currentDay()
+	unless day?
+		minuteTracker?.depend()
+		day = Helpers.currentDay()
 
 	dutchDays[day]
 
 @DateToDutch = (date, includeYear = yes) ->
-	minuteTracker?.depend()
-	date ?= new Date
+	unless date?
+		minuteTracker?.depend()
+		date = new Date
 
 	month = switch date.getMonth()
 		when 0 then 'januari'
@@ -48,3 +50,14 @@
 
 	if includeYear then "#{date.getDate()} #{month} #{date.getFullYear()}"
 	else "#{date.getDate()} #{month}"
+
+@TimeGreeting = (date) ->
+	unless date?
+		minuteTracker?.depend()
+		date = new Date
+
+	hour = date.getHours()
+	if 0 <= hour < 6 then 'Goedenacht'
+	else if 6 <= hour < 12 then 'Goedemorgen'
+	else if 12 <= hour < 18 then 'Goedemiddag'
+	else if 18 <= hour < 24 then 'Goedenavond'

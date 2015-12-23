@@ -1,7 +1,6 @@
 bookComputation = null
 selectedGradeId = new SReactiveVar Match.Optional Mongo.ObjectID
 digitalSchoolUtilities = new ReactiveVar []
-currentClass = -> Router.current().data()
 
 bookEngine = new Bloodhound
 	name: 'books'
@@ -9,36 +8,43 @@ bookEngine = new Bloodhound
 	queryTokenizer: Bloodhound.tokenizers.whitespace
 	local: []
 
-grades = (options) ->
-	StoredGrades.find {
+currentClass = -> Classes.findOne FlowRouter.getParam('id')
+
+grades = ->
+	Grades.find
 		ownerId: Meteor.userId()
-		classId: currentClass()._id
-	}, options
+		classId: FlowRouter.getParam 'id'
 
 Template.classView.helpers
+	class: -> currentClass()
+
 	tasksAmount: -> @__taskAmount
 	tasksWord: -> if @__taskAmount is 1 then 'taak' else 'taken'
-	classColor: -> @__color()
-	textAlign: -> if Session.get 'isPhone' then 'left' else 'right'
+
+	classBorderColor: -> chroma(@__color).darken().hex()
+
+	nextLessonDate: ->
+		CalendarItems.findOne({
+			userIds: Meteor.userId()
+			classId: @_id
+			startDate: $gt: new Date
+			scrapped: no
+		}, {
+			sort:
+				startDate: 1
+		})?.startDate
 
 	gradeGroups: ->
-		arr = StoredGrades.find(
-			classId: @_id
-			ownerId: Meteor.userId()
-			isEnd: no
-		).fetch()
-
+		arr = grades().fetch()
+		console.log arr
 		_(arr)
+			.reject (g) -> g.isEnd
 			.uniq (g) -> g.period.id
 			.map (g) ->
 				name: g.period.name
 				grades: (
 					_(arr)
 						.filter (x) -> x.period.id is g.period.id
-						.map (g) -> _.extend g, {
-							__insufficient: if g.passed then '' else 'insufficient'
-							grade: g.toString()
-						}
 						.value()
 				)
 			.filter (gp) -> gp.grades.length isnt 0
@@ -50,22 +56,33 @@ Template.classView.helpers
 
 	hasGrades: -> grades().count() > 0
 
-	selectedGrade: -> StoredGrades.findOne selectedGradeId.get()
-
+	selectedGrade: ->
+		Grades.findOne selectedGradeId.get()
 	endGrade: ->
-		StoredGrades.findOne
+		Grades.findOne
 			classId: @_id
 			ownerId: Meteor.userId()
 			isEnd: yes
 
-Template.classView.onRendered ->
-	fetchedGrades = new ReactiveVar []
-	@subscribe 'externalGrades'
-	@subscribe 'externalStudyUtils', Blaze.getData()._id
+Template.classView.onCreated ->
+	@autorun =>
+		id = FlowRouter.getParam 'id'
+		slide id
+		@subscribe 'externalStudyUtils', id
+		@subscribe 'externalGrades', classId: id
+
+		@subscribe 'classInfo', id, onReady: ->
+			c = Classes.findOne id
+			if c?
+				setPageOptions
+					title: c.name
+					color: c.__color
+			else
+				notFound()
 
 	@autorun ->
-		unless _.contains grades().fetch(), selectedGradeId.get()
-			selectedGradeId.set grades(limit: 1).fetch()[0]?._id
+		unless _.any(grades().fetch(), (g) -> EJSON.equals selectedGradeId.get(), g._id)
+			selectedGradeId.set grades().fetch()[0]?._id
 
 	###
 	@autorun ->
@@ -78,16 +95,18 @@ Template.classView.onRendered ->
 
 Template.classView.events
 	"click #changeClassIcon": ->
-		ga "send", "event", "button", "click", "classInfoChange"
+		analytics?.track 'Open ChangeClassModal', className: @name
 
-		bookComputation = Tracker.autorun ->
+		bookComputation = Tracker.autorun =>
 			Meteor.subscribe 'scholieren.com'
 			Meteor.subscribe 'books', @_id
 
 			books = Books.find(classId: @_id).fetch()
 
-			scholierenClass = ScholierenClasses.findOne id: @__classInfo().scholierenId
-			books.pushMore _.filter scholierenClass?.books, (b) -> not _.contains (x.title for x in books), b.title
+			scholierenClass =
+				ScholierenClasses.findOne
+					id: currentClass().__classInfo.scholierenId
+			books = books.concat _.reject scholierenClass?.books, (b) -> _.contains _.pluck(books, 'title'), b.title
 
 			bookEngine.clear()
 			bookEngine.add books
@@ -96,13 +115,7 @@ Template.classView.events
 			onHide: -> bookComputation.stop(); console.log 'stopping comp..'
 		}, currentClass
 
-		$("#changeColorInput").colorpicker color: @__color()
-		$("#changeColorLabel").css color: @__color()
-
 Template.changeClassModal.onRendered ->
-	$('#changeColorInput')
-		.colorpicker color: @currentData().__color()
-		.on 'changeColor', -> $('#changeColorLabel').css color: $('#changeColorInput').val()
 	bookEngine.initialize()
 
 	$('#changeBookInput').typeahead(null,
@@ -112,7 +125,6 @@ Template.changeClassModal.onRendered ->
 
 Template.changeClassModal.events
 	'click #goButton': ->
-		color = $('#changeColorInput').val()
 		bookName = $('#changeBookInput').val()
 
 		book = Books.findOne title: bookName
@@ -122,29 +134,27 @@ Template.changeClassModal.events
 
 		Meteor.users.update Meteor.userId(), $pull: classInfos: id: @_id
 		Meteor.users.update Meteor.userId(), $push: classInfos:
-			id: @_id
-			color: color
-			bookId: book._id
+			_.extend @__classInfo, bookId: book?._id
 
-		setPageOptions { color }
+		analytics?.track 'Class Info Changed', className: @name
 		$('#changeClassModal').modal 'hide'
 
-	"click #deleteClassButton": ->
-		$("#changeClassModal").modal "hide"
+	'click #hideClassButton': ->
+		$('#changeClassModal').modal 'hide'
 		alertModal(
 			'Zeker weten?',
 			'''
-				Als je dit vak verwijdert kunnen alle gegevens, zoals projecten verwijdert worden.
-				Dit kan niet ongedaan worden gemaakt
-				Projecten worden alleen verwijderd wanneer alle deelnemers van het project dit vak verwijderd hebben.
+				Als je dit vak verbergt kan je het niet meer zien in de zijbalk, je kan
+				het vak weer toonbaar maken in instellingen > vakken.
 			''',
 			DialogButtons.OkCancel,
-			{ main: 'Verwijderen', second: 'Toch niet' },
+			{ main: 'Verbergen', second: 'Toch niet' },
 			{ main: 'btn-danger' },
-			main: ->
-				Router.go 'app'
-				Meteor.users.update Meteor.userId(), $pull: classInfos:
-					id: @._id
+			main: =>
+				FlowRouter.go 'overview'
+				Meteor.users.update Meteor.userId(), $pull: classInfos: id: @_id
+				Meteor.users.update Meteor.userId(), $push: classInfos:
+					_.extend @__classInfo, hidden: yes
 			second: ->
 		)
 

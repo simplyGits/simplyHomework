@@ -20,7 +20,7 @@ div.projectInfoSubContainer
 span.projectInfoDescription
 	width: 75%
 
-div.projectInfoChatQuoteContainer
+div#chatButton
 	margin-top: 15px
 	margin-bottom: 15px
 	float: right
@@ -28,40 +28,55 @@ div.projectInfoChatQuoteContainer
 	padding: 10px
 	cursor: pointer
 
-	transition: all .1s ease-in-out
+	transition: .1s background-color ease-in-out
 
-div.projectInfoChatQuoteContainer:hover
+	div#header
+		font-size: 30px
+		float: right
+		margin-top: 5px
+
+	img#senderPicture
+		float: left
+		margin: -10px
+		margin-right: 5px
+		border-right: 1px lightgray solid
+
+	div#middle
+		overflow: hidden
+		width: 140px
+		float: left
+		margin-right: 10px
+		line-height: 1.5
+
+		span#senderName
+			font-size: 20px
+			font-weight: 300
+
+		span#senderName:after
+			color: #333
+			content: ":"
+
+		span#messageContent
+			overflow: hidden
+			white-space: nowrap
+			text-overflow: ellipsis
+			display: block
+			margin-top: -5px
+
+	+mobile()
+		width: 100%
+
+		span#header
+			absolute: right 40px
+
+		div#middle
+			width: calc(100% - 140px)
+
+div#chatButton:hover
 	background-color: lightgray
 
-div.projectInfoChatQuoteContainer:active
+div#chatButton:active
 	background-color: #C0C0C0 !important
-
-img.lastChatSenderPicture
-	border-radius: 55px
-	border: 1px gray solid
-
-span.lastChatSenderName
-	position: absolute
-	margin-top: 5px
-	font-size: 20px
-	margin-left: 3px
-	font-weight: 300
-
-span.lastChatSenderName:after
-	color: #333
-	content: ":"
-
-span.lastChatMessage
-	margin-top: 30px
-	width: 137px
-	overflow: hidden
-	white-space: nowrap
-	text-overflow: ellipsis
-	margin-right: 10px
-
-span.lastChatHeader
-	font-size: 30px
-	margin-top: 5px
 
 span#addPersonIcon, span#addFileIcon
 	color: gray
@@ -87,12 +102,6 @@ div.projectViewItemContainer
 	div.itemContainerContent
 		font-size: 35px
 
-div.itemContainerSmallDivider
-	center(85%)
-	border: 0px lightgray solid
-	border-bottom-width: 1px
-	margin-top: -1px
-
 div.fileRow, div.personRow
 	cursor: pointer
 	transition: all .1s ease-in-out
@@ -105,27 +114,33 @@ div.fileRow, div.personRow
 div.personRow
 	rowHeight = 60px
 	height: rowHeight
+	font-weight: normal
 
 	.removePersonButton
 		line-height: rowHeight
 
-img.personImage
-	border-left: 3px black solid
-	absolute: top left bottom
+	img
+		border-left: 3px black solid
+		absolute: top left bottom
 
-img.personImage.online
-	border-color: #2ECC40
+	img.online
+		border-color: #2ECC40
 
-img.personImage.inactive
-	border-color: #FF851B
+	img.inactive
+		border-color: #FF851B
 
-img.personImage.offline
-	border-color: #FF4136
+	img.offline
+		border-color: #FF4136
 
-span.personName
-	margin-left: 65px
-	line-height: 60px
-	color: #a4a4a4
+	span.name
+		margin-left: 65px
+		line-height: 60px
+
+		+mobile()
+			display: inline-block
+			width: calc(100% - 110px)
+			text-overflow: ellipsis
+			overflow-x: hidden
 
 span.removePersonButton, span.removeFileButton
 	float: right
@@ -145,8 +160,13 @@ div.fileRow:hover, div.personRow:hover
 	span.removePersonButton, span.removeFileButton
 		opacity: .4
 
-.personSuggestionName
-	margin-left: 15px
+.personSuggestion
+	.picture
+		border-radius: 50%
+		border: 1px gray solid
+
+	.name
+		margin-left: 15px
 
 span#changeProjectIcon
 	color: lightgray
@@ -178,7 +198,7 @@ div.projectHeader:hover span#changeProjectIcon
 	span.projectInfoDescription
 		width: 100%
 
-	div.projectInfoChatQuoteContainer
+	div.chatButton
 		width: 100%
 
 		span.lastChatHeader
@@ -186,15 +206,3 @@ div.projectHeader:hover span#changeProjectIcon
 
 	div.projectViewItemContainer
 		height: initial !important
-
-	div.itemContainerContent
-		margin-top: 20px
-
-	span.personName
-		width: calc(100% - 110px)
-		display: inline-block
-		-o-text-overflow: ellipsis
-		text-overflow: ellipsis
-		overflow-x: hidden
-		position: absolute
-		margin-left: 10px

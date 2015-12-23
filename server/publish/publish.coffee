@@ -24,176 +24,199 @@
 
 # WARNING: PUSHES ALL DATA
 Meteor.publish 'usersData', (ids) ->
-	@unblock()
+	check ids, Match.Optional [String]
 	userId = @userId
+	# `if ids?` is needed to not create an array when ids is undefined, which is
+	# used to get every person.
+	ids = _.reject ids, userId if ids?
 
-	# We don't have to handle shit if we are only asked for the current user or no
+	# We don't have to do shit if we are only asked for the current user or no
 	# users at all.
-	if ids? and ids.length <= 1 and ids[0] is userId
+	if ids? and ids.length is 0
 		@ready()
 		return undefined
 
-	Meteor.users.find {
-		_id: (
-			if ids? then { $in: _.reject ids, userId }
-			else { $ne: userId }
-		)
-		'profile.firstName': $ne: ''
-	}, fields:
-		'status.online': 1
-		'status.idle': 1
-		profile: 1
+	[
+		Meteor.users.find {
+			_id: (
+				if ids? then { $in: ids }
+				else { $ne: userId }
+			)
+			'profile.firstName': $ne: ''
+		}, fields: profile: 1
 
-Meteor.publish "chatMessages", (data, limit) ->
-	@unblock()
-
-	unless @userId?
-		@ready()
-		return undefined
-
-	# Makes sure we're getting a number in a base of of 10. This is so that we
-	# minimize the amount of unique cursors in the publishments pool.
-	# This shouldn't be needed since the client only increments the limit by ten,
-	# but we want to make sure it is server side too.
-	limit = limit + 9 - (limit - 1) % 10
-
-	if data.userId?
-		ChatMessages.find {
-			$or: [
-				{
-					creatorId: data.userId
-					to: @userId
-				}
-				{
-					creatorId: @userId
-					to: data.userId
-				}
-			]
-		}, { limit, sort: "time": -1 }
-	else
-		# Check if the user is inside the project. #veiligheidje
-		if Projects.find(_id: data.projectId, participants: @userId).count() is 0
-			@ready()
-			return undefined
-
-		ChatMessages.find {
-			projectId: data.projectId
-		}, { limit, sort: "time": -1 }
+		ChatRooms.find
+			userIds: _.union ids, [ @userId ]
+	]
 
 Meteor.publish null, ->
 	unless @userId?
 		@ready()
 		return undefined
 
-	@unblock()
-
-	user = Meteor.users.findOne @userId
+	userId = @userId
+	user = Meteor.users.findOne userId, fields: profile: 1
 
 	[
-		Meteor.users.find @userId, fields:
-			'externalServices.asked': 1
+		Meteor.users.find userId, fields:
 			classInfos: 1
-			creationDate: 1
-			externalServices: 1
+			createdAt: 1
+			events: 1
 			gradeNotificationDismissTime: 1
 			magisterCredentials: 1
 			plannerPrefs: 1
 			premiumInfo: 1
 			privacyOptions: 1
 			profile: 1
-			status: 1
-			studyGuidesHashes: 1
+			roles: 1
+			setupProgress: 1
+			#studyGuidesHashes: 1
 
-		Schools.find user.profile.schoolId
+		Schools.find _id: user.profile.schoolId
 
-		Projects.find { participants: @userId }, fields:
+		Projects.find { participants: userId }, fields:
 			name: 1
 			magisterId: 1
 			classId: 1
 			deadline: 1
 
-		# All unread chatMessages.
-		ChatMessages.find {
-			# old, weird code imo, maybe im wrong.
-			#$or: [
-			#	{ to: @userId }
-			#	{ creatorId: @userId }
-			#]
-			#readBy: $ne: @userId
-
-			to: @userId
-			readBy: $ne: @userId
-		}, sort:
-			'time': -1
+		Notifications.find
+			userIds: userId
+			done: $ne: userId
 	]
 
-Meteor.publish 'classes', (all = no) ->
+Meteor.publish 'status', (ids) ->
+	check ids, [String]
+	userId = @userId
+	unless userId?
+		@ready()
+		return undefined
+
+	Meteor.users.find {
+		_id: $in: _.filter ids, (id) -> Privacy.getOptions(id).publishStatus
+	}, {
+		fields:
+			'status.online': 1
+			'status.idle': 1
+	}
+
+Meteor.publish 'classes', (options) ->
+	check options, Match.Optional Object
+
+	{ hidden, all } = options ? {}
+	hidden ?= yes
+	all ?= no
+	check hidden, Boolean
+	check all, Boolean
+
 	unless @userId?
 		@ready()
 		return undefined
 
-	@unblock()
+	user = Meteor.users.findOne @userId,
+		fields:
+			'classInfos': 1
+			'profile.courseInfo': 1
 
-	user = Meteor.users.findOne @userId
 	classInfos = user.classInfos ? []
+	nonhidden = _.reject classInfos, 'hidden'
 	courseInfo = user.profile.courseInfo
 
-	if not all
-		Classes.find _id: $in: (x.id for x in classInfos)
-	else if courseInfo?
-		{ year, schoolVariant } = courseInfo
-		Classes.find { schoolVariant, year }
-	else
-		Classes.find()
+	# TODO: add fields filter?
+	Classes.find (
+		if all
+			if courseInfo?
+				{ year, schoolVariant } = courseInfo
+				{ schoolVariant, year }
+			else {}
+
+		else if hidden then { _id: $in: _.pluck classInfos, 'id' }
+		else { _id: $in: _.pluck nonhidden, 'id' }
+	)
+
+Meteor.publish 'classInfo', (classId) ->
+	check classId, String
+	unless @userId? and classId
+		@ready()
+		return undefined
+
+	[
+		Classes.find _id: classId
+		CalendarItems.find {
+			userIds: @userId
+			classId: classId
+			startDate: $gt: new Date
+			scrapped: no
+		}, {
+			sort: startDate: 1
+			limit: 1
+		}
+	]
 
 Meteor.publish 'schools', (externalId) ->
-	@unblock()
+	check externalId, Match.Any
+
 	if externalId?
 		Schools.find { externalId }, fields: externalId: 1
 	else
 		Schools.find {}, fields: name: 1
 
 Meteor.publish "goaledSchedules", -> GoaledSchedules.find { ownerId: @userId }
-Meteor.publish "projects", (id) ->
-	unless @userId?
-		@ready()
-		return undefined
 
-	@unblock()
-
-	if Projects.find(_id: id, participants: @userId).count() is 0
-		@ready()
-		return undefined
-
-	[
-		Projects.find _id: id, participants: @userId
-		ChatMessages.find { projectId: id }, limit: 1, sort: "time": -1 # Just the last message to show on the projectView.
-	]
+Meteor.publishComposite 'project', (id) ->
+	check id, Mongo.ObjectID
+	find: -> Projects.find _id: id, participants: @userId
+	children: [{
+		find: (project) -> ChatRooms.findOne projectId: id
+		children: [{
+			find: (room) ->
+				# Just the last message to show on the projectView.
+				ChatMessages.find {
+					chatRoomId: room._id
+				},
+					limit: 1
+					sort: 'time': -1
+		}]
+	}]
 
 Meteor.publish "books", (classId) ->
+	check classId, String
 	unless @userId?
 		@ready()
 		return undefined
-
-	@unblock()
 
 	if classId?
 		Books.find { classId }
-	else if _.isNull classId
-		Books.find classId: $in: (x.id for x in (Meteor.users.findOne(@userId).classInfos ? []))
 	else
-		Books.find _id: $in: (x.bookId for x in (Meteor.users.findOne(@userId).classInfos ? []))
+		classInfos = getClassInfos @userId
+		Books.find _id: $in: _.pluck classInfos, 'bookId'
 
-Meteor.publish "roles", ->
-	@unblock()
-	Meteor.users.find(@userId, fields: roles: 1)
+Meteor.publish 'foreignCalendarItems', (userId, from, to) ->
+	check userId, String
+	check from, Date
+	check to, Date
+	unless @userId?
+		@ready()
+		return undefined
 
-Meteor.publish "userCount", ->
-	@unblock()
-	Counts.publish this, "userCount", Meteor.users.find()
+	user = Meteor.users.findOne userId
+	unless Privacy.getOptions(userId).publishCalendarItems
+		@ready()
+		return undefined
+
+	from ?= new Date().addDays -7
+	to ?= new Date().addDays 7
+
+	CalendarItems.find
+		userIds: userId
+		startDate: $gte: from
+		endDate: $lte: to
+
+Meteor.publish 'userCount', ->
+	Counts.publish this, 'userCount', Meteor.users.find {}
 	undefined
 
-Meteor.publish "scholieren.com", ->
+Meteor.publish 'scholieren.com', ->
 	unless @userId?
 		@ready()
 		return undefined

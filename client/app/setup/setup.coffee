@@ -1,7 +1,7 @@
 # TODO: Make some stuff configurable outside of the setup, externalServices, for
 # example.
 
-currentSetupItem = new SReactiveVar String
+currentItemIndex = new SReactiveVar Number, 0
 externalClasses  = new ReactiveVar()
 
 currentSelectedImage      = new SReactiveVar Number, 0
@@ -52,23 +52,47 @@ names = ->
 		return val if val?
 	undefined
 
-fullCount = 0
 ran = no
-setupItems =
-	welcome:
-		done: yes
+setupItems = [
+	{
+		name: 'welcome'
 		async: no
+	}
 
-	externalServices:
-		done: no
+	{
+		name: 'externalServices'
 		async: no
-		onDone: ->
+		onDone: (cb) ->
 			schoolId = _(externalServices.get())
 				.map (s) -> s.profileData()?.schoolId
 				.find _.negate _.isUndefined
 
-	extractInfo:
-		done: no
+			loginServices = _.filter externalServices.get(), 'loginNeeded'
+			data = _.filter loginServices, (s) -> s.profileData()?
+			if loginServices.length > 0 and data.length is 0
+				alertModal(
+					'Hé!'
+					'''
+						Je hebt je op geen enkele site ingelogd!
+						Hierdoor zal simplyHomework niet automagisch data van sites voor je kunnen ophalen.
+						Als je later toch een site wilt toevoegen kan dat altijd in je instellingen.
+
+						Weet je zeker dat je door wilt gaan?
+					'''
+					DialogButtons.OkCancel
+					{ main: 'doorgaan', second: 'woops' }
+					{ main: 'btn-danger' }
+					main: -> cb true
+					second: -> cb false
+				)
+				return
+
+			Meteor.users.update Meteor.userId(), $push: setupProgress: 'externalServices'
+			cb yes
+	}
+
+	{
+		name: 'extractInfo'
 		async: no
 		onDone: (cb) ->
 			schoolQuery = $('#setup #schoolInput').val()
@@ -86,7 +110,7 @@ setupItems =
 
 				courseInfo =
 					year: parseInt value.replace(/\D/g, '').trim(), 10
-					schoolVariant: value.replace(/\d/g, '').trim().toLowerCase()
+					schoolVariant: normalizeSchoolVariant value.replace(/\d/g, '').trim()
 
 				if _.isEmpty value.trim()
 					setFieldError '#courseGroup', 'Veld is leeg'
@@ -99,64 +123,87 @@ setupItems =
 
 			return if any
 
-			Meteor.users.update Meteor.userId(), { $set:
-				'profile.schoolId': (
-					schoolId ? Schools.findOne({
-						name: $regex: schoolQuery, $options: 'i'
-					})?._id
-				)
-				'profile.pictureInfo': (
-					val = pictures()[currentSelectedImage.get()]
-					if val?
-						url: val.value
-						fetchedBy: val.fetchedBy
-				)
-				'profile.courseInfo': courseInfo
-				'profile.firstName': Helpers.nameCap $firstNameInput.val()
-				'profile.lastName': Helpers.nameCap $lastNameInput.val()
-				'profile.birthDate':
-					# Picks the date from the first externalService that has one. Maybe we
-					# should ask the user too?
-					_(externalServices.get())
-						.map (s) -> s.profileData()?.birthDate
-						.find _.isDate
-
-				'externalServices.asked': yes
+			Meteor.users.update Meteor.userId(), {
+				$push: setupProgress: 'extractInfo'
+				$set:
+					'profile.schoolId': (
+						schoolId ? Schools.findOne({
+							name: $regex: schoolQuery, $options: 'i'
+						})?._id
+					)
+					'profile.pictureInfo': (
+						val = pictures()[currentSelectedImage.get()]
+						if val?
+							url: val.value
+							fetchedBy: val.fetchedBy
+					)
+					'profile.courseInfo': courseInfo
+					'profile.firstName': Helpers.nameCap $firstNameInput.val()
+					'profile.lastName': Helpers.nameCap $lastNameInput.val()
+					'profile.birthDate':
+						# Picks the date from the first externalService that has one. Maybe we
+						# should ask the user too?
+						_(externalServices.get())
+							.map (s) -> s.profileData()?.birthDate
+							.find _.isDate
 			}, ->
 				cb()
 				schoolEngineSub?.stop()
+	}
 
-	plannerPrefs:
-		done: no
-		async: no
-		onDone: ->
-			Meteor.call 'storePlannerPrefs',
-				weekdays:
-					_(weekdays.get())
-						.sortBy 'index'
-						.map (d, i) ->
-							weekday: i
-							weight: d.selectedWeightOption
-						.value()
+	{
+	name: 'plannerPrefs'
+	async: no
+	onDone: ->
+		Meteor.call 'storePlannerPrefs',
+			weekdays:
+				_(weekdays.get())
+					.sortBy 'index'
+					.map (d, i) ->
+						weekday: i
+						weight: d.selectedWeightOption
+					.value()
+	}
 
-	getExternalClasses:
-		done: no
+	{
+		name: 'getExternalClasses'
 		async: yes
 		func: (callback) ->
+			colors = _.shuffle [
+				'#F44336'
+				'#E91E63'
+				'#9C27B0'
+				'#673AB7'
+				'#3F51B5'
+				'#03A9F4'
+				'#009688'
+				'#4CAF50'
+				'#8BC34A'
+				'#CDDC39'
+				'#FFEB3B'
+				'#FFC107'
+				'#FF9800'
+				'#FF5722'
+			]
+
 			Meteor.call 'getExternalClasses', (e, r) ->
 				if e? or _.isEmpty r
+					console.log 'if e? or _.isEmpty r', e
 					callback false
 					return
 
 				Meteor.subscribe 'scholieren.com', ->
-					externalClasses.set r
+					externalClasses.set r.map (c, i) -> _.extend c, color: colors[ i % colors.length ]
 					callback true
 
 					for c in r
+						console.log c
 						Meteor.subscribe 'books', c._id
 						scholierenClass = ScholierenClasses.findOne c.scholierenClassId
-						books = scholierenClass?.books ? []
-						books.pushMore Books.find(classId: c._id).fetch()
+						books = _.union(
+							scholierenClass?.books,
+							Books.find(classId: c._id).fetch()
+						)
 
 						bookEngine = new Bloodhound
 							name: 'books'
@@ -168,48 +215,46 @@ setupItems =
 
 						do (c, bookEngine) ->
 							Meteor.defer ->
-								$("div##{c._id.toHexString()} > input")
+								$("div##{c._id} > input")
 									.typeahead null,
 										source: bookEngine.ttAdapter()
 										displayKey: 'title'
 									.on 'typeahead:selected', (obj, datum) -> c.__method = datum
 
-					Meteor.defer ->
-						$('#getExternalClasses > #result > div')
-							.colorpicker input: null
-							.each ->
-								$this = $ this
-								$this
-									.on 'changeColor', (e) -> $this.attr 'colorHex', e.color.toHex()
-									.colorpicker 'setValue', "##{Random.hexString 6}"
-
 		onDone: ->
-			{ year, schoolVariant } = Meteor.user().profile.courseInfo
-
-			unless Meteor.user().classInfos?
-				Meteor.users.update Meteor.userId(), $set: classInfos: []
+			{ year, schoolVariant } = getCourseInfo()
+			userId = Meteor.userId()
 
 			for c in externalClasses.get()
-				color = $("div##{c._id.toHexString()}").attr 'colorHex'
-
 				if (method = c.__method)?
 					book = Books.findOne title: method.title
 					unless book?
-						book = new book method.title, undefined, method.id, undefined, c._id
+						book = new Book method.title, undefined, method.id, undefined, c._id
 						Books.insert book
 
-				Meteor.users.update Meteor.userId(), $push: classInfos:
+				Meteor.users.update userId, $push: classInfos:
 					id: c._id
-					color: color
+					color: c.color
 					createdBy: c.fetchedBy
 					externalInfo: c.externalInfo
 					bookId: book?._id ? null
+					hidden: no
 
-	# TODO: implement this, it should open a modal that asks
-	# if the current schoolyear is over, if so we can ask the user to follow the setup
-	# with stuff as `externalServices` and `externalClasses` again.
-	newSchoolYear:
-		done: no
+			Meteor.users.update userId, $push: setupProgress: 'getExternalClasses'
+	}
+
+	{
+		name: 'privacy'
+		async: no
+		onDone: ->
+			Meteor.users.update Meteor.userId(), $push: setupProgress: 'privacy'
+	}
+
+	{
+		# TODO: implement this, it should open a modal that asks
+		# if the current schoolyear is over, if so we can ask the user to follow the setup
+		# with stuff as `externalServices` and `externalClasses` again.
+		name: 'newSchoolYear'
 		func: ->
 			return undefined
 
@@ -222,9 +267,10 @@ setupItems =
 				{ main: (->) },
 				no
 			)
+	}
 
-	final:
-		done: yes
+	{
+		name: 'final'
 		func: ->
 			swalert
 				type: "success"
@@ -233,32 +279,41 @@ setupItems =
 				confirmButtonText: "Rondleiding"
 				cancelButtonText: "Afsluiten"
 				onSuccess: -> App.runTour()
+	}
+]
+running = undefined
 
 ###*
-# Initializes and starts the setup path.
+# Initializes and starts the setup.
 #
-# @method followSetupPath
+# @method runSetup
 ###
-@followSetupPath = ->
-	return yes if ran
+@runSetup = ->
+	return undefined if ran
 
-	setupItems.externalServices.done =
-	setupItems.extractInfo.done =
-	setupItems.getExternalClasses.done =
-		Meteor.user().externalServices?.asked ? no
-	setupItems.plannerPrefs.done = not _.isEmpty Meteor.user().plannerPrefs
-	setupItems.newSchoolYear.done = yes # TODO: Dunno how're going to do this shit
+	setupProgress = getUserField Meteor.userId(), 'setupProgress', []
+	setupProgress = setupProgress.concat [
+		'welcome'
+		'final'
+		'plannerPrefs'
+		'newSchoolYear' # TODO: Dunno how're going to do this shit
+	]
 
-	fullCount = _.filter(setupItems, (x) -> not x.done).length
-	setupItems.welcome.done = setupItems.final.done = fullCount is 0
+	running = _.filter setupItems, (item) -> item.name not in setupProgress
 
-	if fullCount is 0
-		no
-	else
-		Router.go 'setup'
-		step()
+	if running.length > 0
+		# We need to insert the 'welcome' _before_ all the items in the `running`
+		# array, and the 'final' _after_ them!
+		running = _(setupItems)
+			.take()
+			.concat(running)
+			.push _.last(setupItems)
+			.value()
+
+		Session.set 'runningSetup', yes
 		ran = yes
-		yes
+
+	undefined
 
 ###*
 # Moves the setup path one item further.
@@ -267,59 +322,74 @@ setupItems =
 # @return {Object} Object that gives information about the progress of the setup path.
 ###
 step = ->
-	return if fullCount is 0
+	return if running.length is 0
 
-	cb = ->
-		pair = _(setupItems)
-			.pairs()
-			.find (pair) -> not pair[1].done
+	cb = (success = yes) ->
+		return unless success
+		next = running[currentItemIndex.get() + 1]
 
-		unless pair?
-			fullCount = 0
+		unless next?
+			running = []
 			# TODO: disabled because if an step failed we could get into an infinite
 			# loop. Better way to handle this?
 			# Also rename this var to `running`, if fixed.
 			#ran = no
-			Router.go 'app'
+			Session.set 'runningSetup', no
 			return
 
-		[key, item] = pair
-
 		callback = (res = true) ->
-			currentSetupItem.set key
-			item.done = yes
+			currentItemIndex.set currentItemIndex.get() + 1
 
-			item.success = res
+			next.success = res
 
-			# Continue if the current step doesn't have an UI. or if the item.func
+			# Continue if the current step doesn't have an UI or if the next.func
 			# encountered an error.
-			step() if not Template["setup-#{key}"]? or not res
+			step() if not Template["setup-#{next.name}"]? or not res
 
-		if item.async
-			item.func callback
+		if next.async
+			next.func callback
 		else
-			item.func?()
+			next.func?()
 			callback()
 
-	prevItem = setupItems[currentSetupItem.get()]
-	if prevItem? and prevItem.success and prevItem.onDone?
-		prevItem.onDone cb
+	current = running[currentItemIndex.get()]
+	if current? and current.success and current.onDone?
+		current.onDone cb
 
 		# onDone handled at least one argument, this means that `cb` will be called,
 		# no need to call it ourselves.
-		return if prevItem.onDone.length > 0
+		return if current.onDone.length > 0
 
 	cb()
 	undefined
 
+progressInfo = ->
+	current = currentItemIndex.get()
+
+	percentage: (current / running.length) * 100
+	current: current
+	amount: running.length
+
 Template.setup.helpers
-	currentSetupItem: -> "setup-#{currentSetupItem.get()}"
+	currentSetupItem: ->
+		item = running[currentItemIndex.get()]
+		"setup-#{item?.name}"
+
+	progressText: ->
+		info = progressInfo()
+		"#{info.current + 1}/#{info.amount}"
+
+	progressPercentage: -> progressInfo().percentage
 
 Template.setup.onRendered ->
-	$('#setup').on 'keyup', 'input:last-child', (e) -> step() if e.which is 13
+	setPageOptions
+		title: 'Setup'
+		color: null
+
+	@$('#setup').on 'keyup', 'input:last-child', (e) -> step() if e.which is 13
 
 Template.setupFooter.helpers
-	isLast: -> _.every setupItems, 'done'
+	isLast: -> _.every running, 'done'
 
 Template.setupFooter.events
 	'click button': -> step()
@@ -376,7 +446,7 @@ Template.plannerPrefsDay.events
  'change': (event) ->
 	 @selected = event.target.dataset.dayIndex
 
-Template['setup-plannerPrefs'].onRendered ->
+Template['setup-plannerPrefs'].onCreated ->
 	# TODO: When being implemented outside of the setup:
 	#       Set the current data of the plannerPrefs, if available
 	weekdays.set _.map Helpers.weekdays(), (name, index) ->

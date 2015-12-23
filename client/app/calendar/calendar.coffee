@@ -1,32 +1,53 @@
-height = -> $('.content').height() - if has('noAds') then 10 else 100
+height = -> $('.content').height()
 
-currentSub = null
+currentSub = undefined
 
-dblDate = null
-dblDateResetHandle = null
-keydownSet = no
+dblDate = undefined
+dblDateResetHandle = undefined
+
+currentOpenEvent = new ReactiveVar
+popoverTimeout = undefined
+popoverView = undefined
+
+setQueryParam = (id) ->
+	FlowRouter.withReplaceState ->
+		FlowRouter.setQueryParams openCalendarItemId: id
+
+openCalendarItemsModal = (id) ->
+	return unless id?
+
+	setQueryParam id
+	showModal 'calendarItemDetailsModal', {
+		onHide: -> setQueryParam undefined
+	}, -> CalendarItems.findOne id
 
 calendarItemToEvent = (calendarItem) ->
-	type = calendarItem.content?.type
-	type = 'quiz' if /^(so|schriftelijke overhoring|(luister\W?)?toets)\b/i.test calendarItem.description
-	type = 'test' if /^(proefwerk|pw|examen|tentamen)\b/i.test calendarItem.description
+	# commented out since this is currently not needed, but we have to keep
+	# remembered about.
+	#calendarItem = _.extend new CalendarItem, calendarItem
+
+	own = Meteor.userId() in calendarItem.userIds
+	_class = Classes.findOne calendarItem.classId
 
 	id: calendarItem._id
-	title: (
-		if calendarItem.classId? then Classes.findOne(calendarItem.classId).name
-		else calendarItem.description
-	)
+	title: _class?.name ? calendarItem.description
 	allDay: calendarItem.fullDay
 	start: calendarItem.startDate
 	end: calendarItem.endDate
 	color: (
 		if calendarItem.scrapped then 'gray'
-		else switch type
+		else if not own then '#A938FF'
+		else switch calendarItem.content?.type
 			when 'homework' then '#32A8CE'
 			when 'test', 'exam' then '#FF4136'
 			when 'quiz', 'oral' then '#FF851B'
 
 			else '#3a87ad'
+	)
+	className: (
+		switch calendarItem.absenceInfo?.type
+			when 'absent', 'sick', 'exemption', 'discharged' then 'opaque'
+			else ''
 	)
 	clickable: not calendarItem.scrapped
 	open: no
@@ -35,8 +56,22 @@ calendarItemToEvent = (calendarItem) ->
 	content: calendarItem.content
 
 Template.calendar.onRendered ->
+	unless $::fullCalendar?
+		document.location.reload()
+
+	slide 'calendar'
+	setPageOptions
+		title: 'Agenda'
+		color: null
+
+	dates = new ReactiveVar []
+	currentItems = []
 	$calendar = @$ '.calendar'
 	$calendar.fullCalendar
+		# TODO: this has to be removed when we have custom calendarItems back
+		# working.
+		weekends: false
+
 		defaultView: 'agendaWeek'
 		height: height()
 		firstDay: 1
@@ -62,14 +97,7 @@ Template.calendar.onRendered ->
 			day: 'dddd'
 
 		events: (start, end, timezone, callback) ->
-			[ start, end ] = (d.toDate() for d in [ start, end ])
-
-			currentSub?.stop()
-			currentSub = Meteor.subscribe 'externalCalendarItems', start, end, ->
-				callback CalendarItems.find(
-					startDate: $gte: start
-					endDate: $lte: end
-				).map calendarItemToEvent
+			callback currentItems
 
 		dayClick: (date, event, view) ->
 			clearTimeout dblDateResetHandle
@@ -90,29 +118,47 @@ Template.calendar.onRendered ->
 
 			dblDateResetHandle = _.delay ( -> dblDate = dblDateResetHandle = null ), 500
 
+		eventMouseover: (calendarEvent, event) ->
+			Meteor.clearTimeout popoverTimeout
+			popoverTimeout = Meteor.setTimeout (->
+				currentOpenEvent.set calendarEvent
+				Meteor.defer ->
+					new Tether
+						element: document.getElementById 'eventDetailsTooltip'
+						target: event.currentTarget
+						attachment: 'top left'
+						targetAttachment: 'top right'
+						constraints: [
+							{
+								to: 'scrollParent',
+								attachment: 'together'
+								pin: yes
+							}
+						]
+			), 500
+
+		eventMouseout: (calendarEvent, event) ->
+			Meteor.clearInterval popoverTimeout
+			currentOpenEvent.set undefined
+
 		eventClick: (calendarEvent, event) ->
-			$(event.target).popover "hide"
+			Meteor.clearInterval popoverTimeout
+			currentOpenEvent.set undefined
+			openCalendarItemsModal calendarEvent.calendarItem._id
 
 		eventAfterRender: (event, element) ->
-			event.element = element
-			if event.content?
-				element.popover
-					content: event.content.description
-					placement: 'auto top'
-					animation: yes
-					delay: { show: 750 }
-					trigger: 'hover'
-					container: '.content'
-
 			return unless event.clickable
-
 			element.css cursor: "pointer"
 
-		dayRender: (date, cell) ->
+		viewRender: (view, element) ->
+			dates.set (d.toDate().date() for d in [ view.start, view.end ])
+
 			Meteor.defer ->
-				header = $ ".fc-left h2"
-				return if header.text().indexOf("week") isnt -1
-				header.html "#{$(".fc-left h2").text()} <small>week: #{date.week()}</small>"
+				FlowRouter.withReplaceState ->
+					FlowRouter.setParams time: +view.start
+
+				$header = $ ".fc-left h2"
+				$header.html "#{$header.text()} <small>week: #{view.start.week()}</small>"
 
 		eventDrop: (event) ->
 			CalendarItems.update event.calendarItem._id, $set:
@@ -120,22 +166,83 @@ Template.calendar.onRendered ->
 				endDate: event.end?.toDate() ? event.start.add(1, "hour").toDate()
 
 		eventResize: (event) -> CalendarItems.update event.calendarItem._id, $set: startDate: event.start.toDate(), endDate: event.end.toDate()
+		eventAfterAllRender: ->
+			Blaze.remove popoverView if popoverView?
+			popoverView = Blaze.renderWithData Template.eventDetailsTooltip, (->
+				item = currentOpenEvent.get()?.calendarItem
+				if item?
+					_.extend item,
+						__group: (
+							if item.description?
+								_.find item.description.split(' '), (w) -> /\d/.test(w) and /[a-z]/i.test(w)
+						)
+			), document.body
+
+	time = +FlowRouter.getParam 'time'
+	$calendar.fullCalendar 'gotoDate', time if isFinite time
+	openCalendarItemsModal FlowRouter.getQueryParam 'openCalendarItemId'
 
 	@$('.addAppointmentForm').detach().prependTo "body"
-	$calendar.find('button.fc-button').removeClass('fc-button fc-state-default').addClass 'btn btn-default'
-	$calendar.find('.fc-right').prepend '<button id="newAppointmentButton" class="btn btn-primary">toevoegen</button>'
-	$calendar.find('button#newAppointmentButton').click open
-	Mousetrap.bind 'shift+n', (e) -> open(); e.preventDefault()
+	$calendar
+		.find 'button.fc-button'
+		.removeClass 'fc-button fc-state-default'
+		.addClass 'btn btn-default'
+	# TODO: fix adding calendarItems n stuff. When fixed uncomment next 2 lines.
+	##$calendar.find('.fc-right').prepend '<button id="newAppointmentButton" class="btn btn-primary">toevoegen</button>'
+	##$calendar.find('button#newAppointmentButton').click open
+	Mousetrap.bind 'shift+n', (e) ->
+		open()
+		false
 
-	$(window).resize -> $calendar.fullCalendar('option', 'height', height())
+	# Handle Resizing
+	resize = -> $calendar.fullCalendar('option', 'height', height())
+	@autorun (c) ->
+		currentBigNotice._reactiveVar.dep.depend()
+		resize() unless c.firstRun
+	$(window).resize resize
 
-	unless keydownSet
-		keydownSet = yes
-		$(window).keydown (event) ->
-			return if $("input, textarea").is(":focus") or $("body").hasClass "shepherd-active"
-			$(".calendar").fullCalendar if event.which is 39 then "next" else if event.which is 37 then "prev"
+	@autorun =>
+		dateTracker.depend()
+
+		[ start, end ] = dates.get()
+		@subscribe 'externalCalendarItems', start, end
+		currentItems = CalendarItems.find({
+			startDate: $gte: start
+			endDate: $lte: end
+		}, sort: startDate: 1
+		).map calendarItemToEvent
+		$calendar.fullCalendar 'refetchEvents'
+
+	Mousetrap.bind 'left', ->
+		$calendar.fullCalendar 'prev'
+		false
+
+	Mousetrap.bind 'right', ->
+		$calendar.fullCalendar 'next'
+		false
+
+	Mousetrap.bind 'space', ->
+		$calendar.fullCalendar 'today'
+		false
+
+	Mousetrap.bind 'esc', ->
+		$('#calendarItemDetailsModal').modal 'hide'
+		false
+
+Template.calendar.onDestroyed ->
+	Mousetrap.unbind [ 'left', 'right', 'space', 'esc', 'shift+n' ]
+	# Force reset the eventDetailsTooltip, since it's possible that we switched
+	# route without triggering the mouseout event on fullcalendar (switching by
+	# using keyboard shortcuts for example).
+	Meteor.clearTimeout popoverTimeout
+	Blaze.remove popoverView if popoverView?
+	currentOpenEvent.set null
+	currentSub?.stop()
 
 open = ->
+	# TODO: fix adding calendarItems n stuff. When fixed uncomment next line.
+	return
+
 	$("div.addAppointmentForm").addClass "transformIn"
 	$("div.backdrop").addClass "dimmed"
 	$("div.backdrop, div.addAppointmentForm > .close").click close

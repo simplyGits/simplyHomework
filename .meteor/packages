@@ -3,20 +3,24 @@
 # 'meteor add' and 'meteor remove' will edit this file for you,
 # but you can also edit it by hand.
 
-standard-app-packages
-jquery
+meteor-base             # Packages every Meteor app needs to have
+mobile-experience       # Packages for a great mobile UX
+mongo                   # The database Meteor supports right now
+session                 # Client-side reactive dictionary for your app
+jquery                  # Helpful client-side library
+tracker                 # Meteor's client-side reactive programming library
+
+standard-minifiers      # JS/CSS minifiers run for production mode
+es5-shim                # ECMAScript 5 compatibility for older browsers.
+
 accounts-password
 http
 email
-amplify
 spiderable
 browser-policy
 coffeescript
-stevezhu:lodash
 rosh93:dataset-filter
-iron:router
 meteorhacks:fast-render
-reywood:iron-router-ga
 natestrauser:animate-css
 reactive-var
 tsega:bootstrap3-datetimepicker
@@ -24,12 +28,10 @@ meteorhacks:unblock
 meteorhacks:subs-manager
 mdg:reload-on-resume
 mizzao:user-status
-fastclick
 percolate:synced-cron
 mousetrap:mousetrap
 percolate:paginated-subscription
 aldeed:collection2
-qnub:emojione
 twbs:bootstrap-noglyph
 mizzao:bootboxjs
 fortawesome:fontawesome
@@ -39,16 +41,36 @@ tmeasday:publish-counts
 simply-debug-tools
 meteorhacks:kadira-debug
 simply:strict-reactive-var
-magister-binding
 gravatar-binding
 scholieren
 meteorhacks:kadira
-3stack:embox-value
 simply:woordjesleren
-cryptoquick:stylus-multi
 simply:fullcalendar
 simply:lazy-code-push
 chuangbo:marked
-standard-minifiers
 meteorhacks:npm
 npm-container
+simply:katex
+emojione:emojione
+rcy:chromajs
+okgrow:analytics
+audit-argument-checks
+stevezhu:lodash
+magister-binding
+kadira:flow-router
+kadira:blaze-layout
+check
+ejson
+crosswalk
+blaze-html-templates
+simply:external-services-connector
+ddp-rate-limiter
+mquandalle:stylus
+simply:typeahead
+privacy
+themes
+mizzao:timesync
+homepage-endpoints
+viewport-units-buggyfill
+chat
+reywood:publish-composite

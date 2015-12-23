@@ -1,5 +1,20 @@
 @require "../../utils"
 
+#setupProgressBar
+	fixed: top left
+	height: 3px
+	background-color: simplyBlue
+	pointer-events: none
+
+#setupProgressBar.full
+	height: 100%
+	opacity: .04
+
+#setupProgressText
+	fixed: top 10px right 15px
+	opacity: .7
+	letter-spacing: .1em
+
 .setupAppNameHeader
 	fixed: top left 5px
 	color: black !important
@@ -17,6 +32,8 @@
 
 #getExternalClasses
 	text-align: center
+	+mobile()
+		text-align: left
 
 	#spinner
 		height: 60px
@@ -27,35 +44,18 @@
 
 	#result > div
 		width: 100%
-		height: 30px
+		height: 35px
+		line-height: 35px
 		margin-bottom: 7px
 
-		i.fa-times
-			opacity: .5
-			transition: .25s opacity linear
-
-			float: left
-			margin-right: 10px
-			margin-top: 3px
-
-		i.fa-times:hover
-			opacity: 1
+		padding-right: 10px
+		border-right: 2px black solid
 
 		.twitter-typeahead
 			display: initial !important
 
 			.tt-dropdown-menu
 				width: 175px
-
-		.input-group-addon
-			float: left
-			display: inline-block
-			margin-right: 10px
-			height: 25px
-
-			i
-				margin-left: -8px
-				margin-top: -3px
 
 		div#classTitle
 			text-transform: lowercase
@@ -71,17 +71,24 @@
 			width: auto
 
 		+mobile()
-			height: 75px
-			border-bottom: 1px lightgray solid
-			margin-bottom: 15px
+			height: 65px
+			margin-bottom: 25px
+			line-height: initial
 
 			div#classTitle
-				max-width: calc(100% - 60px)
+				max-width: 100%
+				float: initial
 
-			input#method
+			input#method, .twitter-typeahead
 				width: 100%
 				margin-top: 10px
 				margin-bottom: 10px
+				float: initial
+
+#setup-wrapper
+	absolute: top left right bottom
+	overflow: hidden
+	overflow-y: scroll
 
 #setup
 	max-width: 650px

@@ -1,7 +1,14 @@
 <template name="setup">
+	<div id="setupProgressBar" style="width: {{progressPercentage}}%"></div>
+	<div id="setupProgressBar" class="full" style="width: {{progressPercentage}}%"></div>
+	<div id="setupProgressText">{{progressText}}</div>
+
 	<div class="appNameHeader setupAppNameHeader"></div>
-	<div id="setup">
-		{{> Template.dynamic template=currentSetupItem}}
+	<div id="setup-wrapper">
+		<div id="setup">
+			{{> Template.dynamic template=currentSetupItem}}
+			{{> setupFooter}}
+		</div>
 	</div>
 </template>
 
@@ -27,10 +34,8 @@
 		<br><br>
 		Het haalt automatisch je huiswerk van magister, zoekt de juiste woordenlijsten bij het huiswerk, plant automatisch voor proefwerken en nog veel meer.
 		<br><br>
-		Voordat we beginnen hebben we nog een paar vraagjes.
+		We moeten nog een paar dingen van je weten voordat we kunnen beginnen.
 	</div>
-
-	{{> setupFooter}}
 </template>
 
 <template name="setup-externalServices">
@@ -41,8 +46,6 @@
 	<div class="body">
 		{{> externalServices}}
 	</div>
-
-	{{> setupFooter}}
 </template>
 
 <template name="setup-extractInfo">
@@ -55,6 +58,11 @@
 			import classes, picture, course info and stuff
 			in a nice visual selector.
 		}}
+
+		<div>
+			Selecteer voor elk onderdeel welke waarde je ervoor wilt gebruiken.<br>
+			Sommige dingen kun je later niet meer anpassen, kies dus goed.
+		</div>
 
 		{{#with pictures}}
 			<h2>Profielfoto</h2>
@@ -84,7 +92,7 @@
 					<div class="{{isSelected}}">
 						{{value.profile}}
 						<br>
-						{{value.year}} {{value.schoolVariant}}
+						{{value.year}} {{toUpperCase value.schoolVariant}}
 					</div>
 				{{/each}}
 			</div>
@@ -111,8 +119,6 @@
 		</form>
 
 	</div>
-
-	{{> setupFooter}}
 </template>
 
 <template name="plannerPrefsDay">
@@ -139,8 +145,6 @@
 			{{/each}}
 		</form>
 	</div>
-
-	{{> setupFooter}}
 </template>
 
 <template name="setup-getExternalClasses">
@@ -156,14 +160,12 @@
 			</div>
 		{{else}}
 			<div>
-				We hebben geprobeerd zoveel mogelijk vakken automatisch op te halen.<br>
-				Verwijder overbodige vakken en wijzig onjuiste informatie, vakken kun je later toevoegen.
+				We hebben geprobeerd zoveel mogelijk vakken automatisch op te
+				halen, vakken die missen kan je later toevoegen.
 			</div>
 			<div id="result">
 				{{#each externalClasses}}
-					<div id="{{_id.toHexString}}">
-						<i style="cursor: pointer" class="fa fa-times"></i>
-						<span class="input-group-addon"><i></i></span>
+					<div id="{{_id}}" style="border-color: {{color}}">
 						<div id="classTitle">{{name}}</div>
 						<input class="form-control" type="text" id="method" placeholder="Methode"/>
 					</div>
@@ -171,6 +173,14 @@
 			</div>
 		{{/unless}}
 	</div>
+</template>
 
-	{{> setupFooter}}
+<template name="setup-privacy">
+	<div class="header">
+		Privacy instellingen
+	</div>
+
+	<div class="body">
+		{{> privacySettings}}
+	</div>
 </template>

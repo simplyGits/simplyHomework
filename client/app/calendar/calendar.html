@@ -1,6 +1,6 @@
 <template name="calendar">
 	<div class="addAppointmentForm">
-		<button type="button" class="close"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+		{{! <button type="button" class="close"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button> }}
 
 		<textarea placeholder="Duits overmorgen leer hoofdstuk 1" id="appointmentInput" class="form-control"></textarea>
 
@@ -10,4 +10,20 @@
 		<button type="button" class="btn btn-primary pull-right" id="saveButton">toevoegen</button>
 	</div>
 	<div class="calendar"></div>
+</template>
+
+<template name="calendarItemDetailsModal">
+	<div class="modal fade" aria-hidden="true" id="calendarItemDetailsModal">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+					<h4 class="modal-title">Afspraak details</h4>
+				</div>
+				<div class="modal-body">
+					{{> calendarItemDetails}}
+				</div>
+			</div>
+		</div>
+	</div>
 </template>

@@ -6,5 +6,10 @@
 	"scholieren": {
 		"client_id": "32c8014e0e49363bce563d940859dade",
 		"client_pw": "a56c98c29403f35d7e6152caf12e5c5e"
+	},
+	"public": {
+		"analyticsSettings": {
+			"Google Analytics" : { "trackingId": "xxxxx" }
+		}
 	}
 }

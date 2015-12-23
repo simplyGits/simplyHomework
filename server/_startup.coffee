@@ -3,19 +3,27 @@ Meteor.startup ->
 	reCAPTCHA.config
 		privatekey: '6LejzwQTAAAAAKlQfXJ8rpT8vY0fm-6H4-CnZy9M'
 
-	Projects.find({}).observe
-		changed: (newDoc, oldDoc) ->
-			if newDoc.participants.length is 0
-				Projects.remove newDoc._id
-			else if newDoc.ownerId not in newDoc.participants
-				Projects.update newDoc._id, $set: ownerId: newDoc.participants[0]
+	###
+	Meteor.AppCache.config
+		onlineOnly: [
+			'/packages/simply_katex'
+			'/audio/smoke'
+			'/videos/'
+		]
+	###
 
 	Accounts.onCreateUser (options, doc) ->
 		unless Helpers.correctMail doc.emails[0].address
 			throw new Error 'Given mail address is invalid.'
 
-		doc.creationDate = new Date()
+		doc.classInfos = []
+		doc.events = {}
+		doc.externalServices = {}
+		doc.premiumInfo = {}
+		doc.setupProgress = []
+
 		doc.profile = options.profile
+
 		doc
 
 	# == Emails and stuff ==
@@ -33,16 +41,30 @@ Meteor.startup ->
 
 			Je was je wachtwoord vergeten, hier krijg je een nieuwe:
 			<a href='#{url}'>#{url}</a>
-		"""
+		""",
+			'@context': 'http://schema.org'
+			'@type': 'EmailMessage'
+			description: 'Wachtwoord opnieuw instellen'
+			potentialAction:
+				'@type': 'ViewAction'
+				target: url
+				name: 'Herstel wachtwoord'
 
 	Accounts.emailTemplates.verifyEmail.subject = (user) -> 'simplyHomework | Nieuw Account'
 	Accounts.emailTemplates.verifyEmail.html = (user, url) ->
 		getMail """
 			Hey!
 
-			Welkom bij simplyHomework! Klik, om je account te verifieren, op deze link:
+			Welkom bij simplyHomework! Klik, om je account te verifiëren, op deze link:
 			<a href='#{url}'>#{url}</a>
-		"""
+		""",
+			'@context': 'http://schema.org'
+			'@type': 'EmailMessage'
+			description: 'Account verifiëren'
+			potentialAction:
+				'@type': 'ViewAction'
+				target: url
+				name: 'Verifieer account'
 
 	Meteor.users.find().observe
 		changed: (newDoc, old) ->
@@ -51,7 +73,7 @@ Meteor.startup ->
 
 			if passChanged or mailChanged
 				user = if mailChanged then old else newDoc
-				message = 'Hey #{user.profile.firstName}!\n\n' +
+				message = "Hey #{user.profile.firstName}!\n\n" +
 				(
 					if passChanged and mailChanged then 'Zojuist is het wachtwoord en het email adres van je account veranderd.\n'
 					else if passChanged and not mailChanged then 'Zojuist is het wachtwoord van je account veranderd.\n'
@@ -68,10 +90,7 @@ Meteor.startup ->
 					else if not passChanged and mailChanged then 'Mail Adres Veranderd'
 				)
 
-				sendMail user, 'simplyHomework | #{subject}', message
-
-			unless EJSON.equals old.classInfos, newDoc.classInfos
-				Projects.update { participants: newDoc._id, classId: $exists: 1, $nin: (x.id for x in newDoc.classInfos) }, { $pull: participants: newDoc._id }, multi: yes
+				sendMail user, "simplyHomework | #{subject}", message
 
 	users = {}
 	olderThan = (val, min) -> val? and _.now() - val > min
@@ -101,3 +120,8 @@ Meteor.startup ->
 			"""
 
 			val.mailSentAt = _.now()
+
+	CalendarItems._ensureIndex
+		userIds: 1
+		startDate: -1
+		endDate: -1

@@ -1,315 +1,99 @@
+###
 @subs = new SubsManager
 	cacheLimit: 40
 	expireIn: 10
+###
 
-AccountController = RouteController.extend
-	verifyMail: ->
-		Accounts.verifyEmail @params.token, =>
-			Router.go 'app'
-			notify 'Email geverifiëerd', 'success'
-			@next()
+renderAppTemplate = (name) ->
+	BlazeLayout.render 'app', main: name
 
-Router.configure
-	onStop: ->
+@notFound = ->
+	setPageOptions
+		title: 'Niet gevonden'
+		color: null
+
+	template = 'notFound'
+	if Meteor.userId()? or Meteor.loggingIn() then renderAppTemplate template
+	else BlazeLayout.render template
+
+FlowRouter.notFound = action: notFound
+
+FlowRouter.triggers.exit [
+	->
 		$('.modal.in').modal 'hide'
 		$('.modal-backdrop').remove()
-		$('.tooltip').tooltip 'destroy'
 		$('body').removeClass 'modal-open'
-	trackPageView: true
+		$('.tooltip').tooltip 'destroy'
+]
 
-Router.map ->
-	@route 'launchPage',
-		fastRender: yes
-		path: '/'
-		layoutTemplate: 'launchPage'
-		onBeforeAction: ->
-			Meteor.defer => @redirect 'app' if Meteor.userId()? or Meteor.loggingIn()
-			@next()
-		onAfterAction: ->
-			setPageOptions
-				title: 'simplyHomework'
-				useAppPrefix: no
-				color: null
+FlowRouter.route '/',
+	name: 'launchPage'
+	triggersEnter: [
+		(context, redirect) ->
+			redirect 'overview' if Meteor.userId()? or Meteor.loggingIn()
+	]
+	action: -> BlazeLayout.render 'launchPage'
 
-	@route 'referalLanchPage',
-		fastRender: yes
-		path: '/refd'
-		layoutTemplate: 'referalLanchPage'
-		onBeforeAction: ->
-			Meteor.defer =>
-				if not @data().name? or Meteor.userId()? or Meteor.loggingIn()
-					@redirect 'app'
-			@next()
-		onAfterAction: ->
-			if name?
-				ga 'send', 'event', 'accountRefer', 'accountReferer', referer ? 'unknown'
-				Session.set 'referalName', name
-		data: ->
-			referer: decodeURIComponent @params.query.r
-			name: decodeURIComponent @params.query.n
+FlowRouter.route '/verify/:token',
+	name: 'verifyMail'
+	action: (params) ->
+		Accounts.verifyEmail params.token, ->
+			FlowRouter.go 'overview'
+			notify 'Email geverifiëerd', 'success'
 
-	@route 'app',
-		fastRender: yes
-		layoutTemplate: 'app'
-		template: 'appOverview'
-		subscriptions: ->
-			[
-				subs.subscribe 'classes'
-				Meteor.subscribe 'usersData'
-			]
+FlowRouter.route '/forgot',
+	name: 'forgotPass'
+	action: -> BlazeLayout.render 'forgotPass'
 
-		onBeforeAction: ->
-			unless Meteor.loggingIn() or Meteor.userId()?
-				@redirect 'launchPage'
-				return
-			@next()
+FlowRouter.route '/reset/:token',
+	name: 'resetPass'
+	action: -> BlazeLayout.render 'resetPass'
 
-		onAfterAction: ->
-			Meteor.defer ->
-				slide 'overview'
-				setPageOptions color: null
+appRoutes = FlowRouter.group
+	prefix: '/app'
+	name: 'app'
+	triggersEnter: [
+		(context, redirect) ->
+			redirect 'launchPage' unless Meteor.userId()? or Meteor.loggingIn()
 
-			if @ready()
-				profile = Helpers.emboxValue -> Meteor.user().profile
-				setPageOptions
-					title: (
-						# When we don't have external info yet the name is empty.
-						unless _.isEmpty profile.firstName
-							"simplyHomework | #{profile.firstName} #{profile.lastName}"
-						else
-							'simplyHomework'
-					)
-					useAppPrefix: no
+		(context, redirect) -> $('body').addClass 'noscroll'
+	]
+	triggersExit: [
+		(context) -> $('body').removeClass 'noscroll'
+	]
 
-	@route "classView",
-		fastRender: yes
-		layoutTemplate: "app"
-		path: "/app/class/:classId"
+appRoutes.route '/',
+	name: 'overview'
+	action: -> renderAppTemplate 'overview'
 
-		subscriptions: ->
-			[
-				subs.subscribe 'classes'
-				Meteor.subscribe 'usersData'
-			]
+appRoutes.route '/messages',
+	name: 'messages'
+	action: -> renderAppTemplate 'messages'
 
-		onBeforeAction: ->
-			unless Meteor.loggingIn() or Meteor.userId()?
-				@redirect "launchPage"
-				return
-			@next()
-		onAfterAction: ->
-			if not @data()? and @ready()
-				@redirect "app"
-				swalert title: "Niet gevonden", text: "Je hebt dit vak waarschijnlijk niet.", confirmButtonText: "o.", type: "error"
-				return
+appRoutes.route '/class/:id',
+	name: 'classView'
+	action: -> renderAppTemplate 'classView'
 
-			Meteor.defer => slide @data()._id.toHexString()
+appRoutes.route '/project/:id',
+	name: 'projectView'
+	action: -> renderAppTemplate 'projectView'
 
-			setPageOptions
-				title: @data().name
-				color: @data().__color()
+appRoutes.route '/calendar/:time?',
+	name: 'calendar'
+	action: ->
+		renderAppTemplate (
+			if Session.equals 'deviceType', 'phone' then 'mobileCalendar'
+			else 'calendar'
+		)
 
-		data: ->
-			try
-				id = new Meteor.Collection.ObjectID @params.classId
-				return Classes.findOne id, transform: classTransform
-			catch e
-				Kadira.trackError "Class-Search-Error", e.message, stacks: e.stack
-				return null
+appRoutes.route '/person/:id',
+	name: 'personView'
+	action: -> renderAppTemplate 'personView'
 
-	@route "projectView",
-		fastRender: yes
-		layoutTemplate: "app"
-		path: "/app/project/:projectId"
+appRoutes.route '/chat/:id',
+	name: 'mobileChat'
+	action: -> renderAppTemplate 'mobileChatWindow'
 
-		subscriptions: ->
-			return [
-				subs.subscribe("classes")
-				Meteor.subscribe("usersData")
-				subs.subscribe("projects", new Meteor.Collection.ObjectID @params.projectId)
-			]
-
-		onBeforeAction: ->
-			unless Meteor.loggingIn() or Meteor.userId()?
-				@redirect "launchPage"
-				return
-			subs.subscribe("usersData", @data?()?.participants)
-			@next()
-		onAfterAction: ->
-			if @ready() and not @data()?
-				@redirect 'app'
-				swalert title: 'Niet gevonden', text: 'Dit project is niet gevonden.', type: 'error'
-				return
-
-			_class = @data().__class()
-			if _class? then Meteor.defer -> slide _class._id.toHexString()
-			setPageOptions
-				title: @data().name
-				color: _class?.__color()
-
-		data: ->
-			try
-				id = new Meteor.Collection.ObjectID @params.projectId
-				return Projects.findOne id, transform: projectTransform
-			catch e
-				Kadira.trackError "Project-Search-Error", e.message, stacks: e.stack
-				return null
-
-	@route "calendar",
-		fastRender: yes
-		layoutTemplate: "app"
-		path: "/app/calendar"
-
-		subscriptions: ->
-			return [
-				subs.subscribe("classes")
-				Meteor.subscribe("usersData")
-			]
-
-		onBeforeAction: ->
-			unless Meteor.loggingIn() or Meteor.userId()?
-				@redirect "launchPage"
-				return
-			@redirect "mobileCalendar" if Session.get "isPhone"
-			@next()
-		onAfterAction: ->
-			Meteor.defer ->
-				slide "calendar"
-
-			setPageOptions
-				title: 'Agenda'
-				color: null
-
-	@route "mobileCalendar",
-		fastRender: yes
-		layoutTemplate: "app"
-		path: "/app/mobileCalendar"
-
-		subscriptions: ->
-			return [
-				subs.subscribe("classes")
-				Meteor.subscribe("usersData")
-			]
-
-		onBeforeAction: ->
-			unless Meteor.loggingIn() or Meteor.userId()?
-				@redirect "launchPage"
-				return
-			@redirect "calendar" unless Session.get "isPhone"
-			@next()
-		onAfterAction: ->
-			Meteor.defer ->
-				slide "calendar"
-
-			setPageOptions
-				title: 'Agenda'
-				color: null
-
-	@route "personView",
-		fastRender: yes
-		layoutTemplate: "app"
-		path: "/app/person/:_id"
-
-		subscriptions: ->
-			[
-				subs.subscribe("usersData", [ @params._id ])
-				subs.subscribe("classes")
-				Meteor.subscribe("usersData")
-			]
-
-		onBeforeAction: ->
-			unless Meteor.loggingIn() or Meteor.userId()?
-				@redirect "launchPage"
-				return
-			@next()
-		onAfterAction: ->
-			Meteor.defer -> slide "overview"
-
-			if not @data()? and @ready()
-				@redirect "app"
-				swalert title: "Niet gevonden", text: "Deze persoon is niet gevonden.", type: "error"
-				return
-
-			setPageOptions title: "simplyHomework | #{@data().profile.firstName} #{@data().profile.lastName}"
-
-		data: -> Meteor.users.findOne @params._id
-
-	@route "mobileChatWindow",
-		fastRender: yes
-		layoutTemplate: "app"
-		path: "/app/chat/:_id"
-
-		subscriptions: ->
-			return [
-				subs.subscribe("usersData", [ @params._id ])
-				subs.subscribe("classes")
-				Meteor.subscribe("usersData")
-			]
-
-		onBeforeAction: ->
-			unless Meteor.loggingIn() or Meteor.userId()?
-				@redirect "launchPage"
-				return
-			@redirect "app" unless Session.get "isPhone"
-			@next()
-
-		onAfterAction: ->
-			Meteor.defer -> slide "overview"
-
-			if not @data()? and @ready()
-				@redirect "app"
-				swalert title: "Niet gevonden", text: "Deze chat is niet gevonden.", type: "error"
-				return
-
-			setPageOptions
-				title: @data().__friendlyName
-
-		data: ->
-			x = Meteor.users.findOne { _id: @params._id }, transform: userChatTransform
-			x ?= Projects.findOne { _id: new Meteor.Collection.ObjectID @params._id }, transform: projectChatTransform
-			return x
-
-	@route 'setup',
-		fastRender: no
-		layoutTemplate: 'setup'
-		onBeforeAction: ->
-			unless Meteor.loggingIn() or Meteor.userId()? then @redirect 'launchPage'
-			else @next()
-		onAfterAction: ->
-			setPageOptions title: 'simplyHomework | Setup'
-			if @ready() and not followSetupPath()
-				@redirect 'app'
-
-	@route "press",
-		fastRender: yes
-		layoutTemplate: "press"
-		onAfterAction: ->
-			setPageOptions title: "simplyHomework | Pers"
-			$("body").scrollTop 0
-
-	@route "verifyMail",
-		fastRender: yes
-		path: "/verify/:token"
-		controller: AccountController
-		action: "verifyMail"
-
-	@route "forgotPass",
-		fastRender: yes
-		path: "/forgot"
-		layoutTemplate: "forgotPass"
-
-	@route "resetPass",
-		fastRender: yes
-		path: "/reset/:token"
-		layoutTemplate: "resetPass"
-
-Router.route '/.*', -> # 404 route.
-	if @ready()
-		setPageOptions title: 'simplyHomework | Niet gevonden'
-		@render 'notFound'
-
-Router.route '/privacy', (->
-	@response.writeHead 301,
-		'Location': '/privacy.html'
-	@response.end()
-), where: 'server'
+appRoutes.route '/settings/:page?',
+	name: 'settings'
+	action: -> renderAppTemplate 'settings'

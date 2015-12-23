@@ -6,152 +6,140 @@
 	height: 100%
 	cursor: default
 
-	div.sidebarButton
-		div.selectedBorder
-			position: absolute
-			left: 0
-			height: 37px
-			border-left: 2px simplyBlue solid
-
-			opacity: 0
-			transition: .5s opacity ease
-
-	div.sidebarButton.selected
-		div.selectedBorder
-			opacity: 1
-
 	a
 		text-decoration: none !important
 		outline: none !important
 
-div.bigSidebarButton
-	color: white
-	font-family: 'Roboto', sans-serif
-	font-weight: 300
-	-webkit-font-smoothing: antialiased
-	font-size: 30px
-	padding-left: 10px
-	cursor: pointer
-	margin-bottom: -5px
-
-div.sidebarClass
-	color: white
-	font-family: 'Roboto', sans-serif
-	font-weight: 300
-	-webkit-font-smoothing: antialiased
-	font-size: 30px
-	padding-left: 10px
-	margin-bottom: -5px
-
-	div.classColorBar
-		position: absolute
-		left: 0
-		height: 37px
-		border-left: 1px simplyBlue solid
-
-	span
-		white-space: nowrap
-
-	div.badge
-		margin-top: 13px
-		margin-right: 10px
-
-div.sidebarProfile
-	width: 100%
-	height: 75px
-	overflow: hidden
-	position: relative
-	border-bottom: 1px gray solid
-
-	div.sidebarProfileBack
-		absolute: top -20px left -20px right -20px bottom -20px
-		background-size: cover
-		background-position: center center
-
-		blur = blur(35px)
-		filter: blur
-		filter: url('/svg/sidebarProfileBackBlur.svg#blur')
-		-webkit-filter: blur
-		-moz-filter: blur
-		-o-filter: blur
-		-ms-filter: blur
-
-		opacity: .8
-
-	img.sidebarProfilePicture
-		border-radius: 50%
-		border: 1px lightgray solid
-		absolute: top 13px left 5px
-
-	div.sidebarProfileName
-		absolute: top 17px left 65px
+	div.sidebarProfile
+		width: 100%
+		height: 75px
 		overflow: hidden
+		position: relative
+		border-bottom: 1px gray solid
 
+		div.sidebarProfileBack
+			absolute: top -20px left -20px right -20px bottom -20px
+			background-size: cover
+			background-position: center center
+
+			blur = blur(35px)
+			filter: blur
+			filter: url('/svg/sidebarProfileBackBlur.svg#blur')
+			-webkit-filter: blur
+			-moz-filter: blur
+			-o-filter: blur
+			-ms-filter: blur
+
+			opacity: .8
+
+			+mobile()
+				filter: none
+				-webkit-filter: none
+				-moz-filter: none
+				-o-filter: none
+				-ms-filter: none
+				opacity: .1
+
+		img.sidebarProfilePicture
+			border-radius: 50%
+			border: 1px lightgray solid
+			absolute: top 13px left 5px
+
+		div.sidebarProfileName
+			absolute: top 17px left 65px
+			overflow: hidden
+
+			roboto(300)
+			color: white
+			font-size: 30px
+			white-space: nowrap
+			text-rendering: optimizeLegibility
+
+	.sidebarSubheading
 		roboto(300)
+		width: 100%
+		padding-left: 10px
+		margin-top: 10px
+		font-size: 20px
 		color: white
-		font-size: 30px
-		white-space: nowrap
-		text-rendering: optimizeLegibility
 
-.sidebarSubheading
-	roboto(300)
-	width: 100%
-	padding-left: 10px
-	margin-top: 10px
-	font-size: 20px
-	color: white
+		border = 1px gray solid
+		border-top: border
+		border-bottom: border
 
-	border = 1px gray solid
-	border-top: border
-	border-bottom: border
-
-	div
-		opacity: .7
-
-	+desktop()
 		div
-			opacity: .5
-			transition: .1s opacity ease-in-out
-			cursor: pointer
+			opacity: .7
 
-		div:hover
-			opacity: 1
+		+desktop()
+			div
+				opacity: .5
+				transition: .1s opacity ease-in-out
+				cursor: pointer
 
-.sidebarClasses
-	overflow-y: auto
-	overflow-x: hidden
-	width: 200px
-	height: calc(100% - 240px)
-	position: relative
+			div:hover
+				opacity: 1
 
-	div.slider
-		absolute: top 0
-		display: none
+	div.sidebarButton
+		padding-left: 10px
+		margin-bottom: -5px
 
-.sidebarFooter
-	margin-bottom: 2px
-	width: 200px
-	position: absolute
-	bottom: 0
+		color: #bfbfbf
+		roboto(300)
+		font-size: 30px
+		-webkit-font-smoothing: antialiased
 
-	.sidebarFooterAppNameHeader
-		bottom: 0
+		transition: .1s color linear
+
+	div.sidebarButton.selected
+		color: white
+
+	.sidebarClasses
+		overflow-y: auto
+		overflow-x: hidden
+		width: 200px
+		height: calc(100% - 260px)
+		position: relative
+
+		div.sidebarClass
+			div.classColorBar
+				float: left;
+				margin-left: -10px;
+
+				height: 37px
+				border-left: 1px black solid
+
+			span
+				white-space: nowrap
+
+	.sidebarFooter
+		margin-bottom: 2px
+		width: 200px
 		position: absolute
-		margin-bottom: 3px
-		margin-right: 6px
-		right: 0
-
-	.sidebarFooterAppNameHeader:before
-		margin-right: -2px
-
-	.sidebarFooterSettingsIcon
-		background-image: url("images/ic_action_settings.png")
-		width: 25px
-		height: 25px
-		background-repeat: no-repeat
-		background-size: contain
-		position: fixed
-		left: 0
 		bottom: 0
-		cursor: pointer
-		opacity: .6
+
+		.sidebarFooterAppNameHeader
+			bottom: 0
+			position: absolute
+			margin-bottom: 3px
+			margin-right: 6px
+			right: 0
+
+		.sidebarFooterAppNameHeader:before
+			margin-right: -2px
+
+		.sidebarFooterSettingsIcon
+			background-image: url("images/ic_action_settings.png")
+			width: 25px
+			height: 25px
+			background-repeat: no-repeat
+			background-size: contain
+			position: fixed
+			left: 0
+			bottom: 0
+			cursor: pointer
+			opacity: .6
+
+		+mobile()
+			.sidebarFooterSettingsIcon
+				width: 30px
+				height: 30px

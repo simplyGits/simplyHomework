@@ -1,12 +1,3 @@
-###
-# Note: we don't have a property that
-# tracks if the calendarItem is full day,
-# to make a calendarItem full day we should
-# make the startDate start on 00:00 on day 1
-# and end on 00:00 on day 2.
-# e.g (begin: 12/02/2015 00:00, 13/02/2015 00:00).
-###
-
 ###*
 # Item in the calendar.
 #
@@ -30,11 +21,11 @@ class @CalendarItem
 		@userIds = [ ownerId ]
 
 		###*
-		# @property isDone
-		# @type Boolean
-		# @defualt false
+		# @property usersDone
+		# @type String[]
+		# @defualt []
 		###
-		@isDone = no
+		@usersDone = []
 
 		###*
 		# @property content
@@ -105,4 +96,53 @@ class @CalendarItem
 		###
 		@location = null
 
-	class: -> Classes.findOne @classId
+		###*
+		# @property absenceInfo
+		# @type Object
+		# @default null
+		###
+		@absenceInfo = null
+
+	class: -> Classes.findOne @classId, transform: classTransform
+
+	# TODO: Better i18n for these methods?
+	contentTypeLong: ->
+		switch @content?.type
+			when 'homework' then 'Huiswerk'
+			when 'test' then 'Proefwerk'
+			when 'exam' then 'Examen'
+			when 'quiz' then 'Schrijftelijke Overhoring'
+			when 'oral' then 'Mondlinge Overhoring'
+			when 'information' then 'Informatie'
+
+			else 'Inhoud'
+
+	contentTypeShort: ->
+		switch @content?.type
+			when 'homework' then 'HW'
+			when 'test' then 'PW'
+			when 'exam' then 'TT'
+			when 'quiz' then 'SO'
+			when 'oral' then 'LT'
+			when 'information' then 'IN'
+
+			else '??'
+
+	relativeTime: ->
+		return '' unless Meteor.isClient
+
+		minuteTracker.depend()
+		now = new Date
+		diff = moment(@startDate).diff now
+
+		unless moment(@startDate).isSame(now, 'day') and
+		not @fullDay and
+		not @scrapped
+			return ''
+
+		if @startDate <= now <= @endDate
+			"nog #{Helpers.timeDiff now, @endDate}"
+		else if diff > 0
+			"over #{Helpers.timeDiff now, @startDate}"
+		else
+			"#{Helpers.timeDiff now, @endDate} geleden"

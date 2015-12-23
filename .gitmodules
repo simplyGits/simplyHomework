@@ -1,3 +1,6 @@
 [submodule "packages/fullcalendar/fullcalendar"]
 	path = packages/fullcalendar/fullcalendar
 	url = git@github.com:fullcalendar/fullcalendar.git
+[submodule "packages/viewport-units-buggyfill/viewport-units-buggyfill"]
+	path = packages/viewport-units-buggyfill/viewport-units-buggyfill
+	url = git@github.com:rodneyrehm/viewport-units-buggyfill.git

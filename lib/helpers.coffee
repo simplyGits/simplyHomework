@@ -19,8 +19,8 @@ Date.today = -> new Date().date()
 # @return {Date} A Date object with the given ammount of days added.
 ###
 Date::addDays = (days, newDate = false) ->
-	check days, Number
-	newDate = false unless Match.test newDate, Boolean
+	check days, Match.Integer
+	check newDate, Boolean
 
 	if newDate
 		new Date @getTime() + (86400000 * days)
@@ -28,16 +28,7 @@ Date::addDays = (days, newDate = false) ->
 		@setDate @getDate() + days
 		this
 
-Date::date = -> new Date @getUTCFullYear(), @getMonth(), @getDate()
-
-Array::remove = (item) ->
-	if _.isObject(item) and _.contains _.keys(item), "_id"
-		_.remove this, (i) -> EJSON.equals item._id, i._id
-	else
-		_.remove this, (i) -> EJSON.equals item, i
-
-	this
-Array::pushMore = (items) -> [].push.apply this, items; return this
+Date::date = -> new Date @getFullYear(), @getMonth(), @getDate()
 
 ###
 # Static class containing helper methods.
@@ -117,7 +108,7 @@ class @Helpers
 	# @param ignoreCasing {Boolean} Whether to ignore the casing of the search.
 	# @return {Boolean} Whether the original string contains the query string.
 	###
-	@contains: (original, query, ignoreCasing = false) ->
+	@contains: (original = '', query = '', ignoreCasing = false) ->
 		if ignoreCasing
 			original
 				.toUpperCase()
@@ -201,22 +192,25 @@ class @Helpers
 	# @return {String} The capped `name`.
 	###
 	@nameCap: (name) ->
-		words = name.toLowerCase().split /[\s-&]/g
 		nonCapped = [
-			"van"
-			"vanden"
-			"in"
-			"uit"
-			"der"
-			"den"
-			"de"
-			"en"
-			"of"
-			"o"
+			'de'
+			'den'
+			'der'
+			'en'
+			'in'
+			'o'
+			'of'
+			'ten'
+			'uit'
+			'van'
+			'vanden'
 		]
 
-		name.toLowerCase().replace /\w+/g, (match) =>
-			if match in nonCapped then match else @cap match
+		name
+			.trim()
+			.toLowerCase()
+			.replace /\w+/g, (match) =>
+				if match in nonCapped then match else @cap match
 
 	###*
 	# Find links in the given `string` and converts
@@ -310,34 +304,160 @@ class @Helpers
 	###
 	@emboxValue: (fn, equals) -> emboxValue(fn, { equals, lazy: yes })()
 
+	###*
+	# @method sed
+	# @param sedcommand {String}
+	# @param [original] {String}
+	# @return {String}
+	###
+	@sed: (sedcommand, original) ->
+		sedreg = /^s\/(.+)\/(.*)\/([ig]{0,2})$/
+		res = sedreg.exec sedcommand
+
+		if not original?
+			return res?
+		else if not res?
+			return original
+
+		if res[0].match(/[^\\]\//g).length > 3
+			throw new Error '/ has to be escaped.'
+
+		matcher = res[1]
+		replacer = res[2]
+		flags = res[3]
+
+		matchreg = new RegExp matcher, flags
+		original.replace matchreg, replacer
+
+	###*
+	# Gets the first character from `str` utf-8 compound characters.
+	# Returns an empty string if `str` is empty.
+	#
+	# @method first
+	# @param {String} str
+	# @return {String}
+	###
+	@first: (str) ->
+		astralSymbols = /^[\uD800-\uDBFF][\uDC00-\uDFFF]/
+		if astralSymbols.test str
+			str.substr 0, 2
+		else
+			str[0] ? ''
+
+	###*
+	# Returns the given `date` friendly formatted.
+	# If `date` is a null value, `undefined` will be returned.
+	#
+	# @method formatDate
+	# @param {Date} date The date to format.
+	# @return {String|undefined} The given `date` formatted.
+	###
+	@formatDate: (date) ->
+		return undefined unless date?
+
+		check date, Date
+		m = moment date
+
+		if m.year() isnt new Date().getFullYear()
+			m.format "DD-MM-YYYY HH:mm"
+		else if m.toDate().date().getTime() isnt Date.today().getTime()
+			m.format "DD-MM HH:mm"
+		else
+			m.format "HH:mm"
+
+	@timeDiff: (a, b) ->
+		diff = moment(b).diff a
+		secIn = diff / 1000
+
+		hours = ~~(secIn / 3600)
+		remainder = ~~(secIn % 3600)
+		minutes = ~~(remainder / 60)
+
+		arr = []
+		if hours isnt 0
+			arr.push "#{Math.abs hours}u"
+		if minutes isnt 0
+			arr.push "#{Math.abs minutes}m"
+		if hours is 0 and minutes is 0
+			arr.push "minder dan 1 minuut"
+		time = arr.join ' en '
+
+@getUserField = (userId = Meteor.userId(), field, def) ->
+	check userId, String
+	check field, String
+	check def, Match.Optional Match.Any
+
+	user = Meteor.users.findOne userId, fields: "#{field.split('[')[0]}": 1
+	_.get(user, field) ? def
+
+@getEvent = (event, userId) -> getUserField userId, "events.#{event}"
+
 ###*
-# Checks if the given `user` is in the given `role`.
+# Checks if the given `user` is in the given `roles`.
 # @method userIsInRole
-# @param [user=Meteor.user()] {User|String} The user or its ID to check.
-# @param [role="admin"] {String} The role to check.
-# @return {Boolean} True if the given `user` is in the given `role`.
+# @param [userId=Meteor.userId()] {String} The ID of the user to check.
+# @param [roles=["admin"]] {String|String[]} The role(s) to check.
+# @return {Boolean} True if the given `user` is in the given `roles`.
 ###
-@userIsInRole = (user = Meteor.user(), role = "admin") ->
-	if _.isString(user) then user = Meteor.users.findOne user
-	return no unless user?
-	_.every (if _.isArray(role) then role else [role]), (s) -> _.contains user.roles, s
+@userIsInRole = (userId, roles = ['admin']) ->
+	roles = if _.isArray(roles) then roles else [roles]
+	userRoles = getUserField userId, 'roles', []
+	_.every roles, (role) -> _.contains userRoles, role
 
 ###*
-# Generates a getter/setter method for a global class variable.
-#
-# @param varName {String} The name of the variable to make method for.
-# @param pattern {Pattern} The Match pattern to test when the variable is being changed.
-# @param allowChanges {Boolean} Whether to allow changes to the property (otherwise it's just going to generate a getter method)
-# @param transformIn {Function} Function to map the new variable to before saving it.
-# @param transformOut {Function} Function to map the variable that gets returned to.
-# @return {Function} A getter/setter method for the given global class variable.
+# Gets the course info for the user with the given id.
+# @method getCourseInfo
+# @param {String} [userId=Meteor.userId()]
+# @return {Object}
 ###
-@getset = (varName, pattern = Match.Any, allowChanges = yes, transformIn, transformOut) ->
-	(newVar) ->
-		if newVar?
-			if allowChanges
-				@[varName] = if _.isFunction(transformIn) then transformIn newVar else newVar
-			else
-				throw new Error "Changes on this property aren't allowed"
+@getCourseInfo = (userId) -> getUserField userId, 'profile.courseInfo', {}
 
-		if _.isFunction(transformOut) then transformOut @[varName] else @[varName]
+###*
+# Gets the classInfo of the user with the given id.
+# @method getClassInfos
+# @param {String} [userId=Meteor.userId()]
+# @return {Object[]}
+###
+@getClassInfos = (userId) -> getUserField userId, 'classInfos', []
+
+@getRecentChatIds = (userId = Meteor.userId()) ->
+	chatRooms = ChatRooms.find(userIds: userId).fetch()
+
+	projectIds = _(chatRooms)
+		.pluck 'projectId'
+		.reject _.isUndefined
+		.value()
+
+	userIds = _(chatRooms)
+		.filter (room) -> room.users.length is 2 and not room.projectId?
+		.map (room) -> _.find(room.users, (id) -> id isnt userId)
+		.value()
+
+	###
+	fields =
+		projectId: 1
+		to: 1
+		creatorId: 1
+
+	projectIds =
+		_(ChatMessages.find({
+			projectId: $in: _.pluck Projects.find({ participants: @userId }).fetch(), '_id'
+		}, { fields }).fetch())
+			.pluck 'projectId'
+			.uniq (id) -> id._str
+			.value()
+
+	userIds =
+		_(ChatMessages.find({
+			$or: [
+				{ creatorId: userId }
+				{ to: userId }
+			]
+		}, { fields }).fetch())
+			.map (m) -> if m.creatorId is userId then m.to else m.creatorId
+			.uniq()
+			.value()
+
+	###
+
+	{ projectIds, userIds }

@@ -1,0 +1,28 @@
+<template name="messages">
+	<div id="settings">
+		{{> messages_sidebar}}
+		<div class="page">
+			"Als de berichtje ook nog eens meer dan een button zouden zijn" - Joris Lith
+		</div>
+	</div>
+</template>
+
+<template name="messages_sidebar">
+	<div id="messagesSidebar">
+		<div class="header">Berichten</div>
+		<div class="folderList">
+			{{#each folders}}
+				{{> messages_sidebar_folder}}
+			{{/each}}
+			<div class="item">
+				Postvak in
+			</div>
+		</div>
+	</div>
+</template>
+
+<template name="messages_sidebar_folder">
+	<div class="item">
+		kaas
+	</div>
+</template>

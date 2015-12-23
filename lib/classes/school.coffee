@@ -12,10 +12,7 @@ class @School
 	# @param url {String} The URL of the school.
 	###
 	constructor: (@name, @url) ->
-		@_id = new Meteor.Collection.ObjectID()
-
-		@externalId = undefined
-		@fetchedBy = undefined
+		@externalIds = {}
 
 	###*
 	# Return a cursor pointing to the books that this school uses.

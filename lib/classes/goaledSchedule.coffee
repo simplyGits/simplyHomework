@@ -22,21 +22,10 @@ class @GoaledSchedule
 		@tasks = []
 
 		###*
-		# The ID of the Magister appointment this GoaledSchedule is for.
-		# If this is set `calendarItemId` should be null.
-		#
-		# @property magisterAppoinmentId
-		# @type Number
-		# @default null
-		###
-		@magisterAppoinmentId = null
-
-		###*
 		# The ID of the CalendarItem this GoaledSchedule is for.
-		# If this is set `magisterAppoinmentId` should be null.
 		#
 		# @property calendarItemId
-		# @type ObjectID
+		# @type String|null
 		# @default null
 		###
 		@calendarItemId = null

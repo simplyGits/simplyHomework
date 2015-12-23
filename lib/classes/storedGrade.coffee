@@ -15,17 +15,18 @@ englishGradeMap =
 # @return {Number} `grade` converted to a number. Defaults to NaN.
 ###
 @gradeConverter = (grade) ->
-	return grade if _.isNumber grade
+	return grade if _.isFinite grade
 	check grade, String
-	number = parseInt grade.replace(',', '.').replace(/[^\d\.]/g, ''), 10
+	number = parseFloat grade.replace(',', '.').replace(/[^\d\.]/g, '')
 
 	# Normal Dutch grades
 	return number unless _.isNaN number
 
 	# English grades
-	if _(englishGradeMap).keys().contains(grade.toUpperCase())
-		return englishGradeMap[grade.toUpperCase()]
+	number = englishGradeMap[grade.toUpperCase()]
+	return number if number?
 
+	# TODO: This seems like it's never called.
 	# Percentages
 	if _.isString(grade) and grade[-1..] is '%' and not _.isNaN number
 		return number
@@ -45,6 +46,14 @@ englishGradeMap =
 class @StoredGrade
 	constructor: (@grade, @weight, @classId, @ownerId) ->
 		@_id = new Meteor.Collection.ObjectID()
+
+		###*
+		# Can be one of: [ 'number', 'percentage' ]
+		# @property gradeType
+		# @type String
+		# @default 'number'
+		###
+		@gradeType = 'number'
 
 		###*
 		# A description describing what this grade is for.
@@ -114,6 +123,7 @@ class @StoredGrade
 		###
 		@period = null
 
+	class: -> Classes.findOne @classId
 	toString: (precision = 2) -> @grade.toPrecision precision
 	valueOf: -> @grade
 

@@ -1,26 +1,31 @@
 <template name="sidebar">
 	<div class="sidebar unselectable" onselectstart="return false;" ondragstart="return false;">
-		{{#linkTo route="personView" data=currentUser}}
-			<div class="sidebarProfile">
-				<div class="sidebarProfileBack" style="background-image: url({{ gravatar currentUser 250}})"></div>
-				<img class="sidebarProfilePicture" src="{{gravatar currentUser 100}}" width="50" height="50"/>
-				<div class="sidebarProfileName">
-					{{#with currentUser.profile}}
-						{{firstName}}
-					{{/with}}
+		{{#with currentUser}}
+			<a href="{{pathFor 'personView' id=_id}}">
+				<div class="sidebarProfile">
+					<div class="sidebarProfileBack" style="background-image: url({{picture this 250}})"></div>
+					<img class="sidebarProfilePicture" src="{{picture this 100}}" width="50" height="50"/>
+					<div class="sidebarProfileName">
+						{{profile.firstName}}
+					</div>
 				</div>
-			</div>
-		{{/linkTo}}
-		<a href="{{pathFor 'app'}}">
-			<div class="sidebarButton bigSidebarButton" id="overview">
-				<div class="selectedBorder"></div>
-				Overzicht
+			</a>
+		{{else}}
+			<div class="sidebarProfile"></div>
+		{{/with}}
+		<a href="{{pathFor 'overview'}}">
+			<div class="sidebarButton" id="overview">
+				<span>Overzicht</span>
 			</div>
 		</a>
 		<a href="{{pathFor 'calendar'}}">
-			<div class="sidebarButton bigSidebarButton" id="calendar">
-				<div class="selectedBorder"></div>
-				Agenda
+			<div class="sidebarButton" id="calendar">
+				<span>Agenda</span>
+			</div>
+		</a>
+		<a href="{{pathFor 'messages'}}">
+			<div class="sidebarButton" id="messages">
+				<span>Berichten</span>
 			</div>
 		</a>
 
@@ -33,9 +38,7 @@
 
 		<div class="sidebarClasses smoothScroll">
 			{{#each classes}}
-				{{#linkTo route="classView" classId=_id.toHexString}}
-					{{> sidebarItem}}
-				{{/linkTo}}
+				{{> sidebarClass}}
 			{{/each}}
 		</div>
 		<div class="sidebarFooter">
@@ -45,16 +48,11 @@
 	</div>
 </template>
 
-<template name="sidebarItem">
-	<div class="sidebarButton sidebarClass" id="{{_id.toHexString}}">
-		<div class="classColorBar" style="border-color: {{__color}}"></div>
-		<div class="selectedBorder"></div>
-		<span>{{__sidebarName}}</span>
-
-		{{#if __showBadge}}
-			{{#with __taskAmount}}
-				<div class="badge pull-right">{{this}}</div>
-			{{/with}}
-		{{/if}}
-	</div>
+<template name="sidebarClass">
+	<a href="{{pathFor 'classView' id=_id}}">
+		<div class="sidebarButton sidebarClass" id="{{_id}}">
+			<div class="classColorBar" style="border-color: {{__color}}"></div>
+			<span>{{__sidebarName}}</span>
+		</div>
+	</a>
 </template>

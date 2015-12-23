@@ -47,7 +47,6 @@ div.personInfo
 
 		button
 			font-size: 20px
-			border-radius: 0
 
 		button:hover
 			color: white
@@ -60,21 +59,37 @@ div.personInfo
 			width: size
 
 		div.course
-			display: none
+			font-size: 30px
+			top: 0
+			bottom: initial
 
 		div.name
-			bottom: 55px
-			font-size: 27px
-			font-size: 8vw
+			display: none
 
 		div.buttons
+			height = 40px
+			bottom: 10px
+			right: initial
+
+			height: height
+			line-height: height
+
 			button
+				font-size: 17px
+				padding: 6px
+
+			#chatButton
+				float: left
+
+			i
+				margin-right: initial
 				margin-left: 10px
-				bottom: 10px
-				right: initial
 
 div.personDetailsContainer
 	margin-top: 250px
+
+	+mobile()
+		margin-top: 100px
 
 div.personSharedHours
 	li

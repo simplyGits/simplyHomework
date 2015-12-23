@@ -1,0 +1,60 @@
+<template name="mobileCalendar">
+	{{#with openCalendarItem}}
+		{{> mobileCalendarItemDetails}}
+	{{/with}}
+
+	<div class="swipebar"></div>
+	<div class="swipebar right"></div>
+
+	<div class="mobileCalendarTopBar">
+		<span class="currentDate {{today}}">{{currentDate}}</span>
+		{{! <i class="fa fa-plus pull-right" id="newAppointmentButton"></i> }}
+	</div>
+	<div class="mobileCalendar" data-snap-ignore="true"></div>
+</template>
+
+<template name="mobileCalendarPage">
+	<div style="overflow-y: visible; overflow-x: hidden; position: absolute; top: 0; left: 0; right: 0;">
+		{{#unless loading}}
+			{{#each items}}
+				{{> mobileCalendarHour}}
+			{{else}}
+				<div class="notice">
+					Geen afspraken.
+				</div>
+			{{/each}}
+		{{else}}
+			<div class="notice">
+				Afspraken laden...
+			</div>
+		{{/unless}}
+	</div>
+</template>
+
+<template name="mobileCalendarHour">
+	<div class="hour {{current}} {{__type}} {{__absent}}">
+		<div class="hourIndicator">{{__classSchoolHour}}</div>
+		<div class="hourInfo">
+			<div class="primary">{{__className}}</div>
+			<div class="secondary">
+				{{__classTime}}
+				{{#with relativeTime}}
+					({{this}})
+				{{/with}}
+				{{#with __classLocation}}
+					in {{this}}
+				{{/with}}
+			</div>
+		</div>
+	</div>
+</template>
+
+<template name="mobileCalendarItemDetails">
+	<div id="mobileCalendarItemDetails">
+		<div id="header">
+			Afspraak details
+			<span id="closeButton">&times;</span>
+		</div>
+		{{> calendarItemDetails}}
+	</div>
+</template>

@@ -12,6 +12,7 @@ Meteor.startup -> # my eyes feel dizzy, i think. cant remember. please. help.
 	BrowserPolicy.content.allowImageOrigin 'www.google-analytics.com'
 	BrowserPolicy.content.allowImageOrigin 'http://cdn.jsdelivr.net/'
 	BrowserPolicy.content.allowImageOrigin 'ssl.gstatic.com'
+	BrowserPolicy.content.allowImageOrigin 'apis.google.com'
 
 	BrowserPolicy.content.allowMediaOrigin 'www.ispeech.org'
 
@@ -33,15 +34,16 @@ Meteor.startup -> # my eyes feel dizzy, i think. cant remember. please. help.
 Meteor.users.allow
 	update: (userId, doc, fields, modifier) ->
 		allowed = [
+			'events'
 			'classInfos'
-			'externalServices'
+			#'gradeNotificationDismissTime'
+			#'hasGravatar'
 			'mailSignup'
-			'schedular'
 			'privacyOptions'
 			'profile'
-			'hasGravatar'
-			'studyGuidesHashes'
-			'gradeNotificationDismissTime'
+			'schedular'
+			'setupProgress'
+			#'studyGuidesHashes'
 		]
 		userId is doc._id and not _.any fields, (f) -> not _.contains allowed, f
 
@@ -59,7 +61,8 @@ CalendarItems.allow
 Projects.allow
 	insert: (userId, doc) -> doc.ownerId is userId and _.contains doc.participants, userId
 	update: (userId, doc, fields, modifier) ->
-		isParticiapnt = _.contains doc.participants, userId
+		isParticipant = _.contains doc.participants, userId
+		###
 		isOwner = userId is doc.ownerId
 
 		modifiesAllowedFields = (
@@ -67,13 +70,10 @@ Projects.allow
 			leaves or not _.any ['ownerId', 'participants'], (x) -> _.contains fields, x
 		)
 
-		return isParticiapnt and ( modifiesAllowedFields or isOwner )
+		return isParticipant and ( modifiesAllowedFields or isOwner )
+		###
+		isParticipant
 	remove: -> no
-
-ChatMessages.allow
-	insert: -> yes
-	update: -> no # Not yet. We don't have have GUI to change it or to show it. (which is really important).
-	remove: -> no # Never I guess.
 
 GoaledSchedules.allow
 	insert: -> yes
@@ -85,8 +85,8 @@ Schools.allow
 	update: -> no # maybe later?
 	remove: -> no
 
-# StoredGrades and StudyUtils are only updated serverside.
-StoredGrades.allow
+# Grades and StudyUtils are only updated serverside.
+Grades.allow
 	insert: -> no
 	update: -> no
 	remove: -> no

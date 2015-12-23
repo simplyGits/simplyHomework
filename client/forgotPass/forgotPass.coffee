@@ -24,12 +24,17 @@ Template.forgotPass.events
 					text: 'Je krijgt zometeen een mailtje waar je je wachtwoord kan veranderen.'
 					type: 'success'
 
+Template.forgotPass.onRendered ->
+	setPageOptions
+		title: 'Wachtwoord Vergeten'
+		color: null
+
 Template.resetPass.events
 	'submit': (event) ->
 		event.preventDefault()
 		val = document.getElementById('passwordInput').value
 
-		Accounts.resetPassword Router.current().params.token, val, (err) ->
+		Accounts.resetPassword FlowRouter.getParam('token'), val, (err) ->
 			if err?
 				if err.reason is 'Token expired'
 					swalert
@@ -44,8 +49,13 @@ Template.resetPass.events
 
 					Kadira.trackError 'resetPass-client', err.message, stacks: EJSON.stringify err
 			else
-				Router.go 'app'
+				FlowRouter.go 'overview'
 				swalert
 					title: 'yay'
 					text: 'Je wachtwoord is aangepast.'
 					type: 'success'
+
+Template.resetPass.onRendered ->
+	setPageOptions
+		title: 'Wachtwoord Aanpassen'
+		color: null
