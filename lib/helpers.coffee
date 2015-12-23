@@ -1,5 +1,3 @@
-root = this
-
 @_ = lodash # Shortcut for lo-dash. Replaces underscore.
 
 ###*
@@ -443,45 +441,3 @@ class @Helpers
 # @return {Object[]}
 ###
 @getClassInfos = (userId) -> getUserField userId, 'classInfos', []
-
-@getRecentChatIds = (userId = Meteor.userId()) ->
-	chatRooms = ChatRooms.find(userIds: userId).fetch()
-
-	projectIds = _(chatRooms)
-		.pluck 'projectId'
-		.reject _.isUndefined
-		.value()
-
-	userIds = _(chatRooms)
-		.filter (room) -> room.users.length is 2 and not room.projectId?
-		.map (room) -> _.find(room.users, (id) -> id isnt userId)
-		.value()
-
-	###
-	fields =
-		projectId: 1
-		to: 1
-		creatorId: 1
-
-	projectIds =
-		_(ChatMessages.find({
-			projectId: $in: _.pluck Projects.find({ participants: @userId }).fetch(), '_id'
-		}, { fields }).fetch())
-			.pluck 'projectId'
-			.uniq (id) -> id._str
-			.value()
-
-	userIds =
-		_(ChatMessages.find({
-			$or: [
-				{ creatorId: userId }
-				{ to: userId }
-			]
-		}, { fields }).fetch())
-			.map (m) -> if m.creatorId is userId then m.to else m.creatorId
-			.uniq()
-			.value()
-
-	###
-
-	{ projectIds, userIds }
