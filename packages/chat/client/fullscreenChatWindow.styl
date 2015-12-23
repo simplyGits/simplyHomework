@@ -1,8 +1,8 @@
-@import "jeet"
+@require "jeet"
 
-div.fullscreenChatWindow
-	fixed: top left right bottom
-	z-index: 999
+div#fullscreenChatWindow
+	absolute: top left right bottom
+	z-index: 299
 	paddingSides = 200px // This is going to get messy.
 
 	padding-top: 50px
@@ -11,7 +11,7 @@ div.fullscreenChatWindow
 	animation: .5s fadeIn ease-out-expo // Fade in animation
 	transition: .5s opacity ease-out-expo // For the fade out animation
 
-	div.headerAsides
+	div#headerAsides
 		div.userStatus
 			absolute top 70px left 100px
 			font-size: 25px
@@ -34,7 +34,7 @@ div.fullscreenChatWindow
 			color: black
 			cursor: pointer
 
-	div.header
+	div#header
 		position: relative
 		height: 75px
 		margin-bottom: 25px
@@ -47,6 +47,7 @@ div.fullscreenChatWindow
 			size = 75px
 			width: size
 			height: size
+			overflow: hidden
 
 			border: 1px lightgray solid
 
@@ -60,7 +61,7 @@ div.fullscreenChatWindow
 			font-weight: 300
 			font-size: 30px
 
-	div.messages
+	div#messages
 		height: calc(100% - 175px)
 		overflow: hidden
 		overflow-y: scroll
@@ -75,18 +76,21 @@ div.fullscreenChatWindow
 			aside
 				position: absolute
 				opacity: .3
-				width: 115px
+				width: 165px
 
 				transition: .1s opacity linear
 
-				left: -120px
+				left: -170px
 				right: initial
 
 				text-align: right
 
+				cursor: default
+
 				.edited
-					float: left
-					margin-right: 5px
+					float: right
+					margin-left: 5px
+					margin-right: 0
 
 			aside:hover
 				opacity: .8
@@ -103,12 +107,21 @@ div.fullscreenChatWindow
 
 				text-align: left
 
+				a.name
+					color: black
+					text-decoration: underline
+
 		div.message.own
 			aside
 				left: initial
-				right: -120px
+				right: -170px
 
 				text-align: left
+
+				.edited
+					float: left
+					margin-left: 0
+					margin-right: 5px
 
 			img.senderImage
 				float: right
@@ -119,7 +132,19 @@ div.fullscreenChatWindow
 
 				text-align: right
 
-	div.footer
+				*
+					margin: 0
+
+		div.message.new
+			aside
+				opacity: 1
+
+		div.loadMore
+			text-align: center
+			border: 1px lightgray solid
+			margin-bottom: 10px
+
+	div#footer
 		position: relative
 		inputWidth = 65%
 		center(inputWidth)
@@ -156,15 +181,16 @@ div.fullscreenChatWindow
 
 			border: none
 			border-left: 1px lightgray solid
+			outline: none
 
 			font-size: 20px
 			line-height: 1
 
-			span
-				absolute: right 35px top 7px
+			#sendText
+				absolute: right 35px top 6px
 				font-size: 15px
 
-			.fa
+			#sendIcon
 				absolute: right 10px top 3px
 
 		button:hover
