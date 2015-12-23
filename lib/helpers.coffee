@@ -228,6 +228,16 @@ class @Helpers
 			else
 				"<a target='_blank' href='http://#{match}'>#{match}</a>"
 
+	###*
+	# Sets an interval for the given `func`. While immediately executing it.
+	# Optionally also binds to an object containing a stop function.
+	#
+	# @method interval
+	# @param {Function} func
+	# @param {Number} interval
+	# @param {Boolean} [bind=true]
+	# @return {Number}
+	###
 	@interval: (func, interval, bind = yes) ->
 		if bind then func = _.bind func, stop: -> Meteor.clearInterval handle
 		Meteor.defer func
@@ -252,7 +262,7 @@ class @Helpers
 	# stolen from http://www.passwordmeter.com/
 	#
 	# @method passwordStrength
-	# @param password {String} The password to chec
+	# @param {String} password The password to check
 	# @return {Number} The strength of `password`.
 	###
 	@passwordStrength: (password) ->
@@ -382,6 +392,13 @@ class @Helpers
 			arr.push "minder dan 1 minuut"
 		time = arr.join ' en '
 
+###*
+# @method getUserField
+# @param {String} [userId=Meteor.userId()]
+# @param {String} field
+# @param {mixed} [def] Optional default value to set the result to if it's undefined or null.
+# @return {mixed}
+###
 @getUserField = (userId = Meteor.userId(), field, def) ->
 	check userId, String
 	check field, String
@@ -390,6 +407,13 @@ class @Helpers
 	user = Meteor.users.findOne userId, fields: "#{field.split('[')[0]}": 1
 	_.get(user, field) ? def
 
+###*
+# Gets the date of the given `event` for the user with the given `userId`.
+# @method getEvent
+# @param {String} event
+# @param {String} [userId=Meteor.userId()]
+# @return {Date}
+###
 @getEvent = (event, userId) -> getUserField userId, "events.#{event}"
 
 ###*

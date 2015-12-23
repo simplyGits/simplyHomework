@@ -5,8 +5,12 @@ externalAssignments = new ReactiveVar()
 
 ###*
 # @class App
+# @static
 ###
 class @App
+	###*
+	# @method logout
+	###
 	@logout: ->
 		FlowRouter.go 'launchPage'
 		Meteor.defer ->

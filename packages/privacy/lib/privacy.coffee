@@ -1,5 +1,13 @@
+###*
+# @class Privacy
+# @static
+###
 Privacy = {}
 
+###*
+# @property options
+# @type Object[]
+###
 Privacy.options = [
 	{
 		description: 'Anderen toestaan je rooster te bekijken.'
