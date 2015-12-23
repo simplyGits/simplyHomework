@@ -213,6 +213,7 @@ Meteor.publish 'foreignCalendarItems', (userId, from, to) ->
 		startDate: $gte: from
 		endDate: $lte: to
 
+# TODO: remove this when new homepage is up?
 Meteor.publish 'userCount', ->
 	Counts.publish this, 'userCount', Meteor.users.find {}
 	undefined

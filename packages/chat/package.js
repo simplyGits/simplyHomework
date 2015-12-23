@@ -9,14 +9,14 @@ Package.describe({
 Package.onUse(function(api) {
 	api.versionsFrom('1.2.1');
 
-	api.use('api', { weak: true });
+	api.use('public-api', { weak: true }); // for irc bridge and websocket bridge 'n tuff.
 	api.use('aldeed:collection2', { weak: true });
 	api.use([
 		'coffeescript',
-		'ejson',
 		'check',
 		'tmeasday:publish-counts',
 		'stevezhu:lodash',
+		'mongo',
 	]);
 	api.use([
 		'templating',
