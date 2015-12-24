@@ -13,11 +13,11 @@ markUserEvent = (userId, name) ->
 # in of current connection, unless the grades were updated shortly before.
 #
 # @method updateGrades
-# @param [userId=this.userId] {String} `userId` overwrites the `this.userId` which is used by default which is used by default.
+# @param userId {String} `userId` overwrites the `this.userId` which is used by default which is used by default.
 # @param [forceUpdate=false] {Boolean} If true the grades will be forced to update, otherwise the grades will only be updated if they weren't updated in the last 20 minutes.
 # @return {Error[]} An array containing errors from ExternalServices.
 ###
-updateGrades = (userId = @userId, forceUpdate = no) ->
+updateGrades = (userId, forceUpdate = no) ->
 	check userId, String
 	check forceUpdate, Boolean
 
@@ -70,11 +70,11 @@ updateGrades = (userId = @userId, forceUpdate = no) ->
 # in of current connection, unless the utils were updated shortly before.
 #
 # @method updateStudyUtils
-# @param [userId=this.userId] {String} `userId` overwrites the `this.userId` which is used by default which is used by default.
+# @param userId {String} `userId` overwrites the `this.userId` which is used by default which is used by default.
 # @param [forceUpdate=false] {Boolean} If true the utils will be forced to update, otherwise the utils will only be updated if they weren't updated in the last 20 minutes.
 # @return {Error[]} An array containing errors from ExternalServices.
 ###
-updateStudyUtils = (userId = @userId, forceUpdate = no) ->
+updateStudyUtils = (userId, forceUpdate = no) ->
 	check userId, String
 	check forceUpdate, Boolean
 
@@ -118,12 +118,12 @@ updateStudyUtils = (userId = @userId, forceUpdate = no) ->
 # in of current connection, unless the utils were updated shortly before.
 #
 # @method updateCalendarItems
-# @param [userId=this.userId] {String} `userId` overwrites the `this.userId` which is used by default which is used by default.
+# @param userId {String} `userId` overwrites the `this.userId` which is used by default which is used by default.
 # @param [from] {Date} The date from which to get the calendarItems from.
 # @param [to] {Date} The date till which to get the calendarItems of.
 # @return {Error[]} An array containing errors from ExternalServices.
 ###
-updateCalendarItems = (userId = @userId, from, to) ->
+updateCalendarItems = (userId, from, to) ->
 	check userId, String
 	check from, Date
 	check to, Date
@@ -185,10 +185,10 @@ updateCalendarItems = (userId = @userId, from, to) ->
 # @method getPersons
 # @param query {String}
 # @param [type] {String}
-# @param [userId=this.userId] {String}
+# @param userId {String}
 # @return {ExternalPerson[]}
 ###
-getPersons = (query, type = undefined, userId = @userId) ->
+getPersons = (query, type = undefined, userId) ->
 	# TODO: Store doneQueries so that we can cache them, example:
 	# tho -> fetch persons -> store persons
 	# thom -> tho is substring of thom, we can locally filter the results
@@ -210,10 +210,10 @@ getPersons = (query, type = undefined, userId = @userId) ->
 ###*
 # Returns the classes from externalServices for the given `userId`
 # @method getExternalClasses
-# @param [userId=this.userId] {String} The ID of the user to get the classes from.
+# @param userId {String} The ID of the user to get the classes from.
 # @return {SchoolClass[]} The external classes as SchoolClasses
 ###
-getExternalClasses = (userId = @userId) ->
+getExternalClasses = (userId) ->
 	check userId, String
 
 	courseInfo = getCourseInfo userId
@@ -274,10 +274,10 @@ getExternalClasses = (userId = @userId) ->
 ###*
 # Gets the assignments for the user with the given `userId`.
 # @method getExternalAssignments
-# @param [userId=this.userId] {String} The ID of the user to get the assignments for.
+# @param userId {String} The ID of the user to get the assignments for.
 # @return {Assignment[]}
 ###
-getExternalAssignments = (userId = @userId) ->
+getExternalAssignments = (userId) ->
 	check userId, String
 
 	user = Meteor.users.findOne userId
@@ -293,9 +293,10 @@ getExternalAssignments = (userId = @userId) ->
 
 	result
 
-getServiceSchools = (serviceName, query) ->
+getServiceSchools = (serviceName, query, userId) ->
 	check serviceName, String
 	check query, String
+	check userId, Match.Optional String
 
 	service = _.find Services, (s) -> s.name is serviceName
 
@@ -308,7 +309,7 @@ getServiceSchools = (serviceName, query) ->
 	try
 		result = service.getSchools query
 	catch e
-		handleServiceError service.name, @userId, e
+		handleServiceError service.name, userId, e
 		throw new Meteor.Error 'externalError', "Error while retreiving schools from #{serviceName}"
 
 	for school in result
@@ -326,17 +327,19 @@ getServiceSchools = (serviceName, query) ->
 		name: $regex: query, $options: 'i'
 	).fetch()
 
-getSchools = (query) ->
+getSchools = (query, userId) ->
 	check query, String
+	check userId, Match.Optional String
+
 	services = _.filter Services, (s) -> s.getSchools?
 	for service in services
-		Meteor.call 'getServiceSchools', service.name, query
+		getServiceSchools service.name, query, userId
 
 	Schools.find(
 		name: $regex: query, $options: 'i'
 	).fetch()
 
-getServiceProfileData = (serviceName, userId = @userId) ->
+getServiceProfileData = (serviceName, userId) ->
 	check serviceName, String
 	check userId, String
 
@@ -367,10 +370,10 @@ getServiceProfileData = (serviceName, userId = @userId) ->
 # that service.
 #
 # @method getProfileData
-# @param [userId=this.userId] {String} The ID of the user to get the profile data for.
+# @param userId {String} The ID of the user to get the profile data for.
 # @return {Object}
 ###
-getProfileData = (userId = @userId) ->
+getProfileData = (userId) ->
 	check userId, String
 
 	services = _.filter Services, (s) -> s.active userId
@@ -386,10 +389,10 @@ getProfileData = (userId = @userId) ->
 ###*
 # Returns an array containg info about available services.
 # @method getModuleInfo
-# @param [userId=this.userId] {String} The ID of the user to use for the service info.
+# @param userId {String} The ID of the user to use for the service info.
 # return {Object[]} An array containg objects that hold the info about all the services.
 ###
-getModuleInfo = (userId = @userId) ->
+getModuleInfo = (userId) ->
 	check userId, String
 
 	_.map Services, (s) ->
