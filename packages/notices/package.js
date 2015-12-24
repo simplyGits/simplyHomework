@@ -16,6 +16,7 @@ Package.onUse(function(api) {
 	]);
 	api.use([
 		'templating',
+		'mquandalle:stylus',
 		'handlebars',
 	], 'client');
 	api.use([
@@ -31,6 +32,8 @@ Package.onUse(function(api) {
 		'client/noticesManager.coffee',
 		'client/notices.html',
 		'client/notices.coffee',
+		'client/recentGrades/recentGrades.html',
+		'client/recentGrades/recentGrades.coffee',
 	], 'client');
 	api.addFiles([
 		'server/security.coffee',

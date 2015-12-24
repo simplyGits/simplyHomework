@@ -1,18 +1,8 @@
-@notices = notices = new Mongo.Collection null
-recentGrades = ->
-	dateTracker.depend()
-	date = Date.today().addDays -4
-	Grades.find(
-		dateFilledIn: $gte: date
-		isEnd: no
-	).fetch()
+# added temp till we have used `NoticeManager.provide` everywhere.
+@notices = notices = NoticeManager.notices
 
 Template.notices.helpers
-	notices: ->
-		notices.find {},
-			sort: priority: -1
-			transform: (n) -> _.extend n,
-				clickable: if n.onClick? then 'clickable' else ''
+	notices: -> NoticeManager.get()
 	timeGreeting: -> TimeGreeting()
 
 Template.notices.events
@@ -22,20 +12,8 @@ Template.notices.events
 			when 'route' then FlowRouter.go a.route, a.params, a.queryParams
 
 Template.notices.onCreated ->
+	@autorun -> NoticeManager.init()
 	@subscribe 'externalCalendarItems', Date.today(), Date.today().addDays 4
-	@subscribe 'externalGrades', onlyRecent: yes
-
-	@autorun ->
-		if recentGrades().length
-			notices.upsert {
-				template: 'recentGrades'
-			}, {
-				template: 'recentGrades'
-				header: 'Recent behaalde cijfers'
-				priority: 0
-			}
-		else
-			notices.remove template: 'recentGrades'
 
 	@autorun ->
 		if tasks().length
@@ -141,26 +119,6 @@ Template.notices.onCreated ->
 			}
 		else
 			notices.remove template: 'infoNextLesson'
-
-Template.recentGrades.helpers
-	gradeGroups: ->
-		grades = recentGrades()
-		_(grades)
-			.sortByOrder 'dateFilledIn', 'desc'
-			.uniq 'classId'
-			.map (g) ->
-				class: g.class()
-				grades: (
-					_(grades)
-						.filter (x) -> x.classId is g.classId
-						.sortBy 'dateFilledIn'
-						.map (x) -> if x.passed then x.__grade else "<b style='color: red'>#{x.__grade}</b>"
-						.join ' & '
-				)
-			.value()
-
-Template.recentGradeGroup.events
-	'click': -> FlowRouter.go 'classView', id: @class._id
 
 Template.tasks.helpers
 	tasks: -> tasks()
