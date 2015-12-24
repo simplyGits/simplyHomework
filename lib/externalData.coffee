@@ -1,27 +1,3 @@
-@getGradesCursor = (query, userId = Meteor.userId()) ->
-	if Meteor.isClient and userId isnt Meteor.userId()
-		throw new Error 'Client code can only fetch their own grades.'
-
-	Meteor.call 'updateGrades', userId, no, yes
-
-	Grades.find query
-
-@getStudyUtilsCursor = (query, userId = Meteor.userId()) ->
-	if Meteor.isClient and userId isnt Meteor.userId()
-		throw new Error 'Client code can only fetch their own utils.'
-
-	Meteor.call 'updateStudyUtils', userId, no, yes
-
-	StudyUtils.find query
-
-@getCalendarItems = (query, userId = Meteor.userId()) ->
-	if Meteor.isClient and userId isnt Meteor.userId()
-		throw new Error 'Client code can only fetch their own calendarItems.'
-
-	Meteor.call 'updateCalendarItems', userId, no, yes
-
-	CalendarItems.find query
-
 @getPersons = (query, type, userId = Meteor.userId()) ->
 	callback = _.last arguments
 	if Meteor.isClient and not _.isFunction(callback)
@@ -71,6 +47,7 @@
 			when 'magister' then info.url
 			else throw new Error "Don't know anything about '#{info.fetchedBy}'"
 
+# Issue: #156
 @getAvailableClasses = ->
 	clean = (s) -> s.replace(/\W/g, '').toLowerCase()
 
