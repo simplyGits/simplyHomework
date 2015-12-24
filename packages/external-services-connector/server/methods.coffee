@@ -1,5 +1,7 @@
 Meteor.methods
-	# TODO: should we have checks to ensure that no data has been stored yet for
+	'getModuleInfo': -> getModuleInfo @userId
+
+	# REVIEW: should we have checks to ensure that no data has been stored yet for
 	# the service?
 	#
 	# I don't know if it's useful to call this function while there's
@@ -43,3 +45,22 @@ Meteor.methods
 			service.storedInfo @userId, null
 		else
 			throw new Meteor.Error 'notfound', "No module with the name '#{serviceName}' found."
+
+	'getServiceProfileData': (serviceName) ->
+		check serviceName, String
+		getServiceProfileData serviceName, @userId
+
+	'getExternalClasses': ->
+		@unblock()
+		getExternalClasses @userId
+
+	'getServiceSchools': (serviceName, query) ->
+		@unblock()
+		check serviceName, String
+		check query, String
+		getServiceSchools serviceName, query, @userId
+
+	'getSchools': (query) ->
+		@unblock()
+		check query, String
+		getSchools query, @userId
