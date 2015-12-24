@@ -1,6 +1,6 @@
 NoticeManager.provide 'currentLesson', ->
 	minuteTracker.depend()
-	@subscribe 'externalCalendarItems', Date.today(), Date.today().addDays 1, yes
+	@subscribe 'externalCalendarItems', Date.today(), Date.today().addDays 1
 
 	today = CalendarItems.find({
 		userIds: Meteor.userId()
