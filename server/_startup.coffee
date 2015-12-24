@@ -86,3 +86,7 @@ Meteor.startup ->
 		userIds: 1
 		startDate: -1
 		endDate: -1
+
+	Meteor.users._ensureIndex
+		'profile.firstName': 1
+		'profile.lastName': 1
