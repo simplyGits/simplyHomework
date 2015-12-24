@@ -4,7 +4,7 @@ Meteor.methods
 	# @param {String} userId
 	# @return {String} The ID of the newely created ChatRoom.
 	###
-	createPrivateChatRoom: (userId) -> # TODO: See why this can create multiple chatrooms between the same users.
+	createPrivateChatRoom: (userId) ->
 		check userId, String
 		if (val = ChatRooms.findOne users: [@userId, userId])?
 			val._id

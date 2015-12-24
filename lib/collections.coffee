@@ -1,12 +1,9 @@
 @Schemas               = {}
-@GoaledSchedules       = new Meteor.Collection 'goaledSchedules'
 @Classes               = new Meteor.Collection 'classes', transform: (c) -> classTransform c
 @Books                 = new Meteor.Collection 'books'
-@Schools               = new Meteor.Collection 'schools'
+@Schools               = new Meteor.Collection 'schools', transform: (s) -> _.extend new School, s
 @Schedules             = new Meteor.Collection 'schedules'
-@Votes                 = new Meteor.Collection 'votes'
 @Utils                 = new Meteor.Collection 'utils'
-@Tickets               = new Meteor.Collection 'tickets'
 @Projects              = new Meteor.Collection 'projects', transform: (p) -> projectTransform p
 @CalendarItems         = new Meteor.Collection 'calendarItems', transform: (c) -> _.extend new CalendarItem, c
 @ReportItems           = new Meteor.Collection 'reportItems'
@@ -17,7 +14,7 @@
 		# TODO: do this on a i18n friendly way.
 		__grade: g.toString().replace '.', ','
 
-@StudyUtils            = new Meteor.Collection 'studyUtils',   transform: (s) -> _.extend new StudyUtil, s
+@StudyUtils            = new Meteor.Collection 'studyUtils', transform: (s) -> _.extend new StudyUtil, s
 @Notifications         = new Meteor.Collection 'notifications'
 @ScholierenClasses     = new Meteor.Collection 'scholieren.com'
 @WoordjesLerenClasses  = new Meteor.Collection 'woordjesleren'
@@ -129,33 +126,6 @@ Schemas.Projects = new SimpleSchema
 			else @value
 	driveFileIds:
 		type: [String]
-
-Schemas.GoaledSchedules = new SimpleSchema
-	_id:
-		type: Meteor.Collection.ObjectID
-	ownerId:
-		type: String
-		index: 1
-	dueDate:
-		type: Date
-	classId:
-		type: String
-	createTime:
-		type: Date
-		autoValue: -> if @isInsert then new Date()
-		denyUpdate: yes
-	tasks:
-		type: [Object]
-		blackbox: yes
-	magisterAppointmentId:
-		type: Number
-		optional: yes
-	calendarItemId:
-		type: Meteor.Collection.ObjectID
-		optional: yes
-	weight:
-		type: Number
-		optional: yes
 
 Schemas.ReportItems = new SimpleSchema
 	reporterId:

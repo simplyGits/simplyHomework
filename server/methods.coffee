@@ -67,7 +67,10 @@ Meteor.methods
 			reportGrounds: reportGrounds
 
 		if old?
-			throw new Meteor.Error 'already-reported', "You've already reported the same user on the same grounds."
+			throw new Meteor.Error(
+				'already-reported'
+				"You've already reported the same user on the same grounds."
+			)
 
 		# Amount of report items done by the current reporter in the previous 30
 		# minutes.

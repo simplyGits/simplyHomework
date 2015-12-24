@@ -7,7 +7,7 @@
 // One heck of a binding this is.
 
 (function (Magister, Future, request, LRU) {
-	"use strict";
+	'use strict';
 
 	var SESSIONID_INVALIDATE_TIME = 1000*60*60*24; // 24 hours
 	var ONLY_RECENT_LIMIT = 1000*60*60*24*6; // 6 days
@@ -25,8 +25,8 @@
 	 * @static
 	 */
 	var MagisterBinding = {
-		name: "magister",
-		friendlyName: "Magister",
+		name: 'magister',
+		friendlyName: 'Magister',
 		loginNeeded: true,
 		/**
 		 * Creates data for the user with given `userId` with the given
@@ -57,8 +57,8 @@
 				credentials: {
 					schoolurl: schoolurl,
 					username: username,
-					password: password
-				}
+					password: password,
+				},
 			});
 
 			try {
@@ -80,7 +80,7 @@
 					return new Error(message);
 				}
 			}
-		}
+		},
 	};
 
 	/**
@@ -97,7 +97,7 @@
 		var data = MagisterBinding.storedInfo(userId);
 		if (_.isEmpty(data)) {
 			cache.del(userId);
-			throw new Error("No credentials found.");
+			throw new Error('No credentials found.');
 		} else {
 			var m = cache.get(userId);
 			if (m !== undefined) {
@@ -115,20 +115,20 @@
 
 			var magister = new Magister.Magister({
 				school: {
-					url: data.credentials.schoolurl
+					url: data.credentials.schoolurl,
 				},
 				username: data.credentials.username,
 				password: data.credentials.password,
 				keepLoggedIn: true,
-				sessionId: useSessionId ? data.lastLogin.sessionId : undefined
+				sessionId: useSessionId ? data.lastLogin.sessionId : undefined,
 			});
 
 			if (!useSessionId) { // Update login info
 				MagisterBinding.storedInfo(userId, {
 					lastLogin: {
 						time: new Date(),
-						sessionId: magister._sessionId
-					}
+						sessionId: magister._sessionId,
+					},
 				});
 			}
 
@@ -200,7 +200,7 @@
 						fetchedBy: MagisterBinding.name,
 						externalId: magister.magisterSchool.id + '_' + g.id(),
 						weight: g.counts() ? g.weight() : 0,
-						grade: gradeConverter(g.grade())
+						grade: gradeConverter(g.grade()),
 					});
 
 					if (stored) {
@@ -209,7 +209,7 @@
 						var gradeFut = new Future();
 						futs.push(gradeFut);
 
-						g.fillGrade(function (e, r) {
+						g.fillGrade(function (e) {
 							if (e) {
 								gradeFut.throw(e);
 							} else  {
@@ -294,15 +294,15 @@
 									fetchedBy: MagisterBinding.name,
 									externalInfo: {
 										partId: sgp.id(),
-										parentId: sg.id()
-									}
+										parentId: sg.id(),
+									},
 								});
 
 								if (stored) {
 									result.push(stored);
 								} else {
 									var classId = _.filter(user.classInfos, function (i) {
-										return i.externalInfo.abbreviation === g.classCodes()[0];
+										return i.externalInfo.abbreviation === sg.classCodes()[0];
 									}).id;
 
 									var studyUtil = new StudyUtil(
@@ -317,7 +317,7 @@
 									studyUtil.visibleTo = sgp.to();
 									studyUtil.externalInfo = {
 										partId: sgp.id(),
-										parentId: sg.id()
+										parentId: sg.id(),
 									};
 									// TODO == Find a good universal file class profile and make a magister
 									// file converter for it.
@@ -415,7 +415,7 @@
 					if (!_.isEmpty(a.content())) {
 						calendarItem.content = {
 							type: a.infoTypeString(),
-							description: a.content()
+							description: a.content(),
 						};
 					}
 					calendarItem.scrapped = a.scrapped();
@@ -464,7 +464,7 @@
 							person.teacherCode = t.teacherCode();
 							person.fetchedBy = MagisterBinding.name;
 							return person;
-						})(c.teacher())
+						})(c.teacher()),
 					};
 				}));
 			}
@@ -508,13 +508,13 @@
 			url: pictureUrl,
 			encoding: null,
 			headers: {
-				cookie: magister.http._cookie
-			}
+				cookie: magister.http._cookie,
+			},
 		}, function (error, response, body) {
 			pictureFut.return(
 				body ?
-					"data:image/jpg;base64," + body.toString("base64") :
-					""
+					'data:image/jpg;base64,' + body.toString('base64') :
+					''
 			);
 		});
 
@@ -533,16 +533,16 @@
 		return {
 			nameInfo: {
 				firstName: pf.firstName(),
-				lastName: (pf.namePrefix() || '') + ' ' + pf.lastName()
+				lastName: (pf.namePrefix() || '') + ' ' + pf.lastName(),
 			},
 			birthDate: pf.birthDate(),
 			picture: pictureFut.wait(),
 			courseInfo: {
 				year: courseInfo.type.year,
 				schoolVariant: courseInfo.type.schoolVariant != null ? courseInfo.type.schoolVariant.toLowerCase() : undefined,
-				profile: courseInfo.profile
+				profile: courseInfo.profile,
 			},
-			mainGroup: courseInfo.group
+			mainGroup: courseInfo.group,
 		};
 	};
 
@@ -591,4 +591,4 @@
 	};
 
 	ExternalServicesConnector.pushExternalService(MagisterBinding);
-})(Magister, Npm.require("fibers/future"), Npm.require("request"), Npm.require("lru-cache"));
+})(Magister, Npm.require('fibers/future'), Npm.require('request'), Npm.require('lru-cache'));

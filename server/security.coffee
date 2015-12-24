@@ -75,11 +75,6 @@ Projects.allow
 		isParticipant
 	remove: -> no
 
-GoaledSchedules.allow
-	insert: -> yes
-	update: (userId, doc) -> doc.ownerId is userId
-	remove: -> no
-
 Schools.allow
 	insert: -> yes
 	update: -> no # maybe later?
