@@ -46,8 +46,8 @@ class NoticeManager
 		readyFunctions = []
 		for provider in @_providers
 			cb = (obj) =>
-				if obj
-					readyFunctions.push obj.ready
+				readyFunctions.push obj?.ready
+				if obj?.template?
 					@notices.upsert {
 						name: provider.name
 					}, _.extend obj,
@@ -67,7 +67,7 @@ class NoticeManager
 					Kadira.trackError 'notice-provider-failure', e.toString(), stacks: JSON.stringify e
 
 		Tracker.autorun ->
-			if _.every(readyFunctions, (fn) -> fn())
+			if _.every(readyFunctions, (fn) -> fn?() ? yes)
 				ready.set yes
 
 		ready: -> ready.get()

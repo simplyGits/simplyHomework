@@ -14,6 +14,8 @@ NoticeManager.provide 'recentGrades', ->
 		header: 'Recent behaalde cijfers'
 		priority: 0
 		ready: -> sub.ready()
+	else
+		ready: -> sub.ready()
 
 Template.recentGrades.helpers
 	gradeGroups: ->

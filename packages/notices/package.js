@@ -36,8 +36,18 @@ Package.onUse(function(api) {
 		'client/noticesManager.coffee',
 		'client/notices.html',
 		'client/notices.coffee',
+
 		'client/recentGrades/recentGrades.html',
 		'client/recentGrades/recentGrades.coffee',
+
+		'client/tasks/tasks.html',
+		'client/tasks/tasks.coffee',
+
+		'client/lessons/currentLesson.html',
+		'client/lessons/currentLesson.coffee',
+
+		'client/lessons/nextLesson.html',
+		'client/lessons/nextLesson.coffee',
 	], 'client');
 	api.addFiles([
 		'server/security.coffee',
