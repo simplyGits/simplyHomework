@@ -41,7 +41,7 @@ ChatMiddlewares =
 				message = item.fn message
 			catch e
 				console.warn "Message middleware '#{item.name}' errored.", e
-				Kadira.trackError 'middleware-failure', e.toString(), stacks: EJSON.stringify e
+				Kadira.trackError 'middleware-failure', e.toString(), stacks: JSON.stringify e
 
 		message
 
