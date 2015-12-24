@@ -33,14 +33,13 @@ Meteor.methods
 
 		Meteor.call 'getServiceProfileData', serviceName, @userId
 
-	'deleteServiceData': (serviceName, userId = @userId) ->
+	'deleteServiceData': (serviceName) ->
 		@unblock()
 
 		check serviceName, String
-		check userId, String
 
 		service = _.find Services, (s) -> s.name is serviceName
 		if service?
-			service.storedInfo userId, null
+			service.storedInfo @userId, null
 		else
 			throw new Meteor.Error 'notfound', "No module with the name '#{serviceName}' found."
