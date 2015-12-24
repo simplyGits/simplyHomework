@@ -76,10 +76,12 @@ ChatMiddlewares.attach 'clickable names', 'client', (message) ->
 		.split /\W/
 		.map (word) -> Helpers.nameCap word
 		.map (word, i) ->
-			Meteor.users.findOne $or: [
-				{ 'profile.firstName': word }
-				{ 'profile.lastName': word }
-			]
+			Meteor.users.findOne
+				_id: $nin: [Meteor.userId(), message.creatorId]
+				$or: [
+					{ 'profile.firstName': word }
+					{ 'profile.lastName': word }
+				]
 		.compact()
 		.uniq '_id'
 		.value()
