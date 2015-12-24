@@ -21,7 +21,7 @@ class NoticeManager
 	###*
 	# @method provide
 	# @param {String} name
-	# @param {Function} fn
+	# @param {Function} fn See README.md for more info.
 	###
 	@provide: (name, fn) ->
 		if _.find(@_providers, { name })?
@@ -35,12 +35,15 @@ class NoticeManager
 	# make sure to greacefully stop all the providers too.
 	# Returns true if all providers are fired up and ready to go.
 	#
-	# @method init
+	# @method run
 	# @return {Boolean}
 	###
-	@init: ->
+	@run: ->
 		# REVIEW: Should we clear the `notices` collection after the current
 		# computation is stopped?
+
+		# REVIEW: Should we register if there already is an running computation and
+		# let only one be runnable at the same time?
 
 		ready = new ReactiveVar no
 		handles = []

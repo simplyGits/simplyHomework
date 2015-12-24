@@ -13,7 +13,7 @@ Template.notices.events
 
 Template.notices.onCreated ->
 	@autorun ->
-		handle = NoticeManager.init()
+		handle = NoticeManager.run()
 
 	@autorun ->
 		return # TODO: doe hier iets mee.
