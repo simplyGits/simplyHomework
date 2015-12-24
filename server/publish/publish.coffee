@@ -54,6 +54,24 @@ Meteor.publish 'usersData', (ids) ->
 			userIds: _.union ids, [ userId ]
 	]
 
+Meteor.publish 'status', (ids) ->
+	check ids, [String]
+	unless @userId?
+		@ready()
+		return undefined
+
+	Meteor.users.find {
+		_id: $in: ids
+		$or: [
+			'privacyOptions.publishStatus': $exists: no
+			'privacyOptions.publishStatus': yes
+		]
+	}, {
+		fields:
+			'status.online': 1
+			'status.idle': 1
+	}
+
 Meteor.publish null, ->
 	unless @userId?
 		@ready()
@@ -90,21 +108,6 @@ Meteor.publish null, ->
 			userIds: userId
 			done: $ne: userId
 	]
-
-Meteor.publish 'status', (ids) ->
-	check ids, [String]
-	userId = @userId
-	unless userId?
-		@ready()
-		return undefined
-
-	Meteor.users.find {
-		_id: $in: _.filter ids, (id) -> Privacy.getOptions(id).publishStatus
-	}, {
-		fields:
-			'status.online': 1
-			'status.idle': 1
-	}
 
 Meteor.publish 'classes', (options) ->
 	check options, Match.Optional Object
