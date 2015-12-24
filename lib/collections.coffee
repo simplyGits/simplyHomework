@@ -18,7 +18,6 @@
 		__grade: g.toString().replace '.', ','
 
 @StudyUtils            = new Meteor.Collection 'studyUtils',   transform: (s) -> _.extend new StudyUtil, s
-@Notifications         = new Meteor.Collection 'notifications'
 @ScholierenClasses     = new Meteor.Collection 'scholieren.com'
 @WoordjesLerenClasses  = new Meteor.Collection 'woordjesleren'
 @Analytics             = new Meteor.Collection 'analytics'
