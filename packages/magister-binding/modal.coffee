@@ -53,7 +53,7 @@ Template.magisterInfoModal.events
 			Meteor.call(
 				'createServiceData',
 				'magister',
-				school.url,
+				school.externalInfo.magister.url,
 				username,
 				password,
 

@@ -136,6 +136,10 @@
 				if (err) {
 					fut.throw(err);
 				} else {
+					var school = Schools.findOne({
+						'externalInfo.magister.url': magister.magisterSchool.url,
+					});
+					magister.magisterSchool.id = school && school.externalInfo.magister.id;
 					fut.return(magister);
 				}
 			});

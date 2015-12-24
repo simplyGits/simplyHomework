@@ -72,7 +72,8 @@ Meteor.publish null, ->
 			setupProgress: 1
 			#studyGuidesHashes: 1
 
-		Schools.find _id: user.profile.schoolId
+		Schools.find { _id: user.profile.schoolId }, fields:
+			externalInfo: 0
 
 		Projects.find { participants: userId }, fields:
 			name: 1
@@ -154,6 +155,7 @@ Meteor.publish 'classInfo', (classId) ->
 		}
 	]
 
+# TODO: revise this publishment
 Meteor.publish 'schools', (externalId) ->
 	check externalId, Match.Any
 

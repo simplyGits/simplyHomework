@@ -312,15 +312,17 @@ getServiceSchools = (serviceName, query) ->
 		throw new Meteor.Error 'externalError', "Error while retreiving schools from #{serviceName}"
 
 	for school in result
-		val = Schools.findOne "externalIds.#{serviceName}": school.id
+		val = Schools.findOne "externalInfo.#{serviceName}.id": school.id
 
 		unless val?
-			s = new School school.name, school.url
-			s.externalIds[serviceName] = school.id
+			s = new School school.name, school.genericUrl
+			s.externalInfo[serviceName] =
+				id: school.id
+				url: school.url
 			Schools.insert s
 
 	Schools.find(
-		"externalIds.#{serviceName}": $exists: yes
+		"externalInfo.#{serviceName}": $exists: yes
 		name: $regex: query, $options: 'i'
 	).fetch()
 
