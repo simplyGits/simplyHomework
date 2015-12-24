@@ -380,7 +380,7 @@ getProfileData = (userId) ->
 
 	res = {}
 	for service in services
-		data = Meteor.call 'getServiceProfileData', service.name, userId
+		data = getServiceProfileData service.name, userId
 		if data.courseInfo?
 			data.courseInfo.schoolVariant = normalizeSchoolVariant data.courseInfo.schoolVariant
 		res[service.name] = data
@@ -407,6 +407,7 @@ getModuleInfo = (userId) ->
 @updateStudyUtils = updateStudyUtils
 @updateCalendarItems = updateCalendarItems
 @getPersons = getPersons
+@getExternalClasses = getExternalClasses
 @getExternalAssignments = getExternalAssignments
 @getServiceSchools = getServiceSchools
 @getSchools = getSchools
