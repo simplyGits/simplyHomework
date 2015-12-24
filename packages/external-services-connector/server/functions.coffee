@@ -46,7 +46,7 @@ updateGrades = (userId, forceUpdate = no) ->
 		catch e
 			# TODO: Error pushing seems broken, if it's fixed remove the log line.
 			console.log 'error while fetching grades from service.', e
-			handleServiceError externalService.name, userId, e
+			ExternalServicesConnector.handleServiceError externalService.name, userId, e
 			errors.push e
 			continue
 
@@ -95,7 +95,7 @@ updateStudyUtils = (userId, forceUpdate = no) ->
 			result = externalService.getStudyUtils userId
 		catch e
 			console.log 'error while fetching studyUtils from service.', e
-			handleServiceError externalService.name, userId, e
+			ExternalServicesConnector.handleServiceError externalService.name, userId, e
 			errors.push e
 			continue
 
@@ -148,7 +148,7 @@ updateCalendarItems = (userId, from, to) ->
 			result = externalService.getCalendarItems userId, from, to
 		catch e
 			console.log 'error while fetching calendarItems from service.', e
-			handleServiceError externalService.name, userId, e
+			ExternalServicesConnector.handleServiceError externalService.name, userId, e
 			errors.push e
 			continue
 
@@ -309,7 +309,7 @@ getServiceSchools = (serviceName, query, userId) ->
 	try
 		result = service.getSchools query
 	catch e
-		handleServiceError service.name, userId, e
+		ExternalServicesConnector.handleServiceError service.name, userId, e
 		throw new Meteor.Error 'externalError', "Error while retreiving schools from #{serviceName}"
 
 	for school in result
@@ -357,7 +357,7 @@ getServiceProfileData = (serviceName, userId) ->
 	try
 		service.getProfileData userId
 	catch e
-		handleServiceError service.name, userId, e
+		ExternalServicesConnector.handleServiceError service.name, userId, e
 		throw new Meteor.Error(
 			'externalError'
 			"Error while retreiving profile data from #{serviceName}"
