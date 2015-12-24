@@ -9,10 +9,10 @@ class @School
 	#
 	# @method constructor
 	# @param name {String} The name of the school
-	# @param url {String} The URL of the school.
+	# @param [url] {String} The URL of the school.
 	###
 	constructor: (@name, @url) ->
-		@externalIds = {}
+		@externalInfo = {}
 
 	###*
 	# Return a cursor pointing to the books that this school uses.

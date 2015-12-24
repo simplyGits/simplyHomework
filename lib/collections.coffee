@@ -88,7 +88,8 @@ Schemas.Schools = new SimpleSchema
 	url:
 		type: String
 		regEx: SimpleSchema.RegEx.Url
-	externalIds:
+		optional: yes
+	externalInfo:
 		type: Object
 		blackbox: yes
 
