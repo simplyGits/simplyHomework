@@ -56,7 +56,7 @@ class NoticeManager
 				else
 					@notices.remove name: provider.name
 
-			Tracker.autorun ->
+			Tracker.autorun do (provider) -> ->
 				try
 					if provider.fn.length > 0 # provider is async
 						provider.fn cb

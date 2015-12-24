@@ -15,13 +15,17 @@ Package.onUse(function(api) {
 		'mongo',
 	]);
 	api.use([
+		'tracker',
+		'reactive-var',
 		'templating',
 		'mquandalle:stylus',
 		'handlebars',
 	], 'client');
+	/*
 	api.use([
 		'reywood:publish-composite',
 	], 'server');
+	*/
 
 	api.addFiles([
 		'lib/collections.coffee',
