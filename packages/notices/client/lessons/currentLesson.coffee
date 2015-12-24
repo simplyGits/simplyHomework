@@ -1,6 +1,6 @@
 NoticeManager.provide 'currentLesson', ->
 	minuteTracker.depend()
-	sub = Meteor.subscribe 'externalCalendarItems', Date.today(), Date.today().addDays 1, yes
+	@subscribe 'externalCalendarItems', Date.today(), Date.today().addDays 1, yes
 
 	today = CalendarItems.find({
 		userIds: Meteor.userId()
@@ -16,7 +16,6 @@ NoticeManager.provide 'currentLesson', ->
 	if currentAppointment?
 		template: 'infoCurrentAppointment'
 		data: currentAppointment
-		ready: -> sub.ready()
 
 		header: 'Huidig Lesuur'
 		subheader: (
@@ -30,8 +29,6 @@ NoticeManager.provide 'currentLesson', ->
 			route: 'calendar'
 			params:
 				time: +Date.today()
-	else
-		ready: -> sub.ready()
 
 Template.infoCurrentAppointment.helpers
 	timeLeft: ->

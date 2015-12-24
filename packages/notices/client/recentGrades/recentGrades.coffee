@@ -7,15 +7,12 @@ recentGrades = ->
 	).fetch()
 
 NoticeManager.provide 'recentGrades', ->
-	sub = Meteor.subscribe 'externalGrades', onlyRecent: yes
+	@subscribe 'externalGrades', onlyRecent: yes
 
 	if recentGrades().length
 		template: 'recentGrades'
 		header: 'Recent behaalde cijfers'
 		priority: 0
-		ready: -> sub.ready()
-	else
-		ready: -> sub.ready()
 
 Template.recentGrades.helpers
 	gradeGroups: ->
