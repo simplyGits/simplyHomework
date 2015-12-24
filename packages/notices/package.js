@@ -28,6 +28,7 @@ Package.onUse(function(api) {
 		'lib/methods.coffee',
 	]);
 	api.addFiles([
+		'client/noticesManager.coffee',
 		'client/notices.html',
 		'client/notices.coffee',
 	], 'client');
@@ -37,6 +38,7 @@ Package.onUse(function(api) {
 	], 'server');
 
 	api.export([
-		'Notices',
+		'NoticeManager',
+		'Notifications',
 	]);
 });
