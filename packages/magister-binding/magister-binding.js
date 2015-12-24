@@ -168,7 +168,7 @@
 	 * @method getGrades
 	 * @param {String} userId The ID of the user to get the grades from.
 	 * @param {Object} [options] Optional map of options.
-	 * @return {StoredGrade[]} The grades as a grade array.
+	 * @return {Grade[]} The grades as a grade array.
 	 */
 	MagisterBinding.getGrades = function (userId, options) {
 		check(userId, String);
@@ -220,7 +220,7 @@
 								});
 								var classId = classInfo && classInfo.id;
 
-								var storedGrade = new StoredGrade(
+								var grade = new Grade(
 									gradeConverter(g.grade()),
 									weight,
 									classId,
@@ -230,21 +230,21 @@
 								// REVIEW: Better way to check percentages than
 								// this?
 								if (g.type().header() === '%') {
-									storedGrade.gradeType = 'percentage';
+									grade.gradeType = 'percentage';
 								}
-								storedGrade.fetchedBy = MagisterBinding.name;
-								storedGrade.externalId = magister.magisterSchool.id + '_' + g.id();
-								storedGrade.description = g.description().trim();
-								storedGrade.passed = g.passed() || storedGrade.passed;
-								storedGrade.dateFilledIn = g.dateFilledIn();
-								storedGrade.dateTestMade = g.testDate();
-								storedGrade.isEnd = g.type().isEnd();
-								storedGrade.period = new GradePeriod(
+								grade.fetchedBy = MagisterBinding.name;
+								grade.externalId = magister.magisterSchool.id + '_' + g.id();
+								grade.description = g.description().trim();
+								grade.passed = g.passed() || grade.passed;
+								grade.dateFilledIn = g.dateFilledIn();
+								grade.dateTestMade = g.testDate();
+								grade.isEnd = g.type().isEnd();
+								grade.period = new GradePeriod(
 									g.gradePeriod().id,
 									g.gradePeriod().name
 								);
 
-								result[i] = storedGrade;
+								result[i] = grade;
 								gradeFut.return();
 							}
 						});
