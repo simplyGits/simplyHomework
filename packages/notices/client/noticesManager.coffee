@@ -57,10 +57,14 @@ class NoticeManager
 					@notices.remove name: provider.name
 
 			Tracker.autorun ->
-				if provider.fn.length > 0 # provider is async
-					provider.fn cb
-				else # provider is sync.
-					cb provider.fn()
+				try
+					if provider.fn.length > 0 # provider is async
+						provider.fn cb
+					else # provider is sync.
+						cb provider.fn()
+				catch e
+					console.warn "Notice provider '#{provider.name}' errored.", e
+					Kadira.trackError 'notice-provider-failure', e.toString(), stacks: JSON.stringify e
 
 		Tracker.autorun ->
 			if _.every(readyFunctions, (fn) -> fn())
