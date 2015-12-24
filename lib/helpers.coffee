@@ -233,7 +233,7 @@ class @Helpers
 	# @method interval
 	# @param {Function} func
 	# @param {Number} interval
-	# @param {Boolean} [bind=true]
+	# @param {Boolean} [bind=true] Sets `this` to { stop: function()->void }
 	# @return {Number}
 	###
 	@interval: (func, interval, bind = yes) ->

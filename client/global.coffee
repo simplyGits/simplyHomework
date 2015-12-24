@@ -2,7 +2,10 @@
 # @method tasks
 # @return {Object[]}
 ###
-@tasks = -> # TODO: Also mix homework for tommorow and homework for days where the day before has no time. Unless today has no time.
+@tasks = ->
+	# TODO: Also mix homework for tommorow and homework for days where the day
+	# before has no time. Unless today has no time.
+
 	tasks = []
 	#for gS in GoaledSchedules.find(dueDate: $gte: new Date).fetch()
 	#	tasks.pushMore _.filter gS.tasks, (t) -> EJSON.equals t.plannedDate.date(), Date.today()

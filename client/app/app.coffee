@@ -359,7 +359,13 @@ setKeyboardShortcuts = ->
 		no
 
 	Mousetrap.bind ['ctrl+/', 'command+/', 'ctrl+?', 'command+?'], ->
-		alertModal 'Toetsenbord shortcuts', Locals['nl-NL'].KeyboardShortcuts(), DialogButtons.Ok, { main: 'Sluiten' }, { main: 'btn-primary' }
+		alertModal(
+			'Toetsenbord shortcuts'
+			Locals['nl-NL'].KeyboardShortcuts()
+			DialogButtons.Ok
+			{ main: 'Sluiten' }
+			{ main: 'btn-primary' }
+		)
 		no
 
 Template.app.helpers
