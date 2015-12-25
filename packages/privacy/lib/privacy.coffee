@@ -32,8 +32,8 @@ Privacy.options = [
 Privacy.getOptions = (userId) ->
 	options = Meteor.users.findOne(
 		{ _id: userId }
-		{ fields: 'privacyOptions': 1 }
-	)?.privacyOptions ? {}
+		{ fields: 'settings.privacy': 1 }
+	)?.settings.privacy ? {}
 
 	defaults = _.chain(Privacy.options)
 		.map (obj) -> [ obj.short, obj.default ]

@@ -21,6 +21,7 @@ Meteor.startup ->
 		doc.externalServices = {}
 		doc.premiumInfo = {}
 		doc.setupProgress = []
+		doc.settings = {}
 
 		doc.profile = options.profile
 

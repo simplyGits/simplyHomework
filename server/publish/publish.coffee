@@ -63,8 +63,8 @@ Meteor.publish 'status', (ids) ->
 	Meteor.users.find {
 		_id: $in: ids
 		$or: [
-			'privacyOptions.publishStatus': $exists: no
-			'privacyOptions.publishStatus': yes
+			'settings.privacy.publishStatus': $exists: no
+			'settings.privacy.publishStatus': yes
 		]
 	}, {
 		fields:
@@ -89,7 +89,7 @@ Meteor.publish null, ->
 			magisterCredentials: 1
 			plannerPrefs: 1
 			premiumInfo: 1
-			privacyOptions: 1
+			settings: 1
 			profile: 1
 			roles: 1
 			setupProgress: 1

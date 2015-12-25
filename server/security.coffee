@@ -39,7 +39,7 @@ Meteor.users.allow
 			#'gradeNotificationDismissTime'
 			#'hasGravatar'
 			'mailSignup'
-			'privacyOptions'
+			'settings'
 			'profile'
 			'schedular'
 			'setupProgress'
