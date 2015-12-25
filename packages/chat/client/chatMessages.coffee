@@ -97,10 +97,9 @@ Template.messageRow.events
 
 Template.messageRow.rendered = ->
 	$node = $ @firstNode
-	$parent = $ @firstNode.parentNode
 
 	if Session.equals 'deviceType', 'desktop'
 		# TODO: fix this when opening multiple times.
 		$node.find('[data-toggle="tooltip"]').tooltip
 			container: 'body'
-			placement: if $node.hasClass('own') then 'right' else 'left'
+			placement: if $node.hasClass('own') then 'auto right' else 'auto left'

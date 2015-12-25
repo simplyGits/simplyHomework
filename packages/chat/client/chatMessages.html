@@ -27,9 +27,16 @@
 				</div>
 			{{/if}}
 			<div class="time">{{__time}}</div>
+			<div class="readBy">
+				{{#each __readBy}}
+					<a href="{{pathFor 'personView' id=_id}}">
+						<img src="{{picture this 100}}" width="15" height="15" title="Gelezen door {{profile.firstName}}" data-toggle="tooltip"/>
+					</a>
+				{{/each}}
+			</div>
 		</aside>
 		{{#with __sender}}
-			<a href="{{pathFor 'personView' _id=_id}}">
+			<a href="{{pathFor 'personView' id=_id}}">
 				<img class="senderImage" src="{{picture this 100}}" width="25" height="25" title="{{profile.firstName}} {{profile.lastName}}" data-toggle="tooltip"/>
 			</a>
 		{{/with}}

@@ -117,12 +117,21 @@ div#fullscreenChatWindow
 				left: initial
 				right: -170px
 
+				align(vertical)
+				font-size: 15px
 				text-align: left
 
 				.edited
 					float: left
 					margin-left: 0
 					margin-right: 5px
+
+				.readBy
+					absolute: right -20px top 50%
+					transform: translateY(-50%)
+
+					img
+						pointer-events: all
 
 			img.senderImage
 				float: right
