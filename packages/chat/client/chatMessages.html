@@ -19,7 +19,7 @@
 </template>
 
 <template name="messageRow">
-	<div class="message {{__own}} {{__new}}"> {{! we will purely use the __own class to style the message (change the color and location of the image and stuff. }}
+	<div class="message {{__own}} {{__new}} {{__pending}}"> {{! we will purely use the __own class to style the message (change the color and location of the image and stuff. }}
 		<aside>
 			{{#if __changedOn}}
 				<div class="edited" title="Bewerkt op {{__changedOn}}" data-toggle="tooltip">

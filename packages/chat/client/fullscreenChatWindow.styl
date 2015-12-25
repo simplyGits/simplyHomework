@@ -72,6 +72,7 @@ div#fullscreenChatWindow
 			position: relative
 			margin-left: paddingSides
 			margin-right: paddingSides
+			transition: .1s opacity ease-out
 
 			aside
 				position: absolute
@@ -139,6 +140,9 @@ div#fullscreenChatWindow
 			aside
 				opacity: 1
 
+		div.message.pending
+			animation: .1s ease-out .3s forwards dim
+
 		div.loadMore
 			text-align: center
 			border: 1px lightgray solid
@@ -201,3 +205,12 @@ div#fullscreenChatWindow
 
 div.fullscreenChatWindow.fadeOut
 	opacity: 0
+
+@keyframes dim {
+	0% {
+		opacity: 1
+	}
+	100% {
+		opacity: .6
+	}
+}

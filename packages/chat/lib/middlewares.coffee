@@ -114,5 +114,6 @@ ChatMiddlewares.attach 'add hidden fields', 'client', (cm) ->
 		__new: if own or Meteor.userId() in cm.readBy then '' else 'new'
 		__time: Helpers.formatDate cm.time
 		__changedOn: Helpers.formatDate cm.changedOn
+		__pending: if cm.pending then 'pending' else ''
 
 @ChatMiddlewares = ChatMiddlewares

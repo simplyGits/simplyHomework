@@ -25,6 +25,9 @@ if Package['aldeed:collection2']?
 		changedOn:
 			type: Date
 			optional: yes
+		pending:
+			type: Boolean
+			optional: yes
 
 	ChatRooms.attachSchema
 		type:

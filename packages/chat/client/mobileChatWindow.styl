@@ -63,6 +63,7 @@ div.mobileChatWindow
 		div.message
 			margin-top: 2px
 			font-size: 15px
+			transition: .1s opacity ease-out
 
 			aside
 				display: none
@@ -81,6 +82,9 @@ div.mobileChatWindow
 		div.message.own
 			img.senderImage
 				float: right
+
+		div.message.pending
+			opacity: .6
 
 		div.loadMore
 			text-align: center
