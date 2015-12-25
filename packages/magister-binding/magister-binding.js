@@ -409,7 +409,7 @@
 						classId
 					);
 
-					calendarItem.usersDone = a.isDone() ? [ Meteor.userId() ] : [];
+					calendarItem.usersDone = a.isDone() ? [ userId ] : [];
 					calendarItem.externalId = magister.magisterSchool.id + '_' + a.id();
 					calendarItem.fetchedBy = MagisterBinding.name;
 					if (!_.isEmpty(a.content())) {
