@@ -16,12 +16,16 @@ Package.onUse(function(api) {
 		'stylus'
 	]);
 	api.use([
+		'ecmascript',
 		'meteorhacks:inject-initial',
 		'webapp',
 		'underscore',
 	], 'server');
 	api.use('appcache', 'server', { weak: true });
-	api.addFiles('themes/paarse-vrijdag.styl')
+	api.addFiles([
+		'themes/paarse-vrijdag.styl',
+		'themes/christmas.styl',
+	]);
 	api.addFiles('themes.js', 'server');
 });
 
