@@ -4,6 +4,6 @@
 [submodule "packages/emojione"]
 	path = packages/emojione
 	url = git@github.com:Ranks/emojione.git
-[submodule "packages/viewport-units-buggyfill/viewport-units-buggyfill"]
-	path = packages/viewport-units-buggyfill/viewport-units-buggyfill
+[submodule "packages/viewport-units-buggyfill/dist"]
+	path = packages/viewport-units-buggyfill/dist
 	url = git@github.com:rodneyrehm/viewport-units-buggyfill.git
