@@ -29,13 +29,14 @@ Template.fullscreenChatWindow.events
 	"keyup input#messageInput": (event) ->
 		content = event.target.value
 
-		previousMessage = =>
-			_.findLast @messages().fetch(), (cm) ->
-				cm.creatorId is Meteor.userId()
-
 		if event.which is 38
 			# edit the previous message.
-			message = previousMessage()
+			message = ChatMessages.findOne {
+				creatorId: Meteor.userId()
+				chatRoomId: @_id
+			}, {
+				sort: 'time': -1
+			}
 
 			event.target.value = message._originalContent
 			@editMessageId = message._id

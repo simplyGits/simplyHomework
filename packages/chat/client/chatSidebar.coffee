@@ -46,13 +46,6 @@ currentSearchTerm = new ReactiveVar ""
 				else ''
 		initial: -> Helpers.first(@friendlyName()).toUpperCase()
 
-		messages: ->
-			ChatMessages.find {
-				chatRoomId: room._id
-			}, {
-				sort: 'time': 1
-			}
-
 		unreadMessagesCount: ->
 			Math.min 99, ChatMessages.find(
 				creatorId: $ne: Meteor.userId()
