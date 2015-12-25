@@ -1,43 +1,14 @@
-# PUSH ONLY FROM SAME SCHOOL <<<<
-#Meteor.publish 'usersData', (ids) ->
-#	check ids, Match.Optional [String]
-#	userId = @userId
-#	# `if ids?` is needed to not create an array when ids is undefined, which is
-#	# used to get every person.
-#	ids = _.reject ids, userId if ids?
-#	schoolId = Meteor.users.findOne(userId).profile.schoolId
-#
-#	# We don't have to handle shit if we are only asked for the current user, no
-#	# users at all or the current user doesn't have a school.
-#	if not schoolId? or (ids? and ids.length is 0)
-#		@ready()
-#		return undefined
-#
-#	[
-#		Meteor.users.find {
-#			_id: (
-#				if ids? then { $in: ids }
-#				else { $ne: userId }
-#			)
-#			'profile.schoolId': schoolId
-#			'profile.firstName': $ne: ''
-#		}, fields: profile: 1
-#
-#		ChatRooms.find
-#			userIds: _.union ids, [ userId ]
-#	]
-
-# WARNING: PUSHES ALL DATA
 Meteor.publish 'usersData', (ids) ->
 	check ids, Match.Optional [String]
 	userId = @userId
 	# `if ids?` is needed to not create an array when ids is undefined, which is
 	# used to get every person.
 	ids = _.reject ids, userId if ids?
+	schoolId = Meteor.users.findOne(userId).profile.schoolId
 
-	# We don't have to do shit if we are only asked for the current user or no
-	# users at all.
-	if ids? and ids.length is 0
+	# We don't have to handle shit if we are only asked for the current user, no
+	# users at all or the current user doesn't have a school.
+	if not schoolId? or (ids? and ids.length is 0)
 		@ready()
 		return undefined
 
@@ -47,6 +18,7 @@ Meteor.publish 'usersData', (ids) ->
 				if ids? then { $in: ids }
 				else { $ne: userId }
 			)
+			#'profile.schoolId': schoolId
 			'profile.firstName': $ne: ''
 		}, fields: profile: 1
 
@@ -114,7 +86,7 @@ Meteor.publish 'classes', (options) ->
 	check options, Match.Optional Object
 
 	{ hidden, all } = options ? {}
-	hidden ?= yes
+	hidden ?= no
 	all ?= no
 	check hidden, Boolean
 	check all, Boolean

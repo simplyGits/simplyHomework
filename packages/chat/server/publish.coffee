@@ -11,12 +11,20 @@ Meteor.publishComposite 'basicChatInfo',
 				'time': -1
 	}, {
 		find: (room) ->
-			# TODO: maybe filter some fields?
-			Meteor.users.find _id: $in: _.reject room.users, @userId
+			Meteor.users.find {
+				_id: $in: _.reject room.users, @userId
+			}, fields:
+				'profile.pictureInfo': 1
+				'profile.firstName': 1
+				'profile.lastName': 1
+				'status.online': 1
+				'status.idle': 1
 	}, {
 		find: (room) ->
-			# TODO: maybe filter some fields?
-			Projects.find _id: room.projectId
+			Projects.find {
+				_id: room.projectId
+			}, fields:
+				name: 1
 	}]
 
 Meteor.publish 'chatMessages', (chatRoomId, limit) ->
