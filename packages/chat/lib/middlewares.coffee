@@ -101,7 +101,8 @@ ChatMiddlewares.attach 'markdown', 'client', (message) ->
 
 ChatMiddlewares.attach 'katex', 'client', (message) ->
 	message.content = message.content.replace /\$\$(.+)\$\$/, (match, formula) ->
-		katex.renderToString formula
+		try katex.renderToString formula
+		catch then match
 
 	message
 
