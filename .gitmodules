@@ -1,6 +1,3 @@
-[submodule "packages/fullcalendar/fullcalendar"]
-	path = packages/fullcalendar/fullcalendar
-	url = git@github.com:fullcalendar/fullcalendar.git
 [submodule "packages/emojione"]
 	path = packages/emojione
 	url = git@github.com:Ranks/emojione.git

@@ -118,7 +118,7 @@ session@1.1.1
 sha@1.0.4
 simply-debug-tools@0.0.1
 simply:external-services-connector@0.0.1
-simply:fullcalendar@2.4.0
+simply:fullcalendar@2.5.0
 simply:katex@0.5.1
 simply:lazy-code-push@0.0.1
 simply:magisterjs@1.14.3_1

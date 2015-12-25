@@ -1,7 +1,7 @@
 if (!Package.appcache) {
-	var jstag = '<script src="/packages/simply_fullcalendar/fullcalendar/dist/fullcalendar.js"></script>'
-	var langtag = '<script src="/packages/simply_fullcalendar/fullcalendar/dist/lang/nl.js"></script>'
-	var csstag = '<link href="/packages/simply_fullcalendar/fullcalendar/dist/fullcalendar.css" rel="stylesheet">'
+	var jstag = '<script src="/packages/simply_fullcalendar/dist/fullcalendar.js"></script>'
+	var langtag = '<script src="/packages/simply_fullcalendar/dist/lang/nl.js"></script>'
+	var csstag = '<link href="/packages/simply_fullcalendar/dist/fullcalendar.css" rel="stylesheet">'
 	var str = [
 		jstag,
 		langtag,
