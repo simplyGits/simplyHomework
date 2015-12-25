@@ -372,6 +372,11 @@ Template.app.helpers
 	pageColor: -> Session.get("pageColor") ? "lightgray"
 	pageTitle: -> Session.get("headerPageTitle") ? ""
 
+	showAdbar: ->
+		excluded = [
+			'mobileChat'
+		]
+		not has('noAds') and FlowRouter.getRouteName() not in excluded
 	runningSetup: -> Session.get 'runningSetup'
 	chat: ->
 		ChatRooms.findOne {
