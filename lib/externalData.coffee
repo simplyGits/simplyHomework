@@ -1,3 +1,41 @@
+@getInbetweenHours = (userId = Meteor.userId()) ->
+	res = []
+	hours = CalendarItems.find(
+		userIds: userId
+		startDate: $gte: Date.today()
+		endDate: $lte: Date.today().addDays 7
+		schoolHour:
+			$exists: yes
+			$ne: null
+	).fetch()
+
+	for daydelta in [0...7]
+		date = Date.today().addDays daydelta
+		items = _(hours)
+			.filter (item) -> item.startDate.date().getTime() is date.getTime()
+			.sortBy 'startDate'
+			.value()
+
+		if items.length > 0
+			# REVIEW: Use mean?
+			timeThreshold = items[0].endDate.getTime() - items[0].startDate.getTime()
+
+			endPrev = undefined
+			for item in items
+				timeSpan = (
+					if endPrev? then item.startDate.getTime() - endPrev.getTime()
+					else 0
+				)
+				amount = ~~(timeSpan / timeThreshold)
+				for i in [0...amount]
+					res.push
+						start: new Date(endPrev.getTime() + timeThreshold * i)
+						end: new Date(endPrev.getTime() + timeThreshold * ( 1 + i ))
+
+				endPrev = item.endDate
+
+	Debug.logThrough res
+
 @getPersons = (query, type, userId = Meteor.userId()) ->
 	callback = _.last arguments
 	if Meteor.isClient and not _.isFunction(callback)

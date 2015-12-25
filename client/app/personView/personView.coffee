@@ -31,20 +31,19 @@ Template.personView.events
 			ChatManager.openChat r
 
 Template.personView.onCreated ->
-	@autorun =>
-		unless sameUser()
-			@subscribe 'externalCalendarItems', Date.today(), Date.today().addDays 7
+		@subscribe 'externalCalendarItems', Date.today(), Date.today().addDays 7
 
-		id = FlowRouter.getParam 'id'
-		@subscribe 'status', [ id ]
-		@subscribe 'usersData', [ id ], onReady: ->
-			person = Meteor.users.findOne id
-			if person?
-				setPageOptions
-					title: "#{person.profile.firstName} #{person.profile.lastName}"
+		@autorun =>
+			id = FlowRouter.getParam 'id'
+			@subscribe 'status', [ id ]
+			@subscribe 'usersData', [ id ], onReady: ->
+				person = Meteor.users.findOne id
+				if person?
+					setPageOptions
+						title: "#{person.profile.firstName} #{person.profile.lastName}"
 
-			else
-				notFound()
+				else
+					notFound()
 
 Template.personView.onRendered ->
 	slide()
@@ -172,3 +171,13 @@ Template.pictureSelectorItem.events
 
 		analytics?.track 'Profile Picture Changed'
 		$('#changePictureModal').modal 'hide'
+
+Template.personStats.helpers
+	stats: ->
+		res = []
+
+		inbetweenHoursCount = getInbetweenHours().length
+		if inbetweenHoursCount > 0
+			res.push "Aantal tussenuren in één week: #{inbetweenHoursCount}"
+
+		res
