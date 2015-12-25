@@ -29,11 +29,11 @@ Template.chatMessages.helpers
 	newMessages: -> # TODO
 
 Template.chatMessages.events
-	"scroll div#messages": (event, template) ->
+	"scroll div#chatMessages": (event, template) ->
 		t = $ event.target
 
 		if t.scrollTop() is 0 and hasMore()
-			$wrapper = $('#messages.chat').get 0
+			$wrapper = $('#chatMessages').get 0
 			previousHeight = $wrapper.scrollHeight
 
 			sub.loadNextPage()
@@ -57,7 +57,7 @@ Template.chatMessages.onCreated ->
 	)
 
 Template.chatMessages.onRendered ->
-	$messages = $('#messages.chat').get 0
+	$messages = $('#chatMessages').get 0
 
 	@atBottom = -> $messages.scrollTop >= $messages.scrollHeight - $messages.clientHeight
 
