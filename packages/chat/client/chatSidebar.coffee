@@ -1,3 +1,5 @@
+NOTIFICATION_SOUND_SRC = '/packages/chat/audio/chatNotification.ogg'
+
 stayOpen = no
 currentSearchTerm = new ReactiveVar ""
 
@@ -165,7 +167,7 @@ Template.chatSidebar.onCreated ->
 		lastNotifications = {}
 		popoverTimeouts = {}
 		audio = new Audio
-		audio.src = "/audio/chatNotification.ogg"
+		audio.src = NOTIFICATION_SOUND_SRC
 		ChatMessages.find(
 			creatorId: $ne: Meteor.userId()
 			readBy: $ne: Meteor.userId()

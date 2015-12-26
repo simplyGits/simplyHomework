@@ -29,6 +29,10 @@ Package.onUse(function(api) {
 		'reywood:publish-composite',
 	], 'server');
 
+	api.addAssets([
+		'audio/chatNotification.ogg',
+	], 'client')
+
 	api.addFiles([
 		'lib/chatRoom.coffee',
 		'lib/chatMessage.coffee',
