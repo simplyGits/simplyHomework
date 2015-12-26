@@ -298,7 +298,7 @@ getExternalAssignments = (userId) ->
 getServiceSchools = (serviceName, query, userId) ->
 	check serviceName, String
 	check query, String
-	check userId, Match.Optional String
+	check userId, String
 
 	service = _.find Services, (s) -> s.name is serviceName
 
@@ -331,7 +331,7 @@ getServiceSchools = (serviceName, query, userId) ->
 
 getSchools = (query, userId) ->
 	check query, String
-	check userId, Match.Optional String
+	check userId, String
 
 	services = _.filter Services, (s) -> s.getSchools?
 	for service in services
