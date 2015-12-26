@@ -101,7 +101,7 @@ Debug = {
 	 * @return {any}
 	 */
 	logThrough: function (val) {
-		console.log(val);
+		console.trace(val);
 		return val;
 	},
 };
