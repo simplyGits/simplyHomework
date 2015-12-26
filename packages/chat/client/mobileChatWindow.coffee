@@ -13,9 +13,9 @@ Template.mobileChatWindow.events
 	"click div.header": ->
 		switch @type
 			when 'private'
-				FlowRouter.go 'personView', id: @user._id
+				FlowRouter.go 'personView', id: @user()._id
 			when 'project'
-				FlowRouter.go 'projectView', id: @project._id.toHexString()
+				FlowRouter.go 'projectView', id: @project()._id.toHexString()
 
 	"keyup input#messageInput": (event, template) ->
 		content = event.target.value.trim()
