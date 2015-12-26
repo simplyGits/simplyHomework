@@ -10,7 +10,7 @@ Meteor.methods
 	# possible on another way, than to relogin everybody on the services).
 	#
 	# But it can also make the code less error prone, idk. The best thing to do
-	# now is to make Service#createData for each server not break stuff if it's
+	# now is to make Service#createData for each service not break stuff if it's
 	# called multiple times on the same user.
 	'createServiceData': (serviceName, params...) ->
 		@unblock()
