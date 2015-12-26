@@ -12,11 +12,14 @@ Meteor.publishComposite 'basicChatInfo',
 	}, {
 		find: (room) ->
 			Meteor.users.find {
-				_id: $in: _.reject room.users, @userId
+				_id:
+					$in: room.users
+					$ne: @userId
 			}, fields:
-				'profile.pictureInfo': 1
-				'profile.firstName': 1
-				'profile.lastName': 1
+				# HACK: We publish too much here to fix an issue where when switching to
+				# personView from chat wouldn't load all the new data (mergebox
+				# problem?)
+				profile: 1
 				'status.online': 1
 				'status.idle': 1
 	}, {
