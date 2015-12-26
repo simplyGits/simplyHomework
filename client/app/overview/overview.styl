@@ -17,8 +17,9 @@ div.divider
 	margin-right: -15px
 
 #overviewNotices
-	margin-left: -25px
-	margin-right: -25px
+	absolute: top 50px left right bottom
+	overflow: scroll
+
 	-webkit-column-gap: 10px
 	-moz-column-gap: 10px
 	-moz-column-count: 3
@@ -30,7 +31,6 @@ div.divider
 		col(1/3, cycle: 3, gutter: 1)
 		display: inline-block
 		//width: 100%
-		height: 100%
 
 		border: 1px lightgray solid
 		padding: noticePadding
