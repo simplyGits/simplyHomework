@@ -61,10 +61,15 @@
 				},
 			});
 
+			// Remove the cache entry (if there's one) for the current user to
+			// make sure we relogin.
+			cache.del(userId);
+
 			try {
 				getMagisterObject(userId);
 			} catch (e) {
 				// Remove the stored info.
+				cache.del(userId);
 				MagisterBinding.storedInfo(userId, null);
 
 				if (
