@@ -26,7 +26,7 @@
 					if endPrev? then item.startDate.getTime() - endPrev.getTime()
 					else 0
 				)
-				amount = ~~(timeSpan / timeThreshold)
+				amount = Math.floor(timeSpan / timeThreshold)
 				for i in [0...amount]
 					res.push
 						start: new Date(endPrev.getTime() + timeThreshold * i)
