@@ -40,6 +40,10 @@ Template.fullscreenChatWindow.events
 
 			event.target.value = message._originalContent
 			@editMessageId = message._id
+		else if event.which is 40 and @editMessageId?
+			# stop editing the previous mesasge.
+			event.target.value = ''
+			@editMessageId = undefined
 
 		else if event.which is 27
 			ChatManager.closeChat()
