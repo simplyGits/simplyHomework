@@ -67,17 +67,15 @@
 				// Remove the stored info.
 				MagisterBinding.storedInfo(userId, null);
 
-				// TODO: check in magister.js if `|| e.Message` is needed.
-				var message = e.toString();
 				if (
 					[
 						'Ongeldig account of verkeerde combinatie van gebruikersnaam en wachtwoord. Probeer het nog eens of neem contact op met de applicatiebeheerder van de school.',
 						'Je gebruikersnaam en/of wachtwoord is niet correct.',
-					].indexOf(message) > -1
+					].indexOf(e.message) > -1
 				) {
 					return false;
 				} else {
-					return new Error(message);
+					return e;
 				}
 			}
 		},
@@ -134,7 +132,7 @@
 
 			magister.ready(function (err) {
 				if (err) {
-					fut.throw(err);
+					fut.throw(new Error(err.message));
 				} else {
 					var school = Schools.findOne({
 						'externalInfo.magister.url': magister.magisterSchool.url,
