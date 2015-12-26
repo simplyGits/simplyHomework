@@ -128,6 +128,8 @@ updateCalendarItems = (userId, from, to) ->
 	check from, Date
 	check to, Date
 
+	# TODO: fix using `events.calendarItemsUpdate` here.
+
 	user = Meteor.users.findOne userId
 	calendarItemsUpdate = undefined#user.events.calendarItemsUpdate
 	errors = []

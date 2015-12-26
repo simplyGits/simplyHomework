@@ -1,17 +1,4 @@
-const FUNC_STRINGS_KEY = 'sHdebug_startFuncs';
-var slice = [].slice;
-
-if (Meteor.isClient) {
-	Meteor.startup(function () {
-		var funcStrings = localStorage[FUNC_STRINGS_KEY];
-
-		if (funcStrings !== undefined) {
-			JSON.parse(funcStrings).forEach(function (str) {
-				eval('(' + str + ')()');
-			});
-		}
-	});
-} else if (Meteor.isServer) {
+if (Meteor.isServer) {
 	Meteor.methods({
 		log: function (message) {
 			check(message, String);
@@ -67,20 +54,6 @@ Debug = {
 	},
 
 	/**
-	 * Runs the given `func` on client startup (Meteor.startup()) every time
-	 * the site/app is loaded.
-	 *
-	 * @method runOnStart
-	 * @param {Function} func The function to load.
-	 */
-	runOnStart: function (func) {
-		if (!Meteor.isClient) return;
-
-		var items = JSON.parse(localStorage[FUNC_STRINGS_KEY] || '[]');
-		localStorage[FUNC_STRINGS_KEY] = JSON.stringify(items.concat([ func.toString() ]));
-	},
-
-	/**
 	 * Logs the changes on the given `collection` on items matching the given
 	 * `query`.
 	 *
@@ -109,6 +82,11 @@ Debug = {
 		Reload._reload();
 	},
 
+	/**
+	 * Disables lazy hot code push.
+	 * @method justfuckingreload
+	 * @param {Boolean} val Whether or not to just fucking reload.
+	 */
 	justfuckingreload: function (val) {
 		if (!Meteor.isClient) return;
 
@@ -116,6 +94,12 @@ Debug = {
 		return localStorage['justfuckingreload'];
 	},
 
+	/**
+	 * `console.trace`s `val` and returns it.
+	 * @method logThrough
+	 * @param {any} val
+	 * @return {any}
+	 */
 	logThrough: function (val) {
 		console.log(val);
 		return val;

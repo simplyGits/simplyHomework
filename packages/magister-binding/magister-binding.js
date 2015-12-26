@@ -9,7 +9,6 @@
 (function (Magister, Future, request, LRU) {
 	'use strict';
 
-	var SESSIONID_INVALIDATE_TIME = 1000*60*60*24; // 24 hours
 	var ONLY_RECENT_LIMIT = 1000*60*60*24*6; // 6 days
 
 	var cache = LRU({
@@ -72,12 +71,10 @@
 				cache.del(userId);
 				MagisterBinding.storedInfo(userId, null);
 
-				if (
-					[
-						'Ongeldig account of verkeerde combinatie van gebruikersnaam en wachtwoord. Probeer het nog eens of neem contact op met de applicatiebeheerder van de school.',
-						'Je gebruikersnaam en/of wachtwoord is niet correct.',
-					].indexOf(e.message) > -1
-				) {
+				if (_.contains([
+					'Ongeldig account of verkeerde combinatie van gebruikersnaam en wachtwoord. Probeer het nog eens of neem contact op met de applicatiebeheerder van de school.',
+					'Je gebruikersnaam en/of wachtwoord is niet correct.',
+				], e.message)) {
 					return false;
 				} else {
 					return e;
@@ -106,10 +103,6 @@
 			if (m !== undefined) {
 				return m;
 			}
-
-			// // We invalidate the sessionId after SESSIONID_INVALIDATE_TIME.
-			// var useSessionId = data.lastLogin &&
-			// 	_.now() - data.lastLogin.time.getTime() <= SESSIONID_INVALIDATE_TIME;
 
 			// REVIEW:
 			// Currently not invalidating sessionIds, since it's unknown when

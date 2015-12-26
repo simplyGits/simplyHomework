@@ -3,7 +3,7 @@ Meteor.publish 'usersData', (ids) ->
 	userId = @userId
 	# `if ids?` is needed to not create an array when ids is undefined, which is
 	# used to get every person.
-	ids = _.reject ids, userId if ids?
+	ids = _.without ids, userId if ids?
 	schoolId = Meteor.users.findOne(userId).profile.schoolId
 
 	# We don't have to handle shit if we are only asked for the current user, no
