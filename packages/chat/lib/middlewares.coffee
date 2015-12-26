@@ -69,7 +69,8 @@ ChatMiddlewares.attach 'convert smileys', 'client', (message) ->
 	message
 
 ChatMiddlewares.attach 'emojione', 'client', (message) ->
-	message.content = emojione.toImage message.content
+	unless localStorage['no-chat-emojis']
+		message.content = emojione.toImage message.content
 	message
 
 ChatMiddlewares.attach 'clickable names', 'client', (message) ->
