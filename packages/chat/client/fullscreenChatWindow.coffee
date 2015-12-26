@@ -4,6 +4,8 @@ lastInputs = new Map
 error = new ReactiveVar ''
 ratelimitErrorTimeout = undefined
 
+@typing = typing = new ReactiveVar []
+
 send = (content, updateId) ->
 	content = content.trim()
 	return if content.length is 0 or ratelimitErrorTimeout?
@@ -25,6 +27,12 @@ send = (content, updateId) ->
 
 	document.getElementById('messageInput').value = ''
 
+markTyping = _.throttle ((chatRoomId, typing) ->
+	Meteor.call 'markTyping', chatRoomId, typing
+), 1000,
+	leading: yes
+	trailing: no
+
 Template.fullscreenChatWindow.helpers
 	headerClickable: ->
 		if @type in [ 'private', 'project' ] or
@@ -44,6 +52,12 @@ Template.fullscreenChatWindow.helpers
 				"maximaal #{CHATMESSAGE_MAX_LENGTH} karakters toegestaan"
 			when 'rate-limited'
 				'je hebt teveel berichten in een korte tijd gestuurd'
+
+	typing: ->
+		Meteor.users.find
+			_id:
+				$in: typing.get()
+				$ne: Meteor.userId()
 
 Template.fullscreenChatWindow.events
 	"click #header": (e) ->
@@ -66,6 +80,8 @@ Template.fullscreenChatWindow.events
 
 	"keyup input#messageInput": (event) ->
 		content = event.target.value
+
+		markTyping @_id, content.length > 0
 
 		previousMessage = =>
 			ChatMessages.findOne {
@@ -117,6 +133,12 @@ Template.fullscreenChatWindow.events
 
 Template.fullscreenChatWindow.onCreated ->
 	@subscribe 'status', @data.users
+	Streamy.on 'typing', (data) =>
+		return unless data.chatRoomId is @data._id
+		if data.typing
+			typing.set _.union typing.get(), [ data.user ]
+		else
+			typing.set _.without typing.get(), data.user
 
 Template.fullscreenChatWindow.onRendered ->
 	$messageInput = document.getElementById 'messageInput'

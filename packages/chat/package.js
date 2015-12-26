@@ -70,6 +70,7 @@ Package.onUse(function(api) {
 		'server/publish.coffee',
 		'server/rateLimits.coffee',
 		'server/indices.coffee',
+		'server/methods.coffee',
 	], 'server');
 
 	api.export([
