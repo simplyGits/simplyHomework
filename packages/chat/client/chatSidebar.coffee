@@ -66,15 +66,21 @@ class @ChatManager
 
 	###*
 	# Opens a chat window for the given user.
-	# @method openUserChat
+	# @method openPrivateChat
 	# @param projectId {ObjectID|User} The user or an ID of an user to open a chat for.
 	###
-	@openUserChat: (userId) ->
+	@openPrivateChat: (userId) ->
 		userId = userId._id if userId._id?
-		@openChat ChatRooms.findOne(
+
+		room = ChatRooms.findOne
 			users: [ userId, Meteor.userId() ]
 			projectId: $exists: no
-		)?._id
+
+		if room?
+			@openChat room._id
+		else
+			Meteor.call 'createPrivateChatRoom', userId, (e, r) ->
+				ChatManager.openChat r
 
 	###*
 	# Opens a chat window for the given project.

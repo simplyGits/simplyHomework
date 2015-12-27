@@ -26,9 +26,7 @@ Template.personView.events
 	'click i#reportButton': ->
 		analytics?.track 'Open ReportUserModal'
 		showModal 'reportUserModal', undefined, currentPerson
-	"click button#chatButton": ->
-		Meteor.call 'createPrivateChatRoom', @_id, (e, r) ->
-			ChatManager.openChat r
+	"click button#chatButton": -> ChatManager.openPrivateChat @_id
 
 Template.personView.onCreated ->
 	@autorun =>
