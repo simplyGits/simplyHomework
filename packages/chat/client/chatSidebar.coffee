@@ -60,9 +60,10 @@ currentSearchTerm = new ReactiveVar ""
 ###
 # Static class for managing the currently open chat.
 # @class ChatManager
+# @static
 ###
 class @ChatManager
-	@MESSAGE_PER_PAGE: 40
+	@MESSAGES_PER_PAGE: 40
 
 	###*
 	# Opens a chat window for the given user.

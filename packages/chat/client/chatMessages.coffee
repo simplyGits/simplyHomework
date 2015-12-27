@@ -1,4 +1,3 @@
-MESSAGE_PER_PAGE = 40
 sub = undefined
 
 localCount = ->
@@ -53,7 +52,7 @@ Template.chatMessages.onCreated ->
 	sub = Meteor.subscribeWithPagination(
 		'chatMessages'
 		@data._id
-		MESSAGE_PER_PAGE
+		ChatManager.MESSAGES_PER_PAGE
 	)
 
 Template.chatMessages.onRendered ->
