@@ -67,6 +67,9 @@ Template.fullscreenChatWindow.events
 
 			window.sendToBottom()
 
+	'blur input#messageInput': (event) ->
+		event.target.focus()
+
 Template.fullscreenChatWindow.onCreated ->
 	@subscribe 'status', @data.users
 
