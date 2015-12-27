@@ -1,4 +1,4 @@
-# TODO: check if marked does escaption, if not handle it manually.
+# TODO: Use middlewares serverside. Naughty url stripping?
 ###*
 # @class ChatMiddlewares
 # @static
@@ -45,8 +45,16 @@ ChatMiddlewares =
 
 		message
 
+# Always keep this middleware on top, please.
 ChatMiddlewares.attach 'preserve original content', 'client', (message) ->
 	message._originalContent = message.content
+	message
+
+ChatMiddlewares.attach 'strip naughty urls', 'client', (message) ->
+	message.content = message.content.replace(
+		/<a href=('|"?)javascript:[^\1]+\1>([^<]*)<\/a>/ig
+		(match, qoute, content) -> content
+	)
 	message
 
 chatMessageReplaceMap =

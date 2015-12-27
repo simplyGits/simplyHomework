@@ -32,12 +32,15 @@ Meteor.startup ->
 	renderer = new marked.Renderer()
 	renderer.html = (str) -> str.replace /<[^>]*>/, ''
 	renderer.link = (href, title, text) ->
-		a = document.createElement 'a'
-		a.href = href
-		a.title = title
-		a.innerText = text
-		a.target = '_blank'
-		a.outerHTML
+		if /^javascript:/.test href
+			text
+		else
+			a = document.createElement 'a'
+			a.href = href
+			a.title = title
+			a.innerText = text
+			a.target = '_blank'
+			a.outerHTML
 	# People use '* <text>' to give an correction, on a previous text message.
 	# But markdown interperts that as an bulleted list.
 	renderer.listitem = (str) -> "* #{str}"
