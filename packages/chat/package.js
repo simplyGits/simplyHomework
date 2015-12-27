@@ -9,7 +9,7 @@ Package.describe({
 Package.onUse(function(api) {
 	api.versionsFrom('1.2.1');
 
-	api.use('public-api', { weak: true }); // for irc bridge and websocket bridge 'n tuff.
+	api.use('public-api', { weak: true }); // for irc bridge and websocket bridge 'n stuff.
 	api.use('aldeed:collection2', { weak: true });
 	api.use([
 		'coffeescript',
@@ -27,6 +27,7 @@ Package.onUse(function(api) {
 	], 'client');
 	api.use([
 		'reywood:publish-composite',
+		'ddp-rate-limiter',
 	], 'server');
 
 	api.addAssets([
@@ -58,6 +59,7 @@ Package.onUse(function(api) {
 		'server/_startup.coffee',
 		'server/security.coffee',
 		'server/publish.coffee',
+		'server/rateLimits.coffee',
 	], 'server');
 
 	api.export([

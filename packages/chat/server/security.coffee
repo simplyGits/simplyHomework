@@ -4,6 +4,6 @@
 	remove: -> no
 
 @ChatMessages.allow
-	insert: -> yes
-	update: -> yes
+	insert: -> no
+	update: -> no
 	remove: -> no # Never I guess.
