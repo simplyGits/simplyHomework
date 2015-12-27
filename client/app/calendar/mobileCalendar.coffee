@@ -76,6 +76,7 @@ Template.mobileCalendarHour.helpers
 			''
 
 Template.mobileCalendar.onCreated ->
+	@subscribe 'classes', hidden: yes
 	@autorun =>
 		date = currentDate()
 		handle = calendarSubs.subscribe(

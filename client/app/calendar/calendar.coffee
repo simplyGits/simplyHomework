@@ -55,6 +55,9 @@ calendarItemToEvent = (calendarItem) ->
 	editable: not calendarItem.fetchedBy?
 	content: calendarItem.content
 
+Template.calendar.onCreated ->
+	@subscribe 'classes', hidden: yes
+
 Template.calendar.onRendered ->
 	unless $::fullCalendar?
 		document.location.reload()
