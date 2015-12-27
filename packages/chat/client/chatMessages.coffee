@@ -72,10 +72,11 @@ Template.chatMessages.onRendered ->
 	, 10
 	@sendToBottomIfNecessary()
 
-	@autorun =>
+	@autorun => # HACK
 		localCount()
 		currentBigNotice._reactiveVar.dep.depend()
-		@sendToBottomIfNecessary()
+		Meteor.defer =>
+			@sendToBottomIfNecessary()
 
 	@onWindowResize = => Meteor.defer => @sendToBottomIfNecessary()
 	window.addEventListener 'resize', @onWindowResize
