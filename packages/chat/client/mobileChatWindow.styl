@@ -1,19 +1,4 @@
-div.chatWindow
-	z-index: 9999
-
-	width: 450px
-	height: 300px
-	margin-top: 15px
-
-	position: relative
-
-	background-color: white
-	border: 1px lightgray solid
-	border-radius: 5px
-	overflow: hidden
-
-div.mobileChatWindow
-	absolute: top left right bottom
+headerHeight = 40px
 
 // Swag™ colors for activity of other person.
 div.mobileChatWindow.online > .header
@@ -24,19 +9,20 @@ div.mobileChatWindow.offline > .header
 	background-color: #EF5350
 
 div.mobileChatWindow
+	absolute: top left right bottom
+
 	div.header
 		position: relative
-		height: 40px
+		height: headerHeight
 		padding: 3px
 		font-size: 15px
-		border-bottom: 1px lightgray solid
 
 		color: white
 
 		img
 			absolute: left top bottom
-			height: 39px
-			width: 39px
+			height: headerHeight
+			width: headerHeight
 
 			pointer-events: all
 			cursor: pointer
@@ -56,7 +42,7 @@ div.mobileChatWindow
 			text-align: center
 
 	div#chatMessages
-		absolute: top 40px bottom 30px left right
+		absolute: top headerHeight bottom 30px left right
 		overflow: hidden
 		overflow-y: scroll
 
