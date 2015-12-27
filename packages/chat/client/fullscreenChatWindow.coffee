@@ -1,3 +1,5 @@
+editMessageId = new ReactiveVar
+
 send = (content, updateId) ->
 	content = content.trim()
 	return if content.length is 0
@@ -8,6 +10,9 @@ send = (content, updateId) ->
 		Meteor.call 'addChatMessage', content, @_id
 
 	document.getElementById('messageInput').value = ''
+
+Template.fullscreenChatWindow.helpers
+	__editing: -> if editMessageId.get()? then 'editing' else ''
 
 Template.fullscreenChatWindow.events
 	"click #header": (e) ->
@@ -39,11 +44,11 @@ Template.fullscreenChatWindow.events
 			}
 
 			event.target.value = message._originalContent
-			@editMessageId = message._id
-		else if event.which is 40 and @editMessageId?
+			editMessageId.set message._id
+		else if event.which is 40 and editMessageId.get()?
 			# stop editing the previous mesasge.
 			event.target.value = ''
-			@editMessageId = undefined
+			editMessageId.set undefined
 
 		else if event.which is 27
 			ChatManager.closeChat()
@@ -57,8 +62,8 @@ Template.fullscreenChatWindow.events
 				else
 					event.target.value = ''
 			else
-				send.call this, content, @editMessageId
-				@editMessageId = undefined
+				send.call this, content, editMessageId.get()
+				editMessageId.set undefined
 
 			window.sendToBottom()
 
