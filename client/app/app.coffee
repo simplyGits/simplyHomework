@@ -318,7 +318,10 @@ setKeyboardShortcuts = ->
 		no
 
 	Mousetrap.bind 'c', ->
-		$('.searchBox > input').focus()
+		if FlowRouter.getRouteName() is 'personView'
+			ChatManager.openPrivateChat FlowRouter.getParam 'id'
+		else
+			$('.searchBox > input').focus()
 		no
 
 	buttonGoto = (delta) ->
