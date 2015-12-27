@@ -12,20 +12,15 @@ ChatMiddlewares =
 	# @param {String} name
 	# @param {String} platform
 	# @param {String} fn
-	# @param {Boolean} [prepend=false]
 	###
-	attach: (name, platform, fn, prepend = no) ->
+	attach: (name, platform, fn) ->
 		check name, String
 		check platform, String
 		check fn, Function
-		check prepend, Boolean
 
 		item = { name, platform, fn }
 
-		if prepend
-			@_middlewares.unshift item
-		else
-			@_middlewares.push item
+		@_middlewares.push item
 
 	###*
 	# Runs the given `message` through every middleware in order.
