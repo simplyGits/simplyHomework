@@ -112,6 +112,7 @@ updateStudyUtils = (userId, forceUpdate = no) ->
 
 	errors
 
+# REVIEW: Should we have different functions for absenceInfo and calendarItems?
 # TODO: think out some throtthling for this.
 ###*
 # Updates the CalendarItems in the database for the given `userId` or the user
@@ -154,7 +155,8 @@ updateCalendarItems = (userId, from, to) ->
 			errors.push e
 			continue
 
-		for calendarItem in result ? []
+		result ?= []
+		for calendarItem in result
 			val = CalendarItems.findOne
 				fetchedBy: calendarItem.fetchedBy
 				externalId: calendarItem.externalId
@@ -165,18 +167,37 @@ updateCalendarItems = (userId, from, to) ->
 				content.type = 'test' if /^(proefwerk|pw|examen|tentamen)\b/i.test content.description
 			calendarItem.content = content
 
-			if val? and Meteor.isServer
-				delete calendarItem._id
+			obj = _.omit calendarItem, 'absenceInfo'
+			if val?
 				mergeUserIdsField = (fieldName) ->
-					calendarItem[fieldName] = _(val[fieldName])
-						.concat calendarItem[fieldName]
+					obj[fieldName] = _(val[fieldName])
+						.concat obj[fieldName]
 						.uniq()
 						.value()
 				mergeUserIdsField 'userIds'
 				mergeUserIdsField 'usersDone'
-				CalendarItems.update val._id, { $set: calendarItem }, modifier: no
+				CalendarItems.update val._id, { $set: obj }, modifier: no
+				calendarItem._id = val._id
 			else
-				CalendarItems.insert calendarItem
+				calendarItem._id = CalendarItems.insert obj
+
+		for calendarItem in result when calendarItem.absenceInfo?
+			val = Absences.findOne
+				fetchedBy: calendarItem.fetchedBy
+				externalId: calendarItem.absenceInfo.externalId
+
+			absenceInfo = new AbsenceInfo(
+				userId
+				calendarItem._id
+				calendarItem.absenceInfo.type
+				calendarItem.absenceInfo.permitted
+			)
+			absenceInfo.description = calendarItem.absenceInfo.description
+
+			if val?
+				Absences.update val._id, { $set: absenceInfo }, modifier: no
+			else
+				Absences.insert absenceInfo
 
 	errors
 

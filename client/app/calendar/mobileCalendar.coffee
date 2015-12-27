@@ -26,7 +26,7 @@ calendarItemToMobileCalendar = (calendarItem) ->
 				else ''
 		)
 		__absent: (
-			switch calendarItem.absenceInfo?.type
+			switch calendarItem.getAbsenceInfo()?.type
 				when 'absent', 'sick', 'exemption', 'discharged' then 'absent'
 				else ''
 		)

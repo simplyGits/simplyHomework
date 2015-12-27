@@ -45,7 +45,7 @@ calendarItemToEvent = (calendarItem) ->
 			else '#3a87ad'
 	)
 	className: (
-		switch calendarItem.absenceInfo?.type
+		switch calendarItem.getAbsenceInfo()?.type
 			when 'absent', 'sick', 'exemption', 'discharged' then 'opaque'
 			else ''
 	)

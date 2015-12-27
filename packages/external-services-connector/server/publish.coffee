@@ -1,26 +1,50 @@
 Meteor.publish 'externalCalendarItems', (from, to) ->
 	check from, Date
 	check to, Date
+	userId = @userId
 
 	@unblock()
-	unless @userId?
+	unless userId?
 		@ready()
 		return undefined
 
 	from = from.date().addDays -(from.getDay() % 2)
 	to = to.date().addDays to.getDay() % 2
 
-	handle = Helpers.interval (=>
-		updateCalendarItems @userId, from, to
+	handle = Helpers.interval (->
+		updateCalendarItems userId, from, to
 	), 1000 * 60 * 20 # 20 minutes
 
 	@onStop ->
 		Meteor.clearInterval handle
 
-	CalendarItems.find
-		userIds: @userId
-		startDate: $gte: from
-		endDate: $lte: to
+	cursor =
+		CalendarItems.find
+			userIds: userId
+			startDate: $gte: from
+			endDate: $lte: to
+
+	findAbsence = (query) -> Absences.findOne query
+
+	cursor.observeChanges
+		added: (id, doc) =>
+			@added 'calendarItems', id, doc
+
+			absence = findAbsence calendarItemId: id
+			if absence?
+				@added 'absences', absence._id, absence
+
+		changed: (id, doc) =>
+			@changed 'calendarItems', id, doc
+
+		removed: (id) =>
+			@removed 'calendarItems', id
+
+			findAbsence calendarItemId: id
+			if absence?
+				@removed 'absences', absence._id
+
+	@ready()
 
 Meteor.publish 'externalGrades', (options) ->
 	check options, Object

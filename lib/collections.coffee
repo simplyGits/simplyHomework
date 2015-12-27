@@ -5,6 +5,7 @@
 @Schedules             = new Meteor.Collection 'schedules'
 @Utils                 = new Meteor.Collection 'utils'
 @Projects              = new Meteor.Collection 'projects', transform: (p) -> projectTransform p
+@Absences              = new Meteor.Collection 'absences'
 @CalendarItems         = new Meteor.Collection 'calendarItems', transform: (c) -> _.extend new CalendarItem, c
 @ReportItems           = new Meteor.Collection 'reportItems'
 @Grades                = new Meteor.Collection 'grades', transform: (g) ->
@@ -223,6 +224,25 @@ Schemas.StudyUtils = new SimpleSchema
 	externalInfo:
 		type: Object
 		blackbox: yes
+
+Schemas.Absences = new SimpleSchema
+	userId:
+		type: String
+	calendarItemId:
+		type: String
+	type:
+		type: String
+		# TODO: fill in allowedValues
+		#allowedValues: ['']
+	permitted:
+		type: Boolean
+	description:
+		type: String
+	externalId:
+		type: null # any type
+		optional: yes
+	fetchedBy:
+		type: String
 		optional: yes
 
 @[key].attachSchema Schemas[key] for key of Schemas

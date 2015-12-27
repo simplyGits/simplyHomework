@@ -96,14 +96,20 @@ class @CalendarItem
 		###
 		@location = null
 
-		###*
-		# @property absenceInfo
-		# @type Object
-		# @default null
-		###
-		@absenceInfo = null
-
+	###*
+	# @method class
+	# @return {SchoolClass}
+	###
 	class: -> Classes.findOne @classId, transform: classTransform
+	###*
+	# @method getAbsenceInfo
+	# @param {String} userId
+	# @return {AbsenceInfo}
+	###
+	getAbsenceInfo: (userId) ->
+		Absences.findOne
+			userId: Meteor.userId()
+			calendarItemId: @_id
 
 	# TODO: Better i18n for these methods?
 	contentTypeLong: ->
