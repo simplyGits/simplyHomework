@@ -20,21 +20,23 @@
 
 <template name="messageRow">
 	<div class="message {{__own}} {{__new}} {{__pending}}"> {{! we will purely use the __own class to style the message (change the color and location of the image and stuff. }}
-		<aside>
-			{{#if __changedOn}}
-				<div class="edited" title="Bewerkt op {{__changedOn}}" data-toggle="tooltip">
-					<i class="fa fa-pencil"></i>
+		{{#unless isPhone}}
+			<aside>
+				{{#if __changedOn}}
+					<div class="edited" title="Bewerkt op {{__changedOn}}" data-toggle="tooltip">
+						<i class="fa fa-pencil"></i>
+					</div>
+				{{/if}}
+				<div class="time">{{__time}}</div>
+				<div class="readBy">
+					{{#each __readBy}}
+						<a href="{{pathFor 'personView' id=_id}}">
+							<img src="{{picture this 100}}" width="15" height="15" title="Gelezen door {{profile.firstName}}" data-toggle="tooltip"/>
+						</a>
+					{{/each}}
 				</div>
-			{{/if}}
-			<div class="time">{{__time}}</div>
-			<div class="readBy">
-				{{#each __readBy}}
-					<a href="{{pathFor 'personView' id=_id}}">
-						<img src="{{picture this 100}}" width="15" height="15" title="Gelezen door {{profile.firstName}}" data-toggle="tooltip"/>
-					</a>
-				{{/each}}
-			</div>
-		</aside>
+			</aside>
+		{{/unless}}
 		{{#with __sender}}
 			<a href="{{pathFor 'personView' id=_id}}">
 				<img class="senderImage" src="{{picture this 100}}" width="25" height="25" title="{{profile.firstName}} {{profile.lastName}}" data-toggle="tooltip"/>
