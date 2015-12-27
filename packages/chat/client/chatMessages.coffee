@@ -8,6 +8,20 @@ localCount = ->
 	).count()
 hasMore = -> sub.loaded() < Counts.get 'chatMessageCount'
 
+loadNextPage = ->
+	return if sub.loading()
+
+	$wrapper = $('#chatMessages').get 0
+	previousHeight = $wrapper.scrollHeight
+
+	sub.loadNextPage()
+
+	loadingComp = Tracker.autorun (c) ->
+		return if sub.loading()
+		c.stop()
+		heightDiff = $wrapper.scrollHeight - previousHeight
+		$wrapper.scrollTop += heightDiff
+
 throttledMarkRead = _.throttle ((template) ->
 	if template.atBottom()
 		console.log 'marking all messages as read, chatroom:', template.data
@@ -32,19 +46,13 @@ Template.chatMessages.events
 		t = $ event.target
 
 		if t.scrollTop() is 0 and hasMore()
-			$wrapper = $('#chatMessages').get 0
-			previousHeight = $wrapper.scrollHeight
-
-			sub.loadNextPage()
-
-			Tracker.autorun (c) ->
-				return if sub.loading()
-				c.stop()
-				heightDiff = $wrapper.scrollHeight - previousHeight
-				$wrapper.scrollTop += heightDiff
+			loadNextPage()
 
 		else if template.atBottom() then template.sticky = yes
 		else template.sticky = no
+
+	'click .loadMore:not(.loading)': ->
+		loadNextPage()
 
 Template.chatMessages.onCreated ->
 	@sticky = yes
