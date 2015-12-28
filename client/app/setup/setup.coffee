@@ -268,18 +268,6 @@ setupItems = [
 				no
 			)
 	}
-
-	{
-		name: 'final'
-		func: ->
-			swalert
-				type: "success"
-				title: "Klaar!"
-				text: "Wil je een complete rondleiding volgen?"
-				confirmButtonText: "Rondleiding"
-				cancelButtonText: "Afsluiten"
-				onSuccess: -> App.runTour()
-	}
 ]
 running = undefined
 
@@ -294,7 +282,6 @@ running = undefined
 	setupProgress = getUserField Meteor.userId(), 'setupProgress', []
 	setupProgress = setupProgress.concat [
 		'welcome'
-		'final'
 		'plannerPrefs'
 		'newSchoolYear' # TODO: Dunno how're going to do this shit
 	]
@@ -303,11 +290,10 @@ running = undefined
 
 	if running.length > 0
 		# We need to insert the 'welcome' _before_ all the items in the `running`
-		# array, and the 'final' _after_ them!
+		# array.
 		running = _(setupItems)
 			.take()
 			.concat(running)
-			.push _.last(setupItems)
 			.value()
 
 		Session.set 'runningSetup', yes
