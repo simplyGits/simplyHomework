@@ -323,7 +323,7 @@ class @Helpers
 	# @return {String|Boolean}
 	###
 	@sed: (sedcommand, original) ->
-		sedreg = /^s\/(.+)\/(.*)\/(|ig?|gi?)$/
+		sedreg = /^s([^\s\w])([^\1]+?)\1([^\1]*?)(?:\1(|ig?|gi?))?$/
 		res = sedreg.exec sedcommand
 
 		if not original?
@@ -331,12 +331,9 @@ class @Helpers
 		else if not res?
 			return original
 
-		if res[0].match(/[^\\]\//g).length > 3
-			throw new Error '/ has to be escaped.'
-
-		matcher = res[1]
-		replacer = res[2]
-		flags = res[3]
+		matcher = res[2]
+		replacer = res[3]
+		flags = res[4]
 
 		matchreg = new RegExp matcher, flags
 		original.replace matchreg, replacer
