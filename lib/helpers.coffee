@@ -313,10 +313,14 @@ class @Helpers
 	@emboxValue: (fn, equals) -> emboxValue(fn, { equals, lazy: yes })()
 
 	###*
+	# Changes `original` using the given `sedcommand`.
+	# If no `original` is given: return whether or not the given `sedcomand` is a
+	# valid sed command.
+	#
 	# @method sed
 	# @param sedcommand {String}
 	# @param [original] {String}
-	# @return {String}
+	# @return {String|Boolean}
 	###
 	@sed: (sedcommand, original) ->
 		sedreg = /^s\/(.+)\/(.*)\/([ig]{0,2})$/
