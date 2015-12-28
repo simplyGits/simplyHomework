@@ -29,7 +29,7 @@ folders = [
 Template.messages.helpers
 	composing: -> composing()
 	isLoading: -> messages.get().length is 0 and isLoading.get()
-	folder: -> currentFolder()
+	folder: -> _.find folders, name: currentFolder()
 	hasMagister: -> hasMagister.get()
 	currentMessage: -> _.find messages.get(), _id: +currentMessage()
 

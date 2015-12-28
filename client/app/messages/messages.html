@@ -15,7 +15,9 @@
 						{{#with currentMessage}}
 							{{> message_current_message}}
 						{{else}}
-							{{> messages_messageList}}
+							{{#with folder}}
+								{{> messages_messageList}}
+							{{/with}}
 						{{/with}}
 					{{/if}}
 				{{else}}
@@ -51,6 +53,9 @@
 </template>
 
 <template name="messages_messageList">
+	<div class="header">
+		{{friendlyName}}
+	</div>
 	<div id="messageList">
 		{{#if messages}}
 			{{#each messages}}
