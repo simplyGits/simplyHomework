@@ -47,7 +47,7 @@ ChatMiddlewares.attach 'preserve original content', 'client', (message) ->
 
 ChatMiddlewares.attach 'strip naughty urls', 'client', (message) ->
 	message.content = message.content.replace(
-		/<a href=('|"?)javascript:[^\1]+\1>([^<]*)<\/a>/ig
+		/<a +href *= *('|"?) *javascript *:[^\1]+\1 *>([^<]*)(<\/a>)?/ig
 		(match, qoute, content) -> content
 	)
 	message
