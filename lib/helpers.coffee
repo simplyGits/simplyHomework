@@ -323,7 +323,7 @@ class @Helpers
 	# @return {String|Boolean}
 	###
 	@sed: (sedcommand, original) ->
-		sedreg = /^s\/(.+)\/(.*)\/([ig]{0,2})$/
+		sedreg = /^s\/(.+)\/(.*)\/(|ig?|gi?)$/
 		res = sedreg.exec sedcommand
 
 		if not original?
