@@ -8,31 +8,25 @@ bookEngine = new Bloodhound
 	queryTokenizer: Bloodhound.tokenizers.whitespace
 	local: []
 
-currentClass = -> Classes.findOne FlowRouter.getParam('id')
+classId = -> FlowRouter.getParam 'id'
+currentClass = -> Classes.findOne classId()
 
 grades = ->
 	Grades.find
 		ownerId: Meteor.userId()
-		classId: FlowRouter.getParam 'id'
+		classId: classId()
 
 Template.classView.helpers
 	class: -> currentClass()
-
-	tasksAmount: -> @__taskAmount
-	tasksWord: -> if @__taskAmount is 1 then 'taak' else 'taken'
-
 	classBorderColor: -> chroma(@__color).darken().hex()
 
-	nextLessonDate: ->
-		CalendarItems.findOne({
+	hoursPerWeek: ->
+		CalendarItems.find(
 			userIds: Meteor.userId()
-			classId: @_id
-			startDate: $gt: new Date
-			scrapped: no
-		}, {
-			sort:
-				startDate: 1
-		})?.startDate
+			classId: classId()
+			startDate: $gt: Date.today()
+			endDate: $lt: Date.today().addDays 7
+		).count()
 
 	gradeGroups: ->
 		arr = grades().fetch()
@@ -58,6 +52,7 @@ Template.classView.helpers
 
 	selectedGrade: ->
 		Grades.findOne selectedGradeId.get()
+
 	endGrade: ->
 		Grades.findOne
 			classId: @_id
@@ -66,7 +61,7 @@ Template.classView.helpers
 
 Template.classView.onCreated ->
 	@autorun =>
-		id = FlowRouter.getParam 'id'
+		id = classId()
 		slide id
 		@subscribe 'externalStudyUtils', id
 		@subscribe 'externalGrades', classId: id
@@ -83,15 +78,6 @@ Template.classView.onCreated ->
 	@autorun ->
 		unless _.any(grades().fetch(), (g) -> EJSON.equals selectedGradeId.get(), g._id)
 			selectedGradeId.set grades().fetch()[0]?._id
-
-	###
-	@autorun ->
-		Meteor.subscribe "magisterDigitalSchoolUtilties", currentClass().__classInfo().magisterDescription
-		digitalSchoolUtilities.set MagisterDigitalSchoolUtilties.find(
-			_class: $exists: yes
-			"_class._description": currentClass().__classInfo().magisterDescription
-		).fetch()
-	###
 
 Template.classView.events
 	"click #changeClassIcon": ->

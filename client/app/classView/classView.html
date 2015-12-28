@@ -1,78 +1,47 @@
 <template name="classView">
 {{#with class}}
-	<div class="container-fluid">
+	<div class="container-fluid classViewContainer">
 		{{#unless isPhone}}
 			<div class="row classHeader" style="background-color: {{__color}}; border-color: {{classBorderColor}}; color: {{textColor __color}}">
 				<div class="robotoHeader overviewHeader" id="classHeader">
 					{{name}}
 					<span id="changeClassIcon" class="fa fa-pencil"></span>
 				</div>
-				<div class="robotoHeader overviewHeader" style="position: absolute; top: 0; right: 10px; text-align: right">{{tasksAmount}} <span class="robotoThin" style="margin-left: 5px">{{tasksWord}}</span></div>
 			</div>
 		{{/unless}}
-		<!--<div class="divider" style="border-color: {{__color}}"></div>-->
-		{{#with nextLessonDate}}
-			VOLGENDE LES IS DAN: {{dateFormat 'dddd D MMMM' this}}<br>
-		{{/with}}
-		<!--VOLGENDE TOETS IS DAN: {{dateFormat 'D MMMM' nextTestDate}}<br>-->
-		Je docent: <a href="#">Malle Henk</a>
-		<div class="gradeInfoContainer">
-			{{#if Template.subscriptionsReady}}
-				{{#if hasGrades}}
+		{{! TODO: add searchbar }}
+
+		<div class="row" id="buttonsRow">
+			{{! TODO: grades, hours/week, projects and teacher buttons }}
+
+			<div id="gradesButton" class="{{__insufficient}}">
+				<div class="emp">
 					{{#with endGrade}}
-						{{> endGradeTemplate}}
+						{{this}}
 					{{else}}
-						<div class="gradeContainerEndGrade">
-							<div class="gradeSquare">?</div>
-							<div class="endGradeHint">Gemiddelde</div>
-						</div>
+						?
 					{{/with}}
-
-					<div class="gradeContainer">
-						{{#each gradeGroups}}
-							{{> gradeGroup}}
-						{{/each}}
-					</div>
-
-					{{#with selectedGrade}}
-						{{> gradeDetail}}
-					{{/with}}
-				{{else}}
-					<div class="notice">
-						Geen cijfers gevonden.
-					</div>
-				{{/if}}
-			{{else}}
-				<div class="notice">
-					Cijfers laden...
 				</div>
-			{{/if}}
+				<div>cijfers</div>
+			</div>
+			<div id="hoursButton">
+				<div class="emp">{{hoursPerWeek}}</div>
+				<div>uur/week</div>
+			</div>
+			<div id="projectsButton">
+				<div class="emp">{{projectCount}}</div>
+				<div>projecten</div>
+			</div>
+			<div id="teacher">
+				<div id="teacher-avatar">docent</div>
+				<div class="emp">Malle Henk</div>
+				<!--<div class="emp">{{teacherName}}</div>-->
+				<div>berichten</div>
+			</div>
 		</div>
+
 		<div class="row">
-			<div class="col-sm-6">
-				<div class="itemContainer studyUtils">
-					<div class="robotoThin itemContainerHeader">
-						Studiewijzers
-					</div>
-					<div class="itemContainerContent">
-						{{#each studyUtils}}
-							{{> studyUtil}}
-						{{/each}}
-					</div>
-				</div>
-			</div>
-			<div class="col-sm-6">
-				<div class="itemContainer digitalSchoolUtilities">
-					<div class="robotoThin itemContainerHeader">
-						Leermiddelen
-					</div>
-					<div class="itemContainerContent">
-						{{#each digitalSchoolUtilities}}
-							{{> digitalSchoolUtility}}
-						{{/each}}
-					</div>
-				</div>
-			</div>
+			{{! TODO: info and chat containers }}
 		</div>
 	</div>
 {{else}}

@@ -4,8 +4,8 @@
 .row.classHeader
 	margin-left: -25px
 	margin-right: -25px
-	padding-left: 10px
-	padding-right: 10px
+	padding-left: 10px !important
+	padding-right: 10px !important
 
 	height: 75px
 	line-height: 75px
@@ -256,3 +256,64 @@ div.digitalSchoolUtilities
 
 	div.digitalSchoolUtility:hover
 		background-color: lightgray
+
+.classViewContainer
+	.row
+		padding = 25px
+		padding-left: padding
+		padding-right: padding
+
+		+mobile()
+			padding: 10px
+
+	#buttonsRow
+		margin-top: 15px
+
+	#buttonsRow > div
+		col(1/5)
+		position: relative
+		border: 1px lightgray solid
+		height: 75px
+		text-align: center !important
+		font-size: 20px
+		cursor: pointer
+
+		line-height: 1.7em
+		padding: 5px
+
+		div.emp
+			font-weight: bold
+			font-size: 1.8em
+
+		+mobile()
+			stack()
+			width: 100% !important
+			margin-bottom: 5px
+
+	#buttonsRow > div:hover
+		background-color: #EFEFEF
+
+	#buttonsRow > div:last-child
+		col(2/5)
+
+		div.emp
+			font-size: 1.6em
+
+	.row:nth-child(3) > div:first-child
+		col(3/5)
+
+	.row:nth-child(3) > div:last-child
+		col(2/5)
+
+#teacher-avatar
+	border-radius: 50%
+	background-color: #525252
+	color: white
+	text-transform: uppercase
+
+	float: left
+	width: 65px
+	height: 65px
+	font-size: 14px
+	text-align: center
+	line-height: 65px

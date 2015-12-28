@@ -124,14 +124,21 @@ Meteor.publish 'classInfo', (classId) ->
 
 	[
 		Classes.find _id: classId
+
+		# OPTIMIZE
 		CalendarItems.find {
 			userIds: @userId
 			classId: classId
-			startDate: $gt: new Date
+			startDate: $gt: Date.today()
+			endDate: $lt: Date.today().addDays 7
 			scrapped: no
 		}, {
 			sort: startDate: 1
-			limit: 1
+			fields:
+				_id: 1
+				classId: 1
+				start: 1
+				endDate: 1
 		}
 	]
 
