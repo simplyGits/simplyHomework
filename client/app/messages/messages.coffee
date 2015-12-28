@@ -46,6 +46,15 @@ Template.messages.events
 			amount.set amount.get() + 10
 
 Template.messages.onCreated ->
+	tracker = new Tracker.Dependency()
+	prev = _.now()
+	@autorun ->
+		minuteTracker.depend()
+		now = _.now()
+		if now - prev >= 180000 # 3 minutes
+			tracker.changed()
+			prev = now
+
 	@autorun ->
 		folder = currentFolder()
 		if folder?
@@ -54,7 +63,7 @@ Template.messages.onCreated ->
 		else
 			isLoading.set no
 	@autorun ->
-		minuteTracker.depend()
+		tracker.depend()
 
 		folder = currentFolder()
 		return unless folder?
