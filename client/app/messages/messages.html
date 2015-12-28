@@ -55,6 +55,7 @@
 <template name="messages_messageList">
 	<div class="header">
 		{{friendlyName}}
+		<span id="closeButton">&times;</span>
 	</div>
 	<div id="messageList">
 		{{#if messages}}
@@ -92,10 +93,11 @@
 </template>
 
 <template name="message_current_message">
+	<div class="header">
+		{{subject}}
+		<span id="closeButton" class="desktop-too">&times;</span>
+	</div>
 	<div id="full_message">
-		<header>
-			{{subject}}
-		</header>
 		<div class="sender">
 			<span class="dim">Verzender:</span> {{sender}}
 		</div>

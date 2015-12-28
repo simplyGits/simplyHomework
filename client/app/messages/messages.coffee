@@ -96,6 +96,9 @@ Template['messages_messageList'].helpers
 	messages: -> messages.get()
 	loadingNext: -> loadingNext.get()
 
+Template['messages_messageList'].events
+	'click #closeButton': -> history.back()
+
 Template['messages_message_row'].helpers
 	__recipients: ->
 		# TODO: make this based on length of the res string instead of amount of
@@ -110,6 +113,9 @@ Template['messages_message_row'].helpers
 
 Template['messages_message_row'].events
 	'click': -> setCurrentMessage @_id
+
+Template['message_current_message'].events
+	'click #closeButton': -> history.back()
 
 Template['message_compose'].events
 	'click #send': ->
