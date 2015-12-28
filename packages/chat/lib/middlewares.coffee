@@ -59,6 +59,7 @@ chatMessageReplaceMap =
 	':sunglasses:': /\(h\)/ig
 	':sweat_smile:': /\^\^'/ig
 	':tada:': /:fissa:/ig
+	':middle_finger:': /:fu:/ig
 	'¯\\\\\\_(ツ)\\_/¯': /:shrug:/ig
 
 ChatMiddlewares.attach 'convert smileys', 'client', (message) ->
