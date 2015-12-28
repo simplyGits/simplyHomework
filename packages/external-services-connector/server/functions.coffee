@@ -409,6 +409,46 @@ getProfileData = (userId) ->
 		res[service.name] = data
 	res
 
+getMessages = (folder, skip, limit, userId) ->
+	check folder, String
+	check skip, Number
+	check limit, Number
+	check userId, String
+
+	services = _.filter Services, (s) -> s.getMessages? and s.active userId
+	res = []
+	for service in services
+		res = res.concat service.getMessages folder, skip, limit, userId
+	res
+
+fillMessage = (message, service, userId) ->
+	check message, Object
+	check service, String
+	check userId, String
+
+	service = _.find Services, (s) -> s.name is service and s.getMessages? and s.active userId
+	serivce.fillMessage message, userId
+
+composeMessage = (subject, body, recipients, service, userId) ->
+	check subject, String
+	check body, String
+	check recipients, [String]
+	check service, String
+	check userId, String
+
+	service = _.find Services, (s) -> s.name is service and s.composeMessage? and s.active userId
+	service.composeMessage subject, body, recipients, userId
+
+replyMessage = (body, id, all, service, userId) ->
+	check body, String
+	check id, Number
+	check all, Boolean
+	check service, String
+	check userId, String
+
+	service = _.find Services, (s) -> s.name is service and s.getMessages? and s.active userId
+	serivce.replyMessage body, id, all, userId
+
 ###*
 # Returns an array containg info about available services.
 # @method getModuleInfo
@@ -436,4 +476,8 @@ getModuleInfo = (userId) ->
 @getSchools = getSchools
 @getServiceProfileData = getServiceProfileData
 @getProfileData = getProfileData
+@getMessages = getMessages
+@fillMessage = fillMessage
+@composeMessage = composeMessage
+@replyMessage = replyMessage
 @getModuleInfo = getModuleInfo

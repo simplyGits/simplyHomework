@@ -66,7 +66,11 @@ appRoutes.route '/',
 	name: 'overview'
 	action: -> renderAppTemplate 'overview'
 
-appRoutes.route '/messages',
+appRoutes.route '/messages/compose',
+	name: 'composeMessage'
+	action: -> renderAppTemplate 'messages'
+
+appRoutes.route '/messages/:folder?/:message?',
 	name: 'messages'
 	action: -> renderAppTemplate 'messages'
 
