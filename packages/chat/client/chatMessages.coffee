@@ -98,6 +98,8 @@ Template.chatMessages.onDestroyed ->
 	window.removeEventListener 'mousemove', @markRead
 	window.removeEventListener 'keyup', @markRead
 
+	sub.stop()
+
 Template.messageRow.events
 	"click .senderImage": ->
 		ChatManager.closeChat()
