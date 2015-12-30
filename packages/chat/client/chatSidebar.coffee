@@ -125,7 +125,9 @@ chats = (searchTerm = currentSearchTerm.get(), onlyFirst = no) ->
 	dam = DamerauLevenshtein insert: 0
 	calcDistance = _.curry (s) -> dam searchTerm.trim().toLowerCase(), s.trim().toLowerCase()
 
-	chatRooms = ChatRooms.find({}).fetch()
+	chatRooms = ChatRooms.find({
+		lastMessageTime: $exists: yes
+	}).fetch()
 
 	chain = _(chatRooms)
 		.filter (chat) ->
