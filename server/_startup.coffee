@@ -25,6 +25,11 @@ Meteor.startup ->
 
 		doc.profile = options.profile
 
+		userCount = Meteor.users.find({}, fields: _id: 1).count()
+		if userCount < 55
+			obj = deadline: Date.today().addDays 365
+			doc.premiumInfo.noAds = obj
+
 		doc
 
 	Meteor.users.find().observe
