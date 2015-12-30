@@ -291,8 +291,6 @@ Template.app.events
 	'click #bigNotice > #dismissButton': -> currentBigNotice.get().onDismissed? arguments...
 
 Template.app.onCreated ->
-	# TODO: REFACTOR THE SHIT OUT OF THIS.
-	###
 	mailVerified = Meteor.user().emails[0].verified
 	if not mailVerified and
 	Helpers.daysRange(Meteor.user().createdAt, new Date(), no) >= 2
@@ -300,7 +298,6 @@ Template.app.onCreated ->
 			Je hebt je account nog niet geverifiëerd.
 			Check je email!
 		''', 'warning'
-	###
 
 	@autorun ->
 		dateTracker.depend()
