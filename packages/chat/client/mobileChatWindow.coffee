@@ -26,6 +26,15 @@ Template.mobileChatWindow.events
 			event.target.value = ''
 			window.sendToBottom()
 
+	'click #sendButton': ->
+		$input = document.getElementById 'messageInput'
+
+		content = $input.value.trim()
+		Meteor.call 'addChatMessage', content, FlowRouter.getParam('id')
+
+		$input.value = ''
+		window.sendToBottom()
+
 Template.mobileChatWindow.onCreated ->
 	@sticky = yes
 	@subscribe 'basicChatInfo', onReady: =>
