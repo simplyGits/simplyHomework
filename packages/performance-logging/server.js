@@ -1,9 +1,9 @@
 PerformanceData = new Mongo.Collection('performanceData');
 
 Meteor.methods({
-	performance_report: function (data) {
-		// TODO: Add user-agent.
+	performance_report(data) {
 		check(data, Object);
-		PerformanceData.insert(data);
-	}
-})
+		const userAgent = this.connection.httpHeaders['user-agent'];
+		PerformanceData.insert(_.extend(data, { userAgent }));
+	},
+});
