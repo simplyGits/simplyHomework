@@ -1,7 +1,7 @@
 currentFolder = -> FlowRouter.getParam 'folder'
 
 setCurrentMessage = (id) -> FlowRouter.setParams message: id
-currentMessage = -> FlowRouter.getParam 'message'
+currentMessage = -> _.find messages.get(), _id: +FlowRouter.getParam('message')
 
 composing = -> FlowRouter.getRouteName() is 'composeMessage'
 
@@ -31,7 +31,7 @@ Template.messages.helpers
 	isLoading: -> messages.get().length is 0 and isLoading.get()
 	folder: -> _.find folders, name: currentFolder()
 	hasMagister: -> hasMagister.get()
-	currentMessage: -> _.find messages.get(), _id: +currentMessage()
+	currentMessage: -> currentMessage()
 
 Template.messages.events
 	'scroll': ->
@@ -90,6 +90,21 @@ Template.messages.onRendered ->
 	setPageOptions
 		title: 'Berichten'
 		color: null
+
+	@autorun ->
+		$page = document.getElementsByClassName 'page'
+		$page.scrollTop = 0
+
+		if composing()
+			setPageOptions title: 'Berichten | Nieuw bericht'
+		else if currentMessage()?
+			message = currentMessage()
+			setPageOptions title: "Berichten | #{message.subject}"
+		else if currentFolder()?
+			folder = _.find folders, name: currentFolder()
+			setPageOptions title: "Berichten | #{folder.friendlyName}"
+		else
+			setPageOptions title: 'Berichten'
 
 Template['messages_sidebar'].helpers
 	folders: -> folders
