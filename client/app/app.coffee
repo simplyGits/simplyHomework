@@ -291,8 +291,6 @@ Template.app.events
 	'click #bigNotice > #dismissButton': -> currentBigNotice.get().onDismissed? arguments...
 
 Template.app.onCreated ->
-	# TODO: REFACTOR THE SHIT OUT OF THIS.
-	###
 	mailVerified = Meteor.user().emails[0].verified
 	if not mailVerified and
 	Helpers.daysRange(Meteor.user().createdAt, new Date(), no) >= 2
@@ -300,7 +298,6 @@ Template.app.onCreated ->
 			Je hebt je account nog niet geverifiëerd.
 			Check je email!
 		''', 'warning'
-	###
 
 	@autorun ->
 		dateTracker.depend()
@@ -332,40 +329,6 @@ Template.app.onCreated ->
 						'''
 						type: 'error'
 			), 3000
-
-	###
-	@autorun ->
-		return unless Meteor.userId()?
-		lastUpdate = Meteor.user().profile.courseInfo.classGroupsUpdated
-		start = new Date
-		end = new Date().addDays 7
-
-		if lastUpdate? and
-		_.now() - lastUpdate.getTime() < 1000 * 60 * 60 * 24 # 24 hours
-			return
-
-		Meteor.subscribe 'externalCalendarItems', start, end
-
-		classGroups = Meteor.user().profile.courseInfo.classGroups
-		return unless classGroups?
-
-		res = []
-		for classInfo in Meteor.user().classInfos
-			group = CalendarItems.findOne(
-				classId: classInfo.id
-				description:
-					$exists: yes
-					$ne: ''
-			)?.description
-			continue unless group?
-
-			classGroup = _.find(classGroups, (i) -> i.id is classInfo.id) ? {}
-			res.push _.extend classGroup, group
-
-		Meteor.users.update Meteor.userId(), $set:
-			'profile.courseInfo.classGroups': res
-			'profile.courseInfo.classGroupsUpdated': new Date
-	###
 
 	# REVIEW: Maybe use a cleaner method using Blaze and stuff?
 	notifmap = {}

@@ -1,6 +1,9 @@
 # Let's hope that this package is performant.
 Meteor.publishComposite 'basicChatInfo',
-	find: -> ChatRooms.find users: @userId
+	find: ->
+		ChatRooms.find {
+			users: @userId
+		}, limit: 50 # REVIEW: is this a good value?
 	children: [{
 		find: (room) ->
 			ChatMessages.find {

@@ -77,16 +77,16 @@ ChatMiddlewares.attach 'emojione', 'client', (message) ->
 		message.content = emojione.toImage message.content
 	message
 
+# TODO: This needs to be serverside to find every user.
 ChatMiddlewares.attach 'clickable names', 'client', (message) ->
 	users = _(message.content)
 		.split /\W/
-		.map (word) -> Helpers.nameCap word
 		.map (word, i) ->
 			Meteor.users.findOne
 				_id: $nin: [Meteor.userId(), message.creatorId]
 				$or: [
-					{ 'profile.firstName': word }
-					{ 'profile.lastName': word }
+					{ 'profile.firstName': $regex: word, $options: 'i' }
+					{ 'profile.lastName': $regex: word, $options: 'i' }
 				]
 		.compact()
 		.uniq '_id'

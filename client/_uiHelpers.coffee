@@ -137,6 +137,7 @@ http://tomsmeding.nl/
 	audio.src = "http://www.ispeech.org/p/generic/getaudio?text=#{text}%2C&voice=eurdutchfemale&speed=0&action=convert"
 	audio.play()
 
+# TODO: Give this its own package
 ###*
 # The manager for notificafions.
 # @class NotificationsManager
@@ -470,7 +471,7 @@ class @NotificationsManager
 	$modal = $ "##{name}"
 	$modal
 		.modal options
-		.on 'hidden.bs.modal', ->
+		.one 'hidden.bs.modal', ->
 			Blaze.remove view
 			options?.onHide?()
 
@@ -480,14 +481,14 @@ class @NotificationsManager
 	-> $modal.modal 'hide'
 
 Meteor.startup ->
-	Session.setDefault "documentPageTitle", "simplyHomework"
-	Session.setDefault "pageColor", "lightgray"
-	Session.setDefault "allowNotifications", no
+	Session.setDefault 'documentPageTitle', 'simplyHomework'
+	Session.setDefault 'pageColor', 'lightgray'
+	Session.setDefault 'allowNotifications', no
 
-	colortag = $ "meta[name='theme-color']"
+	$colortag = $ 'meta[name="theme-color"]'
 	Tracker.autorun ->
-		document.title = Session.get "documentPageTitle"
-		colortag.attr "content", Session.get("pageColor") ? "#32A8CE"
+		document.title = Session.get 'documentPageTitle'
+		$colortag.attr 'content', Session.get('pageColor') ? '#32A8CE'
 
 	BlazeLayout.setRoot 'body'
 
@@ -541,7 +542,6 @@ Meteor.startup ->
 		hashBang = view.hash.hash ? ''
 		FlowRouter.path(path, view.hash, query) + hashBang
 
-	# TODO: Remove the console.infos.
 	disconnectedNotice = null
 	Tracker.autorun ->
 		status = Meteor.status()

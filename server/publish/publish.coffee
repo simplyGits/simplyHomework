@@ -70,9 +70,13 @@ Meteor.publish null, ->
 		Schools.find { _id: user.profile.schoolId }, fields:
 			externalInfo: 0
 
-		Projects.find { participants: userId }, fields:
+		Projects.find {
+			participants: userId
+			finished: no
+		}, fields:
 			name: 1
 			magisterId: 1
+			finished: 1
 			classId: 1
 			deadline: 1
 			participants: 1

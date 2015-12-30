@@ -22,6 +22,6 @@
 				<b>Agenda</b>: <kbd>a</kbd>
 				<b>Zoeken</b>: <kbd>/</kbd> of <kbd>?</kbd>
 				<b>Chatbalk zoeken</b>: <kbd>c</kbd>
-				<b>Vorige zijbalk item</b>: <kbd>shift</kbd> + <kbd>pijltje boven</kbd>
-				<b>Volgende zijbalk item</b>: <kbd>shift</kbd> + <kbd>pijltje beneden</kbd>
+				<b>Vorige zijbalk item</b>: <kbd>shift</kbd> + <kbd>pijltje boven</kbd> of <kbd>shift</kbd> + <kbd>k</kbd>
+				<b>Volgende zijbalk item</b>: <kbd>shift</kbd> + <kbd>pijltje beneden</kbd> of<kbd>shift</kbd> + <kbd>j</kbd>
 			'''

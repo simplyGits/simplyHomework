@@ -127,6 +127,11 @@ Schemas.Projects = new SimpleSchema
 			else @value
 	driveFileIds:
 		type: [String]
+	finished:
+		type: Boolean
+		autoValue: ->
+			if not @isFromTrustedCode and @isInsert then no
+			else @value
 
 Schemas.ReportItems = new SimpleSchema
 	reporterId:

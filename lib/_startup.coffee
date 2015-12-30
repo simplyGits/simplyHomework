@@ -20,7 +20,7 @@ if Meteor.isClient
 
 Meteor.startup ->
 	Accounts.config
-		sendVerificationEmail: no#yes
+		sendVerificationEmail: yes
 
 	blocked = [
 		'heading'
