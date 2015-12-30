@@ -54,7 +54,7 @@
 
 <template name="messages_messageList">
 	<div class="header">
-		{{friendlyName}}
+		<div id="name">{{friendlyName}}</div>
 		<span id="closeButton">&times;</span>
 	</div>
 	<div id="messageList">
@@ -94,7 +94,7 @@
 
 <template name="message_current_message">
 	<div class="header">
-		{{subject}}
+		<div id="name">{{subject}}</div>
 		<span id="closeButton" class="desktop-too">&times;</span>
 	</div>
 	<div id="full_message">
