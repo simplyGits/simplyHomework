@@ -113,16 +113,17 @@ class @ChatManager
 # Get the current chats, based on search term, if one.
 #
 # @method chats
-# @param [searchTerm] {String}
+# @param {String} [searchTerm]
+# @param {Boolean} [onlyFirst=false]
 # @return {Object[]} An array of ChatSidebar objects.
 ###
-chats = (searchTerm = currentSearchTerm.get()) ->
+chats = (searchTerm = currentSearchTerm.get(), onlyFirst = no) ->
 	dam = DamerauLevenshtein insert: 0
 	calcDistance = _.curry (s) -> dam searchTerm.trim().toLowerCase(), s.trim().toLowerCase()
 
 	chatRooms = ChatRooms.find({}).fetch()
 
-	_(chatRooms)
+	chain = _(chatRooms)
 		.filter (chat) ->
 			name = chat.friendlyName()
 			searchTerm.trim() is '' or
@@ -144,15 +145,16 @@ chats = (searchTerm = currentSearchTerm.get()) ->
 				else
 					distance
 
-		.value()
+	if onlyFirst then chain.first()
+	else chain.value()
 
 Template.chatSidebar.events
 	'keyup div.searchBox': (event) ->
 		if event.which is 27
 			$('div.searchBox > input').blur()
 		else if event.which is 13
-			ChatManager.openChat chats()[0]._id
-			currentSearchTerm.set event.target.value = ''
+			ChatManager.openChat chats(undefined, no)[0]._id
+			$('div.searchBox > input').blur()
 		else
 			currentSearchTerm.set event.target.value
 
@@ -239,6 +241,10 @@ Template.chatSidebar.onRendered ->
 
 	ReactiveLocalStorage 'chatNotify', yes
 
+	$input.on 'blur', (event) ->
+		currentSearchTerm.set ''
+		event.target.value = ''
+
 	if Session.equals 'deviceType', 'desktop'
 		# Attach classes to body on chatSidebar hover / blur
 		$(".chatSidebar").hover (->
@@ -259,6 +265,3 @@ Template.chatSidebar.onRendered ->
 			stayOpen = no
 			$body.removeClass "chatSidebarOpen"
 			$chats.animate scrollTop: 0
-
-			currentSearchTerm.set ""
-			$input.val ""
