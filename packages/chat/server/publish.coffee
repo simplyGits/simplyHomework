@@ -38,8 +38,6 @@ Meteor.publish 'chatMessages', (chatRoomId, limit) ->
 		@ready()
 		return undefined
 
-	console.log @userId, chatRoomId, limit
-
 	room = ChatRooms.findOne
 		_id: chatRoomId
 		users: @userId
