@@ -245,7 +245,8 @@ Template.chatSidebar.onRendered ->
 	$chats = @$ '.chats'
 	$input = @$ 'input'
 
-	ReactiveLocalStorage 'chatNotify', yes
+	unless ReactiveLocalStorage('chatNotify')?
+		ReactiveLocalStorage 'chatNotify', yes
 
 	$input.on 'blur', (event) ->
 		currentSearchTerm.set ''
