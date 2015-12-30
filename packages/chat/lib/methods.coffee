@@ -6,6 +6,10 @@ Meteor.methods
 	###
 	createPrivateChatRoom: (userId) ->
 		check userId, String
+
+		if userId is @userId
+			throw new Meteor.Error 'same-person', "Can't create a chat with yourself."
+
 		if (val = ChatRooms.findOne users: [@userId, userId])?
 			val._id
 		else

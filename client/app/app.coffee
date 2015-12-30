@@ -222,8 +222,9 @@ setKeyboardShortcuts = ->
 		no
 
 	Mousetrap.bind 'c', ->
-		if FlowRouter.getRouteName() is 'personView'
-			ChatManager.openPrivateChat FlowRouter.getParam 'id'
+		id = FlowRouter.getParam 'id'
+		if FlowRouter.getRouteName() is 'personView' and Meteor.userId() isnt id
+			ChatManager.openPrivateChat id
 		else
 			$('.searchBox > input').focus()
 		no

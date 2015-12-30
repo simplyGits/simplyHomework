@@ -29,6 +29,8 @@ Template.personView.events
 	"click button#chatButton": -> ChatManager.openPrivateChat @_id
 
 Template.personView.onCreated ->
+	@subscribe 'classes', hidden: yes
+
 	@autorun =>
 		unless sameUser()
 			@subscribe 'externalCalendarItems', Date.today(), Date.today().addDays 7

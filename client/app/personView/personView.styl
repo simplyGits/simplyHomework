@@ -1,4 +1,5 @@
 @require "../../utils"
+@require "jeet"
 hoverBackground = rgba(0, 0, 0, .08)
 
 div.personInfo
@@ -91,9 +92,21 @@ div.personDetailsContainer
 	+mobile()
 		margin-top: 100px
 
-div.personSharedHours
+div#personSharedHours
+	col(1/2)
+
 	li
 		list-style-type: none
+
+		a
+			color: black
+			text-decoration: none
+		a:hover
+			text-decoration: underline
+
+	+mobile()
+		stack()
+		margin-bottom: 10px
 
 div#reportUserModal div.modal-body
 	text-align: center

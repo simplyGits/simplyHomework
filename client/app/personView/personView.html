@@ -39,16 +39,19 @@
 </template>
 
 <template name="personSharedHours">
+<div class="itemContainer" id="personSharedHours">
 {{#if days}}
-	<div class="personSharedHours">
-		<b>Lessen van volgende week die je met {{profile.firstName}} deelt</b>
+	<header>Lessen met {{profile.firstName}} volgende week</header>
+	<div>
 		<ul>
 			{{#each days}}
 				{{name}}:
 				<li>
 					<ul>
 						{{#each hours}}
-							<li><b>{{schoolHour}}</b>: {{class.name}}</li>
+							<a href="{{pathFor 'classView' id=class._id}}">
+								<li><b>{{schoolHour}}</b>: {{class.name}}</li>
+							</a>
 						{{/each}}
 					</ul>
 				</li>
@@ -56,6 +59,7 @@
 		</ul>
 	</div>
 {{/if}}
+</div>
 </template>
 
 <template name="reportUserModal">
