@@ -1,8 +1,12 @@
 NOTIFICATION_SOUND_SRC = '/packages/chat/audio/chatNotification.ogg'
 
-stayOpen = no
-currentSearchTerm = new ReactiveVar ""
+currentSearchTerm = new ReactiveVar ''
 
+###*
+# @method chatRoomTransform
+# @param {ChatRoom} room
+# @return {ChatRoom}
+###
 @chatRoomTransform = (room) ->
 	switch room.type
 		when 'private'
@@ -66,9 +70,9 @@ class @ChatManager
 	@MESSAGES_PER_PAGE: 30
 
 	###*
-	# Opens a chat window for the given user.
+	# Opens the chat for with given user.
 	# @method openPrivateChat
-	# @param projectId {ObjectID|User} The user or an ID of an user to open a chat for.
+	# @param userId {ObjectID|User} The user or the ID of an user to open the chat of.
 	###
 	@openPrivateChat: (userId) ->
 		userId = userId._id if userId._id?
@@ -84,18 +88,18 @@ class @ChatManager
 				ChatManager.openChat r
 
 	###*
-	# Opens a chat window for the given project.
+	# Opens the chat for with given project.
 	# @method openProjectChat
-	# @param projectId {ObjectID|Project} The project or an ID of a project to open a chat for.
+	# @param projectId {ObjectID|Project} The project or the ID of a project to open the chat of.
 	###
 	@openProjectChat: (projectId) ->
 		projectId = projectId._id if projectId._id?
 		@openChat ChatRooms.findOne({ projectId })?._id
 
 	###*
-	# Opens a chat window for the given chatSidebar object.
+	# Opens the chat for the given ChatRoom id
 	# @method openChat
-	# @param object {Object} The chatSidebar context object to create a chatWindow for.
+	# @param id {String} ID of a ChatRoom.
 	###
 	@openChat: (id) ->
 		if Session.equals 'deviceType', 'phone'
@@ -235,9 +239,9 @@ Template.chatSidebar.onCreated ->
 
 Template.chatSidebar.onRendered ->
 	# some of that caching, yo.
-	$body = $ "body"
-	$chats = @$ ".chats"
-	$input = @$ "input"
+	$body = $ 'body'
+	$chats = @$ '.chats'
+	$input = @$ 'input'
 
 	ReactiveLocalStorage 'chatNotify', yes
 
@@ -246,22 +250,23 @@ Template.chatSidebar.onRendered ->
 		event.target.value = ''
 
 	if Session.equals 'deviceType', 'desktop'
-		# Attach classes to body on chatSidebar hover / blur
-		$(".chatSidebar").hover (->
-			$body.addClass "chatSidebarOpen"
+		stayOpen = no
+
+		$('.chatSidebar').hover (->
+			$body.addClass 'chatSidebarOpen'
 		), ->
 			return if stayOpen
-			$body.removeClass "chatSidebarOpen"
+			$body.removeClass 'chatSidebarOpen'
 			$chats.animate scrollTop: 0
 
-			currentSearchTerm.set ""
-			$input.val ""
+			currentSearchTerm.set ''
+			$input.val ''
 
-		$input.on "focus", ->
+		$input.on 'focus', ->
 			stayOpen = yes
-			$body.addClass "chatSidebarOpen"
+			$body.addClass 'chatSidebarOpen'
 
-		$input.on "blur", ->
+		$input.on 'blur', ->
 			stayOpen = no
-			$body.removeClass "chatSidebarOpen"
+			$body.removeClass 'chatSidebarOpen'
 			$chats.animate scrollTop: 0
