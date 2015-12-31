@@ -1,4 +1,7 @@
+/* global cheerio, WoordjesLeren:true */
 'use strict';
+
+// TODO: make this an external service
 
 var $ = cheerio;
 var urls = {
