@@ -2,7 +2,7 @@ NoticeManager.provide 'tasks', ->
 	dateTracker.depend()
 	@subscribe 'externalCalendarItems', Date.today(), Date.today().addDays 4
 
-	if tasks().length
+	if tasks().length > 0
 		template: 'tasks'
 		header: 'Nu te doen'
 		priority: 1
