@@ -5,6 +5,7 @@
 # @return {String}
 ###
 @normalizeSchoolVariant = (variant) ->
+	# TODO: extend this method.
 	check variant, String
 	variant = variant.toLowerCase().trim()
 	switch variant

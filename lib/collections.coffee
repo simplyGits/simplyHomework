@@ -259,13 +259,13 @@ Schemas.Absences = new SimpleSchema
 	_.extend c,
 		#__taskAmount: _.filter(homeworkItems.get(), (a) -> groupInfo?.group is a.description() and not a.isDone()).length
 		__book: -> null# Books.findOne classInfo()?.bookId
-		__color: classInfo?.color
 		__sidebarName: (
 			val = c.name
 			if val.length > 14 then c.abbreviations[0]
 			else val
 		)
 
+		__color: classInfo?.color
 		__classInfo: classInfo
 
 @projectTransform = (p) ->

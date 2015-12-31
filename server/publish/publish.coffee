@@ -211,6 +211,8 @@ Meteor.publish 'userCount', ->
 	Counts.publish this, 'userCount', Meteor.users.find {}
 	undefined
 
+# OPTIMIZE
+
 Meteor.publish 'scholieren.com', ->
 	unless @userId?
 		@ready()
@@ -221,4 +223,4 @@ Meteor.publish 'woordjesleren', ->
 	unless @userId?
 		@ready()
 		return undefined
-	WoordjesLeren.find()
+	WoordjesLerenClasses.find()

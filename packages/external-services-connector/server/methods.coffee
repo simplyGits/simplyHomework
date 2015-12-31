@@ -65,6 +65,10 @@ Meteor.methods
 		check query, String
 		getSchools query, @userId
 
+	'getProfileData': ->
+		@unblock()
+		getProfileData @userId
+
 	'getMessages': (folder, amount) ->
 		@unblock()
 		check folder, String
