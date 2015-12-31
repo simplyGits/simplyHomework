@@ -126,23 +126,46 @@ Template.changeClassModal.events
 		$('#changeClassModal').modal 'hide'
 
 	'click #hideClassButton': ->
+		userId = Meteor.userId()
+
+		deleteOld = =>
+			Meteor.users.update userId, $pull: classInfos: id: @_id
+		hide = =>
+			FlowRouter.go 'overview'
+
+			deleteOld()
+			Meteor.users.update userId, $push: classInfos:
+				_.extend @__classInfo, hidden: yes
+
+			NotificationsManager.notify
+				body: "<b>#{@name} verborgen</b>"
+				html: yes
+
+				labels: [ 'ongedaan maken' ]
+				callbacks: [ show ]
+		show = =>
+			deleteOld()
+			Meteor.users.update userId, $push: classInfos:
+				_.extend @__classInfo, hidden: no
+			notify "#{@name} zichtbaar gemaakt", 'success'
+
 		$('#changeClassModal').modal 'hide'
-		alertModal(
-			'Zeker weten?',
-			'''
-				Als je dit vak verbergt kan je het niet meer zien in de zijbalk, je kan
-				het vak weer toonbaar maken in instellingen > vakken.
-			''',
-			DialogButtons.OkCancel,
-			{ main: 'Verbergen', second: 'Toch niet' },
-			{ main: 'btn-danger' },
-			main: =>
-				FlowRouter.go 'overview'
-				Meteor.users.update Meteor.userId(), $pull: classInfos: id: @_id
-				Meteor.users.update Meteor.userId(), $push: classInfos:
-					_.extend @__classInfo, hidden: yes
-			second: ->
-		)
+		if getEvent('classHideHint')?
+			hide()
+		else
+			alertModal(
+				'Zeker weten?'
+				'''
+					Als je dit vak verbergt kan je het niet meer zien in de zijbalk, je kan
+					het vak weer toonbaar maken in instellingen > vakken.
+				''',
+				DialogButtons.OkCancel
+				{ main: 'Verbergen', second: 'Toch niet' }
+				{ main: 'btn-danger' }
+				main: ->
+					hide()
+					Meteor.call 'markUserEvent', 'classHideHint'
+			)
 
 Template.gradeRow.events "click .gradeRow": -> selectedGradeId.set @_id
 
