@@ -15,6 +15,7 @@ Package.onUse(function(api) {
 
 	api.use([
 		'http',
+		'ecmascript',
 	], 'server');
 
 	api.addFiles('scholieren.js', 'server');

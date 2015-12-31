@@ -65,4 +65,29 @@ Scholieren = {
 			};
 		});
 	},
+
+	getReports: function (query) {
+		const result = HTTP.post('http://api.scholieren.com/', {
+			params: {
+				'client_id': settings['client_id'],
+				'client_pw': settings['client_pw'],
+				'request': 'reports',
+				'by_item': 'terms',
+				'by_data': query,
+			},
+		});
+		if (!result.content.trim().length) {
+			return [];
+		}
+
+		const reports = JSON.parse(result.content).reports || [];
+		return reports.map(function (report) {
+			const res = {}
+			report.forEach(function (obj) {
+				const pair = _.pairs(obj)[0];
+				res[pair[0]] = pair[1];
+			});
+			return res;
+		});
+	},
 };
