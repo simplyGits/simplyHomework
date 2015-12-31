@@ -15,7 +15,7 @@ var urls = {
 
 WoordjesLeren = {
 	name: 'woordjesleren',
-	friendlyName: 'WoordjesLeren',
+	friendlyName: 'woordjesleren.nl',
 	loginNeeded: false,
 };
 
