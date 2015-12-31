@@ -64,3 +64,7 @@ Meteor.methods
 		@unblock()
 		check query, String
 		getSchools query, @userId
+
+	'getProfileData': ->
+		@unblock()
+		getProfileData @userId
