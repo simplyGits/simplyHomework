@@ -35,12 +35,15 @@ Package.onUse(function(api) {
 	api.addFiles([
 		'client/noticesManager.coffee',
 		'client/notices.html',
+		'client/notices.styl',
 		'client/notices.coffee',
 
 		'client/recentGrades/recentGrades.html',
+		'client/recentGrades/recentGrades.styl',
 		'client/recentGrades/recentGrades.coffee',
 
 		'client/tasks/tasks.html',
+		'client/tasks/tasks.styl',
 		'client/tasks/tasks.coffee',
 
 		'client/lessons/currentLesson.html',
