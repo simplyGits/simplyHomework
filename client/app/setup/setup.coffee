@@ -165,7 +165,7 @@ setupItems = [
 					.value()
 	}
 
-	{
+	{ # TODO: make this step fully automatic.
 		name: 'getExternalClasses'
 		async: yes
 		func: (callback) ->

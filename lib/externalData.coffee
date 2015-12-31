@@ -1,39 +1,46 @@
+###*
+# Gets persons from the external services matching the given `query` and `type`.
+# @method getPersons
+# @param {String} query
+# @param {String} type
+# @param {String} [userId=Meteor.userId()]
+# @param {Function} [callback] Required on client.
+###
 @getPersons = (query, type, userId = Meteor.userId()) ->
 	callback = _.last arguments
-	if Meteor.isClient and not _.isFunction(callback)
-		throw new Error 'Callback required on client.'
+	if Meteor.isClient
+		unless _.isFunction(callback)
+			throw new Error 'Callback required on client.'
 
-	if Meteor.isClient and userId isnt Meteor.userId()
-		throw new Error 'Client code can only fetch persons using their own account.'
+		if userId isnt Meteor.userId()
+			throw new Error 'Client code can only fetch persons using their own account.'
 
-	trans = (arr) -> (_.extend(new ExternalPerson, p) for p in arr)
+	transform = (arr) -> (_.extend(new ExternalPerson, p) for p in arr)
 
 	res = Meteor.call(
 		'getPersons',
 		query,
 		type,
 		userId,
-		if callback? then (e, r) -> callback e, (trans r if r?)
+		if callback? then (e, r) -> callback e, (transform r if r?)
 	)
-	trans res if res?
+	transform res if res?
 
+###*
+# Gets profileData per service
+# @method getProfileDataPerService
+# @param {String} [userId=Meteor.userId()]
+# @param {Function} [callback] Required on client.
+###
 @getProfileDataPerService = ->
 	userId = _.find arguments, (a) -> _.isString a
 	callback = _.find arguments, (a) -> _.isFunction a
 	Meteor.call 'getProfileData', userId ? Meteor.userId(), callback
 
-# TODO: Fix this, we don't want to sent all the externalService data to the
-# client for security reasons.
-@getServicePicture = (service, userId = Meteor.userId()) ->
-	check service, String
-	check userId, String
-
-	Meteor.users.findOne(userId).externalServices[service].picture
-
 ###*
 # Gets the picture of the given `userId`.
 # @method picture
-# @param [userId=Meteor.userId()] {User|ObjectID} The object or ID of the user to get the picture from.
+# @param [userId=Meteor.userId()] {User|String} The object or ID of the user to get the picture from.
 # @param [size=100] {Number} The size in pixels that the gravatar shall be.
 # @return {String} A string containing the URL or data string of the picture.
 ###

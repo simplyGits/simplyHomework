@@ -25,6 +25,7 @@ SyncedCron.add
 		result
 
 SyncedCron.add
+	# OPTIMIZE
 	name: 'Update scholieren.com data'
 	schedule: (parser) -> parser.recur().on(4).hour()
 	job: ->
@@ -87,6 +88,7 @@ SyncedCron.add
 		res
 
 SyncedCron.add
+	# OPTIMIZE
 	name: 'Update woordjesleren data'
 	schedule: (parser) -> parser.recur().on(5).hour()
 	job: ->
