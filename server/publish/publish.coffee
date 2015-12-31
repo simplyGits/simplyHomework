@@ -216,4 +216,4 @@ Meteor.publish 'woordjesleren', ->
 	unless @userId?
 		@ready()
 		return undefined
-	WoordjesLeren.find()
+	WoordjesLerenClasses.find()

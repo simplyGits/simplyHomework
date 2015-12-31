@@ -61,28 +61,27 @@
 	Meteor.subscribe 'scholieren.com'
 	Meteor.subscribe 'woordjesleren'
 
-	res = []
 	results = [
 		ScholierenClasses.find().fetch()
 		WoordjesLerenClasses.find().fetch()
 	]
 
-	for result in results
-		for c in result
+	res = []
+	for result in results # array from classs from one provider.
+		for c in result # class from one provider
 			classBase = _.find res, (x) -> clean(x.name) is clean(c.name)
+
 			if classBase?
 				_.defaults classBase, c
+
+				for b in c.books ? [] # loop over every book the new class provides
+					bookBase = _.find classBase.books, (x) -> clean(x.title) is clean(b.title)
+
+					if bookBase?
+						_.defaults bookBase, b
+					else
+						classBase.books.push b
 			else
 				res.push c
-				classBase = c
-
-			for b in c.books ? []
-				bookBase = _.find classBase.books, (x) ->
-					console.log x, b
-					clean(x.title) is clean(b.title)
-				if bookBase?
-					_.defaults bookBase, b
-				else
-					classBase.books.push c
 
 	res
