@@ -8,9 +8,10 @@ login = ->
 				if error?
 					if error.reason is 'Incorrect password'
 						setFieldError '#passwordGroup', 'Wachtwoord is fout'
-					else
-						setFieldError '#emailGroup', 'Account niet gevonden'
 				else FlowRouter.go 'overview'
+
+		else
+			setFieldError '#emailGroup', 'Account niet gevonden'
 
 
 Template.login.events
