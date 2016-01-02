@@ -408,6 +408,7 @@ getProfileData = (userId) ->
 		res[service.name] = data
 	res
 
+AD_STRING = '\n\n---\nDit bericht is verzonden met <a href="http://www.simplyHomework.nl">simplyHomework</a>.'
 getMessages = (folder, skip, limit, userId) ->
 	check folder, String
 	check skip, Number
@@ -418,6 +419,10 @@ getMessages = (folder, skip, limit, userId) ->
 	res = []
 	for service in services
 		res = res.concat service.getMessages folder, skip, limit, userId
+
+	res = res.map (m) ->
+		if m.body? then m.body = m.body.replace AD_STRING, ''
+		m
 	res
 
 fillMessage = (message, service, userId) ->
@@ -434,6 +439,8 @@ composeMessage = (subject, body, recipients, service, userId) ->
 	check recipients, [String]
 	check service, String
 	check userId, String
+
+	body += AD_STRING
 
 	service = _.find Services, (s) -> s.name is service and s.composeMessage? and s.active userId
 	service.composeMessage subject, body, recipients, userId

@@ -107,6 +107,11 @@
 		<div class="sendDate">
 			Verzonden om: {{dateFormat 'dddd D MMMM YYYY HH:mm' sendDate}}
 		</div>
+		{{#if attachmentCount}}
+			<div class="attachments">
+				{{attachmentInfo}}
+			</div>
+		{{/if}}
 		<div class="body">
 			{{{body}}}
 		</div>
@@ -115,7 +120,7 @@
 
 <template name="message_compose">
 	<div id="compose_message">
-		<button id="send">Verzenden</button>
+		<button id="send">Verzenden <i class="fa fa-angle-double-right"></i></button>
 		<input type="text" id="subject" placeholder="Onderwerp" />
 		<input type="text" id="recipients" placeholder="Ontvangers, gescheiden door een ';'" value="{{recipients}}" />
 		<textarea id="message" placeholder="Bericht inhoud"></textarea>
