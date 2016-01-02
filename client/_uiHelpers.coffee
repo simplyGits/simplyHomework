@@ -510,6 +510,7 @@ Meteor.startup ->
 	Template.registerHelper 'picture', (user, size) -> picture user, if _.isNumber(size) then size else undefined
 	Template.registerHelper 'has', has
 	Template.registerHelper 'toUpperCase', (str) -> str.toUpperCase()
+	Template.registerHelper 'cap', (str) -> Helpers.cap str
 
 	Template.registerHelper 'isPhone', -> Session.equals 'deviceType', 'phone'
 	Template.registerHelper 'isTablet', -> Session.equals 'deviceType', 'tablet'
