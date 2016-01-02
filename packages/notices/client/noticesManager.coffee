@@ -48,33 +48,22 @@ class NoticeManager
 		ready = new ReactiveVar no
 		handles = []
 		for provider in @_providers
-			asyncHandle = undefined
-			cb = (obj) =>
-				if asyncHandle? then asyncHandle._ready.set yes
-				if obj
-					@notices.upsert {
-						name: provider.name
-					}, _.extend obj,
-						name: provider.name
-						ready: undefined
-				else
-					@notices.remove name: provider.name
-
-			Tracker.autorun do (provider, asyncHandle) -> ->
+			Tracker.autorun do (provider) -> ->
 				try
-					if provider.fn.length > 0 # provider is async
-						asyncHandle =
-							_ready: new ReactiveVar no
-							ready: -> @_ready.get() is yes
-						handles.push asyncHandle
-						provider.fn cb
+					res = provider.fn.apply
+						subscribe: ->
+							handle = Meteor.subscribe.apply this, arguments
+							handles.push handle
+							handle
 
-					else # provider is sync.
-						cb provider.fn.apply
-							subscribe: ->
-								handle = Meteor.subscribe.apply this, arguments
-								handles.push handle
-								handle
+					if res
+						NoticeManager.notices.upsert {
+							name: provider.name
+						}, _.extend res,
+							name: provider.name
+							ready: undefined
+					else
+						NoticeManager.notices.remove name: provider.name
 				catch e
 					console.warn "Notice provider '#{provider.name}' errored.", e
 					Kadira.trackError 'notice-provider-failure', e.toString(), stacks: JSON.stringify e
