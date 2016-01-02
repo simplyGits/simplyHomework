@@ -1,3 +1,5 @@
+# HACK
+
 currentFolder = -> FlowRouter.getParam 'folder'
 
 setCurrentMessage = (id) -> FlowRouter.setParams message: id

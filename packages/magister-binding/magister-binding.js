@@ -617,6 +617,7 @@
 						subject: m.subject(),
 						recipients: _.pluck(m.recipients(), '_description'),
 						read: m.isRead(),
+						attachmentCount: m.attachments().length,
 
 						_fillUrl: m._fillUrl,
 					};
