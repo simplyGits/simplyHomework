@@ -154,7 +154,7 @@ Meteor.publishComposite 'project', (id) ->
 	check id, Mongo.ObjectID
 	find: -> Projects.find _id: id, participants: @userId
 	children: [{
-		find: (project) -> ChatRooms.findOne projectId: id
+		find: (project) -> ChatRooms.find projectId: project._id
 		children: [{
 			find: (room) ->
 				# Just the last message to show on the projectView.
