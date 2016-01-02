@@ -265,12 +265,11 @@ getExternalClasses = (userId) ->
 				year: year
 
 			unless _class?
+				# TODO: update.
 				scholierenClass = ScholierenClasses.findOne do (c) -> (sc) ->
 					sc.name
 						.toLowerCase()
 						.indexOf(c.name.toLowerCase()) > -1
-
-				console.log c, scholierenClass
 
 				_class = new SchoolClass(
 					c.name.toLowerCase(),
