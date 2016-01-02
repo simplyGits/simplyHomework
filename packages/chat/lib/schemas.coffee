@@ -37,7 +37,7 @@ if Package['aldeed:collection2']?
 			type: [String]
 			index: 1
 		projectId:
-			type: String
+			type: Meteor.Collection.ObjectID
 			optional: yes
 		subject:
 			type: String
