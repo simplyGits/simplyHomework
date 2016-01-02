@@ -23,7 +23,9 @@ Meteor.startup ->
 		doc.setupProgress = []
 		doc.settings = {}
 
-		doc.profile = options.profile
+		doc.profile =
+			firstName: ''
+			lastName: ''
 
 		doc
 
