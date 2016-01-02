@@ -1,15 +1,10 @@
-# TODO: Make some stuff configurable outside of the setup, externalServices, for
-# example.
-
 currentItemIndex = new SReactiveVar Number, 0
-externalClasses  = new ReactiveVar()
 
 currentSelectedImage      = new SReactiveVar Number, 0
 currentSelectedCourseInfo = new SReactiveVar Number, 0
 
 weekdays = new SReactiveVar [Object]
 
-engines = []
 schoolId = null
 schoolEngineSub = null
 
@@ -152,22 +147,10 @@ setupItems = [
 	}
 
 	{
-	name: 'plannerPrefs'
-	async: no
-	onDone: ->
-		Meteor.call 'storePlannerPrefs',
-			weekdays:
-				_(weekdays.get())
-					.sortBy 'index'
-					.map (d, i) ->
-						weekday: i
-						weight: d.selectedWeightOption
-					.value()
-	}
-
 	{ # TODO: make this step fully automatic.
 		name: 'getExternalClasses'
 		async: yes
+		visisble: no
 		func: (callback) ->
 			colors = _.shuffle [
 				'#F44336'
@@ -186,61 +169,24 @@ setupItems = [
 				'#FF5722'
 			]
 
+			userId = Meteor.userId()
 			Meteor.call 'getExternalClasses', (e, r) ->
+				Meteor.users.update userId, $push: setupProgress: 'getExternalClasses'
+
 				if e? or _.isEmpty r
 					console.log 'if e? or _.isEmpty r', e
 					callback false
-					return
+				else
+					Meteor.users.update userId, $pushAll: classInfos:
+						r.map (c, i) ->
+							id: c._id
+							color: colors[ i % colors.length ]
+							createdBy: c.fetchedBy
+							externalInfo: c.externalInfo
+							hidden: no
 
-				Meteor.subscribe 'scholieren.com', ->
-					externalClasses.set r.map (c, i) -> _.extend c, color: colors[ i % colors.length ]
+					Meteor.call 'enterClassChats'
 					callback true
-
-					for c in r
-						console.log c
-						Meteor.subscribe 'books', c._id
-						scholierenClass = ScholierenClasses.findOne c.scholierenClassId
-						books = _.union(
-							scholierenClass?.books,
-							Books.find(classId: c._id).fetch()
-						)
-
-						bookEngine = new Bloodhound
-							name: 'books'
-							datumTokenizer: (d) -> Bloodhound.tokenizers.whitespace d.title
-							queryTokenizer: Bloodhound.tokenizers.whitespace
-							local: _.uniq books, 'title'
-						bookEngine.initialize()
-						engines.push bookEngine
-
-						do (c, bookEngine) ->
-							Meteor.defer ->
-								$("div##{c._id} > input")
-									.typeahead null,
-										source: bookEngine.ttAdapter()
-										displayKey: 'title'
-									.on 'typeahead:selected', (obj, datum) -> c.__method = datum
-
-		onDone: ->
-			{ year, schoolVariant } = getCourseInfo()
-			userId = Meteor.userId()
-
-			for c in externalClasses.get()
-				if (method = c.__method)?
-					book = Books.findOne title: method.title
-					unless book?
-						book = new Book method.title, undefined, method.id, undefined, c._id
-						Books.insert book
-
-				Meteor.users.update userId, $push: classInfos:
-					id: c._id
-					color: c.color
-					createdBy: c.fetchedBy
-					externalInfo: c.externalInfo
-					bookId: book?._id ? null
-					hidden: no
-
-			Meteor.users.update userId, $push: setupProgress: 'getExternalClasses'
 	}
 
 	{
@@ -351,10 +297,13 @@ step = ->
 
 progressInfo = ->
 	current = currentItemIndex.get()
+	length = _(running)
+		.reject (item) -> item.visisble is no
+		.count()
 
-	percentage: (current / running.length) * 100
+	percentage: (current / length) * 100
 	current: current
-	amount: running.length
+	amount: length
 
 Template.setup.helpers
 	currentSetupItem: ->
@@ -439,33 +388,3 @@ Template['setup-plannerPrefs'].onCreated ->
 		name: name
 		index: index
 		selectedWeightOption: 2
-
-Template['setup-getExternalClasses'].helpers
-	externalClasses: -> externalClasses.get()
-
-Template['setup-getExternalClasses'].rendered = ->
-	new Spinner(
-		lines: 17
-		length: 7
-		width: 2
-		radius: 18
-		corners: 0
-		rotate: 0
-		direction: 1
-		color: '#000'
-		speed: .9
-		trail: 10
-		shadow: no
-		hwaccel: yes
-		className: 'spinner'
-		top: '65%'
-		left: '50%'
-	).spin document.getElementById 'spinner'
-
-Template['setup-getExternalClasses'].events
-	'click .fa-times': (event) -> externalClasses.set _.reject externalClasses.get(), this
-	'keyup #method': (event) ->
-		unless event.target.value is @__method?.title and not _.isEmpty event.target.value
-			@__method =
-				title: Helpers.cap event.target.value
-				id: null

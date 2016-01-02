@@ -26,8 +26,6 @@ Template.overview.helpers
 		margin -= 170 unless hasAppointments()
 		"#{margin}px"
 
-	projects: -> projects()
-
 @originals = {}
 
 Template.recentGrades.helpers
@@ -84,8 +82,6 @@ Template.overview.events
 		a = @onClick
 		switch a?.action
 			when 'route' then FlowRouter.go a.route, a.params, a.queryParams
-
-	'click #addProjectIcon': -> showModal 'addProjectModal'
 
 Template.overview.onCreated ->
 	@subscribe 'externalCalendarItems', Date.today(), Date.today().addDays 4

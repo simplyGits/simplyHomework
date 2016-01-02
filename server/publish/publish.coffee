@@ -120,33 +120,52 @@ Meteor.publish 'classes', (options) ->
 		else { _id: $in: _.pluck nonhidden, 'id' }
 	)
 
-Meteor.publish 'classInfo', (classId) ->
+Meteor.publishComposite 'classInfo', (classId) ->
 	check classId, String
 	unless @userId? and classId
 		@ready()
 		return undefined
 
-	[
-		Classes.find _id: classId
+	find: -> Classes.find classId
+	children: [{
+		find: (c) ->
+			# OPTIMIZE
+			CalendarItems.find {
+				userIds: @userId
+				classId: classId
+				startDate: $gt: Date.today()
+				endDate: $lt: Date.today().addDays 7
 
-		# OPTIMIZE
-		CalendarItems.find {
-			userIds: @userId
-			classId: classId
-			startDate: $gt: Date.today()
-			endDate: $lt: Date.today().addDays 7
-			scrapped: no
-		}, {
-			sort: startDate: 1
-			fields:
-				_id: 1
-				classId: 1
-				start: 1
-				endDate: 1
+				# TODO: If we change it back to 'uur/week' in classView.html this line
+				# should be removed.
+				scrapped: no
+			}, {
+				fields:
+					_id: 1
+					classId: 1
+					start: 1
+					endDate: 1
 		}
-	]
+	}, {
+		find: (c) ->
+			ChatRooms.find
+				type: 'class'
+				'classInfo.ids': c._id
+		children: [{
+			find: (room) ->
+				ChatMessages.find {
+					chatRoomId: room._id
+				}, {
+					limit: 1
+					sort:
+						time: -1
+				}
+		}, {
+			find: (room) ->
+				Meteor.users.find _id: $in: room.users
+		}]
+	}]
 
-# TODO: revise this publishment
 Meteor.publish 'schools', (externalId) ->
 	check externalId, Match.Any
 

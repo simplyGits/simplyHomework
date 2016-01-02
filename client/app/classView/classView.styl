@@ -40,7 +40,7 @@ button#hideClassButton
 	col(10/12)
 	shift(2/12)
 	float: initial
-	text-align: center
+	text-align: center !important
 
 	+mobile()
 		shift()
@@ -51,7 +51,7 @@ button#hideClassButton
 div.gradeInfoContainer
 	margin-top: 10px
 	border: 1px lightgray solid
-	height: 175px
+	height: 200px
 	position: relative
 
 	div.notice
@@ -63,7 +63,7 @@ div.gradeInfoContainer
 		word-break: break-word
 
 	div.gradeContainer
-		span(1/3)
+		span(1/2)
 		height: 100%
 		overflow-x: hidden
 		overflow-y: auto
@@ -116,7 +116,7 @@ div.gradeInfoContainer
 				font-weight: 300
 
 	div.gradeContainerGradeDetail
-		span(1/3)
+		span(1/2)
 		height: 100%
 		overflow: hidden
 		overflow-y: auto
@@ -175,37 +175,6 @@ div.gradeInfoContainer
 			div.gradeInfoRow:nth-child(5)
 				margin-top: 6px
 
-	div.gradeContainerEndGrade
-		span(1/3)
-		height: 100%
-		overflow: hidden
-		position: relative
-		border-right: 1px lightgray solid
-
-		div.gradeSquare
-			height: 100px
-			center(100px)
-
-			roboto(600)
-			font-size: 60px
-			text-align: center
-			padding-top: 7px
-
-			border: 1px lightgray solid
-			border-top: none
-
-		div.gradeSquare.insufficient
-			color: white
-			background-color: #FF4136
-
-		div.endGradeHint
-			width: 100%
-			text-align: center
-			roboto(100)
-			font-size: 35px
-
-			absolute: bottom 15px
-
 div.studyGuides
 	height: calc(100vh - 365px)
 
@@ -258,16 +227,82 @@ div.digitalSchoolUtilities
 		background-color: lightgray
 
 .classViewContainer
+	rowPadding = 25px
+
+	#searchBar
+		absolute: top 37px right 50px
+		transform: translateY(-50%)
+		width: 400px
+
+		input
+			border: none
+			background-color: transparent
+		+placeholder()
+			opacity: .5
+
+		+mobile()
+			position: relative
+			top: initial
+			right: initial
+			width: 100vw
+			transform: none
+
+			border-bottom: 1px lightgray solid
+
+	+desktop()
+		#searchBar.black
+			input
+				color: #000
+			input:focus
+				background-color: rgba(0, 0, 0, 0.05) !important
+			+placeholder()
+				color: #000
+		#searchBar.white
+			input
+				color: #fff
+			input:focus
+				background-color: rgba(255, 255, 255, 0.05) !important
+			+placeholder()
+				color: #fff
+
+	#banner
+		padding: 5px
+
+		margin-left: -(rowPadding)
+		margin-right: -(rowPadding)
+
+		background-color: simplyBlue
+
+		color: white
+		text-align: center
+		font-size: 20px
+
+		#closeButton
+			margin-right: 15px
+			float: right
+			font-size: 30px
+			margin-top: -3px
+
+		+mobile()
+			font-size: 17px
+
+	#banner.clickable
+		cursor: pointer
+	#banner.clickable:hover
+		text-decoration: underline
+
 	.row
-		padding = 25px
-		padding-left: padding
-		padding-right: padding
+		padding-left: rowPadding
+		padding-right: rowPadding
 
 		+mobile()
 			padding: 10px
 
 	#buttonsRow
 		margin-top: 15px
+
+		+mobile()
+			margin-top: 0
 
 	#buttonsRow > div
 		col(1/5)
@@ -278,32 +313,89 @@ div.digitalSchoolUtilities
 		font-size: 20px
 		cursor: pointer
 
-		line-height: 1.7em
+		line-height: 1.55em
 		padding: 5px
 
-		div.emp
+		strong
 			font-weight: bold
 			font-size: 1.8em
+
+		+below(1305px)
+			col(1/2, cycle: 2)
+			margin-bottom: 5px
 
 		+mobile()
 			stack()
 			width: 100% !important
-			margin-bottom: 5px
 
 	#buttonsRow > div:hover
 		background-color: #EFEFEF
 
+		+mobile()
+			background-color: #fff
+
 	#buttonsRow > div:last-child
 		col(2/5)
 
-		div.emp
+		strong
 			font-size: 1.6em
 
-	.row:nth-child(3) > div:first-child
-		col(3/5)
+		+below(1305px)
+			col(1/2, cycle: 2)
 
-	.row:nth-child(3) > div:last-child
-		col(2/5)
+	#containersRow
+		.itemContainer
+			height: calc(100vh - 320px)
+		.itemContainer:first-child
+			col(3/5)
+		.itemContainer:last-child
+			col(2/5)
+
+		#chatContainer > header
+			position: relative
+			cursor: pointer
+
+			#lastChatMessage
+				absolute: top right bottom left 90px
+				font-size: 17px
+				float: right
+				overflow: hidden
+				text-overflow: ellipsis
+
+				#name
+					absolute: top right 60px
+					font-size: 1.2em
+
+				#message
+					absolute: bottom right 60px
+					width: 100%
+					white-space: nowrap
+					overflow: hidden
+					text-overflow: ellipsis
+					text-align: right
+
+				img
+					float: right
+
+		#chatContainer > header:hover
+			background-color: #efefef
+
+		#chatContainer > div
+			font-size: 20px
+			cursor: pointer
+
+			span
+				margin-left: 10px
+		#chatContainer > div:hover
+			background-color: #efefef
+
+	+mobile()
+		#containersRow > div
+			stack()
+			width: 100% !important
+
+#gradesButton.insufficient > strong
+	color: red
 
 #teacher-avatar
 	border-radius: 50%
@@ -317,3 +409,54 @@ div.digitalSchoolUtilities
 	font-size: 14px
 	text-align: center
 	line-height: 65px
+
+modalPadding = 15px
+.searchResult
+	background-color: #fff
+
+	color: black
+	padding: 5px
+	padding-left: modalPadding
+	padding-right: modalPadding
+	margin-left: -(modalPadding)
+	margin-right: -(modalPadding)
+
+	.title
+		font-size: 16px
+	.rating
+		font-size: 15px
+		opacity: .6
+
+.searchResult.insufficient
+	opacity: .5
+
+.searchResult:hover
+	background-color: #EFEFEF
+
+#projectsModal
+	#addProjectButton
+		width: 100%
+
+	#projects
+		margin-top: 10px
+
+		.projectRow
+			cursor: pointer
+
+			padding: 5px
+			padding-left: modalPadding
+			padding-right: modalPadding
+			margin-left: -(modalPadding)
+			margin-right: -(modalPadding)
+
+			border-left: 3px black solid
+
+			font-size: 23px
+
+			.name
+				font-size: 1em
+			.deadline
+				font-size: .7em
+
+		.projectRow:hover
+			background-color: #EFEFEF

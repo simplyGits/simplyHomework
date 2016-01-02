@@ -9,6 +9,7 @@ div.itemContainer
 	+mobile()
 		height: initial !important
 
+
 div.itemContainer > div.itemContainerHeader, div.itemContainer > header
 	padding = 5px
 	padding: padding
@@ -19,6 +20,9 @@ div.itemContainer > div.itemContainerHeader, div.itemContainer > header
 	roboto(300)
 	font-size: 2em
 	text-rendering: optimizeLegibility
+
+div.itemContainer.noPad > div
+	padding-top: 0
 
 div.itemContainer > div.itemContainerContent, div.itemContainer > div
 	padding-top: 10px

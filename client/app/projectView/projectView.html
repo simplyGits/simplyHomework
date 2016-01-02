@@ -40,11 +40,11 @@
 		<div class="row">
 			<div class="col-sm-6">
 				<div class="itemContainer projectViewItemContainer" style="height: calc(100vh - {{heightOffset}}px)">
-					<div class="robotoThin itemContainerHeader">
+					<header>
 						<span class="fa fa-plus" id="addFileIcon"></span>
 						Bestanden
-					</div>
-					<div class="itemContainerContent">
+					</header>
+					<div>
 						{{#each files}}
 							{{> fileRow}}
 						{{/each}}
@@ -54,11 +54,11 @@
 
 			<div class="col-sm-6">
 				<div class="itemContainer projectViewItemContainer" style="height: calc(100vh - {{heightOffset}}px)">
-					<div class="robotoThin itemContainerHeader">
+					<header>
 						<span class="fa fa-plus" id="addPersonIcon"></span>
 						Mensen
-					</div>
-					<div class="itemContainerContent">
+					</header>
+					<div>
 						<a href="{{pathFor 'personView' id=currentUser._id}}">
 							{{> selfRow}}
 						</a>

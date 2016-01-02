@@ -519,11 +519,15 @@ Meteor.startup ->
 	Template.registerHelper 'currentYear', -> new Date().getFullYear()
 	Template.registerHelper 'dateFormat', (format, date) -> moment(date).format format
 	Template.registerHelper 'time', (date) -> moment(date).format 'HH:mm'
+	Template.registerHelper 'numberFormat', (number) ->
+		switch number
+			when 0 then 'geen'
+			else number
 
 	Template.registerHelper 'textColor', (color, fallback) ->
 		color ?= fallback
 		return '' unless color?
-		if chroma(color).luminance() > .45 then '#000' else '#fff'
+		if chroma(color).luminance() > .45 then 'black' else 'white'
 
 	Template.registerHelper 'pathFor', (path, view) ->
 		unless path?

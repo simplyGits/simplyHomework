@@ -74,17 +74,6 @@
 	}, sort: 'name': 1
 
 ###*
-# Get the projects for the current user, converted and sorted.
-# @method projects
-# @return {Cursor} A cursor pointing to the projects.
-###
-@projects = ->
-	Projects.find {},
-		sort:
-			'deadline': 1
-			'name': 1
-
-###*
 # smoke weed everyday.
 # @method kaas
 # @return {String} SURPRISE MOTHERFUCKER

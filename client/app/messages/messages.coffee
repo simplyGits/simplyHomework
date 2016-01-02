@@ -1,3 +1,5 @@
+# HACK
+
 currentFolder = -> FlowRouter.getParam 'folder'
 
 setCurrentMessage = (id) -> FlowRouter.setParams message: id
@@ -138,8 +140,16 @@ Template['messages_message_row'].helpers
 Template['messages_message_row'].events
 	'click': -> setCurrentMessage @_id
 
+Template['message_current_message'].helpers
+	attachmentInfo: ->
+		count = @attachmentCount
+		"#{count} bijlage#{if count is 1 then '' else 'n'}"
+
 Template['message_current_message'].events
 	'click #closeButton': -> history.back()
+
+Template['message_compose'].helpers
+	recipients: -> _.unescape FlowRouter.getQueryParam 'recipients'
 
 Template['message_compose'].events
 	'click #send': ->

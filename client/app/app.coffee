@@ -1,6 +1,5 @@
 schoolSub = null
 externalClasses = new ReactiveVar()
-externalAssignments = new ReactiveVar()
 @currentBigNotice = new SReactiveVar Match.OneOf(null, Object), null
 
 ###*
@@ -30,76 +29,52 @@ Template.addClassModal.helpers
 			_.any knownIds, (id) -> EJSON.equals c._id, id
 
 	scholierenClasses: -> ScholierenClasses.find().fetch()
-	books: -> addClassModalBooks.get()
+	books: -> BooksHandler.engine.ttAdapter()
 
 Template.addClassModal.events
-	"click #goButton": (event) ->
-		name = Helpers.cap $("#classNameInput").val()
-		course = $("#courseInput").val().toLowerCase()
-		bookName = $("#bookInput").val()
-		{ year, schoolVariant } = getCourseInfo()
-
-		classId = undefined
-		_class = Classes.findOne
-			$or: [
-				{ name: $regex: name, $options: 'i' }
-				{ abbreviations: course.toLowerCase() }
-			]
-			schoolVariant: schoolVariant
-			year: year
-		if _class? then classId = _class._id
-		else
-			scholierenClass = ScholierenClasses.findOne ->
-				@name
-					.toLowerCase()
-					.indexOf(name.toLowerCase()) > -1
-
-			_class = new SchoolClass(
-				name,
-				course,
-				year,
-				schoolVariant
-			)
-			_class.scholierenClassId = scholierenClassId?.id
-			classId = Classes.insert _class, Debug.logArgs
-
-		book = Books.findOne title: bookName
-		unless book? or bookName.trim() is ''
-			book = new Book bookName, undefined, @id, undefined, _class._id
-			Books.insert book
-
-		Meteor.users.update Meteor.userId(), $push: classInfos:
-			id: classId
-			bookId: book?._id
-
-		$("#addClassModal").modal "hide"
-
-	'focus #bookInput': ->
+	'click #goButton': (event) ->
 		name = Helpers.cap $('#classNameInput').val()
+		course = $('#courseInput').val().toLowerCase()
+		bookName = $('#bookInput').val()
 
-		{ year, schoolVariant } = getCourseInfo()
-		classId = Classes.findOne({ name, year, schoolVariant })?._id
-		books = Books.find({ classId }).fetch()
+		Meteor.call 'insertClass', name, course, (e, classId) ->
+			if e?
+				notify 'Fout tijdens vak aanmaken', 'error'
+			else
+				Meteor.call 'insertBook', bookName, classId, (e, bookId) ->
+					if e?
+						notify 'Fout tijdens boek aanmaken', 'error'
+					else
+						Meteor.users.update Meteor.userId(), $push: classInfos:
+							id: classId
+							bookId: bookId
 
-		scholierenClass = ScholierenClasses.findOne -> Helpers.contains @name, name, yes
-		books = _(scholierenClass?.books)
-			.reject (b) -> b.title in ( x.title for x in books )
-			.concat books
-			.value()
+						$('#addClassModal').modal 'hide'
 
-		addClassModalBooks.set books
+	'focus #bookInput': (event, template) ->
+		name = Helpers.cap $('#classNameInput').val()
+		template.className.set name
 
 Template.addClassModal.onCreated ->
-	@subscribe 'scholieren.com'
 	@subscribe 'classes', all: yes
+
+	@className = new ReactiveVar
+	@books = new ReactiveVar []
+
+	@autorun =>
+		{ year, schoolVariant } = getCourseInfo @userId
+		c = Classes.findOne
+			name: @className.get()
+			year: year
+			schoolVariant: schoolVariant
+
+		if c?
+			books = BooksHandler.run c
+			@books.set books
 
 Template.addClassModal.onRendered ->
 	Meteor.typeahead.inject '#classNameInput, #bookInput'
-
 	Meteor.call 'getExternalClasses', (e, r) -> externalClasses.set r unless e?
-
-Template.addClassModal.onDestroyed ->
-	addClassModalBooks.set []
 
 Template.newSchoolYearModal.helpers classes: -> classes()
 
@@ -110,83 +85,6 @@ Template.newSchoolYearModal.events
 		classId = target.attr "classid"
 
 		target.find("span").css color: if checked then "lightred" else "white"
-
-Template.addProjectModal.helpers
-	assignments: ->
-		externalAssignments.get()?.map (a) ->
-			_class = -> Classes.findOne a.classId
-			_.extend a,
-				__project: -> Projects.findOne externalId: a.externalId
-				__class: _class
-				__abbreviation: -> _class().abbreviations[0]
-
-	classes: -> classes()
-	selected: (event, _class) -> Session.set 'currentSelectedClassDatum', _class
-
-Template.addProjectModal.events
-	'click #createButton': ->
-		project = new Project(
-			@name,
-			@description,
-			@deadline,
-			Meteor.userId(),
-			@classId,
-			{
-				id: @externalId
-				fetchedBy: @fetchedBy
-				name: @name
-			}
-		)
-		Projects.insert project
-		$('#addProjectModal').modal 'hide'
-
-	'click .goToProjectButton': (event) ->
-		FlowRouter.go 'projectView', id: @__project._id
-		$('#addProjectModal').modal 'hide'
-
-	'click #goButton': ->
-		name = $('#addProjectModal #nameInput').val().trim()
-		description = $('#addProjectModal #descriptionInput').val().trim()
-		deadline = $('#addProjectModal #deadlineInput').data('DateTimePicker').date().toDate()
-		classId = Session.get('currentSelectedClassDatum')?._id
-
-		return if name is ''
-		if Projects.findOne({ name })?
-			setFieldError '#projectNameGroup', 'Je hebt al een project met dezelfde naam'
-			return
-
-		if not classId? and $('#addProjectModal #classNameInput').val().trim() isnt ''
-			shake '#addProjectModal'
-			return
-
-		project = new Project(
-			name,
-			description,
-			deadline,
-			Meteor.userId(),
-			classId,
-			null
-		)
-		Projects.insert project
-
-		$('#addProjectModal').modal 'hide'
-
-Template.addProjectModal.onRendered ->
-	Meteor.typeahead.inject '#classNameInput'
-
-	$('#deadlineInput').datetimepicker
-		locale: moment.locale()
-		defaultDate: new Date()
-		icons:
-			time: 'fa fa-clock-o'
-			date: 'fa fa-calendar'
-			up: 'fa fa-arrow-up'
-			down: 'fa fa-arrow-down'
-			previous: 'fa fa-chevron-left'
-			next: 'fa fa-chevron-right'
-
-	Meteor.call 'getExternalAssignments', (e, r) ->
-		externalAssignments.set r unless e?
 
 # == End Modals ==
 
@@ -223,8 +121,12 @@ setKeyboardShortcuts = ->
 
 	Mousetrap.bind 'c', ->
 		id = FlowRouter.getParam 'id'
-		if FlowRouter.getRouteName() is 'personView' and Meteor.userId() isnt id
+		routeName = FlowRouter.getRouteName()
+
+		if routeName is 'personView' and Meteor.userId() isnt id
 			ChatManager.openPrivateChat id
+		else if routeName is 'classView'
+			ChatManager.openClassChat id
 		else
 			$('.searchBox > input').focus()
 		no

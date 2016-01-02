@@ -96,6 +96,13 @@ class @CalendarItem
 		###
 		@location = null
 
+		###*
+		# @property teacher
+		# @type Object|null
+		# @default null
+		###
+		@teacher = null
+
 	###*
 	# @method class
 	# @return {SchoolClass}
@@ -152,3 +159,7 @@ class @CalendarItem
 			"over #{Helpers.timeDiff now, @startDate}"
 		else
 			"#{Helpers.timeDiff now, @endDate} geleden"
+
+	group: ->
+		if @description?
+			_.find @description.split(' '), (w) -> /\d/.test(w) and /[a-z]/i.test(w)

@@ -12,6 +12,21 @@
 		when 'gymnasium', 'atheneum' then 'vwo'
 		else variant
 
+@normalizeClassName = (name) ->
+	name = name.toLowerCase()
+	contains = (s) -> _.contains name, s
+
+	if contains 'nederlands'
+		'Nederlands'
+	else if contains 'frans'
+		'Frans'
+	else if contains 'duits'
+		'Duits'
+	else if contains 'engels'
+		'Engels'
+	else
+		name
+
 ###*
 # @class SchoolClass
 # @constructor
@@ -36,9 +51,8 @@ class @SchoolClass
 		@schedules = [] # Contains schedule ID's.
 
 		###*
-		# ID of class at Scholieren.com.
-		# @property scholierenClassId
-		# @type Number
-		# @default undefined
+		# @property externalInfo
+		# @type Object
+		# @default {}
 		###
-		@scholierenClassId = undefined
+		@externalInfo = {}
