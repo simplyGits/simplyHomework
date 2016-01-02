@@ -121,31 +121,6 @@
 	</div>
 </template>
 
-<template name="plannerPrefsDay">
-	<div class="group select">
-		<label>{{name}}</label>
-		<select>
-			{{#each weightOptions}}
-				<option data-day-index="{{index}}" selected="{{selected}}">{{name}}</option>
-			{{/each}}
-		</select>
-	</div>
-</template>
-
-<template name="setup-plannerPrefs">
-	<div class="header">
-		Planner voorkeuren
-	</div>
-
-	<div class="body">
-		<h4 style="text-align: center; margin-bottom: 20px;">Hoeveel tijd heb je op elke weekdag?<small><br><i>(schooltijd niet meegerekend)</i><br>Je kan dit altijd in je instellingen aanpassen.</small></h4>
-		<form class="vertical full-width">
-			{{#each weekdays}}
-				{{> plannerPrefsDay}}
-			{{/each}}
-		</form>
-	</div>
-</template>
 <template name="setup-privacy">
 	<div class="header">
 		Privacy instellingen

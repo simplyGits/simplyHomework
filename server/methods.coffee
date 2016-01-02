@@ -130,15 +130,6 @@ Meteor.methods
 
 		Meteor.users.remove @userId
 
-	storePlannerPrefs: (obj) ->
-		@unblock()
-		return if not @userId or _.isEmpty obj
-		check obj, Object
-
-		original = getUserField @userId, 'plannerPrefs', {}
-
-		Meteor.users.update @userId, $set: plannerPrefs: _.extend original, obj
-		undefined
 	# TODO: Make search a package with nice search providers and stuff. Which also
 	# allows for smart searching, instead of just keyword searching it could use
 	# natural language processing to find specefic stuff.

@@ -59,7 +59,6 @@ Meteor.publish null, ->
 			events: 1
 			gradeNotificationDismissTime: 1
 			magisterCredentials: 1
-			plannerPrefs: 1
 			premiumInfo: 1
 			settings: 1
 			profile: 1

@@ -228,7 +228,6 @@ running = undefined
 	setupProgress = getUserField Meteor.userId(), 'setupProgress', []
 	setupProgress = setupProgress.concat [
 		'welcome'
-		'plannerPrefs'
 		'newSchoolYear' # TODO: Dunno how're going to do this shit
 	]
 
@@ -361,30 +360,3 @@ Template['setup-extractInfo'].onRendered ->
 				source: engine.ttAdapter()
 				displayKey: 'name'
 			}
-
-Template['setup-plannerPrefs'].helpers
-	weekdays: -> weekdays.get()
-
-Template.plannerPrefsDay.helpers
-	weightOptions: ->
-		options = [
-			"Geen"
-			"Weinig"
-			"Gemiddeld"
-			"Veel"
-		]
-		res = ( { name: x, selected: no, index: i } for x, i in options )
-		res[@selectedWeightOption].selected = yes
-		res
-
-Template.plannerPrefsDay.events
- 'change': (event) ->
-	 @selected = event.target.dataset.dayIndex
-
-Template['setup-plannerPrefs'].onCreated ->
-	# TODO: When being implemented outside of the setup:
-	#       Set the current data of the plannerPrefs, if available
-	weekdays.set _.map Helpers.weekdays(), (name, index) ->
-		name: name
-		index: index
-		selectedWeightOption: 2
