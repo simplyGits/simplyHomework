@@ -6,6 +6,7 @@ items = [
 	[ 'externalServices', 'Verbonden sites' ]
 	[ 'classes', 'Vakken' ]
 	[ 'notifications', 'Notificaties' ]
+	[ 'about', 'Over simplyHomework' ]
 ].map ([ name, friendlyName ]) ->
 	name: name
 	friendlyName: friendlyName
