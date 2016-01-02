@@ -163,6 +163,7 @@ Template.calendar.onRendered ->
 				$header = $ ".fc-left h2"
 				$header.html "#{$header.text()} <small>week: #{view.start.week()}</small>"
 
+		# REVIEW: handle updating with methods?
 		eventDrop: (event) ->
 			CalendarItems.update event.calendarItem._id, $set:
 				startDate: event.start.toDate()

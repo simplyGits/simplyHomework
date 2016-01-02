@@ -108,10 +108,8 @@ Schemas.Projects = new SimpleSchema
 		optional: yes
 	creatorId:
 		type: String
-		autoValue: ->
-			if not @isFromTrustedCode and @isInsert
-				@userId
-			else @value
+		denyUpdate: yes
+		autoValue: -> if not @isFromTrustedCode then @userId else @value
 	participants:
 		type: [String]
 		index: 1
