@@ -1,0 +1,33 @@
+<template name="login">
+	<div id="loginPage">
+		<div class="appNameHeader"></div>
+		<div class="container">
+			<div class="center">
+				<h1>Jouw overzicht</h1>
+				<h2>Inloggen</h2>
+			</div>
+
+			<div class="row">
+				<div class="col-md-4">&nbsp;</div>
+				<div class="col-md-4" id="loginForm">
+					<form class="vertical full-width">
+						<fieldset name="Login Form">
+							<div id="emailGroup" class="group">
+								<label for="emailInput">Email</label>
+								<input type="email" id="emailInput" placeholder="hello@simplyApps.nl" autofocus>
+							</div>
+							<div id="passwordGroup" class="group">
+								<label for="passwordInput">Wachtwoord</label>
+								<input type="password" id="passwordInput" placeholder="●●●●●●●●●●">
+							</div>
+							<div class="group no-margin">
+								<a href="{{pathFor 'forgotPass'}}">Wachtwoord vergeten</a>
+							</div>
+							<input type="submit" class="btn btn-primary" id="loginButton" value="Inloggen"/>
+						</fieldset>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</template>
