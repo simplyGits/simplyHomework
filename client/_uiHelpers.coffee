@@ -23,7 +23,7 @@ http://tomsmeding.nl/
 	OkCancel: 1
 
 @alertModal = (title, body, buttonType = 0, labels = { main: 'oké', second: 'annuleren' }, styles = { main: 'btn-default', second: 'btn-default' }, callbacks = { main: null, second: null }, exitButton = yes) ->
-	labels = _.extend { main: 'oké', second: 'annuleren' }, labels
+	labels = _.extend { main: 'Oké', second: 'Annuleren' }, labels
 	styles = _.extend { main: 'btn-default', second: 'btn-default' }, styles
 
 	bootbox.hideAll()
@@ -78,7 +78,7 @@ http://tomsmeding.nl/
 		title
 		text
 		type
-		confirmButtonText: confirmButtonText ? 'oké'
+		confirmButtonText: confirmButtonText ? 'Oké'
 		cancelButtonText
 		allowOutsideClick: cancelButtonText?
 		showCancelButton: cancelButtonText?
@@ -498,7 +498,7 @@ Meteor.startup ->
 			switch Notification.permission
 				when 'default'
 					notice = setBigNotice
-						content: 'Wij hebben je toestemming nodig om bureaubladmeldingen weer te kunnen geven.'
+						content: 'We hebben je toestemming nodig om bureaubladmeldingen weer te kunnen geven.'
 						onClick: ->
 							Notification.requestPermission (result) ->
 								notice?.hide()
