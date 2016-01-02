@@ -15,8 +15,7 @@
 		# TODO: do this on a i18n friendly way.
 		__grade: g.toString().replace '.', ','
 
-@StudyUtils            = new Meteor.Collection 'studyUtils', transform: (s) -> _.extend new StudyUtil, s
-@Notifications         = new Meteor.Collection 'notifications'
+@StudyUtils            = new Meteor.Collection 'studyUtils',   transform: (s) -> _.extend new StudyUtil, s
 @ScholierenClasses     = new Meteor.Collection 'scholieren.com'
 @WoordjesLerenClasses  = new Meteor.Collection 'woordjesleren'
 @Analytics             = new Meteor.Collection 'analytics'

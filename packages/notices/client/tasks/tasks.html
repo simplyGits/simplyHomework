@@ -1,0 +1,25 @@
+<template name="tasks">
+	{{#each tasks}}
+		{{> taskRow}}
+	{{/each}}
+</template>
+
+<template name="taskRow">
+	<div class="taskRow">
+		{{#if __isDone}}
+			<label style="text-decoration: line-through; opacity: .4">
+				<input type="checkbox" id="checkbox" checked>
+				<span id="checkboxLabel" class="robotoThin" style="font-weight: 300; font-size: 15px">
+					<b>{{{__taskDescription}}}</b> voor {{__className}}
+				</span>
+			</label>
+		{{else}}
+			<label>
+				<input type="checkbox" id="checkbox">
+				<span id="checkboxLabel" class="robotoThin" style="font-weight: 300; font-size: 15px">
+					<b>{{{__taskDescription}}}</b> voor {{__className}}
+				</span>
+			</label>
+		{{/if}}
+	</div>
+</template>

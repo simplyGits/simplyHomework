@@ -74,5 +74,6 @@ homepage-endpoints
 viewport-units-buggyfill
 chat
 reywood:publish-composite
+simply:notices
 simply:performance-logging
 simply:tether
