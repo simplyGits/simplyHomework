@@ -1,0 +1,19 @@
+<template name="scrappedHours">
+	<div class="scrappedHours">
+		{{#each hourGroups}}
+			<div class="hourGroup {{today}}">
+				<strong>{{day}}</strong>
+				{{#each hours}}
+					{{> scrappedHour}}
+				{{/each}}
+			</div>
+		{{/each}}
+	</div>
+</template>
+
+<template name="scrappedHour">
+	<div class="scrappedHour">
+		<div class="back" style="background-color: {{class.__color}}"></div>
+		{{day}} {{name}} ({{schoolHour}}<sup>e</sup> uur)
+	</div>
+</template>

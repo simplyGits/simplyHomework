@@ -48,9 +48,12 @@ Package.onUse(function(api) {
 
 		'client/lessons/currentLesson.html',
 		'client/lessons/currentLesson.coffee',
-
 		'client/lessons/nextLesson.html',
 		'client/lessons/nextLesson.coffee',
+
+		'client/scrappedHours/srappedHours.html',
+		'client/scrappedHours/srappedHours.styl',
+		'client/scrappedHours/srappedHours.coffee',
 	], 'client');
 	api.addFiles([
 		'server/security.coffee',
