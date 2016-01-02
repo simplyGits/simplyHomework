@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 
 git submodule init
-git submodule update --recursive ./
+git submodule update --recursive --remote --merge ./
+base="MAIL_URL='smtp://lieuwerooijakkers@gmail.com:gV1afFmrhN7IUG7VS-x89w@smtp.mandrillapp.com:587' DISABLE_WEBSOCKETS=true meteor"
 if [[ -f settings.json ]]; then
-	meteor --settings settings.json
+	eval "$base --settings settings.json"
 else
-	meteor
+	eval $base
 fi

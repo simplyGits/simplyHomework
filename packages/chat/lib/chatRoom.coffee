@@ -15,6 +15,13 @@ class ChatRoom
 		@users = [ creatorId ]
 
 		###*
+		# @property classInfo
+		# @type undefined|Object
+		# @default undefined
+		###
+		@classInfo = undefined
+
+		###*
 		# The ID of the project this ChatRoom is for.
 		#
 		# @property projectId

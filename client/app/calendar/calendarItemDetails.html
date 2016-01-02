@@ -57,16 +57,16 @@
 				<div style="white-space: pre-wrap">{{content.description}}</div>
 			</div>
 		{{/if}}
-		{{#with absenceInfo}}
+		{{#with getAbsenceInfo}}
 			<div class="row">
 				<div>Absentie:</div>
 				<div>
 					{{description}}
 
 					{{#if permitted}}
-						(geoorloofd)
+						(Geoorloofd)
 					{{else}}
-						<span class="unpermitted">(ongeoorloofd)</span>
+						<span class="unpermitted">(Ongeoorloofd)</span>
 					{{/if}}
 				</div>
 			</div>
@@ -74,7 +74,7 @@
 		{{#if fetchedBy}}
 			<div class="row">
 				<div>Gehaald van:</div>
-				<div>{{fetchedBy}}</div>
+				<div>{{cap fetchedBy}}</div>
 			</div>
 		{{/if}}
 	</div>

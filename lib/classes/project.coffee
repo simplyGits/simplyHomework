@@ -38,3 +38,10 @@ class @Project
 		# @default undefined
 		###
 		@assignment = undefined
+
+		###*
+		# @property finished
+		# @type Boolean
+		# @default false
+		###
+		@finished = no

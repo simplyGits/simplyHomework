@@ -233,7 +233,7 @@ class @Helpers
 	# @method interval
 	# @param {Function} func
 	# @param {Number} interval
-	# @param {Boolean} [bind=true]
+	# @param {Boolean} [bind=true] Sets `this` to { stop: function()->void }
 	# @return {Number}
 	###
 	@interval: (func, interval, bind = yes) ->
@@ -313,13 +313,17 @@ class @Helpers
 	@emboxValue: (fn, equals) -> emboxValue(fn, { equals, lazy: yes })()
 
 	###*
+	# Changes `original` using the given `sedcommand`.
+	# If no `original` is given: return whether or not the given `sedcomand` is a
+	# valid sed command.
+	#
 	# @method sed
 	# @param sedcommand {String}
 	# @param [original] {String}
-	# @return {String}
+	# @return {String|Boolean}
 	###
 	@sed: (sedcommand, original) ->
-		sedreg = /^s\/(.+)\/(.*)\/([ig]{0,2})$/
+		sedreg = /^s([^\s\w])([^\1]+?)\1([^\1]*?)(?:\1(|ig?|gi?))?$/
 		res = sedreg.exec sedcommand
 
 		if not original?
@@ -327,12 +331,9 @@ class @Helpers
 		else if not res?
 			return original
 
-		if res[0].match(/[^\\]\//g).length > 3
-			throw new Error '/ has to be escaped.'
-
-		matcher = res[1]
-		replacer = res[2]
-		flags = res[3]
+		matcher = res[2]
+		replacer = res[3]
+		flags = res[4]
 
 		matchreg = new RegExp matcher, flags
 		original.replace matchreg, replacer

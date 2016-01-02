@@ -25,16 +25,19 @@ if Package['aldeed:collection2']?
 		changedOn:
 			type: Date
 			optional: yes
+		pending:
+			type: Boolean
+			optional: yes
 
 	ChatRooms.attachSchema
 		type:
 			type: String
-			allowedValues: ['private', 'project', 'group']
+			allowedValues: ['private', 'project', 'group', 'class']
 		users:
 			type: [String]
 			index: 1
 		projectId:
-			type: String
+			type: Meteor.Collection.ObjectID
 			optional: yes
 		subject:
 			type: String
@@ -47,3 +50,7 @@ if Package['aldeed:collection2']?
 		events:
 			type: [Object]
 			blackbox: yes
+		classInfo:
+			type: Object
+			blackbox: yes
+			optional: yes

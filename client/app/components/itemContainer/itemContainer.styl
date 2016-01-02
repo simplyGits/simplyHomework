@@ -1,0 +1,39 @@
+@require "../../../utils"
+@require "rupture"
+
+div.itemContainer
+	margin-top: 10px
+	border: 1px lightgray solid
+	min-height: 150px
+
+	+mobile()
+		height: initial !important
+
+
+div.itemContainer > div.itemContainerHeader, div.itemContainer > header
+	padding = 5px
+	padding: padding
+	padding-left: padding + 10
+
+	border-bottom: 1px #d3d3d3 solid
+
+	roboto(300)
+	font-size: 2em
+	text-rendering: optimizeLegibility
+
+div.itemContainer.noPad > div
+	padding-top: 0
+
+div.itemContainer > div.itemContainerContent, div.itemContainer > div
+	padding-top: 10px
+	overflow-y: auto
+
+	/*
+	roboto(600)
+	a
+		text-decoration: none !important
+	*/
+
+	+mobile()
+		overflow-y: scroll
+		-webkit-overflow-scrolling: touch

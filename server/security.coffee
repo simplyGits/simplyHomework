@@ -39,7 +39,7 @@ Meteor.users.allow
 			#'gradeNotificationDismissTime'
 			#'hasGravatar'
 			'mailSignup'
-			'privacyOptions'
+			'settings'
 			'profile'
 			'schedular'
 			'setupProgress'
@@ -73,11 +73,6 @@ Projects.allow
 		return isParticipant and ( modifiesAllowedFields or isOwner )
 		###
 		isParticipant
-	remove: -> no
-
-GoaledSchedules.allow
-	insert: -> yes
-	update: (userId, doc) -> doc.ownerId is userId
 	remove: -> no
 
 Schools.allow

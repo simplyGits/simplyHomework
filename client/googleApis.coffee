@@ -1,3 +1,5 @@
+# TODO: refactor this code to use drive api v3
+
 pickerLoaded = new ReactiveVar no
 authLoaded = new ReactiveVar no
 @driveLoaded = new ReactiveVar no

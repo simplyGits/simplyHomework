@@ -13,18 +13,27 @@ Template.mobileChatWindow.events
 	"click div.header": ->
 		switch @type
 			when 'private'
-				FlowRouter.go 'personView', id: @user._id
+				FlowRouter.go 'personView', id: @user()._id
 			when 'project'
-				FlowRouter.go 'projectView', id: @project._id.toHexString()
+				FlowRouter.go 'projectView', id: @project()._id.toHexString()
 
-	"keyup input#messageInput": (event, template) ->
+	'keyup input#messageInput': (event) ->
 		content = event.target.value.trim()
 
 		if event.which is 13 and content.length > 0
 			Meteor.call 'addChatMessage', content, FlowRouter.getParam('id')
 
 			event.target.value = ''
-			template.sendToBottom()
+			window.sendToBottom()
+
+	'click #sendButton': ->
+		$input = document.getElementById 'messageInput'
+
+		content = $input.value.trim()
+		Meteor.call 'addChatMessage', content, FlowRouter.getParam('id')
+
+		$input.value = ''
+		window.sendToBottom()
 
 Template.mobileChatWindow.onCreated ->
 	@sticky = yes
@@ -33,7 +42,7 @@ Template.mobileChatWindow.onCreated ->
 		if room?
 			@subscribe 'status', room.users
 			setPageOptions
-				title: room.friendlyName()
+				title: "#{room.friendlyName()} chat"
 				color: null
 		else
 			notFound()

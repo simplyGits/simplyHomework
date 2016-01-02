@@ -67,7 +67,10 @@ Meteor.methods
 			reportGrounds: reportGrounds
 
 		if old?
-			throw new Meteor.Error 'already-reported', "You've already reported the same user on the same grounds."
+			throw new Meteor.Error(
+				'already-reported'
+				"You've already reported the same user on the same grounds."
+			)
 
 		# Amount of report items done by the current reporter in the previous 30
 		# minutes.
@@ -127,25 +130,22 @@ Meteor.methods
 
 		Meteor.users.remove @userId
 
-	storePlannerPrefs: (obj) ->
-		@unblock()
-		return if not @userId or _.isEmpty obj
-		check obj, Object
-
-		original = getUserField @userId, 'plannerPrefs', {}
-
-		Meteor.users.update @userId, $set: plannerPrefs: _.extend original, obj
-		undefined
+	# TODO: Make search a package with nice search providers and stuff. Which also
+	# allows for smart searching, instead of just keyword searching it could use
+	# natural language processing to find specefic stuff.
 
 	###*
 	# Searches for the given query on as many shit as possible.
 	#
 	# @method search
 	# @param {String} query
+	# @param {Object} [options]
+	# 	@param {String[]} [classIds]
 	# @return {Object[]}
 	###
-	search: (query) ->
+	search: (query, options = {}) ->
 		check query, String
+		check options, Object
 		@unblock()
 		query = query.trim().toLowerCase()
 
@@ -161,59 +161,91 @@ Meteor.methods
 		calcDistance = (s) -> dam query, s.trim().toLowerCase()
 
 		res = []
-		res = res.concat Meteor.users.find({
-			'profile.firstName': $ne: ''
-		}, {
-			fields:
-				profile: 1
+		if options.classIds?
+			c = Classes.findOne _id: $in: options.classIds
+			classInfo = _.find getClassInfos(userId), (info) -> info.id is c._id
 
-			transform: (u) -> _.extend u,
-				type: 'user'
-				title: "#{u.profile.firstName} #{u.profile.lastName}"
-		}).fetch()
+			res = res.concat Projects.find({
+				participants: userId
+				classId: options.classIds
+			}, {
+				fields:
+					participants: 1
+					name: 1
+					classId: 1
 
-		res = res.concat Projects.find({
-			participants: userId
-		}, {
-			fields:
-				participants: 1
-				name: 1
+				transform: (p) -> _.extend p,
+					type: 'project'
+					title: p.name
+			}).fetch()
 
-			transform: (p) -> _.extend p,
-				type: 'project'
-				title: p.name
-		}).fetch()
+			bookName = Books.findOne(classInfo.bookId)?.title ? ''
+			query = "#{normalizeClassName c.name} #{bookName} #{query}"
+			res = res.concat Scholieren.getReports(query).map (item) ->
+				_.extend item,
+					type: 'report'
+					filtered: yes
 
-		res = res.concat Classes.find({
-			_id: $in: (
-				_(classInfos)
-					.reject 'hidden'
-					.pluck 'id'
-					.value()
-			)
-		}, {
-			fields:
-				name: 1
+			try
+				res = res.concat WoordjesLeren.getBooks(c.externalInfo['woordjesleren'].id).map (item) ->
+					_.extend item,
+						type: 'wordlist'
+						filtered: yes
+		else
+			res = res.concat Meteor.users.find({
+				'profile.firstName': $ne: ''
+			}, {
+				fields:
+					profile: 1
 
-			transform: (c) -> _.extend c,
-				type: 'class'
-				title: c.name
-		}).fetch()
+				transform: (u) -> _.extend u,
+					type: 'user'
+					title: "#{u.profile.firstName} #{u.profile.lastName}"
+			}).fetch()
 
-		res = res.concat [
-			#[ 'Overzicht', 'overview' ]
-			[ 'Agenda', 'calendar' ]
-			[ 'Berichten', 'messages' ]
-			[ 'Instellingen', 'settings' ]
-		].map ([ name, path, params ], i) ->
-			id: i
-			type: 'route'
-			title: name
-			path: path
-			params: params
+			res = res.concat Projects.find({
+				participants: userId
+			}, {
+				fields:
+					participants: 1
+					name: 1
+
+				transform: (p) -> _.extend p,
+					type: 'project'
+					title: p.name
+			}).fetch()
+
+			res = res.concat Classes.find({
+				_id: $in: (
+					_(classInfos)
+						.reject 'hidden'
+						.pluck 'id'
+						.value()
+				)
+			}, {
+				fields:
+					name: 1
+
+				transform: (c) -> _.extend c,
+					type: 'class'
+					title: c.name
+			}).fetch()
+
+			res = res.concat [
+				#[ 'Overzicht', 'overview' ]
+				[ 'Agenda', 'calendar' ]
+				[ 'Berichten', 'messages' ]
+				[ 'Instellingen', 'settings' ]
+			].map ([ name, path, params ], i) ->
+				id: i
+				type: 'route'
+				title: name
+				path: path
+				params: params
 
 		_(res)
 			.filter (obj) ->
+				obj.filtered or
 				calcDistance(obj.title) < 3 or
 				Helpers.contains obj.title, query, yes
 
@@ -261,3 +293,46 @@ Meteor.methods
 			choosenIndex: choosenIndex
 
 		undefined
+
+	###*
+	# @method enterClassChats
+	###
+	'enterClassChats': ->
+		@unblock()
+		userId = @userId
+
+		unless userId?
+			throw new Meteor.Error 'notLoggedIn', 'User not logged in.'
+
+		updateCalendarItems userId, Date.today(), Date.today().addDays 14
+
+		user = Meteor.users.findOne userId
+		for info in user.classInfos
+			calendarItem = CalendarItems.findOne
+				classId: info.id
+				userIds: userId
+
+			if calendarItem?
+				room = ChatRooms.findOne
+					classInfo: $exists: yes
+					'classInfo.schoolId': user.profile.schoolId
+					'classInfo.group': calendarItem.group()
+
+				if room?
+					ChatRooms.update room._id, $addToSet:
+						users: userId
+						'classInfo.ids': info.id
+				else
+					room = new ChatRoom userId, 'class'
+					room.subject = calendarItem.group()
+					room.classInfo =
+						schoolId: user.profile.schoolId
+						group: calendarItem.group()
+						ids: [ info.id ]
+					ChatRooms.insert room
+
+				if calendarItem.teacher? and info.externalInfo?
+					info.externalInfo.teacherName = calendarItem.teacher.name
+
+				Meteor.users.update Meteor.userId(), $pull: classInfos: id: info.id
+				Meteor.users.update Meteor.userId(), $push: classInfos: info

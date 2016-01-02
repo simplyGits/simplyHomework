@@ -1,7 +1,3 @@
-WebApp.connectHandlers.use '/privacy', (req, res) ->
-	res.writeHead 301, 'Location': '/privacy.html'
-	res.end()
-
 # oldbrowser
 WebApp.connectHandlers.use (req, res, next) ->
 	browser = WebAppInternals.identifyBrowser req.headers['user-agent']
@@ -28,9 +24,12 @@ WebApp.connectHandlers.use (req, res, next) ->
 	undefined
 
 FastRender.onAllRoutes ->
+	# Don't a 'basicChatInfo' subscription here, this will mess up the
+	# notification handling (will sound a dong when there are unread messages
+	# when the app is opened.).
+
 	if @userId?
 		@subscribe 'classes'
-		#@subscribe 'basicChatInfo'
 
 FastRender.route '/app', ->
 	@subscribe 'externalCalendarItems', Date.today(), Date.today().addDays 4

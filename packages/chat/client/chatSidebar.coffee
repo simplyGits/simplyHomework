@@ -1,16 +1,25 @@
-stayOpen = no
-currentSearchTerm = new ReactiveVar ""
+NOTIFICATION_SOUND_SRC = '/packages/chat/audio/chatNotification.ogg'
 
+currentSearchTerm = new ReactiveVar ''
+
+###*
+# @method chatRoomTransform
+# @param {ChatRoom} room
+# @return {ChatRoom}
+###
 @chatRoomTransform = (room) ->
-	switch room.type
-		when 'private'
-			user = ->
-				Meteor.users.findOne
-					_id:
-						$in: room.users
-						$ne: Meteor.userId()
-		when 'project'
-			project = -> Projects.findOne room.projectId
+	user = ->
+		if room.type is 'private'
+			Meteor.users.findOne
+				_id:
+					$in: room.users
+					$ne: Meteor.userId()
+	project = ->
+		if room.type is 'project'
+			Projects.findOne room.projectId
+	_class = ->
+		if room.type is 'class' and room.classInfo.ids.length is 1
+			Classes.findOne _id: $in: room.classInfo.ids
 
 	_.extend room,
 		user: user
@@ -40,18 +49,11 @@ currentSearchTerm = new ReactiveVar ""
 				when 'private'
 					u = user()
 					if u? then "#{u.profile.firstName} #{u.profile.lastName}" else ''
-				when 'group'
+				when 'group', 'class'
 					room.subject ? ''
 
 				else ''
 		initial: -> Helpers.first(@friendlyName()).toUpperCase()
-
-		messages: ->
-			ChatMessages.find {
-				chatRoomId: room._id
-			}, {
-				sort: 'time': 1
-			}
 
 		unreadMessagesCount: ->
 			Math.min 99, ChatMessages.find(
@@ -65,35 +67,42 @@ currentSearchTerm = new ReactiveVar ""
 ###
 # Static class for managing the currently open chat.
 # @class ChatManager
+# @static
 ###
 class @ChatManager
-	@MESSAGE_PER_PAGE: 40
+	@MESSAGES_PER_PAGE: 30
 
 	###*
-	# Opens a chat window for the given user.
-	# @method openUserChat
-	# @param projectId {ObjectID|User} The user or an ID of an user to open a chat for.
+	# Opens the chat for with given user.
+	# @method openPrivateChat
+	# @param userId {User} The user to open the chat of.
 	###
-	@openUserChat: (userId) ->
-		userId = userId._id if userId._id?
-		@openChat ChatRooms.findOne(
+	@openPrivateChat: (userId) ->
+		room = ChatRooms.findOne
+			type: 'private'
 			users: [ userId, Meteor.userId() ]
-			projectId: $exists: no
-		)?._id
+
+		if room?
+			@openChat room._id
+		else
+			Meteor.call 'createPrivateChatRoom', userId, (e, r) ->
+				ChatManager.openChat r
 
 	###*
-	# Opens a chat window for the given project.
+	# Opens the chat for with given project.
 	# @method openProjectChat
-	# @param projectId {ObjectID|Project} The project or an ID of a project to open a chat for.
+	# @param projectId {Project} The project to open the chat of.
 	###
 	@openProjectChat: (projectId) ->
-		projectId = projectId._id if projectId._id?
 		@openChat ChatRooms.findOne({ projectId })?._id
 
+	@openClassChat: (classId) ->
+		@openChat ChatRooms.findOne({ 'classInfo.ids': classId })?._id
+
 	###*
-	# Opens a chat window for the given chatSidebar object.
+	# Opens the chat for the given ChatRoom id
 	# @method openChat
-	# @param object {Object} The chatSidebar context object to create a chatWindow for.
+	# @param id {String} ID of a ChatRoom.
 	###
 	@openChat: (id) ->
 		if Session.equals 'deviceType', 'phone'
@@ -111,16 +120,19 @@ class @ChatManager
 # Get the current chats, based on search term, if one.
 #
 # @method chats
-# @param [searchTerm] {String}
+# @param {String} [searchTerm]
+# @param {Boolean} [onlyFirst=false]
 # @return {Object[]} An array of ChatSidebar objects.
 ###
-chats = (searchTerm = currentSearchTerm.get()) ->
+chats = (searchTerm = currentSearchTerm.get(), onlyFirst = no) ->
 	dam = DamerauLevenshtein insert: 0
 	calcDistance = _.curry (s) -> dam searchTerm.trim().toLowerCase(), s.trim().toLowerCase()
 
-	chatRooms = ChatRooms.find({}).fetch()
+	chatRooms = ChatRooms.find({
+		lastMessageTime: $exists: yes
+	}).fetch()
 
-	_(chatRooms)
+	chain = _(chatRooms)
 		.filter (chat) ->
 			name = chat.friendlyName()
 			searchTerm.trim() is '' or
@@ -142,15 +154,16 @@ chats = (searchTerm = currentSearchTerm.get()) ->
 				else
 					distance
 
-		.value()
+	if onlyFirst then chain.first()
+	else chain.value()
 
 Template.chatSidebar.events
 	'keyup div.searchBox': (event) ->
 		if event.which is 27
 			$('div.searchBox > input').blur()
 		else if event.which is 13
-			ChatManager.openChat chats()[0]._id
-			currentSearchTerm.set event.target.value = ''
+			ChatManager.openChat chats(undefined, no)[0]._id
+			$('div.searchBox > input').blur()
 		else
 			currentSearchTerm.set event.target.value
 
@@ -159,6 +172,7 @@ Template.chatSidebar.events
 		ReactiveLocalStorage 'chatNotify', not ReactiveLocalStorage 'chatNotify'
 
 	'click .chatSidebarItem': ->
+		closeSidebar?()
 		ChatManager.openChat @_id
 
 Template.chatSidebar.helpers
@@ -172,7 +186,7 @@ Template.chatSidebar.onCreated ->
 		lastNotifications = {}
 		popoverTimeouts = {}
 		audio = new Audio
-		audio.src = "/audio/chatNotification.ogg"
+		audio.src = NOTIFICATION_SOUND_SRC
 		ChatMessages.find(
 			creatorId: $ne: Meteor.userId()
 			readBy: $ne: Meteor.userId()
@@ -231,32 +245,35 @@ Template.chatSidebar.onCreated ->
 
 Template.chatSidebar.onRendered ->
 	# some of that caching, yo.
-	$body = $ "body"
-	$chats = @$ ".chats"
-	$input = @$ "input"
+	$body = $ 'body'
+	$chats = @$ '.chats'
+	$input = @$ 'input'
 
-	ReactiveLocalStorage 'chatNotify', yes
+	unless ReactiveLocalStorage('chatNotify')?
+		ReactiveLocalStorage 'chatNotify', yes
+
+	$input.on 'blur', (event) ->
+		currentSearchTerm.set ''
+		event.target.value = ''
 
 	if Session.equals 'deviceType', 'desktop'
-		# Attach classes to body on chatSidebar hover / blur
-		$(".chatSidebar").hover (->
-			$body.addClass "chatSidebarOpen"
+		stayOpen = no
+
+		$('.chatSidebar').hover (->
+			$body.addClass 'chatSidebarOpen'
 		), ->
 			return if stayOpen
-			$body.removeClass "chatSidebarOpen"
+			$body.removeClass 'chatSidebarOpen'
 			$chats.animate scrollTop: 0
 
-			currentSearchTerm.set ""
-			$input.val ""
+			currentSearchTerm.set ''
+			$input.val ''
 
-		$input.on "focus", ->
+		$input.on 'focus', ->
 			stayOpen = yes
-			$body.addClass "chatSidebarOpen"
+			$body.addClass 'chatSidebarOpen'
 
-		$input.on "blur", ->
+		$input.on 'blur', ->
 			stayOpen = no
-			$body.removeClass "chatSidebarOpen"
+			$body.removeClass 'chatSidebarOpen'
 			$chats.animate scrollTop: 0
-
-			currentSearchTerm.set ""
-			$input.val ""

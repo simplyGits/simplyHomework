@@ -1,76 +1,82 @@
 <template name="classView">
 {{#with class}}
-	<div class="container-fluid">
-		{{#unless isPhone}}
+	<div class="container-fluid classViewContainer">
+		{{#if isDesktop}}
 			<div class="row classHeader" style="background-color: {{__color}}; border-color: {{classBorderColor}}; color: {{textColor __color}}">
 				<div class="robotoHeader overviewHeader" id="classHeader">
 					{{name}}
 					<span id="changeClassIcon" class="fa fa-pencil"></span>
 				</div>
-				<div class="robotoHeader overviewHeader" style="position: absolute; top: 0; right: 10px; text-align: right">{{tasksAmount}} <span class="robotoThin" style="margin-left: 5px">{{tasksWord}}</span></div>
 			</div>
-		{{/unless}}
-		<!--<div class="divider" style="border-color: {{__color}}"></div>-->
-		{{#with nextLessonDate}}
-			VOLGENDE LES IS DAN: {{dateFormat 'dddd D MMMM' this}}<br>
+		{{/if}}
+
+		{{#with noticeBanner}}
+			<div id="banner" class="{{__clickable}}">
+				{{content}}
+			</div>
 		{{/with}}
-		<!--VOLGENDE TOETS IS DAN: {{dateFormat 'D MMMM' nextTestDate}}<br>-->
-		Je docent: <a href="#">Malle Henk</a>
-		<div class="gradeInfoContainer">
-			{{#if Template.subscriptionsReady}}
-				{{#if hasGrades}}
+
+		<div id="searchBar" class="{{textColor __color}}">
+			<i class="fa fa-search"></i>
+			<input
+				type="search" placeholder="{{searchPlaceholder}}"
+				spellcheck="on" autocomplete="off"
+			/>
+		</div>
+
+		<div class="row" id="buttonsRow">
+			<div id="gradesButton" class="{{endGrade.__insufficient}}">
+				<strong>
 					{{#with endGrade}}
-						{{> endGradeTemplate}}
+						{{__grade}}
 					{{else}}
-						<div class="gradeContainerEndGrade">
-							<div class="gradeSquare">?</div>
-							<div class="endGradeHint">Gemiddelde</div>
+						?
+					{{/with}}
+				</strong>
+				<div>cijfers</div>
+			</div>
+			<div id="hoursButton">
+				<strong>{{numberFormat hoursPerWeek}}</strong>
+				<div>uur komende week</div>
+				{{! TODO }}
+				{{! <div>uur/week</div> }}
+			</div>
+			<div id="projectsButton">
+				<strong>{{numberFormat projectCount}}</strong>
+				<div>projecten</div>
+			</div>
+			<div id="teacherButton">
+				{{! TODO: add picture here if we have one. }}
+				<div id="teacher-avatar">docent</div>
+				<strong>{{__classInfo.externalInfo.teacherName}}</strong>
+				<div>berichten</div>
+			</div>
+		</div>
+
+		<div class="row" id="containersRow">
+			<div class="itemContainer" id="infoContainer">
+				<header>Informatie</header>
+				<div>
+					{{#each infoItems}}
+						{{> infoItem}}
+					{{/each}}
+				</div>
+			</div>
+			<div class="itemContainer noPad" id="chatContainer">
+				<header>
+					Chat
+					{{#with lastChatMessage}}
+						<div id="lastChatMessage">
+							<span id="name">{{__sender.profile.firstName}} {{__sender.profile.lastName}}</span>
+							<span id="message">{{_originalContent}}</span>
+							<img src="{{picture __sender 100}}" alt="profielfoto" width="50" height="50" />
 						</div>
 					{{/with}}
-
-					<div class="gradeContainer">
-						{{#each gradeGroups}}
-							{{> gradeGroup}}
-						{{/each}}
-					</div>
-
-					{{#with selectedGrade}}
-						{{> gradeDetail}}
-					{{/with}}
-				{{else}}
-					<div class="notice">
-						Geen cijfers gevonden.
-					</div>
-				{{/if}}
-			{{else}}
-				<div class="notice">
-					Cijfers laden...
-				</div>
-			{{/if}}
-		</div>
-		<div class="row">
-			<div class="col-sm-6">
-				<div class="itemContainer studyUtils">
-					<div class="robotoThin itemContainerHeader">
-						Studiewijzers
-					</div>
-					<div class="itemContainerContent">
-						{{#each studyUtils}}
-							{{> studyUtil}}
-						{{/each}}
-					</div>
-				</div>
-			</div>
-			<div class="col-sm-6">
-				<div class="itemContainer digitalSchoolUtilities">
-					<div class="robotoThin itemContainerHeader">
-						Leermiddelen
-					</div>
-					<div class="itemContainerContent">
-						{{#each digitalSchoolUtilities}}
-							{{> digitalSchoolUtility}}
-						{{/each}}
-					</div>
+				</header>
+				<div>
+					{{#each chatPersons}}
+						{{> chatPersonRow}}
+					{{/each}}
 				</div>
 			</div>
 		</div>
@@ -78,6 +84,13 @@
 {{else}}
 	{{> loading}}
 {{/with}}
+</template>
+
+<template name="chatPersonRow">
+	<div class="chatPeronRow">
+		<img src="{{picture this 100}}" alt="profielfoto" width="50" height="50" />
+		<span>{{profile.firstName}} {{profile.lastName}}</span>
+	</div>
 </template>
 
 <template name="gradeGroup">
@@ -100,13 +113,6 @@
 		<div class="gradeSquare {{__insufficient}}">{{__grade}}</div>
 		<div class="gradeInfoRow"><div>Beschrijving</div> {{description}}</div>
 		<div class="gradeInfoRow"><div>Gewicht</div> {{weight}}</div>
-	</div>
-</template>
-
-<template name="endGradeTemplate">
-	<div class="gradeContainerEndGrade {{__insufficient}}">
-		<div class="gradeSquare {{__insufficient}}">{{__grade}}</div>
-		<div class="endGradeHint">Gemiddelde</div>
 	</div>
 </template>
 
@@ -143,7 +149,7 @@
 			<div class="modal-content">
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-					<h4 class="modal-title">{{name}}</h4>
+					<h4 class="modal-title">{{name}} instellingen</h4>
 				</div>
 				<div class="modal-body">
 					<form class="form-horizontal">
@@ -154,11 +160,163 @@
 							</div>
 						</div>
 					</form>
-					<button class="btn btn-danger" id="hideClassButton">Verberg vak</button>
+					<button class="btn btn-primary" id="hideClassButton">Verberg vak</button>
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">Annuleren</button>
 					<button type="button" class="btn btn-primary" id="goButton">Opslaan</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</template>
+
+<template name="gradesModal">
+	<div class="modal fade" aria-hidden="true" id="gradesModal">
+		{{! TODO: improve this, a lot. }}
+		<div class="modal-dialog" style="width: 90%">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+					<h4 class="modal-title">Cijfers</h4>
+				</div>
+				<div class="modal-body">
+					<div class="gradeInfoContainer">
+						{{#if hasGrades}}
+							<div class="gradeContainer">
+								{{#each gradeGroups}}
+									{{> gradeGroup}}
+								{{/each}}
+							</div>
+
+							{{#with selectedGrade}}
+								{{> gradeDetail}}
+							{{/with}}
+						{{else}}
+							<div class="notice">
+								Geen cijfers gevonden.
+							</div>
+						{{/if}}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</template>
+
+<template name="searchResultsModal">
+	<div class="modal fade" aria-hidden="true" id="searchResultsModal">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+					<h4 class="modal-title">Zoekresultaten voor "{{query}}"</h4>
+				</div>
+				<div class="modal-body">
+					{{#if isLoading}}
+						<b>Even zoeken hoor...</b>
+					{{else}}
+						{{#if results}}
+							<div style="margin-bottom: 5px">
+								{{! TODO: make this smart, show only the sites were we really got the results from. }}
+								Resultaten van scholieren.com en woordjesleren.nl
+							</div>
+
+							{{#each results}}
+								{{> searchResultsModal_result}}
+							{{/each}}
+						{{else}}
+							<b>Geen resultaten voor "{{query}}" gevonden.</b>
+						{{/if}}
+					{{/if}}
+				</div>
+			</div>
+		</div>
+	</div>
+</template>
+
+<template name="searchResultsModal_result">
+	<a href="{{url}}" target="_blank" style="text-decoration: none !important">
+		<div class="searchResult {{__insufficient}}">
+			<div class="title">{{title}}</div>
+			<div class="rating">{{rating}}</div>
+		</div>
+	</a>
+</template>
+
+<template name="projectsModal">
+	<div class="modal fade" aria-hidden="true" id="projectsModal">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+					<h4 class="modal-title">Projecten</h4>
+				</div>
+				<div class="modal-body">
+					<button class="btn btn-primary" id="addProjectButton">
+						Project aanmaken
+					</button>
+					<div id="projects">
+						{{#each projects}}
+							{{> projectRow}}
+						{{/each}}
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Annuleren</button>
+					<button type="button" class="btn btn-primary" id="goButton">Opslaan</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</template>
+<template name="projectRow">
+	<div class="projectRow" style="border-color: {{__borderColor}}">
+		<div class="name">{{name}}</div>
+		<div class="deadline">deadline: {{__friendlyDeadline}}</div>
+	</div>
+</template>
+
+<template name="addProjectModal">
+	<div class="modal fade" aria-hidden="true" id="addProjectModal">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+					<h4 class="modal-title">Project aanmaken</h4>
+				</div>
+				<div class="modal-body">
+					<!-- TODO
+					{{#with assignments}}
+						<h3>Kies een externe opdracht</h3>
+						{{#each this}}
+							<div class="assignmentRow">
+								<div class="className">{{__abbreviation}}</div>
+								<div class="assignmentName">{{name}}</div>
+								<button type="button" class="btn btn-primary" id="createProjectButton">aanmaken</button>
+							</div>
+						{{/each}}
+						<h3>Of maak zelf een project</h3>
+					{{/with}}
+					-->
+					<form class="vertical full-width">
+						<div id="nameGroup" class="group">
+							<label for="nameInput">Naam</label>
+							<input type="text" id="nameInput" placeholder="Projectnaam" />
+						</div>
+						<div id="descriptionGroup" class="group">
+							<label for="descriptionInput">Beschrijving</label>
+							<input type="text" id="descriptionInput" placeholder="Projectbeschrijving" />
+						</div>
+						<div id="deadlineGroup" class="group">
+							<label for="deadlineInput">Deadline</label>
+							<input type="text" id="deadlineInput" />
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Annuleren</button>
+					<button type="button" class="btn btn-primary" id="goButton">Aanmaken</button>
 				</div>
 			</div>
 		</div>

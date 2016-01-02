@@ -1,4 +1,4 @@
-# TODO: check if marked does escaption, if not handle it manually.
+# TODO: Use middlewares serverside. Naughty url stripping?
 ###*
 # @class ChatMiddlewares
 # @static
@@ -12,20 +12,15 @@ ChatMiddlewares =
 	# @param {String} name
 	# @param {String} platform
 	# @param {String} fn
-	# @param {Boolean} [prepend=false]
 	###
-	attach: (name, platform, fn, prepend = no) ->
+	attach: (name, platform, fn) ->
 		check name, String
 		check platform, String
 		check fn, Function
-		check prepend, Boolean
 
 		item = { name, platform, fn }
 
-		if prepend
-			@_middlewares.unshift item
-		else
-			@_middlewares.push item
+		@_middlewares.push item
 
 	###*
 	# Runs the given `message` through every middleware in order.
@@ -41,12 +36,20 @@ ChatMiddlewares =
 				message = item.fn message
 			catch e
 				console.warn "Message middleware '#{item.name}' errored.", e
-				Kadira.trackError 'middleware-failure', e.toString(), stacks: EJSON.stringify e
+				Kadira.trackError 'middleware-failure', e.toString(), stacks: JSON.stringify e
 
 		message
 
+# Always keep this middleware on top, please.
 ChatMiddlewares.attach 'preserve original content', 'client', (message) ->
 	message._originalContent = message.content
+	message
+
+ChatMiddlewares.attach 'strip naughty urls', 'client', (message) ->
+	message.content = message.content.replace(
+		/<a +href *= *('|"?) *javascript *:[^\1]+\1 *>([^<]*)(<\/a>)?/ig
+		(match, qoute, content) -> content
+	)
 	message
 
 chatMessageReplaceMap =
@@ -56,6 +59,9 @@ chatMessageReplaceMap =
 	':sunglasses:': /\(h\)/ig
 	':sweat_smile:': /\^\^'/ig
 	':tada:': /:fissa:/ig
+	':cheese:': /:kaas:/ig
+	':middle_finger:': /:fu:/ig
+	'¯\\\\\\_(ツ)\\_/¯': /(:|\/)shrug(:|\/)/ig
 
 ChatMiddlewares.attach 'convert smileys', 'client', (message) ->
 	s = message.content
@@ -68,18 +74,21 @@ ChatMiddlewares.attach 'convert smileys', 'client', (message) ->
 	message
 
 ChatMiddlewares.attach 'emojione', 'client', (message) ->
-	message.content = emojione.toImage message.content
+	unless localStorage['no-chat-emojis']
+		message.content = emojione.toImage message.content
 	message
 
+# TODO: This needs to be serverside to find every user.
 ChatMiddlewares.attach 'clickable names', 'client', (message) ->
 	users = _(message.content)
 		.split /\W/
-		.map (word) -> Helpers.nameCap word
 		.map (word, i) ->
-			Meteor.users.findOne $or: [
-				{ 'profile.firstName': word }
-				{ 'profile.lastName': word }
-			]
+			Meteor.users.findOne
+				_id: $nin: [Meteor.userId(), message.creatorId]
+				$or: [
+					{ 'profile.firstName': $regex: word, $options: 'i' }
+					{ 'profile.lastName': $regex: word, $options: 'i' }
+				]
 		.compact()
 		.uniq '_id'
 		.value()
@@ -99,7 +108,8 @@ ChatMiddlewares.attach 'markdown', 'client', (message) ->
 
 ChatMiddlewares.attach 'katex', 'client', (message) ->
 	message.content = message.content.replace /\$\$(.+)\$\$/, (match, formula) ->
-		katex.renderToString formula
+		try katex.renderToString formula
+		catch then match
 
 	message
 
@@ -111,5 +121,14 @@ ChatMiddlewares.attach 'add hidden fields', 'client', (cm) ->
 		__new: if own or Meteor.userId() in cm.readBy then '' else 'new'
 		__time: Helpers.formatDate cm.time
 		__changedOn: Helpers.formatDate cm.changedOn
+		__pending: if cm.pending then 'pending' else ''
+		__readBy: ->
+			Meteor.users.find {
+				_id:
+					$in: cm.readBy
+					$nin: [ Meteor.userId(), cm.creatorId ]
+			}, {
+				limit: 3
+			}
 
 @ChatMiddlewares = ChatMiddlewares

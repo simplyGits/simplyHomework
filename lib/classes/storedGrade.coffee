@@ -36,14 +36,14 @@ englishGradeMap =
 ###*
 # A serverside database stored grade.
 #
-# @class StoredGrade
+# @class Grade
 # @constructor
 # @param grade {Number} The grade as a Number, the grade should be converted by a converter first if it wasn't a number at first.
 # @param weight {Number} The weight of the grade.
 # @param classId {ObjectID} The ID of the Class which this grade is for.
 # @param ownerId {String} The ID of the owner of this grade.
 ###
-class @StoredGrade
+class @Grade
 	constructor: (@grade, @weight, @classId, @ownerId) ->
 		@_id = new Meteor.Collection.ObjectID()
 

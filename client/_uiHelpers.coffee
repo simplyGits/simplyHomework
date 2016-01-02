@@ -22,16 +22,21 @@ http://tomsmeding.nl/
 	Ok: 0
 	OkCancel: 1
 
-@alertModal = (title, body, buttonType = 0, labels = { main: "oké", second: "annuleren" }, styles = { main: "btn-default", second: "btn-default" }, callbacks = { main: null, second: null }, exitButton = yes) ->
-	labels = _.extend { main: "oké", second: "annuleren" }, labels
-	styles = _.extend { main: "btn-default", second: "btn-default" }, styles
+@alertModal = (title, body, buttonType = 0, labels = { main: 'oké', second: 'annuleren' }, styles = { main: 'btn-default', second: 'btn-default' }, callbacks = { main: null, second: null }, exitButton = yes) ->
+	labels = _.extend { main: 'Oké', second: 'Annuleren' }, labels
+	styles = _.extend { main: 'btn-default', second: 'btn-default' }, styles
 
 	bootbox.hideAll()
 
 	bootbox.dialog
 		title: title
-		message: body.replace /\n/ig, "<br>"
-		onEscape: if buttonType isnt 0 then callbacks.second else if _.isFunction(callbacks.main) then callbacks.main else -> return
+		message: body.replace /\n/ig, '<br>'
+		onEscape: (
+			if buttonType is 0
+				callbacks.second
+			else if _.isFunction(callbacks.main)
+				callbacks.main
+		) ? (->)
 		buttons:
 			switch buttonType
 				when 0
@@ -55,7 +60,7 @@ http://tomsmeding.nl/
 							if _.isFunction(callbacks.main) then callbacks.main()
 							bootbox.hideAll()
 
-	$(".bootbox-close-button").remove() unless exitButton
+	$('.bootbox-close-button').remove() unless exitButton
 	undefined
 
 @swalert = (options) ->
@@ -73,13 +78,13 @@ http://tomsmeding.nl/
 		title
 		text
 		type
-		confirmButtonText: confirmButtonText ? "oké"
+		confirmButtonText: confirmButtonText ? 'Oké'
 		cancelButtonText
 		allowOutsideClick: cancelButtonText?
 		showCancelButton: cancelButtonText?
 	}, (success) -> if success then onSuccess?() else onCancel?()
 
-	if html? then $(".sweet-alert > p").html html.replace "\n", "<br>"
+	if html? then $('.sweet-alert > p').html html.replace '\n', '<br>'
 	undefined
 
 ###*
@@ -91,7 +96,7 @@ http://tomsmeding.nl/
 # @param [trigger="manual"] {String} When to trigger the bootstrap tooltip.
 # @param {jQuery} The given `selector`.
 ###
-@setFieldError = (selector, message, trigger = "manual") ->
+@setFieldError = (selector, message, trigger = 'manual') ->
 	(if selector.jquery? then selector else $(selector))
 		.addClass 'error'
 		.tooltip placement: 'bottom', title: message, trigger: trigger
@@ -132,19 +137,7 @@ http://tomsmeding.nl/
 	audio.src = "http://www.ispeech.org/p/generic/getaudio?text=#{text}%2C&voice=eurdutchfemale&speed=0&action=convert"
 	audio.play()
 
-_text = null
-@strikeThrough = (node, index) ->
-	_text ?= node.text()
-	return false if index >= _text.length
-
-	sToStrike = _text.substr 0, index + 1
-	sAfter = if index < --_text.length then _text.substr(index + 1, _text.length - index) else ""
-
-	node.html '<span style="text-decoration: line-through" id="stroke">' + sToStrike + "</span>" + sAfter
-	_.delay (->
-		strikeThrough node, index + 1
-	), 5
-
+# TODO: Give this its own package
 ###*
 # The manager for notificafions.
 # @class NotificationsManager
@@ -154,12 +147,25 @@ class @NotificationsManager
 	@_notifications: []
 
 	# TODO: Make it possible to update the handlers using the notification handle?
-	# TODO: Clean this method up. Please.
+	# TODO: Clean this method up. Please. (maybe use handlebars templates?)
 	# TODO: `options.onHide` not called on timeout for onfocus notifications?
 	@notify: (options) ->
 		check options, Object
-		_.defaults options, { type: "default", time: 4000, dismissable: yes, labels: [], styles: [], callbacks: [], html: no, priority: 0, allowDesktopNotifications: yes, image: "" }
-		{ body, type, time, dismissable, labels, styles, callbacks, html, onClick, priority, onDismissed, allowDesktopNotifications, image, onHide } = options
+		_.defaults options,
+			type: 'default'
+			time: 4000
+			dismissable: yes
+			labels: []
+			styles: []
+			callbacks: []
+			html: no
+			priority: 0
+			allowDesktopNotifications: yes
+			image: ''
+		{
+			body, type, time, dismissable, labels, styles, callbacks, html, onClick, priority,
+			onDismissed, allowDesktopNotifications, image, onHide
+		} = options
 
 		check time, Match.Where (t) -> _.isNumber(t) and ( t is -1 or t > 0 )
 		check priority, Number
@@ -189,32 +195,51 @@ class @NotificationsManager
 			height: -> unless @_htmlNotification? then @element().outerHeight(yes) else 0
 
 			content: (content, html = false) ->
-				if @_htmlNotification? # We can't change the contents of a HTML notification, just rebuild it.
+				if @_htmlNotification? and content?
+					# We can't change the contents of a HTML notification, just rebuild it.
 					@_htmlNotification.close()
 
-					text = if html then body.trim().replace(/(<[^>]*>)|(&nbsp;)/g, "").replace("<br>", "\n") else body.trim()
-					x = new Notification text.split("\n")[0], body: text.split("\n")[1..].join("\n"), tag: notId, icon: image
-					notHandle._htmlNotification = x
-					x.onclick = ->
+					text = (
+						trimmed = body.trim()
+						if html
+							trimmed.replace(/(<[^>]*>)|(&nbsp;)/g, '').replace('<br>', '\n')
+						else
+							trimmed
+					)
+					notif = new Notification(
+						text.split("\n")[0]
+						{
+							body: text.split("\n")[1..].join("\n")
+							tag: notId
+							icon: image
+						}
+					)
+					notHandle._htmlNotification = notif
+					notif.onclick = ->
 						window.focus()
 						onClick?()
 						onHide?()
 						notHandle.hide()
-					x.onclose = ->
+					notif.onclose = ->
 						onDismissed?()
 						onHide?()
 						notHandle.hide()
 
-					return
-
-				if content?
-					$(".notification##{notId} div").html (if html then body else _.escape body).replace /\n/g, "<br>"
-					NotificationsManager._updatePositions()
-					return content
+					undefined
 				else
-					return $(".notification##{notId} div")[if html then "html" else "text"]()
+					$content = $ ".notification##{notId} div"
+					if content?
+						$content.html (
+							if html then body
+							else _.escape body
+						).replace /\n/g, "<br>"
 
-			element: -> $(".notification##{notId}")
+						NotificationsManager._updatePositions()
+
+					if html then $content.html()
+					else $content.text()
+
+			element: -> $ ".notification##{notId}"
 
 		if document.hasFocus() or not allowDesktopNotifications or not Session.get "allowNotifications"
 			d = $ document.createElement "div"
@@ -322,7 +347,16 @@ class @NotificationsManager
 # @param [dismissable=true] {Boolean} Whether or not this notification is dismissable.
 # @param [priority=0] {Number} The priority of the notification.
 ###
-@notify = (body, type = "default", time = 4000, dismissable = yes, priority = 0) -> NotificationsManager.notify { body: "<b>#{_.escape body}</b>", type, time, dismissable, priority, html: yes, allowDesktopNotifications: no }
+@notify = (body, type = 'default', time = 4000, dismissable = yes, priority = 0) ->
+	NotificationsManager.notify {
+		body: "<b>#{_.escape body}</b>"
+		type
+		time
+		dismissable
+		priority
+		html: yes
+		allowDesktopNotifications: no
+	}
 
 ###*
 # 'Slides' the slider to the given destanation.
@@ -437,7 +471,7 @@ class @NotificationsManager
 	$modal = $ "##{name}"
 	$modal
 		.modal options
-		.on 'hidden.bs.modal', ->
+		.one 'hidden.bs.modal', ->
 			Blaze.remove view
 			options?.onHide?()
 
@@ -447,14 +481,14 @@ class @NotificationsManager
 	-> $modal.modal 'hide'
 
 Meteor.startup ->
-	Session.setDefault "documentPageTitle", "simplyHomework"
-	Session.setDefault "pageColor", "lightgray"
-	Session.setDefault "allowNotifications", no
+	Session.setDefault 'documentPageTitle', 'simplyHomework'
+	Session.setDefault 'pageColor', 'lightgray'
+	Session.setDefault 'allowNotifications', no
 
-	colortag = $ "meta[name='theme-color']"
+	$colortag = $ 'meta[name="theme-color"]'
 	Tracker.autorun ->
-		document.title = Session.get "documentPageTitle"
-		colortag.attr "content", Session.get("pageColor") ? "#32A8CE"
+		document.title = Session.get 'documentPageTitle'
+		$colortag.attr 'content', Session.get('pageColor') ? '#32A8CE'
 
 	BlazeLayout.setRoot 'body'
 
@@ -464,7 +498,7 @@ Meteor.startup ->
 			switch Notification.permission
 				when 'default'
 					notice = setBigNotice
-						content: 'Wij hebben je toestemming nodig om bureaubladmeldingen weer te kunnen geven.'
+						content: 'We hebben je toestemming nodig om bureaubladmeldingen weer te kunnen geven.'
 						onClick: ->
 							Notification.requestPermission (result) ->
 								notice?.hide()
@@ -476,6 +510,7 @@ Meteor.startup ->
 	Template.registerHelper 'picture', (user, size) -> picture user, if _.isNumber(size) then size else undefined
 	Template.registerHelper 'has', has
 	Template.registerHelper 'toUpperCase', (str) -> str.toUpperCase()
+	Template.registerHelper 'cap', (str) -> Helpers.cap str
 
 	Template.registerHelper 'isPhone', -> Session.equals 'deviceType', 'phone'
 	Template.registerHelper 'isTablet', -> Session.equals 'deviceType', 'tablet'
@@ -484,11 +519,15 @@ Meteor.startup ->
 	Template.registerHelper 'currentYear', -> new Date().getFullYear()
 	Template.registerHelper 'dateFormat', (format, date) -> moment(date).format format
 	Template.registerHelper 'time', (date) -> moment(date).format 'HH:mm'
+	Template.registerHelper 'numberFormat', (number) ->
+		switch number
+			when 0 then 'geen'
+			else number
 
 	Template.registerHelper 'textColor', (color, fallback) ->
 		color ?= fallback
 		return '' unless color?
-		if chroma(color).luminance() > .45 then '#000' else '#fff'
+		if chroma(color).luminance() > .45 then 'black' else 'white'
 
 	Template.registerHelper 'pathFor', (path, view) ->
 		unless path?
@@ -508,7 +547,6 @@ Meteor.startup ->
 		hashBang = view.hash.hash ? ''
 		FlowRouter.path(path, view.hash, query) + hashBang
 
-	# TODO: Remove the console.infos.
 	disconnectedNotice = null
 	Tracker.autorun ->
 		status = Meteor.status()

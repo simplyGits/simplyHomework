@@ -1,6 +1,9 @@
+/* global Scholieren:true */
 'use strict';
 
-var settings = Meteor.settings && Meteor.settings.scholieren;
+// TODO: make this an external service
+
+const settings = Meteor.settings && Meteor.settings.scholieren;
 
 if (settings == null) {
 	throw new Error('`settings.scholieren` is required but is null or undefined.');
@@ -14,14 +17,14 @@ Scholieren = {
 	getClasses: function (options) {
 		options = options || {};
 
-		for (var key in options) {
+		for (const key in options) {
 			if (options[key] != null) {
 				var optionsKey = key;
 				break;
 			}
 		}
 
-		var result = HTTP.post('http://api.scholieren.com/', {
+		const result = HTTP.post('http://api.scholieren.com/', {
 			params: {
 				'client_id': settings['client_id'],
 				'client_pw': settings['client_pw'],
@@ -37,14 +40,14 @@ Scholieren = {
 	getBooks: function (options) {
 		options = options || {};
 
-		for (var key in options) {
+		for (const key in options) {
 			if (options[key] != null) {
 				var optionsKey = key;
 				break;
 			}
 		}
 
-		var result = HTTP.post('http://api.scholieren.com/', {
+		const result = HTTP.post('http://api.scholieren.com/', {
 			params: {
 				'client_id': settings['client_id'],
 				'client_pw': settings['client_pw'],
@@ -59,6 +62,35 @@ Scholieren = {
 				id: book.id,
 				classId: book.vakid,
 				title: book.name,
+			};
+		});
+	},
+
+	getReports: function (query) {
+		const result = HTTP.post('http://api.scholieren.com/', {
+			params: {
+				'client_id': settings['client_id'],
+				'client_pw': settings['client_pw'],
+				'request': 'reports',
+				'by_item': 'terms',
+				'by_data': query,
+			},
+		});
+		if (!result.content.trim().length) {
+			return [];
+		}
+
+		const reports = JSON.parse(result.content).reports || [];
+		return reports.map(function (report) {
+			const res = {}
+			report.forEach(function (obj) {
+				const pair = _.pairs(obj)[0];
+				res[pair[0]] = pair[1];
+			});
+			return {
+				title: res.titel,
+				url: res.url,
+				rating: res.rating,
 			};
 		});
 	},

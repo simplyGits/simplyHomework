@@ -1,4 +1,7 @@
+/* global cheerio, WoordjesLeren:true */
 'use strict';
+
+// TODO: make this an external service
 
 var $ = cheerio;
 var urls = {
@@ -12,7 +15,7 @@ var urls = {
 
 WoordjesLeren = {
 	name: 'woordjesleren',
-	friendlyName: 'WoordjesLeren',
+	friendlyName: 'woordjesleren.nl',
 	loginNeeded: false,
 };
 

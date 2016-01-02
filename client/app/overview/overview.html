@@ -6,33 +6,3 @@
 		</div>
 	</div>
 </template>
-
-<template name="projectRow">
-	<a href="{{pathFor 'projectView' id=_id.toHexString}}">
-		<div class="projectRow">
-			<div class="projectRowBorder" style="background-color: {{__borderColor}}">
-				<span>{{__friendlyDeadline}}</span>
-			</div>
-			<span>{{name}}</span> {{__class.name}}
-		</div>
-	</a>
-</template>
-
-<template name="infoNextDay">
-	<div class="robotoHeader infoNextDayHeader">Morgen</div>
-	<div class="robotoHeader overviewTimeIndicator">
-		<span>{{firstHour}}<sup>e</sup></span> - {{lastHour}}<sup>e</sup>
-	</div>
-	<div class="overviewPersons">
-		{{#each people}}
-			<a href="{{pathFor 'personView' id=_id}}">
-				<img src="{{picture this 50}}" width="25" height="25" data-toggle="tooltip" title="{{profile.firstName}} {{profile.lastName}}"/>
-			</a>
-		{{else}}
-			<div style="text-align: center; opacity: .7">
-				Morgen heb je met geen ander simplyHomework lid les. :(<br>
-				Misschien kan je iemand <a href="mailto:?to=&subject=Zie%20deze%20hippe%20app">uitnodigen</a>?
-			</div>
-		{{/each}}
-	</div>
-</template>

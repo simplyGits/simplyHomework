@@ -1,6 +1,6 @@
 Package.describe({
 	name: 'simply:fullcalendar',
-	version: '2.4.0',
+	version: '2.5.0',
 	summary: 'vanilla fullcalendar packaged for Meteor.',
 	git: '',
 	documentation: 'README.md',
@@ -17,9 +17,9 @@ Package.onUse(function(api) {
 	api.use('momentjs:moment', 'client');
 
 	api.addAssets([
-		'fullcalendar/dist/fullcalendar.js',
-		'fullcalendar/dist/fullcalendar.css',
-		'fullcalendar/dist/lang/nl.js',
+		'dist/fullcalendar.js',
+		'dist/fullcalendar.css',
+		'dist/lang/nl.js',
 	], 'client');
 	api.addFiles('inject.js', 'server');
 });

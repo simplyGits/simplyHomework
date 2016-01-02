@@ -17,16 +17,16 @@
 					<i class="fa fa-users headerIcon" data-snap-side="right"></i>
 				</div>
 			{{/unless}}
-			{{#if has "noAds"}}
-				<div class="content unselectable smoothScroll">
-					{{> Template.dynamic template=main}}
-				</div>
-			{{else}}
+			{{#if showAdbar}}
 				{{! TODO: Cleaner way to do this? }}
 				<div class="content unselectable smoothScroll" style="bottom: 90px">
 					{{> Template.dynamic template=main}}
 				</div>
 				<div id="adbar"></div>
+			{{else}}
+				<div class="content unselectable smoothScroll">
+					{{> Template.dynamic template=main}}
+				</div>
 			{{/if}}
 		</div>
 		{{> chatSidebar}}
@@ -87,39 +87,6 @@
 		</div>
 	</div>
 </template>
-
-<!--
-<template name="plannerPrefsModal">
-	<div class="modal fade" aria-hidden="true" id="plannerPrefsModal">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-					<h4 class="modal-title">Planner voorkeuren</h4>
-				</div>
-				<div class="modal-body">
-					<h4 style="text-align: center; margin-bottom: 20px;">Hoeveel tijd heb je op elke weekdag?<small><br><i>(schooltijd niet meegerekend)</i><br>Je kan dit altijd in je instellingen aanpassen.</small></h4>
-					<form class="vertical full-width">
-						{{#each dayWeek}}
-							<div id="{{name}}Group" class="group select">
-								<label for="{{name}}Input">{{friendlyName}}</label>
-								<select id="{{name}}Input">
-									{{#each weigthOptions}}
-										<option selected={{selected}}>{{name}}</option>
-									{{/each}}
-								</select>
-							</div>
-						{{/each}}
-					</form>
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-primary" id="goButton">Opslaan</button>
-				</div>
-			</div>
-		</div>
-	</div>
-</template>
--->
 
 <template name="addClassModal">
 	<div class="modal fade" aria-hidden="true" id="addClassModal">
@@ -200,63 +167,6 @@
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-primary" id="goButton">Okido</button>
-				</div>
-			</div>
-		</div>
-	</div>
-</template>
-
-<template name="addProjectModal">
-	<div class="modal fade" aria-hidden="true" id="addProjectModal">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-					<h4 class="modal-title">Project aanmaken</h4>
-				</div>
-				<div class="modal-body">
-					{{#with assignments}}
-						<h3>Kies een externe opdracht</h3>
-						{{#each this}}
-							<div class="assignmentRow">
-								<div class="className">{{__abbreviation}}</div>
-								<div class="assignmentName">{{name}}</div>
-
-								{{#if __project}}
-									<button type="button" class="btn btn-default goToProjectButton" id="{{__project._id.toHexString}}">aangemaakt</button>
-								{{else}}
-									<button type="button" class="btn btn-primary" id="createProjectButton">aanmaken</button>
-								{{/if}}
-							</div>
-						{{/each}}
-						<h3>Of maak zelf een project</h3>
-					{{/with}}
-					<form class="vertical full-width">
-						<div id="nameGroup" class="group">
-							<label for="nameInput">Naam</label>
-							<input type="text" id="nameInput" placeholder="Projectnaam" />
-						</div>
-						<div id="descriptionGroup" class="group">
-							<label for="descriptionInput">Beschrijving</label>
-							<input type="text" id="descriptionInput" placeholder="Projectbeschrijving" />
-						</div>
-						<div id="deadlineGroup" class="group">
-							<label for="deadlineInput">Deadline</label>
-							<input type="text" id="deadlineInput" />
-						</div>
-						<div id="classNameGroup" class="group">
-							<label for="classNameInput">Vak</label>
-							<input
-								type="text" id="classNameInput" placeholder="Projectvak"
-								spellcheck="off" autocomplete="off"
-								data-source="classes" data-value-key="name" data-select="selected"
-							/>
-						</div>
-					</form>
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-default" data-dismiss="modal">Annuleren</button>
-					<button type="button" class="btn btn-primary" id="goButton">Aanmaken</button>
 				</div>
 			</div>
 		</div>

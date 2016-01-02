@@ -21,7 +21,7 @@
 				<img class="profilePicture" src="{{sidebarIcon}}" width="75">
 			{{else}}
 				<div class="profilePicture">
-					{{#each participants}}
+					{{#each users}}
 						<img src="{{picture this 50}}" width="25">
 					{{/each}}
 				</div>
@@ -31,7 +31,7 @@
 
 		{{> chatMessages}}
 
-		<div id="footer">
+		<div id="footer" class="{{__editing}}">
 			<button class="sendButton">
 				<span id="sendText">verzenden</span>
 				<i id="sendIcon" class="fa fa-angle-double-right"></i>

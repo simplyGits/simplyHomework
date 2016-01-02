@@ -40,21 +40,25 @@
 
 <template name="personSharedHours">
 {{#if days}}
-	<div class="personSharedHours">
-		<b>Lessen van volgende week die je met {{profile.firstName}} deelt</b>
+<div class="itemContainer" id="personSharedHours">
+	<header>Lessen met {{profile.firstName}} volgende week</header>
+	<div>
 		<ul>
 			{{#each days}}
 				{{name}}:
 				<li>
 					<ul>
 						{{#each hours}}
-							<li><b>{{schoolHour}}</b>: {{class.name}}</li>
+							<a href="{{pathFor 'classView' id=class._id}}">
+								<li><b>{{schoolHour}}</b>: {{class.name}}</li>
+							</a>
 						{{/each}}
 					</ul>
 				</li>
 			{{/each}}
 		</ul>
 	</div>
+</div>
 {{/if}}
 </template>
 
@@ -130,6 +134,7 @@
 							</label>
 						</div>
 					</div>
+					<!-- TODO:
 					<br>
 					<div>
 						Wil je {{profile.firstName}} blokkeren?
@@ -144,6 +149,7 @@
 							</span>
 						</label>
 					</div>
+					-->
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">Annuleren</button>

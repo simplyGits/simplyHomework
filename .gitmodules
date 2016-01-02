@@ -1,9 +1,9 @@
-[submodule "packages/fullcalendar/fullcalendar"]
-	path = packages/fullcalendar/fullcalendar
-	url = git@github.com:fullcalendar/fullcalendar.git
 [submodule "packages/emojione"]
 	path = packages/emojione
 	url = git@github.com:Ranks/emojione.git
-[submodule "packages/viewport-units-buggyfill/viewport-units-buggyfill"]
-	path = packages/viewport-units-buggyfill/viewport-units-buggyfill
+[submodule "packages/viewport-units-buggyfill/dist"]
+	path = packages/viewport-units-buggyfill/dist
 	url = git@github.com:rodneyrehm/viewport-units-buggyfill.git
+[submodule "packages/typeahead/typeahead"]
+	path = packages/typeahead/typeahead
+	url = git@github.com:corejavascript/typeahead.js.git

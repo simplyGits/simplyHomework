@@ -26,11 +26,11 @@ Template.personView.events
 	'click i#reportButton': ->
 		analytics?.track 'Open ReportUserModal'
 		showModal 'reportUserModal', undefined, currentPerson
-	"click button#chatButton": ->
-		Meteor.call 'createPrivateChatRoom', @_id, (e, r) ->
-			ChatManager.openChat r
+	"click button#chatButton": -> ChatManager.openPrivateChat @_id
 
 Template.personView.onCreated ->
+	@subscribe 'classes', hidden: yes
+
 	@autorun =>
 		unless sameUser()
 			@subscribe 'externalCalendarItems', Date.today(), Date.today().addDays 7
@@ -128,7 +128,7 @@ Template.reportUserModal.events
 		Meteor.call 'reportUser', @_id, reportGrounds, (e, r) ->
 			if e?
 				message = switch e.error
-					when 'rate-limit' then "Je hebt de afgelopen tijd téveel mensen gerapporteerd, probeer het later opnieuw."
+					when 'rate-limit' then 'Je hebt de afgelopen tijd téveel mensen gerapporteerd, probeer het later opnieuw.'
 					when 'already-reported' then "Je hebt #{name} al gerapporteerd om dezelfde reden(en)."
 					else 'Onbekende fout tijdens het rapporteren'
 

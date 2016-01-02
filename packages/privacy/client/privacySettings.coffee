@@ -1,7 +1,7 @@
 Template.privacyOption.events
 	'change': ->
 		Meteor.users.update Meteor.userId(),
-			$set: "privacyOptions.#{@short}": not @enabled
+			$set: "settings.privacy.#{@short}": not @enabled
 
 Template.privacySettings.helpers
 	privacyOptions: ->

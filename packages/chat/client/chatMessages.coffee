@@ -1,4 +1,3 @@
-MESSAGE_PER_PAGE = 40
 sub = undefined
 
 localCount = ->
@@ -8,6 +7,20 @@ localCount = ->
 		fields: _id: 1
 	).count()
 hasMore = -> sub.loaded() < Counts.get 'chatMessageCount'
+
+loadNextPage = ->
+	return if sub.loading()
+
+	$wrapper = $('#chatMessages').get 0
+	previousHeight = $wrapper.scrollHeight
+
+	sub.loadNextPage()
+
+	loadingComp = Tracker.autorun (c) ->
+		return if sub.loading()
+		c.stop()
+		heightDiff = $wrapper.scrollHeight - previousHeight
+		$wrapper.scrollTop += heightDiff
 
 throttledMarkRead = _.throttle ((template) ->
 	if template.atBottom()
@@ -20,26 +33,26 @@ throttledMarkRead = _.throttle ((template) ->
 Template.chatMessages.helpers
 	hasMore: hasMore
 	isLoading: -> sub?.loading()
+	messages: ->
+		ChatMessages.find {
+			chatRoomId: @_id
+		}, {
+			sort: 'time': 1
+		}
 	newMessages: -> # TODO
 
 Template.chatMessages.events
-	"scroll div#messages": (event, template) ->
+	"scroll div#chatMessages": (event, template) ->
 		t = $ event.target
 
 		if t.scrollTop() is 0 and hasMore()
-			$wrapper = $('#messages.chat').get 0
-			previousHeight = $wrapper.scrollHeight
-
-			sub.loadNextPage()
-
-			Tracker.autorun (c) ->
-				return if sub.loading()
-				c.stop()
-				heightDiff = $wrapper.scrollHeight - previousHeight
-				$wrapper.scrollTop += heightDiff
+			loadNextPage()
 
 		else if template.atBottom() then template.sticky = yes
 		else template.sticky = no
+
+	'click .loadMore:not(.loading)': ->
+		loadNextPage()
 
 Template.chatMessages.onCreated ->
 	@sticky = yes
@@ -47,11 +60,11 @@ Template.chatMessages.onCreated ->
 	sub = Meteor.subscribeWithPagination(
 		'chatMessages'
 		@data._id
-		MESSAGE_PER_PAGE
+		ChatManager.MESSAGES_PER_PAGE
 	)
 
 Template.chatMessages.onRendered ->
-	$messages = $('#messages.chat').get 0
+	$messages = $('#chatMessages').get 0
 
 	@atBottom = -> $messages.scrollTop >= $messages.scrollHeight - $messages.clientHeight
 
@@ -67,10 +80,11 @@ Template.chatMessages.onRendered ->
 	, 10
 	@sendToBottomIfNecessary()
 
-	@autorun =>
+	@autorun => # HACK
 		localCount()
 		currentBigNotice._reactiveVar.dep.depend()
-		@sendToBottomIfNecessary()
+		Meteor.defer =>
+			@sendToBottomIfNecessary()
 
 	@onWindowResize = => Meteor.defer => @sendToBottomIfNecessary()
 	window.addEventListener 'resize', @onWindowResize
@@ -84,6 +98,8 @@ Template.chatMessages.onDestroyed ->
 	window.removeEventListener 'mousemove', @markRead
 	window.removeEventListener 'keyup', @markRead
 
+	sub.stop()
+
 Template.messageRow.events
 	"click .senderImage": ->
 		ChatManager.closeChat()
@@ -91,10 +107,9 @@ Template.messageRow.events
 
 Template.messageRow.rendered = ->
 	$node = $ @firstNode
-	$parent = $ @firstNode.parentNode
 
 	if Session.equals 'deviceType', 'desktop'
 		# TODO: fix this when opening multiple times.
 		$node.find('[data-toggle="tooltip"]').tooltip
 			container: 'body'
-			placement: if $node.hasClass('own') then 'right' else 'left'
+			placement: if $node.hasClass('own') then 'auto right' else 'auto left'

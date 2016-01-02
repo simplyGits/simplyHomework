@@ -3,13 +3,15 @@
  * @author simply
  * @module magister-binding
  */
+ /* global Magister, ExternalServicesConnector, Schools, gradeConverter, Grades,
+  * Grade, StudyUtil, StudyUtils, GradePeriod, ExternalPerson, CalendarItem,
+  * Assignment */
 
 // One heck of a binding this is.
 
 (function (Magister, Future, request, LRU) {
-	"use strict";
+	'use strict';
 
-	var SESSIONID_INVALIDATE_TIME = 1000*60*60*24; // 24 hours
 	var ONLY_RECENT_LIMIT = 1000*60*60*24*6; // 6 days
 
 	var cache = LRU({
@@ -25,8 +27,8 @@
 	 * @static
 	 */
 	var MagisterBinding = {
-		name: "magister",
-		friendlyName: "Magister",
+		name: 'magister',
+		friendlyName: 'Magister',
 		loginNeeded: true,
 		/**
 		 * Creates data for the user with given `userId` with the given
@@ -57,30 +59,31 @@
 				credentials: {
 					schoolurl: schoolurl,
 					username: username,
-					password: password
-				}
+					password: password,
+				},
 			});
+
+			// Remove the cache entry (if there's one) for the current user to
+			// make sure we relogin.
+			cache.del(userId);
 
 			try {
 				getMagisterObject(userId);
 			} catch (e) {
 				// Remove the stored info.
+				cache.del(userId);
 				MagisterBinding.storedInfo(userId, null);
 
-				// TODO: check in magister.js if `|| e.Message` is needed.
-				var message = e.toString();
-				if (
-					[
-						'Ongeldig account of verkeerde combinatie van gebruikersnaam en wachtwoord. Probeer het nog eens of neem contact op met de applicatiebeheerder van de school.',
-						'Je gebruikersnaam en/of wachtwoord is niet correct.',
-					].indexOf(message) > -1
-				) {
+				if (_.contains([
+					'Ongeldig account of verkeerde combinatie van gebruikersnaam en wachtwoord. Probeer het nog eens of neem contact op met de applicatiebeheerder van de school.',
+					'Je gebruikersnaam en/of wachtwoord is niet correct.',
+				], e.message)) {
 					return false;
 				} else {
-					return new Error(message);
+					return e;
 				}
 			}
-		}
+		},
 	};
 
 	/**
@@ -97,16 +100,12 @@
 		var data = MagisterBinding.storedInfo(userId);
 		if (_.isEmpty(data)) {
 			cache.del(userId);
-			throw new Error("No credentials found.");
+			throw new Error('No credentials found.');
 		} else {
 			var m = cache.get(userId);
 			if (m !== undefined) {
 				return m;
 			}
-
-			// // We invalidate the sessionId after SESSIONID_INVALIDATE_TIME.
-			// var useSessionId = data.lastLogin &&
-			// 	_.now() - data.lastLogin.time.getTime() <= SESSIONID_INVALIDATE_TIME;
 
 			// REVIEW:
 			// Currently not invalidating sessionIds, since it's unknown when
@@ -115,27 +114,31 @@
 
 			var magister = new Magister.Magister({
 				school: {
-					url: data.credentials.schoolurl
+					url: data.credentials.schoolurl,
 				},
 				username: data.credentials.username,
 				password: data.credentials.password,
 				keepLoggedIn: true,
-				sessionId: useSessionId ? data.lastLogin.sessionId : undefined
+				sessionId: useSessionId ? data.lastLogin.sessionId : undefined,
 			});
 
 			if (!useSessionId) { // Update login info
 				MagisterBinding.storedInfo(userId, {
 					lastLogin: {
 						time: new Date(),
-						sessionId: magister._sessionId
-					}
+						sessionId: magister._sessionId,
+					},
 				});
 			}
 
 			magister.ready(function (err) {
 				if (err) {
-					fut.throw(err);
+					fut.throw(new Error(err.message));
 				} else {
+					var school = Schools.findOne({
+						'externalInfo.magister.url': magister.magisterSchool.url,
+					});
+					magister.magisterSchool.id = school && school.externalInfo.magister.id;
 					fut.return(magister);
 				}
 			});
@@ -164,7 +167,7 @@
 	 * @method getGrades
 	 * @param {String} userId The ID of the user to get the grades from.
 	 * @param {Object} [options] Optional map of options.
-	 * @return {StoredGrade[]} The grades as a grade array.
+	 * @return {Grade[]} The grades as a grade array.
 	 */
 	MagisterBinding.getGrades = function (userId, options) {
 		check(userId, String);
@@ -196,7 +199,7 @@
 						fetchedBy: MagisterBinding.name,
 						externalId: magister.magisterSchool.id + '_' + g.id(),
 						weight: g.counts() ? g.weight() : 0,
-						grade: gradeConverter(g.grade())
+						grade: gradeConverter(g.grade()),
 					});
 
 					if (stored) {
@@ -205,7 +208,7 @@
 						var gradeFut = new Future();
 						futs.push(gradeFut);
 
-						g.fillGrade(function (e, r) {
+						g.fillGrade(function (e) {
 							if (e) {
 								gradeFut.throw(e);
 							} else  {
@@ -216,7 +219,7 @@
 								});
 								var classId = classInfo && classInfo.id;
 
-								var storedGrade = new StoredGrade(
+								var grade = new Grade(
 									gradeConverter(g.grade()),
 									weight,
 									classId,
@@ -226,21 +229,21 @@
 								// REVIEW: Better way to check percentages than
 								// this?
 								if (g.type().header() === '%') {
-									storedGrade.gradeType = 'percentage';
+									grade.gradeType = 'percentage';
 								}
-								storedGrade.fetchedBy = MagisterBinding.name;
-								storedGrade.externalId = magister.magisterSchool.id + '_' + g.id();
-								storedGrade.description = g.description().trim();
-								storedGrade.passed = g.passed() || storedGrade.passed;
-								storedGrade.dateFilledIn = g.dateFilledIn();
-								storedGrade.dateTestMade = g.testDate();
-								storedGrade.isEnd = g.type().isEnd();
-								storedGrade.period = new GradePeriod(
+								grade.fetchedBy = MagisterBinding.name;
+								grade.externalId = magister.magisterSchool.id + '_' + g.id();
+								grade.description = g.description().trim();
+								grade.passed = g.passed() || grade.passed;
+								grade.dateFilledIn = g.dateFilledIn();
+								grade.dateTestMade = g.testDate();
+								grade.isEnd = g.type().isEnd();
+								grade.period = new GradePeriod(
 									g.gradePeriod().id,
 									g.gradePeriod().name
 								);
 
-								result[i] = storedGrade;
+								result[i] = grade;
 								gradeFut.return();
 							}
 						});
@@ -290,15 +293,15 @@
 									fetchedBy: MagisterBinding.name,
 									externalInfo: {
 										partId: sgp.id(),
-										parentId: sg.id()
-									}
+										parentId: sg.id(),
+									},
 								});
 
 								if (stored) {
 									result.push(stored);
 								} else {
 									var classId = _.filter(user.classInfos, function (i) {
-										return i.externalInfo.abbreviation === g.classCodes()[0];
+										return i.externalInfo.abbreviation === sg.classCodes()[0];
 									}).id;
 
 									var studyUtil = new StudyUtil(
@@ -313,7 +316,7 @@
 									studyUtil.visibleTo = sgp.to();
 									studyUtil.externalInfo = {
 										partId: sgp.id(),
-										parentId: sg.id()
+										parentId: sg.id(),
 									};
 									// TODO == Find a good universal file class profile and make a magister
 									// file converter for it.
@@ -405,19 +408,27 @@
 						classId
 					);
 
-					calendarItem.usersDone = a.isDone() ? [ Meteor.userId() ] : [];
+					calendarItem.usersDone = a.isDone() ? [ userId ] : [];
 					calendarItem.externalId = magister.magisterSchool.id + '_' + a.id();
 					calendarItem.fetchedBy = MagisterBinding.name;
 					if (!_.isEmpty(a.content())) {
 						calendarItem.content = {
 							type: a.infoTypeString(),
-							description: a.content()
+							description: a.content(),
 						};
 					}
 					calendarItem.scrapped = a.scrapped();
 					calendarItem.fullDay = a.fullDay();
 					calendarItem.schoolHour = a.beginBySchoolHour();
 					calendarItem.location = a.location();
+
+					var teacher = a.teachers()[0];
+					if (teacher != null) {
+						calendarItem.teacher = {
+							name: teacher.fullName(),
+							id: teacher.id(),
+						};
+					}
 
 					var absenceInfo = a.absenceInfo();
 					if (absenceInfo != null) {
@@ -460,7 +471,7 @@
 							person.teacherCode = t.teacherCode();
 							person.fetchedBy = MagisterBinding.name;
 							return person;
-						})(c.teacher())
+						})(c.teacher()),
 					};
 				}));
 			}
@@ -504,13 +515,13 @@
 			url: pictureUrl,
 			encoding: null,
 			headers: {
-				cookie: magister.http._cookie
-			}
+				cookie: magister.http._cookie,
+			},
 		}, function (error, response, body) {
 			pictureFut.return(
 				body ?
-					"data:image/jpg;base64," + body.toString("base64") :
-					""
+					'data:image/jpg;base64,' + body.toString('base64') :
+					''
 			);
 		});
 
@@ -529,16 +540,16 @@
 		return {
 			nameInfo: {
 				firstName: pf.firstName(),
-				lastName: (pf.namePrefix() || '') + ' ' + pf.lastName()
+				lastName: (pf.namePrefix() || '') + ' ' + pf.lastName(),
 			},
 			birthDate: pf.birthDate(),
 			picture: pictureFut.wait(),
 			courseInfo: {
 				year: courseInfo.type.year,
 				schoolVariant: courseInfo.type.schoolVariant != null ? courseInfo.type.schoolVariant.toLowerCase() : undefined,
-				profile: courseInfo.profile
+				profile: courseInfo.profile,
 			},
-			mainGroup: courseInfo.group
+			mainGroup: courseInfo.group,
 		};
 	};
 
@@ -586,5 +597,97 @@
 		return fut.wait();
 	};
 
+	MagisterBinding.getMessages = function (folder, skip, limit, userId) {
+		check(folder, String);
+		check(skip, Number);
+		check(limit, Number);
+		check(userId, String);
+
+		var fut = new Future();
+
+		var magister = getMagisterObject(userId);
+		if (folder === 'inbox') {
+			folder = magister.inbox();
+		} else if (folder === 'outbox') {
+			folder = magister.sentItems();
+		}
+
+		folder.messages({
+			limit: limit,
+			skip: skip,
+		}, function (e, r) {
+			if (e) {
+				fut.throw(e);
+			} else {
+				fut.return(r.map(function (m) {
+					return {
+						_id: m.id(),
+						sendDate: m.sendDate(),
+						body: m._body,
+						sender: m.sender().description(),
+						subject: m.subject(),
+						recipients: _.pluck(m.recipients(), '_description'),
+						read: m.isRead(),
+						attachmentCount: m.attachments().length,
+
+						_fillUrl: m._fillUrl,
+					};
+				}));
+			}
+		});
+
+		return fut.wait();
+	};
+
+	MagisterBinding.fillMessage = function (obj, userId) {
+		check(obj, Object);
+		check(userId, String);
+
+		// TODO: this function doesn't make sense at all.
+		return obj; // tmp until function is fixed.
+
+		var message = _.extend(new Magister.Message(), obj);
+		var fut = new Future();
+
+		message.fillMessage(function (e, r) {
+			if (e) {
+				fut.throw(e);
+			} else {
+				console.log(r);
+				fut.return({
+					_id: m.id(),
+					sendDate: r.sendDate(),
+					summary: r.body(),
+					sender: r.sender().description(),
+					subject: r.subject(),
+					recipients: _.pluck(r.recipients(), '_description'),
+					read: r.isRead(),
+
+					_fillUrl: r._fillUrl,
+				});
+			}
+		});
+
+		return fut.wait();
+	};
+
+	MagisterBinding.composeMessage = function (subject, body, recipients, userId) {
+		check(subject, String);
+		check(body, String);
+		check(recipients, [String]);
+		check(userId, String);
+
+		var fut = new Future();
+		getMagisterObject(userId).composeAndSendMessage(subject, body, recipients, function (e, r) {
+			if (e) {
+				fut.throw(e);
+			} else {
+				fut.return();
+			}
+		});
+
+		return fut.wait();
+	};
+
 	ExternalServicesConnector.pushExternalService(MagisterBinding);
-})(Magister, Npm.require("fibers/future"), Npm.require("request"), Npm.require("lru-cache"));
+})(Magister, Npm.require('fibers/future'), Npm.require('request'), Npm.require('lru-cache'));

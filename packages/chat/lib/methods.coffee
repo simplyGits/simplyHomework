@@ -4,8 +4,12 @@ Meteor.methods
 	# @param {String} userId
 	# @return {String} The ID of the newely created ChatRoom.
 	###
-	createPrivateChatRoom: (userId) -> # TODO: See why this can create multiple chatrooms between the same users.
+	createPrivateChatRoom: (userId) ->
 		check userId, String
+
+		if userId is @userId
+			throw new Meteor.Error 'same-person', "Can't create a chat with yourself."
+
 		if (val = ChatRooms.findOne users: [@userId, userId])?
 			val._id
 		else
@@ -30,8 +34,12 @@ Meteor.methods
 		if ChatRooms.find(_id: chatRoomId, users: @userId).count() is 0
 			throw new Meteor.Error 'not-in-room'
 
+		message = new ChatMessage content, @userId, chatRoomId
+		if @isSimulation
+			message.pending = yes
+
 		ChatRooms.update chatRoomId, $set: lastMessageTime: new Date
-		ChatMessages.insert new ChatMessage content, @userId, chatRoomId
+		ChatMessages.insert message
 
 	###*
 	# @method updateChatMessage
@@ -54,10 +62,14 @@ Meteor.methods
 		else if old.content is content
 			throw new Meteor.Error 'same-content'
 
+		if @isSimulation
+			pending = yes
+
 		ChatMessages.update chatMessageId,
 			$set:
 				content: content
 				changedOn: new Date
+				pending: pending
 		undefined
 
 	###*

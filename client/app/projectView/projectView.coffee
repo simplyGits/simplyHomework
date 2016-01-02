@@ -177,7 +177,7 @@ Template.projectView.events
 				previous: 'fa fa-chevron-left'
 				next: 'fa fa-chevron-right'
 
-	"click #chatButton": -> ChatManager.openProjectChat this
+	"click #chatButton": -> ChatManager.openProjectChat @_id
 
 Template.changeProjectModal.helpers
 	classes: -> classes()
