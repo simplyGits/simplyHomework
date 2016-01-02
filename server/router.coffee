@@ -1,7 +1,3 @@
-WebApp.connectHandlers.use '/privacy', (req, res) ->
-	res.writeHead 301, 'Location': '/privacy.html'
-	res.end()
-
 # oldbrowser
 WebApp.connectHandlers.use (req, res, next) ->
 	browser = WebAppInternals.identifyBrowser req.headers['user-agent']

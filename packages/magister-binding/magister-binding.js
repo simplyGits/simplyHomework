@@ -3,6 +3,9 @@
  * @author simply
  * @module magister-binding
  */
+ /* global Magister, ExternalServicesConnector, Schools, gradeConverter, Grades,
+  * Grade, StudyUtil, StudyUtils, GradePeriod, ExternalPerson, CalendarItem,
+  * Assignment */
 
 // One heck of a binding this is.
 

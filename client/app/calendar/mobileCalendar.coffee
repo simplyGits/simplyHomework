@@ -93,7 +93,7 @@ Template.mobileCalendar.onRendered ->
 		color: null
 
 	loading = @loading
-	calendar = new SwipeView '.mobileCalendar', hastyPageFlip: yes
+	@calendar = calendar = new SwipeView '.mobileCalendar', hastyPageFlip: yes
 	getDelta = (index) ->
 		[
 			[0, 1, -1]
