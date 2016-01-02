@@ -169,6 +169,7 @@ Template.chatSidebar.events
 		ReactiveLocalStorage 'chatNotify', not ReactiveLocalStorage 'chatNotify'
 
 	'click .chatSidebarItem': ->
+		closeSidebar?()
 		ChatManager.openChat @_id
 
 Template.chatSidebar.helpers
