@@ -72,7 +72,6 @@ Template.messages.onCreated ->
 		Meteor.call 'getMessages', folder, amount.get(), (e, r) ->
 			loadingNext.set no
 			isLoading.set no
-			console.log 'getmessages result', e, r
 
 			if e?.error is 'magister-only'
 				hasMagister.set no

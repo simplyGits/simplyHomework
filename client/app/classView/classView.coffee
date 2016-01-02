@@ -379,7 +379,6 @@ Template.addProjectModal.onRendered ->
 Template.gradesModal.helpers
 	gradeGroups: ->
 		arr = getGrades().fetch()
-		console.log arr
 		_(arr)
 			.reject (g) -> g.isEnd
 			.uniq (g) -> g.period.id

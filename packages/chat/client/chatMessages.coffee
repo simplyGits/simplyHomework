@@ -24,7 +24,6 @@ loadNextPage = ->
 
 throttledMarkRead = _.throttle ((template) ->
 	if template.atBottom()
-		console.log 'marking all messages as read, chatroom:', template.data
 		template.data.markRead()
 ), 1500,
 	leading: yes
