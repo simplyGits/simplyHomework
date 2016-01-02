@@ -2,12 +2,12 @@
 {{#if Template.subscriptionsReady}}
 	{{#with chat}}
 		<div class="mobileChatWindow {{status}}" id="{{_id}}">
-			<div class="header">
-				{{#if sidebarIcon}}
+			{{#if sidebarIcon}}
+				<div class="header">
 					<img class="profilePicture" src="{{sidebarIcon}}" width="40">
-				{{/if}}
-				<div class="name">{{friendlyName}}</div>
-			</div>
+					<div class="name">{{friendlyName}}</div>
+				</div>
+			{{/if}}
 
 			{{> chatMessages}}
 
