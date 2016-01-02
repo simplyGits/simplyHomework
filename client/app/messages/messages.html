@@ -1,9 +1,30 @@
 <template name="messages">
-	<div id="settings">
+	<div id="messages">
 		{{> messages_sidebar}}
-		<div class="page">
-			"Als de berichtje ook nog eens meer dan een button zouden zijn" - Joris Lith
-		</div>
+		{{#if composing}}
+			<div class="page">
+				{{> message_compose}}
+			</div>
+		{{/if}}
+		{{#if folder}}
+			<div class="page">
+				{{#if hasMagister}}
+					{{#if isLoading}}
+						{{> loading}}
+					{{else}}
+						{{#with currentMessage}}
+							{{> message_current_message}}
+						{{else}}
+							{{#with folder}}
+								{{> messages_messageList}}
+							{{/with}}
+						{{/with}}
+					{{/if}}
+				{{else}}
+					Berichten worden momenteel alleen nog ondersteund met Magister.
+				{{/if}}
+			</div>
+		{{/if}}
 	</div>
 </template>
 
@@ -11,18 +32,97 @@
 	<div id="messagesSidebar">
 		<div class="header">Berichten</div>
 		<div class="folderList">
+			{{! TODO make it possible to add custom folders. }}
 			{{#each folders}}
 				{{> messages_sidebar_folder}}
 			{{/each}}
-			<div class="item">
-				Postvak in
+
+			<div id="compose">
+				Bericht opstellen
 			</div>
 		</div>
 	</div>
 </template>
 
 <template name="messages_sidebar_folder">
-	<div class="item">
-		kaas
+	<a href="{{pathFor 'messages' folder=name}}">
+		<div class="item {{current}}">
+			{{friendlyName}}
+		</div>
+	</a>
+</template>
+
+<template name="messages_messageList">
+	<div class="header">
+		<div id="name">{{friendlyName}}</div>
+		<span id="closeButton">&times;</span>
+	</div>
+	<div id="messageList">
+		{{#if messages}}
+			{{#each messages}}
+				{{> messages_message_row}}
+			{{/each}}
+
+			{{#if loadingNext}}
+				<div class="loadMore loading">
+					Berichten aan het laden...
+				</div>
+			{{else}}
+				<div class="loadMore">
+					Scroll naar onder om meer berichten te laden.
+				</div>
+			{{/if}}
+		{{else}}
+			Geen berichten gevonden
+		{{/if}}
+	</div>
+</template>
+
+<template name="messages_message_row">
+	<div class="message">
+		<header>
+			{{subject}}
+		</header>
+		<div class="sender">
+			<span class="dim">Verzender:</span> {{sender}}
+		</div>
+		<div class="recipients">
+			<span class="dim">Ontvangers:</span> {{__recipients}}
+		</div>
+	</div>
+</template>
+
+<template name="message_current_message">
+	<div class="header">
+		<div id="name">{{subject}}</div>
+		<span id="closeButton" class="desktop-too">&times;</span>
+	</div>
+	<div id="full_message">
+		<div class="sender">
+			<span class="dim">Verzender:</span> {{sender}}
+		</div>
+		<div class="recipients">
+			<span class="dim">Ontvangers:</span> {{recipients}}
+		</div>
+		<div class="sendDate">
+			Verzonden om: {{dateFormat 'dddd D MMMM YYYY HH:mm' sendDate}}
+		</div>
+		{{#if attachmentCount}}
+			<div class="attachments">
+				{{attachmentInfo}}
+			</div>
+		{{/if}}
+		<div class="body">
+			{{{body}}}
+		</div>
+	</div>
+</template>
+
+<template name="message_compose">
+	<div id="compose_message">
+		<button id="send">Verzenden <i class="fa fa-angle-double-right"></i></button>
+		<input type="text" id="subject" placeholder="Onderwerp" />
+		<input type="text" id="recipients" placeholder="Ontvangers, gescheiden door een ';'" />
+		<textarea id="message" placeholder="Bericht inhoud"></textarea>
 	</div>
 </template>

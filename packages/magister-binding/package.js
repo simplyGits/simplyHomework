@@ -16,7 +16,7 @@ Package.onUse(function(api) {
 
 	api.use([
 		"stevezhu:lodash",
-		"simply:magisterjs@1.14.3",
+		"simply:magisterjs@1.15.0",
 		"simply:external-services-connector",
 		"ejson",
 	], "server");
