@@ -15,3 +15,14 @@ underlineInput(color = lightgray, width = 1px)
 	background-color: transparent
 	outline: none
 	border-bottom-width: width
+
+// Block mixin for setting input placeholder options.
+placeholder()
+	input::-webkit-input-placeholder
+		{block}
+	input:-moz-placeholder
+		{block}
+	input::-moz-placeholder
+		{block}
+	input:-ms-input-placeholder
+		{block}

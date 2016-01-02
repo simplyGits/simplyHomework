@@ -422,6 +422,14 @@
 					calendarItem.schoolHour = a.beginBySchoolHour();
 					calendarItem.location = a.location();
 
+					var teacher = a.teachers()[0];
+					if (teacher != null) {
+						calendarItem.teacher = {
+							name: teacher.fullName(),
+							id: teacher.id(),
+						};
+					}
+
 					var absenceInfo = a.absenceInfo();
 					if (absenceInfo != null) {
 						calendarItem.absenceInfo = {

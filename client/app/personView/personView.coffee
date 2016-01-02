@@ -128,7 +128,7 @@ Template.reportUserModal.events
 		Meteor.call 'reportUser', @_id, reportGrounds, (e, r) ->
 			if e?
 				message = switch e.error
-					when 'rate-limit' then "Je hebt de afgelopen tijd te veel mensen gerapporteerd, probeer het later opnieuw."
+					when 'rate-limit' then 'Je hebt de afgelopen tijd téveel mensen gerapporteerd, probeer het later opnieuw.'
 					when 'already-reported' then "Je hebt #{name} al gerapporteerd om dezelfde reden(en)."
 					else 'Onbekende fout tijdens het rapporteren'
 

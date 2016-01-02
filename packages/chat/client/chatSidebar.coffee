@@ -8,15 +8,18 @@ currentSearchTerm = new ReactiveVar ''
 # @return {ChatRoom}
 ###
 @chatRoomTransform = (room) ->
-	switch room.type
-		when 'private'
-			user = ->
-				Meteor.users.findOne
-					_id:
-						$in: room.users
-						$ne: Meteor.userId()
-		when 'project'
-			project = -> Projects.findOne room.projectId
+	user = ->
+		if room.type is 'private'
+			Meteor.users.findOne
+				_id:
+					$in: room.users
+					$ne: Meteor.userId()
+	project = ->
+		if room.type is 'project'
+			Projects.findOne room.projectId
+	_class = ->
+		if room.type is 'class' and room.classInfo.ids.length is 1
+			Classes.findOne _id: $in: room.classInfo.ids
 
 	_.extend room,
 		user: user
@@ -46,7 +49,7 @@ currentSearchTerm = new ReactiveVar ''
 				when 'private'
 					u = user()
 					if u? then "#{u.profile.firstName} #{u.profile.lastName}" else ''
-				when 'group'
+				when 'group', 'class'
 					room.subject ? ''
 
 				else ''
@@ -72,14 +75,12 @@ class @ChatManager
 	###*
 	# Opens the chat for with given user.
 	# @method openPrivateChat
-	# @param userId {ObjectID|User} The user or the ID of an user to open the chat of.
+	# @param userId {User} The user to open the chat of.
 	###
 	@openPrivateChat: (userId) ->
-		userId = userId._id if userId._id?
-
 		room = ChatRooms.findOne
+			type: 'private'
 			users: [ userId, Meteor.userId() ]
-			projectId: $exists: no
 
 		if room?
 			@openChat room._id
@@ -90,11 +91,13 @@ class @ChatManager
 	###*
 	# Opens the chat for with given project.
 	# @method openProjectChat
-	# @param projectId {ObjectID|Project} The project or the ID of a project to open the chat of.
+	# @param projectId {Project} The project to open the chat of.
 	###
 	@openProjectChat: (projectId) ->
-		projectId = projectId._id if projectId._id?
 		@openChat ChatRooms.findOne({ projectId })?._id
+
+	@openClassChat: (classId) ->
+		@openChat ChatRooms.findOne({ 'classInfo.ids': classId })?._id
 
 	###*
 	# Opens the chat for the given ChatRoom id

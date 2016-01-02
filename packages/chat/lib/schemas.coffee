@@ -32,7 +32,7 @@ if Package['aldeed:collection2']?
 	ChatRooms.attachSchema
 		type:
 			type: String
-			allowedValues: ['private', 'project', 'group']
+			allowedValues: ['private', 'project', 'group', 'class']
 		users:
 			type: [String]
 			index: 1
@@ -50,3 +50,7 @@ if Package['aldeed:collection2']?
 		events:
 			type: [Object]
 			blackbox: yes
+		classInfo:
+			type: Object
+			blackbox: yes
+			optional: yes
