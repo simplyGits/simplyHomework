@@ -34,32 +34,40 @@
 </template>
 
 <template name="personStats">
-	Aantal tussenuren in één week: 500000<br>
-	Je behoort tot de top 3% van simplyHomework gebruikers in 5 vwo
+	{{#if stats}}
+		<div class="itemContainer" id="personStats">
+			<header>Feitjes</header>
+			<div>
+				{{#each stats}}
+					{{this}}
+				{{/each}}
+			</div>
+		</div>
+	{{/if}}
 </template>
 
 <template name="personSharedHours">
-{{#if days}}
-<div class="itemContainer" id="personSharedHours">
-	<header>Lessen met {{profile.firstName}} volgende week</header>
-	<div>
-		<ul>
-			{{#each days}}
-				{{name}}:
-				<li>
-					<ul>
-						{{#each hours}}
-							<a href="{{pathFor 'classView' id=class._id}}">
-								<li><b>{{schoolHour}}</b>: {{class.name}}</li>
-							</a>
-						{{/each}}
-					</ul>
-				</li>
-			{{/each}}
-		</ul>
-	</div>
-</div>
-{{/if}}
+	{{#if days}}
+		<div class="itemContainer" id="personSharedHours">
+			<header>Lessen met {{profile.firstName}} volgende week</header>
+			<div>
+				<ul>
+					{{#each days}}
+						{{name}}:
+						<li>
+							<ul>
+								{{#each hours}}
+									<a href="{{pathFor 'classView' id=class._id}}">
+										<li><b>{{schoolHour}}</b>: {{class.name}}</li>
+									</a>
+								{{/each}}
+							</ul>
+						</li>
+					{{/each}}
+				</ul>
+			</div>
+		</div>
+	{{/if}}
 </template>
 
 <template name="reportUserModal">

@@ -37,9 +37,11 @@
 				{{> messages_sidebar_folder}}
 			{{/each}}
 
-			<div id="compose">
-				Bericht opstellen
-			</div>
+			{{#if hasMagister}}
+				<div id="compose">
+					Bericht opstellen
+				</div>
+			{{/if}}
 		</div>
 	</div>
 </template>
