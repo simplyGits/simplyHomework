@@ -34,7 +34,7 @@
 
 				endPrev = item.endDate
 
-	Debug.logThrough res
+	res
 
 ###*
 # Gets persons from the external services matching the given `query` and `type`.
