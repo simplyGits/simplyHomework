@@ -20,6 +20,16 @@ FlowRouter.triggers.exit [
 		$('.tooltip').tooltip 'destroy'
 ]
 
+FlowRouter.route '/',
+	name: 'root'
+	triggersEnter: [
+		(context, redirect) ->
+			if Meteor.userId()? or Meteor.loggingIn()
+				redirect 'overview'
+			else
+				redirect 'signup'
+	]
+
 FlowRouter.route '/login',
 	name: 'login'
 	triggersEnter: [
