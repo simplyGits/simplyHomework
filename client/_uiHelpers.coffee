@@ -15,7 +15,7 @@
       ''----________----''
 
 Art by Tom Smeding
-http://tomsmeding.nl/
+http://tomsmeding.com/
 ###
 
 @DialogButtons =
