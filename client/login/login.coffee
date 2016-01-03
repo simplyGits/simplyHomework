@@ -42,6 +42,10 @@ Template.signup.events
 			setFieldError '#passwordRepeatGroup', 'Wachtwoorden komen niet overéén'
 			error = yes
 
+		unless $('#allowGroup input').is ':checked'
+			setFieldError '#allowGroup', 'Je moet met de voorwaarden akkoord gaan.'
+			error = yes
+
 		unless error
 			Accounts.createUser {
 				password: $passwordInput.val()
