@@ -111,6 +111,7 @@ Template.projectView.helpers
 
 Template.projectView.events
 	"click #addFileIcon": ->
+		# TODO: clean this mess up.
 		onPickerResult (r) =>
 			return unless r.action is "picked"
 			cb = =>
@@ -152,7 +153,6 @@ Template.projectView.events
 						notify "Bestand kan niet worden toegevoegd", "error"
 						Kadira.trackError "Drive-client", res.error.message, stacks: EJSON.stringify res
 					else
-						gapi.client.drive.files.delete(fileId: r.docs[0].id).execute()
 						r.docs[0] = res
 						setPermissions()
 
