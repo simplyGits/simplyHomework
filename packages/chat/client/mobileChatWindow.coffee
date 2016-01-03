@@ -43,7 +43,7 @@ Template.mobileChatWindow.onCreated ->
 		if room?
 			@subscribe 'status', room.users
 			setPageOptions
-				title: "#{room.friendlyName()} chat"
+				title: "Chat: #{room.friendlyName()}"
 				color: null
 		else
 			notFound()
