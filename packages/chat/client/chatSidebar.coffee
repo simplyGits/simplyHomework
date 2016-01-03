@@ -1,4 +1,4 @@
-NOTIFICATION_SOUND_SRC = '/packages/chat/audio/chatNotification.ogg'
+NOTIFICATION_SOUND_SRC = 'https://www.simplyhomework.nl/static/audio/chatNotification.ogg'
 
 currentSearchTerm = new ReactiveVar ''
 
