@@ -38,9 +38,11 @@
 		<div class="itemContainer" id="personStats">
 			<header>Feitjes</header>
 			<div>
-				{{#each stats}}
-					{{this}}
-				{{/each}}
+				<ul>
+					{{#each stats}}
+						<li>{{this}}</li>
+					{{/each}}
+				</ul>
 			</div>
 		</div>
 	{{/if}}
