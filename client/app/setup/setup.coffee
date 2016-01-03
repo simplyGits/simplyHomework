@@ -82,7 +82,7 @@ setupItems = [
 				)
 				return
 
-			Meteor.users.update Meteor.userId(), $push: setupProgress: 'externalServices'
+			Meteor.users.update Meteor.userId(), $addToSet: setupProgress: 'externalServices'
 			cb yes
 	}
 
@@ -119,7 +119,7 @@ setupItems = [
 			return if any
 
 			Meteor.users.update Meteor.userId(), {
-				$push: setupProgress: 'extractInfo'
+				$addToSet: setupProgress: 'extractInfo'
 				$set:
 					'profile.schoolId': (
 						schoolId ? Schools.findOne({
@@ -170,7 +170,7 @@ setupItems = [
 
 			userId = Meteor.userId()
 			Meteor.call 'getExternalClasses', (e, r) ->
-				Meteor.users.update userId, $push: setupProgress: 'getExternalClasses'
+				Meteor.users.update userId, $addToSet: setupProgress: 'getExternalClasses'
 
 				if e? or _.isEmpty r
 					console.log 'if e? or _.isEmpty r', e
@@ -192,7 +192,7 @@ setupItems = [
 		name: 'privacy'
 		async: no
 		onDone: ->
-			Meteor.users.update Meteor.userId(), $push: setupProgress: 'privacy'
+			Meteor.users.update Meteor.userId(), $addToSet: setupProgress: 'privacy'
 	}
 
 	{
