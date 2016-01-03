@@ -1,8 +1,8 @@
 ###*
-# @method tasks
+# @method getTasks
 # @return {Object[]}
 ###
-tasks = ->
+getTasks = ->
 	# TODO: Also mix homework for tommorow and homework for days where the day
 	# before has no time. Unless today has no time.
 
@@ -45,13 +45,13 @@ NoticeManager.provide 'tasks', ->
 	dateTracker.depend()
 	@subscribe 'externalCalendarItems', Date.today(), Date.today().addDays 4
 
-	if tasks().length > 0
+	if getTasks().length > 0
 		template: 'tasks'
 		header: 'Nu te doen'
 		priority: 1
 
 Template.tasks.helpers
-	tasks: -> tasks()
+	tasks: -> getTasks()
 
 Template.taskRow.events
 	'change': (event) ->
