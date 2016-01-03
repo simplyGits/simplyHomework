@@ -7,6 +7,12 @@
 //div.head2
 //	col(4/12)
 
+.projectContainer
+	hr
+		margin: 0
+		margin-left: -25px
+		margin-right: -25px
+
 div.projectInfoContainer
 	padding-top: 5px
 	padding-bottom: 5px
@@ -98,6 +104,9 @@ span.projectTitle
 	overflow-x: hidden
 	text-overflow: ellipsis
 
+div.projectViewItemContainer
+	height: calc(100vh - 320px)
+
 div.projectViewItemContainer > div
 	padding: 0
 	font-size: 35px
@@ -187,7 +196,6 @@ div.projectHeader:hover span#changeProjectIcon
 	span#changeProjectIcon
 		opacity: 1 !important
 
-+mobile()
 	div.projectHeader
 		stack()
 		text-align: center

@@ -15,9 +15,7 @@ Meteor.startup ->
 			ChatRooms.insert chatRoom
 
 		changed: (newDoc, oldDoc) ->
-			if newDoc.participants.length is 0
-				Projects.remove newDoc._id
-			else
+			if newDoc.participants.length > 0
 				chatRoom = ChatRooms.findOne projectId: newDoc._id
 
 				newPersons = _.difference newDoc.participants, chatRoom.users

@@ -1,18 +1,13 @@
 <template name="projectView">
 {{#with project}}
-	<div class="container-fluid">
+	<div class="container-fluid projectContainer">
 		<div class="row">
 			<div class="robotoHeader overviewHeader head1 projectHeader">
 				{{name}}
 				<span id="changeProjectIcon" class="fa fa-pencil"></span>
 			</div>
-			<!--
-			{{#if showRightHeader}}
-				<div class="robotoHeader overviewHeader head2 projectHeader" style="text-align: right">{{participants.length}} <span class="robotoThin" style="margin-left: 5px">personen</span></div>
-			{{/if}}
-			-->
 		</div>
-		<div class="divider"></div>
+		<hr>
 
 		<div class="projectInfoContainer">
 			<div class="projectInfoSubContainer">
@@ -39,7 +34,7 @@
 
 		<div class="row">
 			<div class="col-sm-6">
-				<div class="itemContainer projectViewItemContainer" style="height: calc(100vh - {{heightOffset}}px)">
+				<div class="itemContainer projectViewItemContainer">
 					<header>
 						<span class="fa fa-plus" id="addFileIcon"></span>
 						Bestanden
@@ -53,7 +48,7 @@
 			</div>
 
 			<div class="col-sm-6">
-				<div class="itemContainer projectViewItemContainer" style="height: calc(100vh - {{heightOffset}}px)">
+				<div class="itemContainer projectViewItemContainer">
 					<header>
 						<span class="fa fa-plus" id="addPersonIcon"></span>
 						Mensen

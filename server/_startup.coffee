@@ -29,6 +29,11 @@ Meteor.startup ->
 
 		doc
 
+	Projects.find({}).observe
+		changed: (newDoc, oldDoc) ->
+			if newDoc.participants.length is 0
+				Projects.remove newDoc._id
+
 	Meteor.users.find().observe
 		changed: (newDoc, old) ->
 			passChanged = old.services.password.bcrypt isnt newDoc.services.password.bcrypt
