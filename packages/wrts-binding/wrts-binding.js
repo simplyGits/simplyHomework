@@ -4,6 +4,7 @@
  * @module wrts-binding
  */
 
+/* global WrtsBinding:true */
 'use strict';
 
 var Future = Npm.require('fibers/future');

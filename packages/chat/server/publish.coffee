@@ -1,6 +1,9 @@
 # Let's hope that this package is performant.
 Meteor.publishComposite 'basicChatInfo',
-	find: -> ChatRooms.find users: @userId
+	find: ->
+		ChatRooms.find {
+			users: @userId
+		}, limit: 50 # REVIEW: is this a good value?
 	children: [{
 		find: (room) ->
 			ChatMessages.find {
@@ -12,11 +15,14 @@ Meteor.publishComposite 'basicChatInfo',
 	}, {
 		find: (room) ->
 			Meteor.users.find {
-				_id: $in: _.reject room.users, @userId
+				_id:
+					$in: room.users
+					$ne: @userId
 			}, fields:
-				'profile.pictureInfo': 1
-				'profile.firstName': 1
-				'profile.lastName': 1
+				# HACK: We publish too much here to fix an issue where when switching to
+				# personView from chat wouldn't load all the new data (mergebox
+				# problem?)
+				profile: 1
 				'status.online': 1
 				'status.idle': 1
 	}, {
@@ -34,8 +40,6 @@ Meteor.publish 'chatMessages', (chatRoomId, limit) ->
 	unless @userId
 		@ready()
 		return undefined
-
-	console.log @userId, chatRoomId, limit
 
 	room = ChatRooms.findOne
 		_id: chatRoomId

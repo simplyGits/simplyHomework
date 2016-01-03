@@ -23,7 +23,7 @@ http://tomsmeding.nl/
 	OkCancel: 1
 
 @alertModal = (title, body, buttonType = 0, labels = { main: 'oké', second: 'annuleren' }, styles = { main: 'btn-default', second: 'btn-default' }, callbacks = { main: null, second: null }, exitButton = yes) ->
-	labels = _.extend { main: 'oké', second: 'annuleren' }, labels
+	labels = _.extend { main: 'Oké', second: 'Annuleren' }, labels
 	styles = _.extend { main: 'btn-default', second: 'btn-default' }, styles
 
 	bootbox.hideAll()
@@ -78,7 +78,7 @@ http://tomsmeding.nl/
 		title
 		text
 		type
-		confirmButtonText: confirmButtonText ? 'oké'
+		confirmButtonText: confirmButtonText ? 'Oké'
 		cancelButtonText
 		allowOutsideClick: cancelButtonText?
 		showCancelButton: cancelButtonText?
@@ -137,6 +137,7 @@ http://tomsmeding.nl/
 	audio.src = "http://www.ispeech.org/p/generic/getaudio?text=#{text}%2C&voice=eurdutchfemale&speed=0&action=convert"
 	audio.play()
 
+# TODO: Give this its own package
 ###*
 # The manager for notificafions.
 # @class NotificationsManager
@@ -470,7 +471,7 @@ class @NotificationsManager
 	$modal = $ "##{name}"
 	$modal
 		.modal options
-		.on 'hidden.bs.modal', ->
+		.one 'hidden.bs.modal', ->
 			Blaze.remove view
 			options?.onHide?()
 
@@ -480,14 +481,14 @@ class @NotificationsManager
 	-> $modal.modal 'hide'
 
 Meteor.startup ->
-	Session.setDefault "documentPageTitle", "simplyHomework"
-	Session.setDefault "pageColor", "lightgray"
-	Session.setDefault "allowNotifications", no
+	Session.setDefault 'documentPageTitle', 'simplyHomework'
+	Session.setDefault 'pageColor', 'lightgray'
+	Session.setDefault 'allowNotifications', no
 
-	colortag = $ "meta[name='theme-color']"
+	$colortag = $ 'meta[name="theme-color"]'
 	Tracker.autorun ->
-		document.title = Session.get "documentPageTitle"
-		colortag.attr "content", Session.get("pageColor") ? "#32A8CE"
+		document.title = Session.get 'documentPageTitle'
+		$colortag.attr 'content', Session.get('pageColor') ? '#32A8CE'
 
 	BlazeLayout.setRoot 'body'
 
@@ -497,7 +498,7 @@ Meteor.startup ->
 			switch Notification.permission
 				when 'default'
 					notice = setBigNotice
-						content: 'Wij hebben je toestemming nodig om bureaubladmeldingen weer te kunnen geven.'
+						content: 'We hebben je toestemming nodig om bureaubladmeldingen weer te kunnen geven.'
 						onClick: ->
 							Notification.requestPermission (result) ->
 								notice?.hide()
@@ -509,6 +510,7 @@ Meteor.startup ->
 	Template.registerHelper 'picture', (user, size) -> picture user, if _.isNumber(size) then size else undefined
 	Template.registerHelper 'has', has
 	Template.registerHelper 'toUpperCase', (str) -> str.toUpperCase()
+	Template.registerHelper 'cap', (str) -> Helpers.cap str
 
 	Template.registerHelper 'isPhone', -> Session.equals 'deviceType', 'phone'
 	Template.registerHelper 'isTablet', -> Session.equals 'deviceType', 'tablet'
@@ -517,11 +519,15 @@ Meteor.startup ->
 	Template.registerHelper 'currentYear', -> new Date().getFullYear()
 	Template.registerHelper 'dateFormat', (format, date) -> moment(date).format format
 	Template.registerHelper 'time', (date) -> moment(date).format 'HH:mm'
+	Template.registerHelper 'numberFormat', (number) ->
+		switch number
+			when 0 then 'geen'
+			else number
 
 	Template.registerHelper 'textColor', (color, fallback) ->
 		color ?= fallback
 		return '' unless color?
-		if chroma(color).luminance() > .45 then '#000' else '#fff'
+		if chroma(color).luminance() > .45 then 'black' else 'white'
 
 	Template.registerHelper 'pathFor', (path, view) ->
 		unless path?
@@ -541,7 +547,6 @@ Meteor.startup ->
 		hashBang = view.hash.hash ? ''
 		FlowRouter.path(path, view.hash, query) + hashBang
 
-	# TODO: Remove the console.infos.
 	disconnectedNotice = null
 	Tracker.autorun ->
 		status = Meteor.status()

@@ -4,3 +4,6 @@
 [submodule "packages/viewport-units-buggyfill/dist"]
 	path = packages/viewport-units-buggyfill/dist
 	url = git@github.com:rodneyrehm/viewport-units-buggyfill.git
+[submodule "packages/typeahead/typeahead"]
+	path = packages/typeahead/typeahead
+	url = git@github.com:corejavascript/typeahead.js.git

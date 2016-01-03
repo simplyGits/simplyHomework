@@ -1,3 +1,4 @@
+/* global Inject */
 'use strict';
 
 if (!Package.appcache) {

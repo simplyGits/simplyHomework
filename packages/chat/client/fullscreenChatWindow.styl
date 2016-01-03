@@ -37,7 +37,7 @@ div#fullscreenChatWindow
 	div#header
 		position: relative
 		height: 75px
-		margin-bottom: 25px
+		margin-bottom: 10px
 		cursor: pointer
 
 		margin-left: paddingSides
@@ -62,7 +62,7 @@ div#fullscreenChatWindow
 			font-size: 30px
 
 	div#chatMessages
-		height: calc(100% - 175px)
+		height: calc(100% - 155px)
 		overflow: hidden
 		overflow-y: scroll
 
@@ -92,6 +92,13 @@ div#fullscreenChatWindow
 					float: right
 					margin-left: 5px
 					margin-right: 0
+
+				.readBy
+					absolute: left -20px top 50%
+					transform: translateY(-50%)
+
+					img
+						pointer-events: all
 
 			aside:hover
 				opacity: .8
@@ -128,6 +135,7 @@ div#fullscreenChatWindow
 
 				.readBy
 					absolute: right -20px top 50%
+					left: initial
 					transform: translateY(-50%)
 
 					img
@@ -156,6 +164,9 @@ div#fullscreenChatWindow
 			text-align: center
 			border: 1px lightgray solid
 			margin-bottom: 10px
+
+		div.loadMore:not(.loading)
+			cursor: pointer
 
 	div#footer
 		position: relative
@@ -211,6 +222,11 @@ div#fullscreenChatWindow
 
 		button:hover ~ input
 			padding-right: 130px
+
+	div#footer.editing
+		border-color: #848484
+		button
+			border-color: #848484
 
 div.fullscreenChatWindow.fadeOut
 	opacity: 0

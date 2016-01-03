@@ -12,6 +12,11 @@ class @School
 	# @param [url] {String} The URL of the school.
 	###
 	constructor: (@name, @url) ->
+		###*
+		# @property externalInfo
+		# @type Object
+		# @default {}
+		###
 		@externalInfo = {}
 
 	###*

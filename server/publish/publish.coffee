@@ -3,7 +3,7 @@ Meteor.publish 'usersData', (ids) ->
 	userId = @userId
 	# `if ids?` is needed to not create an array when ids is undefined, which is
 	# used to get every person.
-	ids = _.reject ids, userId if ids?
+	ids = _.without ids, userId if ids?
 	schoolId = Meteor.users.findOne(userId).profile.schoolId
 
 	# We don't have to handle shit if we are only asked for the current user, no
@@ -59,7 +59,6 @@ Meteor.publish null, ->
 			events: 1
 			gradeNotificationDismissTime: 1
 			magisterCredentials: 1
-			plannerPrefs: 1
 			premiumInfo: 1
 			settings: 1
 			profile: 1
@@ -70,9 +69,13 @@ Meteor.publish null, ->
 		Schools.find { _id: user.profile.schoolId }, fields:
 			externalInfo: 0
 
-		Projects.find { participants: userId }, fields:
+		Projects.find {
+			participants: userId
+			finished: no
+		}, fields:
 			name: 1
 			magisterId: 1
+			finished: 1
 			classId: 1
 			deadline: 1
 			participants: 1
@@ -116,26 +119,52 @@ Meteor.publish 'classes', (options) ->
 		else { _id: $in: _.pluck nonhidden, 'id' }
 	)
 
-Meteor.publish 'classInfo', (classId) ->
+Meteor.publishComposite 'classInfo', (classId) ->
 	check classId, String
 	unless @userId? and classId
 		@ready()
 		return undefined
 
-	[
-		Classes.find _id: classId
-		CalendarItems.find {
-			userIds: @userId
-			classId: classId
-			startDate: $gt: new Date
-			scrapped: no
-		}, {
-			sort: startDate: 1
-			limit: 1
-		}
-	]
+	find: -> Classes.find classId
+	children: [{
+		find: (c) ->
+			# OPTIMIZE
+			CalendarItems.find {
+				userIds: @userId
+				classId: classId
+				startDate: $gt: Date.today()
+				endDate: $lt: Date.today().addDays 7
 
-# TODO: revise this publishment
+				# TODO: If we change it back to 'uur/week' in classView.html this line
+				# should be removed.
+				scrapped: no
+			}, {
+				fields:
+					_id: 1
+					classId: 1
+					start: 1
+					endDate: 1
+		}
+	}, {
+		find: (c) ->
+			ChatRooms.find
+				type: 'class'
+				'classInfo.ids': c._id
+		children: [{
+			find: (room) ->
+				ChatMessages.find {
+					chatRoomId: room._id
+				}, {
+					limit: 1
+					sort:
+						time: -1
+				}
+		}, {
+			find: (room) ->
+				Meteor.users.find _id: $in: room.users
+		}]
+	}]
+
 Meteor.publish 'schools', (externalId) ->
 	check externalId, Match.Any
 
@@ -150,7 +179,7 @@ Meteor.publishComposite 'project', (id) ->
 	check id, Mongo.ObjectID
 	find: -> Projects.find _id: id, participants: @userId
 	children: [{
-		find: (project) -> ChatRooms.findOne projectId: id
+		find: (project) -> ChatRooms.find projectId: project._id
 		children: [{
 			find: (room) ->
 				# Just the last message to show on the projectView.
@@ -200,6 +229,8 @@ Meteor.publish 'userCount', ->
 	Counts.publish this, 'userCount', Meteor.users.find {}
 	undefined
 
+# OPTIMIZE
+
 Meteor.publish 'scholieren.com', ->
 	unless @userId?
 		@ready()
@@ -210,4 +241,4 @@ Meteor.publish 'woordjesleren', ->
 	unless @userId?
 		@ready()
 		return undefined
-	WoordjesLeren.find()
+	WoordjesLerenClasses.find()

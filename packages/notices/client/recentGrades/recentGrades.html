@@ -1,0 +1,12 @@
+<template name="recentGrades">
+	{{#each gradeGroups}}
+		{{> recentGradeGroup}}
+	{{/each}}
+</template>
+
+<template name="recentGradeGroup">
+	<div class="recentGradeGroup">
+		<div class="back" style="background-color: {{class.__color}}"></div>
+		{{class.name}}: {{{grades}}}
+	</div>
+</template>

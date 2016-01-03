@@ -3,13 +3,15 @@
  * @author simply
  * @module magister-binding
  */
+ /* global Magister, ExternalServicesConnector, Schools, gradeConverter, Grades,
+  * Grade, StudyUtil, StudyUtils, GradePeriod, ExternalPerson, CalendarItem,
+  * Assignment */
 
 // One heck of a binding this is.
 
 (function (Magister, Future, request, LRU) {
 	'use strict';
 
-	var SESSIONID_INVALIDATE_TIME = 1000*60*60*24; // 24 hours
 	var ONLY_RECENT_LIMIT = 1000*60*60*24*6; // 6 days
 
 	var cache = LRU({
@@ -61,23 +63,24 @@
 				},
 			});
 
+			// Remove the cache entry (if there's one) for the current user to
+			// make sure we relogin.
+			cache.del(userId);
+
 			try {
 				getMagisterObject(userId);
 			} catch (e) {
 				// Remove the stored info.
+				cache.del(userId);
 				MagisterBinding.storedInfo(userId, null);
 
-				// TODO: check in magister.js if `|| e.Message` is needed.
-				var message = e.toString();
-				if (
-					[
-						'Ongeldig account of verkeerde combinatie van gebruikersnaam en wachtwoord. Probeer het nog eens of neem contact op met de applicatiebeheerder van de school.',
-						'Je gebruikersnaam en/of wachtwoord is niet correct.',
-					].indexOf(message) > -1
-				) {
+				if (_.contains([
+					'Ongeldig account of verkeerde combinatie van gebruikersnaam en wachtwoord. Probeer het nog eens of neem contact op met de applicatiebeheerder van de school.',
+					'Je gebruikersnaam en/of wachtwoord is niet correct.',
+				], e.message)) {
 					return false;
 				} else {
-					return new Error(message);
+					return e;
 				}
 			}
 		},
@@ -103,10 +106,6 @@
 			if (m !== undefined) {
 				return m;
 			}
-
-			// // We invalidate the sessionId after SESSIONID_INVALIDATE_TIME.
-			// var useSessionId = data.lastLogin &&
-			// 	_.now() - data.lastLogin.time.getTime() <= SESSIONID_INVALIDATE_TIME;
 
 			// REVIEW:
 			// Currently not invalidating sessionIds, since it's unknown when
@@ -134,7 +133,7 @@
 
 			magister.ready(function (err) {
 				if (err) {
-					fut.throw(err);
+					fut.throw(new Error(err.message));
 				} else {
 					var school = Schools.findOne({
 						'externalInfo.magister.url': magister.magisterSchool.url,
@@ -409,7 +408,7 @@
 						classId
 					);
 
-					calendarItem.usersDone = a.isDone() ? [ Meteor.userId() ] : [];
+					calendarItem.usersDone = a.isDone() ? [ userId ] : [];
 					calendarItem.externalId = magister.magisterSchool.id + '_' + a.id();
 					calendarItem.fetchedBy = MagisterBinding.name;
 					if (!_.isEmpty(a.content())) {
@@ -422,6 +421,14 @@
 					calendarItem.fullDay = a.fullDay();
 					calendarItem.schoolHour = a.beginBySchoolHour();
 					calendarItem.location = a.location();
+
+					var teacher = a.teachers()[0];
+					if (teacher != null) {
+						calendarItem.teacher = {
+							name: teacher.fullName(),
+							id: teacher.id(),
+						};
+					}
 
 					var absenceInfo = a.absenceInfo();
 					if (absenceInfo != null) {
@@ -584,6 +591,98 @@
 
 					return assignment;
 				}));
+			}
+		});
+
+		return fut.wait();
+	};
+
+	MagisterBinding.getMessages = function (folder, skip, limit, userId) {
+		check(folder, String);
+		check(skip, Number);
+		check(limit, Number);
+		check(userId, String);
+
+		var fut = new Future();
+
+		var magister = getMagisterObject(userId);
+		if (folder === 'inbox') {
+			folder = magister.inbox();
+		} else if (folder === 'outbox') {
+			folder = magister.sentItems();
+		}
+
+		folder.messages({
+			limit: limit,
+			skip: skip,
+		}, function (e, r) {
+			if (e) {
+				fut.throw(e);
+			} else {
+				fut.return(r.map(function (m) {
+					return {
+						_id: m.id(),
+						sendDate: m.sendDate(),
+						body: m._body,
+						sender: m.sender().description(),
+						subject: m.subject(),
+						recipients: _.pluck(m.recipients(), '_description'),
+						read: m.isRead(),
+						attachmentCount: m.attachments().length,
+
+						_fillUrl: m._fillUrl,
+					};
+				}));
+			}
+		});
+
+		return fut.wait();
+	};
+
+	MagisterBinding.fillMessage = function (obj, userId) {
+		check(obj, Object);
+		check(userId, String);
+
+		// TODO: this function doesn't make sense at all.
+		return obj; // tmp until function is fixed.
+
+		var message = _.extend(new Magister.Message(), obj);
+		var fut = new Future();
+
+		message.fillMessage(function (e, r) {
+			if (e) {
+				fut.throw(e);
+			} else {
+				console.log(r);
+				fut.return({
+					_id: m.id(),
+					sendDate: r.sendDate(),
+					summary: r.body(),
+					sender: r.sender().description(),
+					subject: r.subject(),
+					recipients: _.pluck(r.recipients(), '_description'),
+					read: r.isRead(),
+
+					_fillUrl: r._fillUrl,
+				});
+			}
+		});
+
+		return fut.wait();
+	};
+
+	MagisterBinding.composeMessage = function (subject, body, recipients, userId) {
+		check(subject, String);
+		check(body, String);
+		check(recipients, [String]);
+		check(userId, String);
+
+		var fut = new Future();
+		getMagisterObject(userId).composeAndSendMessage(subject, body, recipients, function (e, r) {
+			if (e) {
+				fut.throw(e);
+			} else {
+				fut.return();
 			}
 		});
 

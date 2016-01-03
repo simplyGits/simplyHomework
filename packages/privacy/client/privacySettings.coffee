@@ -6,6 +6,4 @@ Template.privacyOption.events
 Template.privacySettings.helpers
 	privacyOptions: ->
 		options = Privacy.getOptions Meteor.userId()
-
-		Debug.logThrough Privacy.options.map (item) -> _.extend item,
-			enabled: options[item.short]
+		Privacy.options.map (item) -> _.extend item, enabled: options[item.short]

@@ -5,6 +5,7 @@
 @Schedules             = new Meteor.Collection 'schedules'
 @Utils                 = new Meteor.Collection 'utils'
 @Projects              = new Meteor.Collection 'projects', transform: (p) -> projectTransform p
+@Absences              = new Meteor.Collection 'absences'
 @CalendarItems         = new Meteor.Collection 'calendarItems', transform: (c) -> _.extend new CalendarItem, c
 @ReportItems           = new Meteor.Collection 'reportItems'
 @Grades                = new Meteor.Collection 'grades', transform: (g) ->
@@ -14,8 +15,7 @@
 		# TODO: do this on a i18n friendly way.
 		__grade: g.toString().replace '.', ','
 
-@StudyUtils            = new Meteor.Collection 'studyUtils', transform: (s) -> _.extend new StudyUtil, s
-@Notifications         = new Meteor.Collection 'notifications'
+@StudyUtils            = new Meteor.Collection 'studyUtils',   transform: (s) -> _.extend new StudyUtil, s
 @ScholierenClasses     = new Meteor.Collection 'scholieren.com'
 @WoordjesLerenClasses  = new Meteor.Collection 'woordjesleren'
 @Analytics             = new Meteor.Collection 'analytics'
@@ -51,21 +51,16 @@ Schemas.Classes = new SimpleSchema
 	schedules:
 		type: [Object]
 		blackbox: yes
-	scholierenClassId:
-		type: Number
-		optional: yes
+	externalInfo:
+		type: Object
+		blackbox: yes
 ###
 
 Schemas.Books = new SimpleSchema
-	_id:
-		type: Meteor.Collection.ObjectID
 	title:
 		type: String
 	publisher:
 		type: String
-		optional: yes
-	scholierenBookId:
-		type: Number
 		optional: yes
 	release:
 		type: Number
@@ -75,8 +70,8 @@ Schemas.Books = new SimpleSchema
 	utils:
 		type: [Object]
 		blackbox: yes
-	chapters:
-		type: [Object]
+	externalInfo:
+		type: Object
 		blackbox: yes
 
 Schemas.Schools = new SimpleSchema
@@ -113,10 +108,8 @@ Schemas.Projects = new SimpleSchema
 		optional: yes
 	creatorId:
 		type: String
-		autoValue: ->
-			if not @isFromTrustedCode and @isInsert
-				@userId
-			else @value
+		denyUpdate: yes
+		autoValue: -> if not @isFromTrustedCode and @isInsert then @userId else @value
 	participants:
 		type: [String]
 		index: 1
@@ -126,6 +119,11 @@ Schemas.Projects = new SimpleSchema
 			else @value
 	driveFileIds:
 		type: [String]
+	finished:
+		type: Boolean
+		autoValue: ->
+			if not @isFromTrustedCode and @isInsert then no
+			else @value
 
 Schemas.ReportItems = new SimpleSchema
 	reporterId:
@@ -223,6 +221,25 @@ Schemas.StudyUtils = new SimpleSchema
 	externalInfo:
 		type: Object
 		blackbox: yes
+
+Schemas.Absences = new SimpleSchema
+	userId:
+		type: String
+	calendarItemId:
+		type: String
+	type:
+		type: String
+		# TODO: fill in allowedValues
+		#allowedValues: ['']
+	permitted:
+		type: Boolean
+	description:
+		type: String
+	externalId:
+		type: null # any type
+		optional: yes
+	fetchedBy:
+		type: String
 		optional: yes
 
 @[key].attachSchema Schemas[key] for key of Schemas
@@ -233,14 +250,14 @@ Schemas.StudyUtils = new SimpleSchema
 
 	_.extend c,
 		#__taskAmount: _.filter(homeworkItems.get(), (a) -> groupInfo?.group is a.description() and not a.isDone()).length
-		__book: -> null# Books.findOne classInfo()?.bookId
-		__color: classInfo?.color
+		__book: -> Books.findOne classInfo?.bookId
 		__sidebarName: (
 			val = c.name
 			if val.length > 14 then c.abbreviations[0]
 			else val
 		)
 
+		__color: classInfo?.color
 		__classInfo: classInfo
 
 @projectTransform = (p) ->
@@ -248,10 +265,13 @@ Schemas.StudyUtils = new SimpleSchema
 		__class: -> Classes.findOne p.classId, transform: classTransform
 		__borderColor: (
 			now = new Date
-			switch
-				when p.deadline < now then '#FF4136'
-				when Helpers.daysRange(now, p.deadline, no) < 2 then '#FF8D00'
-				else '#2ECC40'
+			if p.deadline?
+				switch
+					when p.deadline < now then '#FF4136'
+					when Helpers.daysRange(now, p.deadline, no) < 2 then '#FF8D00'
+					else '#2ECC40'
+			else
+				'#000'
 		)
 		__friendlyDeadline: (
 			if p.deadline?
@@ -273,7 +293,9 @@ Schemas.StudyUtils = new SimpleSchema
 		)
 		__chatRoom: -> ChatRooms.findOne projectId: p._id
 		__lastChatMessage: ->
-			ChatMessages.findOne {
-				chatRoomId: @__chatRoom()._id
-			}, sort:
-				'time': -1
+			chatRoom = @__chatRoom()
+			if chatRoom?
+				ChatMessages.findOne {
+					chatRoomId: chatRoom._id
+				}, sort:
+					'time': -1

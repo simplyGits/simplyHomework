@@ -6,11 +6,6 @@ warningFocusColor = darken(warningColor, 30%)
 successColor = #4CAF50
 successFocusColor = darken(successColor, 30%)
 
-// -- handpicked
-//errorFocusColor = #B61C1C
-//warningFocusColor = #BB7C21
-//successFocusColor = #2E7D32
-
 // == functions
 setFormColors(color, focusColor)
 	label
@@ -167,43 +162,6 @@ form.vertical.full-width
 		input:focus, select:focus
 			border-color: darkgray
 
-	/*
-	div.group.checkbox
-		size = 15px
-
-		input[type="checkbox"]:before
-			display: block
-			content: ""
-			background-color: #FFFFFF
-
-			width: size
-			height: size
-			margin-top: -2px
-
-		input[type="checkbox"]:after
-			display: block
-			content: ""
-			border: 1px #d3d3d3 solid
-
-			width: size
-			height: size
-
-			margin-top: -13px
-			margin-left: -1px
-
-			padding: 2px
-			background-clip: content-box
-			background-color: white
-
-			cursor: pointer
-
-		input[type="checkbox"]:checked:after
-			background-color: #337AB7
-
-		span:first-child
-			margin-left: 4px
-	*/
-
 	div.group.select
 		position: relative
 
@@ -232,5 +190,6 @@ form.vertical.full-width
 	div.group.error
 		setFormColors(errorColor, errorFocusColor)
 
-div.colorpicker
-	border-radius: 0
+hr
+	border: 0
+	border-bottom: 1px lightgray solid

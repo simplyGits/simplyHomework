@@ -5,11 +5,27 @@
 # @return {String}
 ###
 @normalizeSchoolVariant = (variant) ->
+	# TODO: extend this method.
 	check variant, String
 	variant = variant.toLowerCase().trim()
 	switch variant
 		when 'gymnasium', 'atheneum' then 'vwo'
 		else variant
+
+@normalizeClassName = (name) ->
+	name = name.toLowerCase()
+	contains = (s) -> _.contains name, s
+
+	if contains 'nederlands'
+		'Nederlands'
+	else if contains 'frans'
+		'Frans'
+	else if contains 'duits'
+		'Duits'
+	else if contains 'engels'
+		'Engels'
+	else
+		name
 
 ###*
 # @class SchoolClass
@@ -35,9 +51,8 @@ class @SchoolClass
 		@schedules = [] # Contains schedule ID's.
 
 		###*
-		# ID of class at Scholieren.com.
-		# @property scholierenClassId
-		# @type Number
-		# @default undefined
+		# @property externalInfo
+		# @type Object
+		# @default {}
 		###
-		@scholierenClassId = undefined
+		@externalInfo = {}

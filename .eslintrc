@@ -49,6 +49,14 @@
 
 		"handle-callback-err": 1,
 		"no-path-concat": 2,
+
+		"no-var": 2,
+		"prefer-const": 1,
+		"prefer-spread": 1,
+		"arrow-spacing": [
+			2,
+			{ "before": true, "after": true }
+		]
 	},
 	"env": {
 		"node": true,
@@ -58,7 +66,8 @@
 		"mocha": true,
 		"worker": true,
 		"meteor": true,
-		"serviceworker": true
+		"serviceworker": true,
+		"es6": true
 	},
 	"extends": "eslint:recommended",
 	"ecmaFeatures": {

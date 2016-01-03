@@ -1,0 +1,27 @@
+<template name="notices">
+	{{#each notices}}
+		<div class="notice {{clickable}}">
+			{{#if header}}
+				<div class="header">
+					{{header}}
+
+					{{#if subheader}}
+						<div class="subheader">
+							{{subheader}}
+						</div>
+					{{/if}}
+				</div>
+			{{/if}}
+			{{> Template.dynamic template=template data=data}}
+		</div>
+	{{else}}
+		{{#if ready}}
+			<div id="nocardsnotice">
+				{{timeGreeting}} {{currentUser.profile.firstName}}!<br>
+				Momenteel hebben we geen kaarten voor je.
+			</div>
+		{{else}}
+			{{> loading}}
+		{{/if}}
+	{{/each}}
+</template>

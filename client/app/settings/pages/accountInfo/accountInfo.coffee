@@ -58,7 +58,9 @@ Template['settings_page_accountInfo'].events
 				if error?
 					if error.reason is 'Incorrect password'
 						setFieldError '#oldPassGroup', 'Verkeerd wachtwoord'
-					else callback no
+					else
+						Kadira.trackError 'changePassword-client', error.reason, stacks: EJSON.stringify error
+						callback no
 
 				else
 					callback yes
@@ -76,6 +78,8 @@ Template.deleteAccountModal.events
 					grecaptcha.reset()
 				else if e.error is 'wrongCaptcha'
 					shake '#deleteAccountModal'
+				else
+					notify 'Oops, er is iets fout gegaan.', 'error'
 			else
 				analytics?.track 'Removed Account'
 				Router.go 'launchPage'

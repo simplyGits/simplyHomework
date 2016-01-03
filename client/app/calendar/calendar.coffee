@@ -45,7 +45,7 @@ calendarItemToEvent = (calendarItem) ->
 			else '#3a87ad'
 	)
 	className: (
-		switch calendarItem.absenceInfo?.type
+		switch calendarItem.getAbsenceInfo()?.type
 			when 'absent', 'sick', 'exemption', 'discharged' then 'opaque'
 			else ''
 	)
@@ -54,6 +54,9 @@ calendarItemToEvent = (calendarItem) ->
 	calendarItem: calendarItem
 	editable: not calendarItem.fetchedBy?
 	content: calendarItem.content
+
+Template.calendar.onCreated ->
+	@subscribe 'classes', hidden: yes
 
 Template.calendar.onRendered ->
 	unless $::fullCalendar?
@@ -160,6 +163,7 @@ Template.calendar.onRendered ->
 				$header = $ ".fc-left h2"
 				$header.html "#{$header.text()} <small>week: #{view.start.week()}</small>"
 
+		# REVIEW: handle updating with methods?
 		eventDrop: (event) ->
 			CalendarItems.update event.calendarItem._id, $set:
 				startDate: event.start.toDate()
@@ -169,13 +173,7 @@ Template.calendar.onRendered ->
 		eventAfterAllRender: ->
 			Blaze.remove popoverView if popoverView?
 			popoverView = Blaze.renderWithData Template.eventDetailsTooltip, (->
-				item = currentOpenEvent.get()?.calendarItem
-				if item?
-					_.extend item,
-						__group: (
-							if item.description?
-								_.find item.description.split(' '), (w) -> /\d/.test(w) and /[a-z]/i.test(w)
-						)
+				currentOpenEvent.get()?.calendarItem
 			), document.body
 
 	time = +FlowRouter.getParam 'time'

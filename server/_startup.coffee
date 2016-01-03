@@ -23,9 +23,16 @@ Meteor.startup ->
 		doc.setupProgress = []
 		doc.settings = {}
 
-		doc.profile = options.profile
+		doc.profile =
+			firstName: ''
+			lastName: ''
 
 		doc
+
+	Projects.find({}).observe
+		changed: (newDoc, oldDoc) ->
+			if newDoc.participants.length is 0
+				Projects.remove newDoc._id
 
 	Meteor.users.find().observe
 		changed: (newDoc, old) ->

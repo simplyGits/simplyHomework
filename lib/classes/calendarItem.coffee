@@ -97,13 +97,26 @@ class @CalendarItem
 		@location = null
 
 		###*
-		# @property absenceInfo
-		# @type Object
+		# @property teacher
+		# @type Object|null
 		# @default null
 		###
-		@absenceInfo = null
+		@teacher = null
 
+	###*
+	# @method class
+	# @return {SchoolClass}
+	###
 	class: -> Classes.findOne @classId, transform: classTransform
+	###*
+	# @method getAbsenceInfo
+	# @param {String} userId
+	# @return {AbsenceInfo}
+	###
+	getAbsenceInfo: (userId) ->
+		Absences.findOne
+			userId: Meteor.userId()
+			calendarItemId: @_id
 
 	# TODO: Better i18n for these methods?
 	contentTypeLong: ->
@@ -146,3 +159,7 @@ class @CalendarItem
 			"over #{Helpers.timeDiff now, @startDate}"
 		else
 			"#{Helpers.timeDiff now, @endDate} geleden"
+
+	group: ->
+		if @description?
+			_.find @description.split(' '), (w) -> /\d/.test(w) and /[a-z]/i.test(w)
