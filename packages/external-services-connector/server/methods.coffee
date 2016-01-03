@@ -75,7 +75,7 @@ Meteor.methods
 		check amount, Number
 
 		userId = @userId
-		service = _.find Services, (s) -> s.name isnt 'magister' and s.active userId
+		service = _.find Services, (s) -> s.name is 'magister' and s.active userId
 		if not service?
 			throw new Meteor.Error 'magister-only'
 

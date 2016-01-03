@@ -109,6 +109,7 @@ Template.messages.onRendered ->
 
 Template['messages_sidebar'].helpers
 	folders: -> folders
+	hasMagister: -> hasMagister.get()
 
 Template['messages_sidebar'].events
 	'click #compose': ->
