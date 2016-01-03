@@ -45,7 +45,7 @@ Meteor.startup ->
 	# But markdown interperts that as an bulleted list.
 	renderer.listitem = (str) -> "* #{str}"
 
-	passthrough = (str) -> str
+	passthrough = (str) -> str ? ''
 	for item in blocked
 		renderer[item] = passthrough
 
