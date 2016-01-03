@@ -8,6 +8,7 @@ chatRoom = ->
 
 Template.mobileChatWindow.helpers
 	chat: -> chatRoom()
+	__noHeader: -> if not @sidebarIcon()? then 'noHeader' else ''
 
 Template.mobileChatWindow.events
 	"click div.header": ->
