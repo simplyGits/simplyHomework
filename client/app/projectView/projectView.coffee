@@ -1,5 +1,4 @@
 cachedProjectFiles = new ReactiveVar {}
-addQueue = new ReactiveVar []
 
 currentProject = ->
 	id = new Meteor.Collection.ObjectID FlowRouter.getParam 'id'
@@ -201,12 +200,12 @@ Template.changeProjectModal.events
 	'click #leaveProjectButton': ->
 		FlowRouter.go 'overview'
 		Projects.update @_id, $pull: participants: Meteor.userId()
+		notify 'Project verlaten', 'notice'
 
 Template.changeProjectModal.onRendered ->
 	Meteor.typeahead.inject '#changeClassInput'
 
 Template.addParticipantModal.helpers
-	addQueue: -> addQueue.get()
 	persons: -> getOthers().fetch()
 
 Template.addParticipantModal.onCreated ->
