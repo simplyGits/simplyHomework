@@ -9,7 +9,7 @@
 	},
 	"public": {
 		"analyticsSettings": {
-			"Google Analytics" : { "trackingId": "xxxxx" }
+			"Google Analytics" : { "trackingId": "UA-52373748-1" }
 		}
 	}
 }

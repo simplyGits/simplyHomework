@@ -23,14 +23,16 @@ Meteor.startup ->
 		doc.setupProgress = []
 		doc.settings = {}
 
-		doc.profile = options.profile
-
-		userCount = Meteor.users.find({}, fields: _id: 1).count()
-		if userCount < 55
-			obj = deadline: Date.today().addDays 365
-			doc.premiumInfo.noAds = obj
+		doc.profile =
+			firstName: ''
+			lastName: ''
 
 		doc
+
+	Projects.find({}).observe
+		changed: (newDoc, oldDoc) ->
+			if newDoc.participants.length is 0
+				Projects.remove newDoc._id
 
 	Meteor.users.find().observe
 		changed: (newDoc, old) ->

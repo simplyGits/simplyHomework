@@ -68,3 +68,52 @@ Meteor.methods
 	'getProfileData': ->
 		@unblock()
 		getProfileData @userId
+
+	'getMessages': (folder, amount) ->
+		@unblock()
+		check folder, String
+		check amount, Number
+
+		userId = @userId
+		service = _.find Services, (s) -> s.name is 'magister' and s.active userId
+		if not service?
+			throw new Meteor.Error 'magister-only'
+
+		getMessages folder, 0, amount, userId
+
+	'fillMessage': (message) ->
+		@unblock()
+		check message, Object
+
+		userId = @userId
+		service = _.find Services, (s) -> s.name is 'magister' and s.active userId
+		if not service?
+			throw new Meteor.Error 'magister-only'
+
+		fillMessage message, 'magister', userId
+
+	'composeMessage': (subject, body, recipients) ->
+		@unblock()
+		check subject, String
+		check body, String
+		check recipients, [String]
+
+		userId = @userId
+		service = _.find Services, (s) -> s.name is 'magister' and s.active userId
+		if not service?
+			throw new Meteor.Error 'magister-only'
+
+		composeMessage subject, body, recipients, 'magister', userId
+
+	'replyMessage': (body, id, all) ->
+		@unblock()
+		check body, String
+		check id, Number
+		check all, Boolean
+
+		userId = @userId
+		service = _.find Services, (s) -> s.name is 'magister' and s.active userId
+		if not service?
+			throw new Meteor.Error 'magister-only'
+
+		replyMessage body, id, all, 'magister', userId

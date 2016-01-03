@@ -6,10 +6,12 @@ Template.personView.helpers
 	person: currentPerson
 
 	backColor: ->
+		p = currentPerson()
+
 		res = (
-			if not @status? then '#000000'
-			else if @status.idle then '#FF9800'
-			else if @status.online then '#4CAF50'
+			if not p.status? then '#000000'
+			else if p.status.idle then '#FF9800'
+			else if p.status.online then '#4CAF50'
 			else '#EF5350'
 		)
 
@@ -29,12 +31,10 @@ Template.personView.events
 	"click button#chatButton": -> ChatManager.openPrivateChat @_id
 
 Template.personView.onCreated ->
+	@subscribe 'externalCalendarItems', Date.today(), Date.today().addDays 7
 	@subscribe 'classes', hidden: yes
 
 	@autorun =>
-		unless sameUser()
-			@subscribe 'externalCalendarItems', Date.today(), Date.today().addDays 7
-
 		id = FlowRouter.getParam 'id'
 		@subscribe 'status', [ id ]
 		@subscribe 'usersData', [ id ], onReady: ->
@@ -128,7 +128,7 @@ Template.reportUserModal.events
 		Meteor.call 'reportUser', @_id, reportGrounds, (e, r) ->
 			if e?
 				message = switch e.error
-					when 'rate-limit' then "Je hebt de afgelopen tijd téveel mensen gerapporteerd, probeer het later opnieuw."
+					when 'rate-limit' then 'Je hebt de afgelopen tijd téveel mensen gerapporteerd, probeer het later opnieuw.'
 					when 'already-reported' then "Je hebt #{name} al gerapporteerd om dezelfde reden(en)."
 					else 'Onbekende fout tijdens het rapporteren'
 
@@ -172,3 +172,13 @@ Template.pictureSelectorItem.events
 
 		analytics?.track 'Profile Picture Changed'
 		$('#changePictureModal').modal 'hide'
+
+Template.personStats.helpers
+	stats: ->
+		res = []
+
+		inbetweenHoursCount = getInbetweenHours().length
+		if inbetweenHoursCount > 0
+			res.push "Aantal tussenuren in één week: #{inbetweenHoursCount}"
+
+		res

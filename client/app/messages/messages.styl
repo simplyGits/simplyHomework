@@ -1,9 +1,12 @@
+@require "../../utils"
+@require "rupture"
+
 sidebarWidth = 250px
 borderColor = lightgray
 headerHeight = 50px
 sidebarItemHeight = 40px
 
-#settings
+#messages
 	#messagesSidebar
 		absolute: top left right
 		width: sidebarWidth
@@ -51,6 +54,21 @@ sidebarItemHeight = 40px
 		.item.current
 			background-color: #E8E8E8
 
+		#compose
+			absolute: left bottom right
+			background-color: composeColor
+			border: 0
+			color: #000
+			text-align: center
+			height: sidebarItemHeight
+			line-height: sidebarItemHeight
+			cursor: pointer
+
+			border-top: 1px lightgray solid
+
+		#compose:hover
+			background-color: lightgray
+
 	.page
 		padding = 15px
 
@@ -58,7 +76,7 @@ sidebarItemHeight = 40px
 		background-color: #fff
 		z-index: 10
 
-		overflow: hidden
+		overflow: scroll
 
 		+below(800px)
 			left: 0
@@ -71,22 +89,34 @@ sidebarItemHeight = 40px
 			background-color: #DEDEDE
 			line-height: headerHeight
 
+			#name
+				width: calc(100% - 40px)
+				white-space: nowrap
+				text-overflow: ellipsis
+				overflow: hidden
+				display: inline-block
+
 			#closeButton
 				float: right
 				margin-top: -3px
 				font-size: 35px
 				margin-right: 15px
 
+				cursor: pointer
+
 				display: none
 				+below(800px)
 					display: block
 
+			#closeButton.desktop-too
+				display: block
+
 			+below(800px)
 				height: 35px
 				line-height: 35px
-				font-size: 25px
+				font-size: 20px
 
-		.settingsContent
+		#pageContent
 			absolute: top 50px left right bottom
 			overflow-x: hidden
 			overflow-y: scroll
@@ -97,3 +127,92 @@ sidebarItemHeight = 40px
 
 			+below(800px)
 				top: 35px
+
+#messageList
+	.message
+		padding = 15px
+
+		cursor: pointer
+
+		height: 75px
+		padding-left: padding
+		padding-right: padding
+		overflow: hidden
+
+		border-bottom: 1px lightgray solid
+
+		span.dim
+			opacity: .7
+
+		header
+			roboto(300)
+			font-size: 30px
+			line-height: 50px
+
+			+mobile()
+			//+below(800px)
+				font-size: 25px
+				white-space: nowrap
+
+		.sender
+			float: left
+
+		.recipients
+			float: right
+
+	.message:hover
+		background-color: #EFEFEF
+
+	.loadMore
+		padding: 5px
+		height: 75px
+		text-align: center
+		font-size: 25px
+
+		roboto(300)
+
+#full_message
+	padding: 15px
+	padding-top: 0px
+
+	header
+		roboto(300)
+		font-size: 30px
+
+	.body
+		white-space: pre-line
+		border-top: 1px lightgray solid
+		margin-top: 5px
+
+		pointer-events: all
+		user-select: initial
+		cursor: initial
+
+#compose_message
+	input, textarea
+		padding: 5px
+		font-size: 15px
+		outline: none
+
+	input
+		width: 100%
+		border: 0
+		border-bottom: 1px lightgray solid
+
+	textarea
+		absolute: top 64px left right bottom
+		border: 0
+		resize: none
+		width: 100%
+
+	#send
+		absolute: top right
+		height: 31px
+		border: 0
+		background-color: white
+		border-left: 1px lightgray solid
+
+		outline: none !important
+
+	#send:hover
+		background-color: #EFEFEF

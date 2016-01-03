@@ -1,5 +1,4 @@
 cachedProjectFiles = new ReactiveVar {}
-addQueue = new ReactiveVar []
 
 currentProject = ->
 	id = new Meteor.Collection.ObjectID FlowRouter.getParam 'id'
@@ -73,7 +72,7 @@ Template.projectView.onCreated ->
 		return unless driveLoaded.get()
 
 		x = cachedProjectFiles.get()
-		fileIds = _.reject @driveFileIds, (s) -> s in x or _.contains loading, s
+		fileIds = _.reject currentProject().driveFileIds, (s) -> s in x or _.contains loading, s
 		needed = fileIds.length
 
 		push = (r) ->
@@ -107,12 +106,11 @@ Template.projectView.helpers
 	persons: -> getParticipants()
 	#isOwner: -> Router.current().data().ownerId is Meteor.userId()
 
-	showRightHeader: -> @participants?.length > 0
 	overDue: -> if not @deadline? or @deadline > new Date() then "initial" else "darkred"
-	heightOffset: 260
 
 Template.projectView.events
 	"click #addFileIcon": ->
+		# TODO: clean this mess up.
 		onPickerResult (r) =>
 			return unless r.action is "picked"
 			cb = =>
@@ -147,14 +145,13 @@ Template.projectView.events
 							if (val = r.docs[0].name.replace(/[-_]/g, " ").split(".")).length is 1
 								val[0]
 							else
-								_.initial(val)[0].join "."
+								_.initial(val).join '.'
 						)
 				).execute (res) ->
 					if res.error?
 						notify "Bestand kan niet worden toegevoegd", "error"
 						Kadira.trackError "Drive-client", res.error.message, stacks: EJSON.stringify res
 					else
-						gapi.client.drive.files.delete(fileId: r.docs[0].id).execute()
 						r.docs[0] = res
 						setPermissions()
 
@@ -177,7 +174,7 @@ Template.projectView.events
 				previous: 'fa fa-chevron-left'
 				next: 'fa fa-chevron-right'
 
-	"click #chatButton": -> ChatManager.openProjectChat this
+	"click #chatButton": -> ChatManager.openProjectChat @_id
 
 Template.changeProjectModal.helpers
 	classes: -> classes()
@@ -187,7 +184,8 @@ Template.changeProjectModal.events
 		name = $('#changeNameInput').val().trim()
 		description = $('#changeDescriptionInput').val().trim()
 		deadline = $('#changeDeadlineInput').data('DateTimePicker').date().toDate()
-		classId = Session.get('currentSelectedClassDatum')?._id ? @__class()?._id
+		className = $('#changeClassInput').val()
+		classId = Classes.findOne(name: className)?._id ? @__class()?._id
 
 		Projects.update @_id, $set: {
 			name
@@ -202,12 +200,12 @@ Template.changeProjectModal.events
 	'click #leaveProjectButton': ->
 		FlowRouter.go 'overview'
 		Projects.update @_id, $pull: participants: Meteor.userId()
+		notify 'Project verlaten', 'notice'
 
 Template.changeProjectModal.onRendered ->
 	Meteor.typeahead.inject '#changeClassInput'
 
 Template.addParticipantModal.helpers
-	addQueue: -> addQueue.get()
 	persons: -> getOthers().fetch()
 
 Template.addParticipantModal.onCreated ->

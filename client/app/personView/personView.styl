@@ -88,13 +88,20 @@ div.personInfo
 
 div.personDetailsContainer
 	margin-top: 250px
-
 	+mobile()
 		margin-top: 100px
 
-div#personSharedHours
+	.itemContainer
+		margin-top: 0
+
+#personSharedHours, #personStats
 	col(1/2)
 
+	+mobile()
+		stack()
+		margin-bottom: 10px
+
+#personSharedHours
 	li
 		list-style-type: none
 
@@ -103,10 +110,6 @@ div#personSharedHours
 			text-decoration: none
 		a:hover
 			text-decoration: underline
-
-	+mobile()
-		stack()
-		margin-bottom: 10px
 
 div#reportUserModal div.modal-body
 	text-align: center

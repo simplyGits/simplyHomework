@@ -15,7 +15,7 @@
       ''----________----''
 
 Art by Tom Smeding
-http://tomsmeding.nl/
+http://tomsmeding.com/
 ###
 
 @DialogButtons =
@@ -23,7 +23,7 @@ http://tomsmeding.nl/
 	OkCancel: 1
 
 @alertModal = (title, body, buttonType = 0, labels = { main: 'oké', second: 'annuleren' }, styles = { main: 'btn-default', second: 'btn-default' }, callbacks = { main: null, second: null }, exitButton = yes) ->
-	labels = _.extend { main: 'oké', second: 'annuleren' }, labels
+	labels = _.extend { main: 'Oké', second: 'Annuleren' }, labels
 	styles = _.extend { main: 'btn-default', second: 'btn-default' }, styles
 
 	bootbox.hideAll()
@@ -78,7 +78,7 @@ http://tomsmeding.nl/
 		title
 		text
 		type
-		confirmButtonText: confirmButtonText ? 'oké'
+		confirmButtonText: confirmButtonText ? 'Oké'
 		cancelButtonText
 		allowOutsideClick: cancelButtonText?
 		showCancelButton: cancelButtonText?
@@ -498,7 +498,7 @@ Meteor.startup ->
 			switch Notification.permission
 				when 'default'
 					notice = setBigNotice
-						content: 'Wij hebben je toestemming nodig om bureaubladmeldingen weer te kunnen geven.'
+						content: 'We hebben je toestemming nodig om bureaubladmeldingen weer te kunnen geven.'
 						onClick: ->
 							Notification.requestPermission (result) ->
 								notice?.hide()
@@ -510,6 +510,7 @@ Meteor.startup ->
 	Template.registerHelper 'picture', (user, size) -> picture user, if _.isNumber(size) then size else undefined
 	Template.registerHelper 'has', has
 	Template.registerHelper 'toUpperCase', (str) -> str.toUpperCase()
+	Template.registerHelper 'cap', (str) -> Helpers.cap str
 
 	Template.registerHelper 'isPhone', -> Session.equals 'deviceType', 'phone'
 	Template.registerHelper 'isTablet', -> Session.equals 'deviceType', 'tablet'
@@ -518,11 +519,15 @@ Meteor.startup ->
 	Template.registerHelper 'currentYear', -> new Date().getFullYear()
 	Template.registerHelper 'dateFormat', (format, date) -> moment(date).format format
 	Template.registerHelper 'time', (date) -> moment(date).format 'HH:mm'
+	Template.registerHelper 'numberFormat', (number) ->
+		switch number
+			when 0 then 'geen'
+			else number
 
 	Template.registerHelper 'textColor', (color, fallback) ->
 		color ?= fallback
 		return '' unless color?
-		if chroma(color).luminance() > .45 then '#000' else '#fff'
+		if chroma(color).luminance() > .45 then 'black' else 'white'
 
 	Template.registerHelper 'pathFor', (path, view) ->
 		unless path?

@@ -27,6 +27,7 @@ Package.onUse(function(api) {
 	api.export([
 		'ExternalServicesConnector',
 		'Services',
+		'updateCalendarItems',
 	], 'server');
 });
 

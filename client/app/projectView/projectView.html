@@ -1,18 +1,13 @@
 <template name="projectView">
 {{#with project}}
-	<div class="container-fluid">
+	<div class="container-fluid projectContainer">
 		<div class="row">
 			<div class="robotoHeader overviewHeader head1 projectHeader">
 				{{name}}
 				<span id="changeProjectIcon" class="fa fa-pencil"></span>
 			</div>
-			<!--
-			{{#if showRightHeader}}
-				<div class="robotoHeader overviewHeader head2 projectHeader" style="text-align: right">{{participants.length}} <span class="robotoThin" style="margin-left: 5px">personen</span></div>
-			{{/if}}
-			-->
 		</div>
-		<div class="divider"></div>
+		<hr>
 
 		<div class="projectInfoContainer">
 			<div class="projectInfoSubContainer">
@@ -30,7 +25,7 @@
 					<img id="senderPicture" src="{{picture __sender 100}}" width="70" height="70"/>
 					<div id="middle">
 						<span id="senderName" class="robotoThin">{{__sender.profile.firstName}}</span>
-						<span id="messageContent" class="robotoThin">{{content}}</span>
+						<span id="messageContent" class="robotoThin">{{_originalContent}}</span>
 					</div>
 				{{/with}}
 				<div id="header" class="robotoThin">Chat</div>
@@ -39,12 +34,12 @@
 
 		<div class="row">
 			<div class="col-sm-6">
-				<div class="itemContainer projectViewItemContainer" style="height: calc(100vh - {{heightOffset}}px)">
-					<div class="robotoThin itemContainerHeader">
+				<div class="itemContainer projectViewItemContainer">
+					<header>
 						<span class="fa fa-plus" id="addFileIcon"></span>
 						Bestanden
-					</div>
-					<div class="itemContainerContent">
+					</header>
+					<div>
 						{{#each files}}
 							{{> fileRow}}
 						{{/each}}
@@ -53,12 +48,12 @@
 			</div>
 
 			<div class="col-sm-6">
-				<div class="itemContainer projectViewItemContainer" style="height: calc(100vh - {{heightOffset}}px)">
-					<div class="robotoThin itemContainerHeader">
+				<div class="itemContainer projectViewItemContainer">
+					<header>
 						<span class="fa fa-plus" id="addPersonIcon"></span>
 						Mensen
-					</div>
-					<div class="itemContainerContent">
+					</header>
+					<div>
 						<a href="{{pathFor 'personView' id=currentUser._id}}">
 							{{> selfRow}}
 						</a>
@@ -166,14 +161,9 @@
 							<input type="text" id="changeDeadlineInput">
 						</div>
 
-						<hr>
-
-						<h2>Verbindingen</h2>
 						<div id="externalAssignment">
 							{{#with externalInfo}}
 								Dit project is gekoppeld met: <b>{{name}}</b> van <b>{{fetchedBy}}</b>
-							{{else}}
-								<button class="btn btn-primary">Kies iets uit ofzo, (ja Thomas, dit is niet final.)</button>
 							{{/with}}
 						</div>
 						<div id="changeClassGroup" class="group">

@@ -1,11 +1,8 @@
 <template name="mobileChatWindow">
-{{#if Template.subscriptionsReady}}
 	{{#with chat}}
-		<div class="mobileChatWindow {{status}}" id="{{_id}}">
+		<div class="mobileChatWindow {{status}} {{__noHeader}}" id="{{_id}}">
 			<div class="header">
-				{{#if sidebarIcon}}
-					<img class="profilePicture" src="{{sidebarIcon}}" width="40">
-				{{/if}}
+				<img class="profilePicture" src="{{sidebarIcon}}" width="40">
 				<div class="name">{{friendlyName}}</div>
 			</div>
 
@@ -18,8 +15,7 @@
 				</button>
 			</div>
 		</div>
+	{{else}}
+		{{> loading}}
 	{{/with}}
-{{else}}
-	{{> loading}}
-{{/if}}
 </template>

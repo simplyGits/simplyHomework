@@ -87,7 +87,11 @@ Scholieren = {
 				const pair = _.pairs(obj)[0];
 				res[pair[0]] = pair[1];
 			});
-			return res;
+			return {
+				title: res.titel,
+				url: res.url,
+				rating: res.rating,
+			};
 		});
 	},
 };

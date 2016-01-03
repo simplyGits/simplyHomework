@@ -18,7 +18,7 @@ Meteor.publish 'usersData', (ids) ->
 				if ids? then { $in: ids }
 				else { $ne: userId }
 			)
-			#'profile.schoolId': schoolId
+			'profile.schoolId': schoolId
 			'profile.firstName': $ne: ''
 		}, fields: profile: 1
 
@@ -32,11 +32,14 @@ Meteor.publish 'status', (ids) ->
 		@ready()
 		return undefined
 
+	schoolId = Meteor.users.findOne(@userId).profile.schoolId
+
 	Meteor.users.find {
 		_id: $in: ids
+		'profile.schoolId': schoolId
 		$or: [
-			'settings.privacy.publishStatus': $exists: no
-			'settings.privacy.publishStatus': yes
+			{ 'settings.privacy.publishStatus': $exists: no }
+			{ 'settings.privacy.publishStatus': yes }
 		]
 	}, {
 		fields:
@@ -59,7 +62,6 @@ Meteor.publish null, ->
 			events: 1
 			gradeNotificationDismissTime: 1
 			magisterCredentials: 1
-			plannerPrefs: 1
 			premiumInfo: 1
 			settings: 1
 			profile: 1
@@ -120,26 +122,52 @@ Meteor.publish 'classes', (options) ->
 		else { _id: $in: _.pluck nonhidden, 'id' }
 	)
 
-Meteor.publish 'classInfo', (classId) ->
+Meteor.publishComposite 'classInfo', (classId) ->
 	check classId, String
 	unless @userId? and classId
 		@ready()
 		return undefined
 
-	[
-		Classes.find _id: classId
-		CalendarItems.find {
-			userIds: @userId
-			classId: classId
-			startDate: $gt: new Date
-			scrapped: no
-		}, {
-			sort: startDate: 1
-			limit: 1
-		}
-	]
+	find: -> Classes.find classId
+	children: [{
+		find: (c) ->
+			# OPTIMIZE
+			CalendarItems.find {
+				userIds: @userId
+				classId: classId
+				startDate: $gt: Date.today()
+				endDate: $lt: Date.today().addDays 7
 
-# TODO: revise this publishment
+				# TODO: If we change it back to 'uur/week' in classView.html this line
+				# should be removed.
+				scrapped: no
+			}, {
+				fields:
+					_id: 1
+					classId: 1
+					start: 1
+					endDate: 1
+		}
+	}, {
+		find: (c) ->
+			ChatRooms.find
+				type: 'class'
+				'classInfo.ids': c._id
+		children: [{
+			find: (room) ->
+				ChatMessages.find {
+					chatRoomId: room._id
+				}, {
+					limit: 1
+					sort:
+						time: -1
+				}
+		}, {
+			find: (room) ->
+				Meteor.users.find _id: $in: room.users
+		}]
+	}]
+
 Meteor.publish 'schools', (externalId) ->
 	check externalId, Match.Any
 
@@ -154,7 +182,7 @@ Meteor.publishComposite 'project', (id) ->
 	check id, Mongo.ObjectID
 	find: -> Projects.find _id: id, participants: @userId
 	children: [{
-		find: (project) -> ChatRooms.findOne projectId: id
+		find: (project) -> ChatRooms.find projectId: project._id
 		children: [{
 			find: (room) ->
 				# Just the last message to show on the projectView.

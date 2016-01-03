@@ -7,6 +7,12 @@
 //div.head2
 //	col(4/12)
 
+.projectContainer
+	hr
+		margin: 0
+		margin-left: -25px
+		margin-right: -25px
+
 div.projectInfoContainer
 	padding-top: 5px
 	padding-bottom: 5px
@@ -80,15 +86,15 @@ div#chatButton:active
 
 span#addPersonIcon, span#addFileIcon
 	color: gray
-	vertical-align: middle
 	font-size: 20px
-	position: absolute
-	right: 25px
-	top: 20px
 	cursor: pointer
 	opacity: .5
 
 	transition: .1s opacity linear
+
+	float: right
+	line-height: 40px
+	margin-right: 15px
 
 span#addPersonIcon:hover, span#addFileIcon:hover
 	opacity: 1
@@ -99,8 +105,14 @@ span.projectTitle
 	text-overflow: ellipsis
 
 div.projectViewItemContainer
-	div.itemContainerContent
-		font-size: 35px
+	height: calc(100vh - 320px)
+
+div.projectViewItemContainer > div
+	padding: 0
+	font-size: 35px
+
+	a
+		text-decoration: none !important
 
 div.fileRow, div.personRow
 	cursor: pointer
@@ -117,7 +129,7 @@ div.personRow
 	font-weight: normal
 
 	.removePersonButton
-		line-height: rowHeight
+		line-height: rowHeight - 5
 
 	img
 		border-left: 3px black solid
@@ -184,7 +196,6 @@ div.projectHeader:hover span#changeProjectIcon
 	span#changeProjectIcon
 		opacity: 1 !important
 
-+mobile()
 	div.projectHeader
 		stack()
 		text-align: center

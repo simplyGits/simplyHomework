@@ -422,6 +422,14 @@
 					calendarItem.schoolHour = a.beginBySchoolHour();
 					calendarItem.location = a.location();
 
+					var teacher = a.teachers()[0];
+					if (teacher != null) {
+						calendarItem.teacher = {
+							name: teacher.fullName(),
+							id: teacher.id(),
+						};
+					}
+
 					var absenceInfo = a.absenceInfo();
 					if (absenceInfo != null) {
 						calendarItem.absenceInfo = {
@@ -583,6 +591,98 @@
 
 					return assignment;
 				}));
+			}
+		});
+
+		return fut.wait();
+	};
+
+	MagisterBinding.getMessages = function (folder, skip, limit, userId) {
+		check(folder, String);
+		check(skip, Number);
+		check(limit, Number);
+		check(userId, String);
+
+		var fut = new Future();
+
+		var magister = getMagisterObject(userId);
+		if (folder === 'inbox') {
+			folder = magister.inbox();
+		} else if (folder === 'outbox') {
+			folder = magister.sentItems();
+		}
+
+		folder.messages({
+			limit: limit,
+			skip: skip,
+		}, function (e, r) {
+			if (e) {
+				fut.throw(e);
+			} else {
+				fut.return(r.map(function (m) {
+					return {
+						_id: m.id(),
+						sendDate: m.sendDate(),
+						body: m._body,
+						sender: m.sender().description(),
+						subject: m.subject(),
+						recipients: _.pluck(m.recipients(), '_description'),
+						read: m.isRead(),
+						attachmentCount: m.attachments().length,
+
+						_fillUrl: m._fillUrl,
+					};
+				}));
+			}
+		});
+
+		return fut.wait();
+	};
+
+	MagisterBinding.fillMessage = function (obj, userId) {
+		check(obj, Object);
+		check(userId, String);
+
+		// TODO: this function doesn't make sense at all.
+		return obj; // tmp until function is fixed.
+
+		var message = _.extend(new Magister.Message(), obj);
+		var fut = new Future();
+
+		message.fillMessage(function (e, r) {
+			if (e) {
+				fut.throw(e);
+			} else {
+				console.log(r);
+				fut.return({
+					_id: m.id(),
+					sendDate: r.sendDate(),
+					summary: r.body(),
+					sender: r.sender().description(),
+					subject: r.subject(),
+					recipients: _.pluck(r.recipients(), '_description'),
+					read: r.isRead(),
+
+					_fillUrl: r._fillUrl,
+				});
+			}
+		});
+
+		return fut.wait();
+	};
+
+	MagisterBinding.composeMessage = function (subject, body, recipients, userId) {
+		check(subject, String);
+		check(body, String);
+		check(recipients, [String]);
+		check(userId, String);
+
+		var fut = new Future();
+		getMagisterObject(userId).composeAndSendMessage(subject, body, recipients, function (e, r) {
+			if (e) {
+				fut.throw(e);
+			} else {
+				fut.return();
 			}
 		});
 

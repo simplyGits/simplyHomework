@@ -30,9 +30,9 @@
 	</div>
 
 	<div class="body">
-		simplyHomework is een automatische huiswerkplanner die je leven makkelijker maakt.
+		simplyHomework is een handig overzicht dat je leven makkelijker maakt.
 		<br><br>
-		Het haalt automatisch je huiswerk van magister, zoekt de juiste woordenlijsten bij het huiswerk, plant automatisch voor proefwerken en nog veel meer.
+		Het haalt automatisch je huiswerk van magister, brengt alle websites samen, regelt je projecten en laat je chatten met je klasgenoten.
 		<br><br>
 		We moeten nog een paar dingen van je weten voordat we kunnen beginnen.
 	</div>
@@ -118,60 +118,6 @@
 			</div>
 		</form>
 
-	</div>
-</template>
-
-<template name="plannerPrefsDay">
-	<div class="group select">
-		<label>{{name}}</label>
-		<select>
-			{{#each weightOptions}}
-				<option data-day-index="{{index}}" selected="{{selected}}">{{name}}</option>
-			{{/each}}
-		</select>
-	</div>
-</template>
-
-<template name="setup-plannerPrefs">
-	<div class="header">
-		Planner voorkeuren
-	</div>
-
-	<div class="body">
-		<h4 style="text-align: center; margin-bottom: 20px;">Hoeveel tijd heb je op elke weekdag?<small><br><i>(schooltijd niet meegerekend)</i><br>Je kan dit altijd in je instellingen aanpassen.</small></h4>
-		<form class="vertical full-width">
-			{{#each weekdays}}
-				{{> plannerPrefsDay}}
-			{{/each}}
-		</form>
-	</div>
-</template>
-
-<template name="setup-getExternalClasses">
-	<div class="header">
-		Vakken
-	</div>
-
-	<div class="body" id="getExternalClasses">
-		{{#unless externalClasses}}
-			<div style="position: relative; width: 100%; text-align: center; font-size: 16px">
-				Vakken aan het ophalen...<br>
-				<div id="spinner"></div>
-			</div>
-		{{else}}
-			<div>
-				We hebben geprobeerd zoveel mogelijk vakken automatisch op te
-				halen, vakken die missen kan je later toevoegen.
-			</div>
-			<div id="result">
-				{{#each externalClasses}}
-					<div id="{{_id}}" style="border-color: {{color}}">
-						<div id="classTitle">{{name}}</div>
-						<input class="form-control" type="text" id="method" placeholder="Methode"/>
-					</div>
-				{{/each}}
-			</div>
-		{{/unless}}
 	</div>
 </template>
 
