@@ -73,7 +73,7 @@ Template.projectView.onCreated ->
 		return unless driveLoaded.get()
 
 		x = cachedProjectFiles.get()
-		fileIds = _.reject @driveFileIds, (s) -> s in x or _.contains loading, s
+		fileIds = _.reject currentProject().driveFileIds, (s) -> s in x or _.contains loading, s
 		needed = fileIds.length
 
 		push = (r) ->
@@ -145,7 +145,7 @@ Template.projectView.events
 							if (val = r.docs[0].name.replace(/[-_]/g, " ").split(".")).length is 1
 								val[0]
 							else
-								_.initial(val)[0].join "."
+								_.initial(val).join '.'
 						)
 				).execute (res) ->
 					if res.error?
