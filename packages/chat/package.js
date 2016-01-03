@@ -30,10 +30,6 @@ Package.onUse(function(api) {
 		'ddp-rate-limiter',
 	], 'server');
 
-	api.addAssets([
-		'audio/chatNotification.ogg',
-	], 'client')
-
 	api.addFiles([
 		'lib/chatRoom.coffee',
 		'lib/chatMessage.coffee',
