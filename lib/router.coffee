@@ -1,9 +1,3 @@
-###
-@subs = new SubsManager
-	cacheLimit: 40
-	expireIn: 10
-###
-
 renderAppTemplate = (name) ->
 	BlazeLayout.render 'app', main: name
 
@@ -26,13 +20,21 @@ FlowRouter.triggers.exit [
 		$('.tooltip').tooltip 'destroy'
 ]
 
-FlowRouter.route '/',
-	name: 'launchPage'
+FlowRouter.route '/login',
+	name: 'login'
 	triggersEnter: [
 		(context, redirect) ->
 			redirect 'overview' if Meteor.userId()? or Meteor.loggingIn()
 	]
-	action: -> BlazeLayout.render 'launchPage'
+	action: -> BlazeLayout.render 'login_signup'
+
+FlowRouter.route '/signup',
+	name: 'signup'
+	triggersEnter: [
+		(context, redirect) ->
+			redirect 'overview' if Meteor.userId()? or Meteor.loggingIn()
+	]
+	action: -> BlazeLayout.render 'login_signup'
 
 FlowRouter.route '/verify/:token',
 	name: 'verifyMail'

@@ -4,6 +4,7 @@ Meteor.startup -> # my eyes feel dizzy, i think. cant remember. please. help.
 	BrowserPolicy.content.allowFontOrigin 'themes.googleusercontent.com'
 	BrowserPolicy.content.allowFontOrigin 'fonts.gstatic.com'
 
+	BrowserPolicy.content.allowImageOrigin 'simplyapps.nl'
 	BrowserPolicy.content.allowImageOrigin 'www.gravatar.com'
 	BrowserPolicy.content.allowImageOrigin 'http://csi.gstatic.com/'
 	BrowserPolicy.content.allowImageOrigin 'http://stats.g.doubleclick.net'
@@ -14,6 +15,7 @@ Meteor.startup -> # my eyes feel dizzy, i think. cant remember. please. help.
 	BrowserPolicy.content.allowImageOrigin 'ssl.gstatic.com'
 	BrowserPolicy.content.allowImageOrigin 'apis.google.com'
 
+	BrowserPolicy.content.allowMediaOrigin 'simplyapps.nl'
 	BrowserPolicy.content.allowMediaOrigin 'www.ispeech.org'
 
 	BrowserPolicy.content.allowScriptOrigin 'html5shiv.googlecode.com'
