@@ -6,10 +6,12 @@ Template.personView.helpers
 	person: currentPerson
 
 	backColor: ->
+		p = currentPerson()
+
 		res = (
-			if not @status? then '#000000'
-			else if @status.idle then '#FF9800'
-			else if @status.online then '#4CAF50'
+			if not p.status? then '#000000'
+			else if p.status.idle then '#FF9800'
+			else if p.status.online then '#4CAF50'
 			else '#EF5350'
 		)
 
@@ -41,17 +43,8 @@ Template.personView.onCreated ->
 				setPageOptions
 					title: "#{person.profile.firstName} #{person.profile.lastName}"
 
-		@autorun =>
-			id = FlowRouter.getParam 'id'
-			@subscribe 'status', [ id ]
-			@subscribe 'usersData', [ id ], onReady: ->
-				person = Meteor.users.findOne id
-				if person?
-					setPageOptions
-						title: "#{person.profile.firstName} #{person.profile.lastName}"
-
-				else
-					notFound()
+			else
+				notFound()
 
 Template.personView.onRendered ->
 	slide()

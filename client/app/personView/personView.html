@@ -34,33 +34,40 @@
 </template>
 
 <template name="personStats">
-	{{#each stats}}
-		{{this}}
-	{{/each}}
+	{{#if stats}}
+		<div class="itemContainer" id="personStats">
+			<header>Feitjes</header>
+			<div>
+				{{#each stats}}
+					{{this}}
+				{{/each}}
+			</div>
+		</div>
+	{{/if}}
 </template>
 
 <template name="personSharedHours">
-{{#if days}}
-<div class="itemContainer" id="personSharedHours">
-	<header>Lessen met {{profile.firstName}} volgende week</header>
-	<div>
-		<ul>
-			{{#each days}}
-				{{name}}:
-				<li>
-					<ul>
-						{{#each hours}}
-							<a href="{{pathFor 'classView' id=class._id}}">
-								<li><b>{{schoolHour}}</b>: {{class.name}}</li>
-							</a>
-						{{/each}}
-					</ul>
-				</li>
-			{{/each}}
-		</ul>
-	</div>
-</div>
-{{/if}}
+	{{#if days}}
+		<div class="itemContainer" id="personSharedHours">
+			<header>Lessen met {{profile.firstName}} volgende week</header>
+			<div>
+				<ul>
+					{{#each days}}
+						{{name}}:
+						<li>
+							<ul>
+								{{#each hours}}
+									<a href="{{pathFor 'classView' id=class._id}}">
+										<li><b>{{schoolHour}}</b>: {{class.name}}</li>
+									</a>
+								{{/each}}
+							</ul>
+						</li>
+					{{/each}}
+				</ul>
+			</div>
+		</div>
+	{{/if}}
 </template>
 
 <template name="reportUserModal">
