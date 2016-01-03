@@ -147,10 +147,12 @@ Meteor.methods
 		check query, String
 		check options, Object
 		@unblock()
-		query = query.trim().toLowerCase()
+		orig = query.trim().toLowerCase()
+		query = orig.replace /(woordenlijst(en))/g, ''
 
 		userId = @userId
 		classInfos = getClassInfos userId
+		schoolId = getUserField userId, 'profile.schoolId'
 
 		unless userId?
 			throw new Meteor.Error 'notLoggedIn', 'User not logged in.'
@@ -179,12 +181,13 @@ Meteor.methods
 					title: p.name
 			}).fetch()
 
-			bookName = Books.findOne(classInfo.bookId)?.title ? ''
-			query = "#{normalizeClassName c.name} #{bookName} #{query}"
-			res = res.concat Scholieren.getReports(query).map (item) ->
-				_.extend item,
-					type: 'report'
-					filtered: yes
+			unless _.contains(orig, 'woordenlijst')
+				bookName = Books.findOne(classInfo.bookId)?.title ? ''
+				query = "#{normalizeClassName c.name} #{bookName} #{query}"
+				res = res.concat Scholieren.getReports(query).map (item) ->
+					_.extend item,
+						type: 'report'
+						filtered: yes
 
 			try
 				res = res.concat WoordjesLeren.getBooks(c.externalInfo['woordjesleren'].id).map (item) ->

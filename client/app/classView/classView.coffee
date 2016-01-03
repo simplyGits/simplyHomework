@@ -156,8 +156,6 @@ Template.classView.events
 
 	'keydown #searchBar > input': (event) ->
 		query = event.target.value.trim()
-		# TODO: remove this and make search smarter.
-		query.replace /(woordenlijst(en))/g, ''
 
 		if event.which is 13 and query.length > 0
 			searchRes.set undefined
