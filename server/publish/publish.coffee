@@ -18,7 +18,7 @@ Meteor.publish 'usersData', (ids) ->
 				if ids? then { $in: ids }
 				else { $ne: userId }
 			)
-			#'profile.schoolId': schoolId
+			'profile.schoolId': schoolId
 			'profile.firstName': $ne: ''
 		}, fields: profile: 1
 
@@ -32,8 +32,11 @@ Meteor.publish 'status', (ids) ->
 		@ready()
 		return undefined
 
+	schoolId = Meteor.users.findOne(@userId).profile.schoolId
+
 	Meteor.users.find {
 		_id: $in: ids
+		'profile.schoolId': schoolId
 		$or: [
 			{ 'settings.privacy.publishStatus': $exists: no }
 			{ 'settings.privacy.publishStatus': yes }

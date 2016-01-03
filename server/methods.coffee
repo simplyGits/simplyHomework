@@ -194,6 +194,7 @@ Meteor.methods
 		else
 			res = res.concat Meteor.users.find({
 				'profile.firstName': $ne: ''
+				'profile.schoolId': schoolId
 			}, {
 				fields:
 					profile: 1
