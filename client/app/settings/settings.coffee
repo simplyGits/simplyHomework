@@ -5,7 +5,7 @@ items = [
 	[ 'privacy', 'Privacyopties' ]
 	[ 'externalServices', 'Verbonden sites' ]
 	[ 'classes', 'Vakken' ]
-	[ 'notifications', 'Notificaties' ]
+	#[ 'notifications', 'Notificaties' ]
 	[ 'about', 'Over simplyHomework' ]
 ].map ([ name, friendlyName ]) ->
 	name: name
