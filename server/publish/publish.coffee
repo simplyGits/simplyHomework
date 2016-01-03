@@ -35,8 +35,8 @@ Meteor.publish 'status', (ids) ->
 	Meteor.users.find {
 		_id: $in: ids
 		$or: [
-			'settings.privacy.publishStatus': $exists: no
-			'settings.privacy.publishStatus': yes
+			{ 'settings.privacy.publishStatus': $exists: no }
+			{ 'settings.privacy.publishStatus': yes }
 		]
 	}, {
 		fields:
