@@ -13,6 +13,9 @@ items = [
 	templateName: 'settings_page_' + name
 
 Template.settings.helpers
+	exists: ->
+		page = currentPage()
+		not page? or _.any items, name: page
 	page: -> _.find items, (x) -> x.name is currentPage()
 
 Template.settings.events

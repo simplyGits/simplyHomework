@@ -1,18 +1,22 @@
 <template name="settings">
-	<div id="settings">
-		{{> settings_sidebar}}
-		{{#with page}}
-			<div class="page">
-				<div class="header">
-					{{friendlyName}}
-					<span id="closeButton">&times;</span>
+	{{#if exists}}
+		<div id="settings">
+			{{> settings_sidebar}}
+			{{#with page}}
+				<div class="page">
+					<div class="header">
+						{{friendlyName}}
+						<span id="closeButton">&times;</span>
+					</div>
+					<div class="settingsContent">
+						{{> Template.dynamic template=templateName}}
+					</div>
 				</div>
-				<div class="settingsContent">
-					{{> Template.dynamic template=templateName}}
-				</div>
-			</div>
-		{{/with}}
-	</div>
+			{{/with}}
+		</div>
+	{{else}}
+		{{> notFound}}
+	{{/if}}
 </template>
 
 <template name="settings_sidebar">
