@@ -26,11 +26,7 @@ getTasks = ->
 			__taskDescription: item.content.description
 			__className: Classes.findOne(item.classId)?.name ? ''
 			__isDone: (d) ->
-				if d?
-					CalendarItems.update item._id, (
-						if d then $push: usersDone: Meteor.userId()
-						else $pull: usersDone: Meteor.userId()
-					)
+				Meteor.call 'markCalendarItemDone', item._id, d if d?
 				Meteor.userId() in item.usersDone
 	}).fetch()
 

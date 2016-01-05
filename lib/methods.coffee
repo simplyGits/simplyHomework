@@ -102,3 +102,15 @@ Meteor.methods
 			classId
 		)
 		Projects.insert project
+
+	markCalendarItemDone: (id, done) ->
+		check id, String
+		check done, Boolean
+
+		userId = @userId
+
+		update = (mod) -> CalendarItems.update { _id: id, userIds: userId }, mod
+		if done
+			update $addToSet: usersDone: userId
+		else
+			update $pull: usersDone: userId
