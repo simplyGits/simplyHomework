@@ -11,6 +11,12 @@
 	-o-background-size: cover
 	background-size: cover
 
+	#overlay
+		fixed: top left right bottom
+		background-color: black
+		opacity: .3
+		z-index: 0
+
 	.appNameHeader
 		fixed: top
 		color: white
@@ -20,19 +26,24 @@
 	.appNameHeader:before
 		opacity: .6
 
-	.center
-		width: 100%
-		text-align: center
+	.container
+		z-index: 10
+		fixed: top left right bottom
+		overflow: auto
 
-	h1
-		padding-top: 20px
-		text-transform: uppercase
-		font-weight: 600
-		text-shadow: 0 3px 4px rgba(0,0,0,0.6), 0 1px 2px
-		font-size: 3em
+		.center
+			width: 100%
+			text-align: center
 
-	input:not([type="submit"])
-		color: black
+		h1
+			padding-top: 20px
+			text-transform: uppercase
+			font-weight: 600
+			text-shadow: 0 3px 4px rgba(0,0,0,0.6), 0 1px 2px
+			font-size: 3em
 
-	#loginButton
-		float: right
+		input:not([type="submit"])
+			color: black
+
+		#loginButton
+			float: right
