@@ -48,8 +48,8 @@ Package.onUse(function(api) {
 
 		'client/lessons/currentLesson.html',
 		'client/lessons/currentLesson.coffee',
-		'client/lessons/nextLesson.html',
-		'client/lessons/nextLesson.coffee',
+		'client/lessons/nextlesson.html',
+		'client/lessons/nextlesson.coffee',
 
 		'client/scrappedHours/srappedHours.html',
 		'client/scrappedHours/srappedHours.styl',
