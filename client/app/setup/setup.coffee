@@ -297,7 +297,8 @@ progressInfo = ->
 	current = currentItemIndex.get()
 	length = _(running)
 		.reject (item) -> item.visisble is no
-		.count()
+		.value()
+		.length
 
 	percentage: (current / length) * 100
 	current: current
