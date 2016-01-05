@@ -17,7 +17,8 @@ Reload._onMigrate('lazy-code-push', function (retry) {
 	if (Package['kadira:flow-router']) {
 		var FlowRouter = Package['kadira:flow-router'].FlowRouter;
 		onIgnoredRoute = [
-			'launchPage',
+			'login',
+			'signup',
 			undefined, // 404 route
 		].indexOf(FlowRouter.getRouteName()) > -1;
 	}
