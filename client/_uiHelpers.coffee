@@ -126,17 +126,6 @@ http://tomsmeding.com/
 		yes
 	else no
 
-###*
-# Force Beatrix to speak out the given `text`.
-#
-# @method speak
-# @param text {String} The string to speak out.
-###
-@speak = (text) ->
-	audio = new Audio
-	audio.src = "http://www.ispeech.org/p/generic/getaudio?text=#{text}%2C&voice=eurdutchfemale&speed=0&action=convert"
-	audio.play()
-
 # TODO: Give this its own package
 ###*
 # The manager for notificafions.
