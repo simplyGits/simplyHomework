@@ -143,8 +143,8 @@ setupItems = [
 					'profile.firstName': Helpers.nameCap $firstNameInput.val()
 					'profile.lastName': Helpers.nameCap $lastNameInput.val()
 					'profile.birthDate':
-						# Picks the date from the first externalService that has one. Maybe we
-						# should ask the user too?
+						# Picks the date from the first externalService that has one.
+						# REVIEW: Maybe we should ask the user too?
 						_(externalServices.get())
 							.map (s) -> s.profileData()?.birthDate
 							.find _.isDate
@@ -220,6 +220,13 @@ setupItems = [
 				no
 			)
 	}
+
+	{
+		name: 'final'
+		func: ->
+			name = Meteor.user().profile.firstName
+			document.location.href = "https://www.simplyhomework.nl/first-use##{name}"
+	}
 ]
 running = undefined
 
@@ -235,17 +242,19 @@ running = undefined
 	setupProgress = setupProgress.concat [
 		'welcome'
 		'cookies'
+		'final'
 		'newSchoolYear' # TODO: Dunno how're going to do this shit
 	]
 
 	running = _.filter setupItems, (item) -> item.name not in setupProgress
 
 	if running.length > 0
-		# We need to insert the 'welcome' _before_ all the items in the `running`
-		# array.
+		# We need to insert the 'welcome' and 'cookies' _before_ all the items in
+		# the `running` array, and the 'final' _after_ them!
 		running = _(setupItems)
 			.take 2
 			.concat(running)
+			.push _.last(setupItems)
 			.value()
 
 		Session.set 'runningSetup', yes
