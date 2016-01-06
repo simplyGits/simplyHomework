@@ -546,7 +546,7 @@
 			picture: pictureFut.wait(),
 			courseInfo: {
 				year: courseInfo.type.year,
-				schoolVariant: courseInfo.type.schoolVariant != null ? courseInfo.type.schoolVariant.toLowerCase() : undefined,
+				schoolVariant: courseInfo.type.schoolVariant != null ? courseInfo.type.schoolVariant.toLowerCase() : '',
 				profile: courseInfo.profile,
 			},
 			mainGroup: courseInfo.group,
