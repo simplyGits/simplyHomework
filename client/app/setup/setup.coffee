@@ -82,7 +82,9 @@ setupItems = [
 					DialogButtons.OkCancel
 					{ main: 'doorgaan', second: 'woops' }
 					{ main: 'btn-danger' }
-					main: -> cb true
+					main: ->
+						cb true
+						Meteor.users.update Meteor.userId(), $addToSet: setupProgress: 'externalServices'
 					second: -> cb false
 				)
 				return
