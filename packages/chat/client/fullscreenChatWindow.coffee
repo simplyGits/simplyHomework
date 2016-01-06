@@ -17,13 +17,12 @@ Template.fullscreenChatWindow.helpers
 Template.fullscreenChatWindow.events
 	"click #header": (e) ->
 		FlowRouter.withReplaceState =>
-			switch @type
-				when 'private'
-					FlowRouter.go 'personView', id: @user()._id
-				when 'project'
-					FlowRouter.go 'projectView', id: @project()._id.toHexString()
-				when 'class' and @_class()?
-					FlowRouter.go 'classView', id: @_class()._id
+			if @type is 'private'
+				FlowRouter.go 'personView', id: @user()._id
+			else if @type is 'private'
+				FlowRouter.go 'projectView', id: @project()._id.toHexString()
+			else if @type is 'class' and @class()?
+				FlowRouter.go 'classView', id: @class()._id
 
 	"click .closeChat": -> ChatManager.closeChat()
 

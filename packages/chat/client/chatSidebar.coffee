@@ -24,6 +24,7 @@ currentSearchTerm = new ReactiveVar ''
 	_.extend room,
 		user: user
 		project: project
+		class: _class
 
 		status: ->
 			u = user()
