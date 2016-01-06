@@ -35,10 +35,10 @@ FastRender.onAllRoutes ->
 	if @userId?
 		@subscribe 'classes'
 
-FastRender.route '/app', ->
+FastRender.route '/', ->
 	@subscribe 'externalCalendarItems', Date.today(), Date.today().addDays 4
 
-FastRender.route '/app/calendar/:date?', (params) ->
+FastRender.route '/calendar/:date?', (params) ->
 	date = (
 		time = +params.date
 		if isFinite time
@@ -53,16 +53,16 @@ FastRender.route '/app/calendar/:date?', (params) ->
 	)
 	@subscribe 'classes', all: yes
 
-FastRender.route '/app/person/:id', (params) ->
+FastRender.route '/person/:id', (params) ->
 	@subscribe 'status', [ params.id ]
 	@subscribe 'usersData', [ params.id ]
 	if params.id isnt @userId
 		@subscribe 'externalCalendarItems', Date.today(), Date.today().addDays 7
 
-FastRender.route '/app/class/:id', (params) ->
+FastRender.route '/class/:id', (params) ->
 		@subscribe 'externalStudyUtils', params.id
 		@subscribe 'externalGrades', classId: params.id
 		@subscribe 'classInfo', params.id
 
-FastRender.route '/app/chat/:id', (params) ->
+FastRender.route '/chat/:id', (params) ->
 	@subscribe 'chatMessages', params.id, 40
