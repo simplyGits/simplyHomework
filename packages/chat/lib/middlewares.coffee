@@ -26,10 +26,11 @@ ChatMiddlewares =
 	# Runs the given `message` through every middleware in order.
 	# @method run
 	# @param {ChatMessage} message
+	# @param {String} [platform] The platform to run the middlewares for, if none is given one will automatically be chosen.
 	# @return {ChatMessage}
 	###
-	run: (message) ->
-		platform = if Meteor.isClient then 'client' else 'server'
+	run: (message, platform) ->
+		platform ?= if Meteor.isClient then 'client' else 'server'
 
 		for item in _.filter(@_middlewares, { platform })
 			try
@@ -78,30 +79,6 @@ ChatMiddlewares.attach 'emojione', 'client', (message) ->
 		message.content = emojione.toImage message.content
 	message
 
-# TODO: This needs to be serverside to find every user.
-ChatMiddlewares.attach 'clickable names', 'client', (message) ->
-	users = _(message.content)
-		.split /\W/
-		.map (word, i) ->
-			Meteor.users.findOne
-				_id: $nin: [Meteor.userId(), message.creatorId]
-				$or: [
-					{ 'profile.firstName': $regex: word, $options: 'i' }
-					{ 'profile.lastName': $regex: word, $options: 'i' }
-				]
-		.compact()
-		.uniq '_id'
-		.value()
-
-	for user in users
-		{ firstName, lastName } = user.profile
-		regex = new RegExp "@?(#{firstName} #{lastName}|#{firstName}|#{lastName})", 'g'
-		message.content = message.content.replace regex, (str) ->
-			path = FlowRouter.path 'personView', id: user._id
-			"<a href='#{path}' class='name'>#{str}</a>"
-
-	message
-
 ChatMiddlewares.attach 'markdown', 'client', (message) ->
 	message.content = marked message.content
 	message
@@ -130,5 +107,30 @@ ChatMiddlewares.attach 'add hidden fields', 'client', (cm) ->
 			}, {
 				limit: 3
 			}
+
+ChatMiddlewares.attach 'clickable names', 'insert', (message) ->
+	schoolId = Meteor.user().profile.schoolId
+	users = _(message.content)
+		.split /\W/
+		.map (word, i) ->
+			Meteor.users.findOne
+				_id: $nin: [ Meteor.userId(), message.creatorId ]
+				$or: [
+					{ 'profile.firstName': $regex: word, $options: 'i' }
+					{ 'profile.lastName': $regex: word, $options: 'i' }
+				]
+				'profile.schoolId': schoolId
+		.compact()
+		.uniq '_id'
+		.value()
+
+	for user in users
+		{ firstName, lastName } = user.profile
+		regex = new RegExp "@?(#{firstName} #{lastName}|#{firstName}|#{lastName})", 'g'
+		message.content = message.content.replace regex, (str) ->
+			path = FlowRouter.path 'personView', id: user._id
+			"<a href='#{path}' class='name'>#{str}</a>"
+
+	message
 
 @ChatMiddlewares = ChatMiddlewares
