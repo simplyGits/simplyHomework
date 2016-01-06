@@ -55,6 +55,11 @@ setupItems = [
 	}
 
 	{
+		name: 'cookies'
+		async: no
+	}
+
+	{
 		name: 'externalServices'
 		async: no
 		onDone: (cb) ->
@@ -227,6 +232,7 @@ running = undefined
 	setupProgress = getUserField Meteor.userId(), 'setupProgress', []
 	setupProgress = setupProgress.concat [
 		'welcome'
+		'cookies'
 		'newSchoolYear' # TODO: Dunno how're going to do this shit
 	]
 
@@ -236,7 +242,7 @@ running = undefined
 		# We need to insert the 'welcome' _before_ all the items in the `running`
 		# array.
 		running = _(setupItems)
-			.take()
+			.take 2
 			.concat(running)
 			.value()
 

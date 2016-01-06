@@ -288,19 +288,3 @@ Template.app.onRendered ->
 		@autorun -> try UserStatus.startMonitor idleOnBlur: yes
 	else
 		setMobileSettings()
-
-	if not getEvent('cookiesNotice')? and
-	$('#cookiesContainer').length is 0
-		Blaze.render Template.cookies, document.body
-		$cookiesContainer = $ '#cookiesContainer'
-
-		$cookiesContainer
-			.addClass 'visible'
-
-			.find 'button'
-			.click ->
-				Meteor.call 'markUserEvent', 'cookiesNotice'
-				$cookiesContainer
-					.removeClass 'visible'
-					.on 'transitionend webkitTransitionEnd oTransitionEnd', ->
-						$(this).remove()
