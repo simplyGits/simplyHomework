@@ -82,4 +82,4 @@ Template.deleteAccountModal.events
 					notify 'Oops, er is iets fout gegaan.', 'error'
 			else
 				analytics?.track 'Removed Account'
-				Router.go 'launchPage'
+				document.location.href = 'https://simplyhomework.nl/'

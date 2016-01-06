@@ -11,10 +11,9 @@ class @App
 	# @method logout
 	###
 	@logout: ->
-		FlowRouter.go 'launchPage'
-		Meteor.defer ->
-			Meteor.logout()
-			NotificationsManager.hideAll()
+		Meteor.logout()
+		NotificationsManager.hideAll()
+		document.location.href = 'https://simplyhomework.nl/'
 
 # == Modals ==
 addClassModalBooks = new ReactiveVar []
