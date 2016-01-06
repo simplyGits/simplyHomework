@@ -104,6 +104,11 @@ class @ChatManager
 	@openProjectChat: (projectId) ->
 		@openChat ChatRooms.findOne({ projectId })?._id
 
+	###*
+	# Opens the classgroup chat for group of the user for the given class ID.
+	# @method openClassChat
+	# @param {String} classId
+	###
 	@openClassChat: (classId) ->
 		@openChat ChatRooms.findOne({ 'classInfo.ids': classId })?._id
 
