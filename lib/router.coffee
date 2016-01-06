@@ -66,12 +66,8 @@ appRoutes = FlowRouter.group
 	name: 'app'
 	triggersEnter: [
 		(context, redirect) ->
-			redirect 'launchPage' unless Meteor.userId()? or Meteor.loggingIn()
-
-		(context, redirect) -> $('body').addClass 'noscroll'
-	]
-	triggersExit: [
-		(context) -> $('body').removeClass 'noscroll'
+			unless Meteor.userId()? or Meteor.loggingIn()
+				document.location.href = 'https://simplyhomework.nl/'
 	]
 
 appRoutes.route '/',
