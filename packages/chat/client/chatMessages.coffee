@@ -79,18 +79,21 @@ Template.chatMessages.onRendered ->
 	, 10
 	@sendToBottomIfNecessary()
 
-	@autorun => # HACK
-		localCount()
-		currentBigNotice._reactiveVar.dep.depend()
-		Meteor.defer =>
-			@sendToBottomIfNecessary()
-
 	@onWindowResize = => Meteor.defer => @sendToBottomIfNecessary()
 	window.addEventListener 'resize', @onWindowResize
 
 	@markRead = => Meteor.defer => throttledMarkRead this
 	window.addEventListener 'mousemove', @markRead
 	window.addEventListener 'keyup', @markRead
+
+	@autorun => # HACK
+		localCount()
+		currentBigNotice._reactiveVar.dep.depend()
+		Meteor.defer =>
+			@sendToBottomIfNecessary()
+
+		if Session.equals 'deviceType', 'phone'
+			@data.markRead()
 
 Template.chatMessages.onDestroyed ->
 	window.removeEventListener 'resize', @onWindowResize
