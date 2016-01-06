@@ -10,8 +10,11 @@ Meteor.methods
 		if userId is @userId
 			throw new Meteor.Error 'same-person', "Can't create a chat with yourself."
 
-		if (val = ChatRooms.findOne users: [@userId, userId])?
-			val._id
+		room = ChatRooms.findOne
+			type: 'private'
+			users: [ @userId, userId ]
+
+		if room? then room._id
 		else
 			chatRoom = new ChatRoom @userId, 'private'
 			chatRoom.users.push userId
