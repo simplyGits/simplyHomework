@@ -98,3 +98,4 @@ Meteor.startup ->
 	Meteor.users._ensureIndex
 		'profile.firstName': 1
 		'profile.lastName': 1
+		'profile.schoolId': 1
