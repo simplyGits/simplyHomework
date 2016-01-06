@@ -48,7 +48,7 @@ if Package['aldeed:collection2']?
 		lastMessageTime:
 			type: Date
 			optional: yes
-			index: 1
+			index: -1
 		events:
 			type: [Object]
 			blackbox: yes

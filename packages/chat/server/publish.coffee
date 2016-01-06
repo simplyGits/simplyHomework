@@ -3,7 +3,10 @@ Meteor.publishComposite 'basicChatInfo',
 	find: ->
 		ChatRooms.find {
 			users: @userId
-		}, limit: 50 # REVIEW: is this a good value?
+		},
+			limit: 50 # REVIEW: is this a good value?
+			sort:
+				lastMessageTime: -1
 	children: [{
 		find: (room) ->
 			ChatMessages.find {
