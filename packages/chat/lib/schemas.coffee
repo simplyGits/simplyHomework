@@ -33,12 +33,14 @@ if Package['aldeed:collection2']?
 		type:
 			type: String
 			allowedValues: ['private', 'project', 'group', 'class']
+			index: 1
 		users:
 			type: [String]
 			index: 1
 		projectId:
 			type: Meteor.Collection.ObjectID
 			optional: yes
+			index: 1
 		subject:
 			type: String
 			optional: yes
