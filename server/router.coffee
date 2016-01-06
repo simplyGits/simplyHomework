@@ -51,6 +51,7 @@ FastRender.route '/app/calendar/:date?', (params) ->
 		date.addDays -1, yes
 		date.addDays 2, yes
 	)
+	@subscribe 'classes', all: yes
 
 FastRender.route '/app/person/:id', (params) ->
 	@subscribe 'status', [ params.id ]
