@@ -87,7 +87,14 @@ class @ChatManager
 			@openChat room._id
 		else
 			Meteor.call 'createPrivateChatRoom', userId, (e, r) ->
-				ChatManager.openChat r
+				if e?
+					notfy (
+						switch e.error
+							when 'same-person' then 'Je kan niet een chat met jezelf maken'
+							else 'Onbekende fout'
+					), 'error'
+				else
+					ChatManager.openChat r
 
 	###*
 	# Opens the chat for with given project.
