@@ -1,6 +1,7 @@
 currentPerson = -> Meteor.users.findOne FlowRouter.getParam 'id'
 sameUser = -> Meteor.userId() is FlowRouter.getParam 'id'
 pictures = new ReactiveVar []
+personStats = new ReactiveVar
 
 Template.personView.helpers
 	person: currentPerson
@@ -31,18 +32,22 @@ Template.personView.events
 	"click button#chatButton": -> ChatManager.openPrivateChat @_id
 
 Template.personView.onCreated ->
-	@subscribe 'externalCalendarItems', Date.today(), Date.today().addDays 7
-	@subscribe 'classes', hidden: yes
-
 	@autorun =>
+		personStats.set undefined
 		id = FlowRouter.getParam 'id'
+
+		if sameUser()
+			Meteor.call 'getPersonStats', (e, r) -> personStats.set r unless e?
+		else
+			@subscribe 'externalCalendarItems', Date.today(), Date.today().addDays 7
+			@subscribe 'classes', hidden: yes
+
 		@subscribe 'status', [ id ]
 		@subscribe 'usersData', [ id ], onReady: ->
 			person = Meteor.users.findOne id
 			if person?
 				setPageOptions
 					title: "#{person.profile.firstName} #{person.profile.lastName}"
-
 			else
 				notFound()
 
@@ -174,11 +179,4 @@ Template.pictureSelectorItem.events
 		$('#changePictureModal').modal 'hide'
 
 Template.personStats.helpers
-	stats: ->
-		res = []
-
-		inbetweenHoursCount = getInbetweenHours().length
-		if inbetweenHoursCount > 0
-			res.push "Aantal tussenuren in één week: #{inbetweenHoursCount}"
-
-		res
+	stats: -> personStats.get()

@@ -340,3 +340,15 @@ Meteor.methods
 
 				Meteor.users.update Meteor.userId(), $pull: classInfos: id: info.id
 				Meteor.users.update Meteor.userId(), $push: classInfos: info
+
+	'getPersonStats': ->
+		@unblock()
+
+		userId = @userId
+		res = []
+
+		inbetweenHoursCount = getInbetweenHours(userId).length
+		if inbetweenHoursCount > 0
+			res.push "Aantal tussenuren in één week: #{inbetweenHoursCount}"
+
+		res
