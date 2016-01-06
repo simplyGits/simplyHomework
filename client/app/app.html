@@ -14,7 +14,11 @@
 				<div id="mobileHeader" style="border-color: {{pageColor}}">
 					<i class="fa fa-bars headerIcon" data-snap-side="left"></i>
 					<div id="title">{{pageTitle}}</div>
-					<i class="fa fa-users headerIcon" data-snap-side="right"></i>
+					<i class="fa fa-users headerIcon" data-snap-side="right">
+						{{#if unreadChatCount}}
+							<span class="badge">{{unreadChatCount}}</span>
+						{{/if}}
+					</i>
 				</div>
 			{{/unless}}
 			{{#if showAdbar}}
