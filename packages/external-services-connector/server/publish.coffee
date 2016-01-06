@@ -8,9 +8,6 @@ Meteor.publish 'externalCalendarItems', (from, to) ->
 		@ready()
 		return undefined
 
-	from = from.date().addDays -(from.getDay() % 2)
-	to = to.date().addDays to.getDay() % 2
-
 	handle = Helpers.interval (->
 		updateCalendarItems userId, from, to
 	), 1000 * 60 * 20 # 20 minutes
