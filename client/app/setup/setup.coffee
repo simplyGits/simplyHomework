@@ -316,10 +316,6 @@ Template.setup.helpers
 	progressPercentage: -> progressInfo().percentage
 
 Template.setup.onRendered ->
-	setPageOptions
-		title: 'Setup'
-		color: null
-
 	@$('#setup').on 'keyup', 'input:last-child', (e) -> step() if e.which is 13
 
 Template.setupFooter.helpers
