@@ -3,47 +3,72 @@
 
 #loginPage
 	color: white
-	width: 100%
-	height: 100%
-	background: url('/images/loginbg.jpg') no-repeat center center fixed
-	-webkit-background-size: cover
-	-moz-background-size: cover
-	-o-background-size: cover
-	background-size: cover
+	fixed: top left right bottom
+	overflow-x: hidden
+	overflow-y: auto
+
+	#back, #overlay
+		fixed: top left right bottom
+		z-index: -1
 
 	#overlay
-		fixed: top left right bottom
 		background-color: black
 		opacity: .3
-		z-index: 0
+
+	#back
+		background: url('/images/loginbg.jpg') no-repeat center center
+		background-size: cover
 
 	.appNameHeader
-		fixed: top
-		color: white
-		font-size: 2em
-		margin-left: 15px
+		color: #fff
+		font-size: 1.8em
+		margin-bottom: -40px
+		margin-left: 10px
 
 	.appNameHeader:before
 		opacity: .6
 
-	.container
-		z-index: 10
+	h1
+		padding-top: 20px
+		text-transform: uppercase
+		font-weight: 600
+		text-shadow: 0 3px 4px rgba(0,0,0,0.6), 0 1px 2px
+		font-size: 3em
+		text-align: center
+
+	#loadingContainer
 		fixed: top left right bottom
-		overflow: auto
+		background-color: rgba(0, 0, 0, 0.5)
 
-		.center
+		.spinner > div > div
+			background-color: #fff !important
+
+	#container
+		max-width: 500px
+		margin-left: auto
+		margin-right: auto
+		padding: 10px
+
+		#buttons
 			width: 100%
+			height: 50px
+		#buttons > a
+			span(1/2)
 			text-align: center
+			font-size: 20px
+			padding: 5px
+			padding-top: 0
 
-		h1
-			padding-top: 20px
-			text-transform: uppercase
-			font-weight: 600
-			text-shadow: 0 3px 4px rgba(0,0,0,0.6), 0 1px 2px
-			font-size: 3em
+			color: white !important
+			text-decoration: none !important
+		#buttons > a.active
+			border-bottom: 1px white solid
 
-		input:not([type="submit"])
-			color: black
+		fieldset
+			min-width: 100%
 
-		#loginButton
-			float: right
+			input:not([type="submit"])
+				color: black
+
+			input[type="submit"]
+				float: right

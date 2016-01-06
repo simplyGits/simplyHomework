@@ -1,31 +1,39 @@
 <template name="login_signup">
 	<div id="loginPage">
+		<div id="back"></div>
 		<div id="overlay"></div>
-		<div class="appNameHeader"></div>
-		<div class="container">
-			<div class="center">
-				<h1>Jouw overzicht</h1>
-				{{#if loggingIn}}
-					<h2>Inloggen</h2>
-				{{else}}
-					<h2>Account maken</h2>
-				{{/if}}
-			</div>
 
-			<div class="row">
-				<div class="col-md-4">&nbsp;</div>
+		{{#if isLoading}}
+			<div id="loadingContainer">
+				{{> loading}}
+			</div>
+		{{else}}
+			<div class="appNameHeader"></div>
+			<h1>Jouw overzicht</h1>
+
+			<div id="container">
+				<div id="buttons">
+					{{#if loggingIn}}
+						<a href="{{pathFor 'signup'}}">Account maken</a>
+						<a href="{{pathFor 'login'}}" class="active">Inloggen</a>
+					{{else}}
+						<a href="{{pathFor 'signup'}}" class="active">Account maken</a>
+						<a href="{{pathFor 'login'}}">Inloggen</a>
+					{{/if}}
+				</div>
+
 				{{#if loggingIn}}
 					{{> login}}
 				{{else}}
 					{{> signup}}
 				{{/if}}
 			</div>
-		</div>
+		{{/if}}
 	</div>
 </template>
 
 <template name="login">
-	<div class="col-md-4" id="loginForm">
+	<div id="loginForm">
 		<form class="vertical full-width">
 			<fieldset name="Login Form">
 				<div id="emailGroup" class="group">
@@ -39,14 +47,14 @@
 				<div class="group no-margin">
 					<a href="{{pathFor 'forgotPass'}}">Wachtwoord vergeten</a>
 				</div>
-				<input type="submit" class="btn btn-primary" id="loginButton" value="Inloggen"/>
+				<input type="submit" class="btn btn-primary" value="Inloggen"/>
 			</fieldset>
 		</form>
 	</div>
 </template>
 
 <template name="signup">
-	<div class="col-md-4" id="signupForm">
+	<div id="signupForm">
 		<form class="vertical full-width">
 			<fieldset name="Signup Form">
 				<div id="emailGroup" class="group">
@@ -69,7 +77,7 @@
 						</span>
 					</label>
 				</div>
-				<input type="submit" class="btn btn-primary" id="signupLogin" value="Account maken"/>
+				<input type="submit" class="btn btn-primary" value="Account maken"/>
 			</fieldset>
 		</form>
 	</div>

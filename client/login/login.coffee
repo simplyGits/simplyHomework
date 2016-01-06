@@ -1,22 +1,24 @@
+loading = new ReactiveVar no
+
 Template['login_signup'].helpers
 	loggingIn: -> FlowRouter.getRouteName() is 'login'
+	isLoading: -> loading.get()
 
 Template.login.events
-	'submit form': (event) ->
+	'submit': (event) ->
 		event.preventDefault()
 		$emailInput = $ '#emailInput'
 		$passwordInput = $ '#passwordInput'
 
-		Meteor.call 'mailExists', $emailInput.val().toLowerCase(), (error, result) ->
-			if result
-				Meteor.loginWithPassword $emailInput.val().toLowerCase(), $passwordInput.val(), (error) ->
-					if error?
-						if error.reason is 'Incorrect password'
-							setFieldError '#passwordGroup', 'Wachtwoord is fout'
-					else FlowRouter.go 'overview'
-
-			else
-				setFieldError '#emailGroup', 'Account niet gevonden'
+		loading.set yes
+		Meteor.loginWithPassword $emailInput.val().toLowerCase(), $passwordInput.val(), (error) ->
+			loading.set no
+			if error?
+				if error.reason is 'Incorrect password'
+					setFieldError '#passwordGroup', 'Wachtwoord is fout'
+				else if error.reason is 'User not found'
+					setFieldError '#emailGroup', 'Account niet gevonden'
+			else FlowRouter.go 'overview'
 
 Template.login.onRendered ->
 	setPageOptions
@@ -24,7 +26,7 @@ Template.login.onRendered ->
 		color: null
 
 Template.signup.events
-	'submit form': ->
+	'submit': ->
 		event.preventDefault()
 		$emailInput = $ '#emailInput'
 		$passwordInput = $ '#passwordInput'
@@ -47,10 +49,12 @@ Template.signup.events
 			error = yes
 
 		unless error
+			loading.set yes
 			Accounts.createUser {
 				password: $passwordInput.val()
 				email: $emailInput.val().toLowerCase()
 			}, (e, r) ->
+				loading.set no
 				if e?
 					notify 'Onbekende fout, we zijn op de hoogte gesteld.', 'error'
 					Kadira.trackError 'create-account', e.message, stacks: e.stack
