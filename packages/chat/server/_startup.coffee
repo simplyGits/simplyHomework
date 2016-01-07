@@ -40,11 +40,8 @@ Meteor.startup ->
 
 	Meteor.users.find({}).observe
 		removed: (doc) ->
-			ChatRooms.remove {
+			ChatRooms.remove
 				type: 'private'
 				users: doc._id
-			}, {
-				multi: yes
-			}
 
 	loadingObserve = no
