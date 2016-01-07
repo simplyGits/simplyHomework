@@ -351,4 +351,27 @@ Meteor.methods
 		if inbetweenHoursCount > 0
 			res.push "Aantal tussenuren in één week: #{inbetweenHoursCount}"
 
+		hours = CalendarItems.find({
+			userIds: userId
+			startDate: $gte: Date.today()
+			endDate: $lte: Date.today().addDays 7
+			schoolHour:
+				$exists: yes
+				$ne: null
+		}, {
+			fields:
+				userIds: 1
+		}).fetch()
+		frequent = _(hours)
+			.pluck 'userIds'
+			.flatten()
+			.without userId
+			.countBy()
+			.pairs()
+			.max _.last
+
+		if _.isArray(frequent)
+			user = Meteor.users.findOne frequent[0]
+			res.push "Je deelt de meeste lessen met #{user.profile.firstName} #{user.profile.lastName}!"
+
 		res
