@@ -391,6 +391,34 @@ class @Helpers
 			arr.push "minder dan 1 minuut"
 		time = arr.join ' en '
 
+	###*
+	# @method formatDateRelative
+	# @param {Date|moment} date
+	# @param {Boolean} [showTime=true]
+	# @return {String}
+	###
+	@formatDateRelative: (date, showTime = yes) ->
+		date = moment date
+
+		day = date.format 'dddd'
+		time = date.format 'HH:mm'
+		sameYear = date.year() is moment().year()
+
+		date = switch @daysRange new Date, date.toDate(), no
+			when -6, -5, -4, -3 then "Afgelopen #{day}"
+			when -2 then 'Eergisteren'
+			when -1 then 'Gisteren'
+			when 0 then 'Vandaag'
+			when 1 then 'Morgen'
+			when 2 then 'Overmorgen'
+			when 3, 4, 5, 6 then "Aanstaande #{day}"
+			else "#{day} #{DateToDutch date.toDate(), not sameYear}"
+
+		@cap (
+			if showTime then "#{date} #{time}"
+			else date
+		)
+
 ###*
 # @method getUserField
 # @param {String} [userId=Meteor.userId()]

@@ -275,21 +275,7 @@ Schemas.Absences = new SimpleSchema
 		)
 		__friendlyDeadline: (
 			if p.deadline?
-				day = DayToDutch Helpers.weekDay p.deadline
-				time = "#{Helpers.addZero p.deadline.getHours()}:#{Helpers.addZero p.deadline.getMinutes()}"
-
-				sameYear = p.deadline.getUTCFullYear() is new Date().getUTCFullYear()
-				date = switch Helpers.daysRange new Date, p.deadline, no
-					when -6, -5, -4, -3 then "Afgelopen #{day}"
-					when -2 then 'Eergisteren'
-					when -1 then 'Gisteren'
-					when 0 then 'Vandaag'
-					when 1 then 'Morgen'
-					when 2 then 'Overmorgen'
-					when 3, 4, 5, 6 then "Aanstaande #{day}"
-					else "#{Helpers.cap day} #{DateToDutch p.deadline, not sameYear}"
-
-				"#{date} #{time}"
+				Helpers.formatDateRelative p.deadline, yes
 		)
 		__chatRoom: -> ChatRooms.findOne projectId: p._id
 		__lastChatMessage: ->

@@ -37,7 +37,7 @@ Template.scrappedHours.helpers
 			.map (h) ->
 				today = h.startDate.date().getTime() is Date.today().getTime()
 
-				day: DayToDutch Helpers.weekDay h.startDate
+				day: Helpers.formatDateRelative h.startDate, no
 				today: if today then 'today' else ''
 				hours: (
 					_(arr)
