@@ -108,26 +108,26 @@ Template.classView.onCreated ->
 	@autorun =>
 		id = classId()
 		slide id
+		@subscribe 'classInfo', id
 		@subscribe 'externalStudyUtils', id
 		@subscribe 'externalGrades', classId: id
 
-		@subscribe 'classInfo', id, onReady: ->
-			c = Classes.findOne id
-			if c?
-				setPageOptions
-					title: c.name
-					color: c.__color
+	@autorun ->
+		c = currentClass()
+		return unless c?
 
-				if c.__classInfo.bookId?
-					noticeBanner.set undefined
-				else
-					noticeBanner.set
-						content: 'Voeg een methode toe om betere zoekresultaten te krijgen.'
-						onClick: ->
-							analytics?.track 'Click no book banner', className: c.name
-							showModal 'changeClassModal', undefined, currentClass
-			else
-				notFound()
+		setPageOptions
+			title: c.name
+			color: c.__color
+
+		if c.__classInfo.bookId?
+			noticeBanner.set undefined
+		else
+			noticeBanner.set
+				content: 'Voeg een methode toe om betere zoekresultaten te krijgen.'
+				onClick: ->
+					analytics?.track 'Click no book banner', className: c.name
+					showModal 'changeClassModal', undefined, currentClass
 
 	@autorun ->
 		unless _.any(getGrades().fetch(), (g) -> EJSON.equals selectedGradeId.get(), g._id)

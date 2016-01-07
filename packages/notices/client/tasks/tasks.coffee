@@ -6,12 +6,7 @@ getTasks = ->
 	# TODO: Also mix homework for tommorow and homework for days where the day
 	# before has no time. Unless today has no time.
 
-	tasks = []
-	#for gS in GoaledSchedules.find(dueDate: $gte: new Date).fetch()
-	#	tasks.pushMore _.filter gS.tasks, (t) -> EJSON.equals t.plannedDate.date(), Date.today()
-
-	res = []
-	res = res.concat CalendarItems.find({
+	CalendarItems.find({
 		'userIds': Meteor.userId()
 		'content': $exists: yes
 		'content.type': $ne: 'information'
@@ -21,21 +16,14 @@ getTasks = ->
 	}, {
 		sort:
 			startDate: 1
-		transform: (item) -> _.extend item,
-			__id: item._id
-			__taskDescription: item.content.description
-			__className: Classes.findOne(item.classId)?.name ? ''
-			__isDone: (d) ->
+		transform: (item) ->
+			description: item.content.description
+			class: Classes.findOne item.classId
+			date: item.startDate
+			done: (d) ->
 				Meteor.call 'markCalendarItemDone', item._id, d if d?
 				Meteor.userId() in item.usersDone
 	}).fetch()
-
-	res = res.concat _.map tasks, (task) -> _.extend task,
-		__id: task._id.toHexString()
-		__taskDescription: task.content
-		__className: '' # TODO: Should be set correctly.
-
-	res
 
 NoticeManager.provide 'tasks', ->
 	dateTracker.depend()
@@ -54,4 +42,4 @@ Template.taskRow.events
 		$target = $ event.target
 		checked = $target.is ':checked'
 
-		@__isDone checked
+		@done checked
