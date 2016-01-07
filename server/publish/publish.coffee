@@ -132,22 +132,11 @@ Meteor.publishComposite 'classInfo', (classId) ->
 	children: [{
 		find: (c) ->
 			# OPTIMIZE
-			CalendarItems.find {
+			CalendarItems.find
 				userIds: @userId
 				classId: classId
 				startDate: $gt: Date.today()
 				endDate: $lt: Date.today().addDays 7
-
-				# TODO: If we change it back to 'uur/week' in classView.html this line
-				# should be removed.
-				scrapped: no
-			}, {
-				fields:
-					_id: 1
-					classId: 1
-					start: 1
-					endDate: 1
-		}
 	}, {
 		find: (c) ->
 			ChatRooms.find

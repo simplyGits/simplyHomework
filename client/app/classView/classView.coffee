@@ -103,8 +103,6 @@ Template.classView.helpers
 	###
 
 Template.classView.onCreated ->
-	@subscribe 'externalCalendarItems', Date.today(), Date.today().addDays 7
-
 	@autorun =>
 		id = classId()
 		slide id
