@@ -249,10 +249,10 @@ class @Helpers
 	# @return {String[]}
 	###
 	@weekdays: ->
-		_weekdays = moment()._locale._weekdays
-		_(_weekdays)
+		weekdays = moment()._locale._weekdays
+		_(weekdays)
 			.slice 1
-			.push _weekdays[0]
+			.push weekdays[0]
 			.value()
 
 	###
@@ -374,6 +374,12 @@ class @Helpers
 		else
 			m.format "HH:mm"
 
+	###*
+	# @method timeDiff
+	# @param {Date|moment} a
+	# @param {Date|moment} b
+	# @return {String}
+	###
 	@timeDiff: (a, b) ->
 		diff = moment(b).diff a
 		secIn = diff / 1000
