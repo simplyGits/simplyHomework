@@ -11,6 +11,7 @@ Template.login.events
 		$passwordInput = $ '#passwordInput'
 
 		loading.set yes
+		analytics?.track 'User login'
 		Meteor.loginWithPassword $emailInput.val().toLowerCase(), $passwordInput.val(), (error) ->
 			loading.set no
 			if error?
@@ -50,6 +51,7 @@ Template.signup.events
 
 		unless error
 			loading.set yes
+			analytics?.track 'User signup'
 			Accounts.createUser {
 				password: $passwordInput.val()
 				email: $emailInput.val().toLowerCase()
