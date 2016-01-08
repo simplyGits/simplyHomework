@@ -6,6 +6,17 @@ englishGradeMap =
 	'B': 8.3
 	'A': 10.0
 
+dutchGradeMap =
+	'ZS': 1
+	'S': 2
+	'ROV': 3
+	'OV': 4
+	'V': 6
+	'RV': 7
+	'G': 8
+	'ZG': 9
+	'U': 10
+
 ###*
 # Converts a grade to a number, can be Dutch grade style or English. More can be added.
 # If the `grade` can't be converted it will return NaN.
@@ -25,6 +36,16 @@ gradeConverter = (grade) ->
 	# English grades
 	number = englishGradeMap[grade.toUpperCase()]
 	return number if number?
+
+	# Dutch grades like 'V' and 'OV'
+	number = dutchGradeMap[grade.toUpperCase().replace /(\+|-)$/, '']
+	if number?
+		return (
+			last = grade[-1..]
+			if last is '-' then number - .25
+			else if last is '+' then number + .25
+			else number
+		)
 
 	# TODO: This seems like it's never called.
 	# Percentages
