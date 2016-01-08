@@ -92,7 +92,7 @@ Meteor.publish 'classes', (options) ->
 	check options, Match.Optional Object
 
 	{ hidden, all } = options ? {}
-	hidden ?= no
+	hidden = yes # REVIEW: should this still be forced set to `true`?
 	all ?= no
 	check hidden, Boolean
 	check all, Boolean
