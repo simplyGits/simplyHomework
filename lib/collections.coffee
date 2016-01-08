@@ -9,7 +9,7 @@
 @CalendarItems         = new Meteor.Collection 'calendarItems', transform: (c) -> _.extend new CalendarItem, c
 @ReportItems           = new Meteor.Collection 'reportItems'
 @Grades                = new Meteor.Collection 'grades', transform: (g) ->
-	g = _.extend new Grade, g
+	g = _.extend new Grade(g.gradeStr), g
 	_.extend g,
 		__insufficient: if g.passed then '' else 'insufficient'
 		# TODO: do this on a i18n friendly way.

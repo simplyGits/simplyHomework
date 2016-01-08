@@ -3,7 +3,7 @@
  * @author simply
  * @module magister-binding
  */
- /* global Magister, ExternalServicesConnector, Schools, gradeConverter, Grades,
+ /* global Magister, ExternalServicesConnector, Schools, Grades,
   * Grade, StudyUtil, StudyUtils, GradePeriod, ExternalPerson, CalendarItem,
   * Assignment */
 
@@ -199,7 +199,7 @@
 						fetchedBy: MagisterBinding.name,
 						externalId: magister.magisterSchool.id + '_' + g.id(),
 						weight: g.counts() ? g.weight() : 0,
-						grade: gradeConverter(g.grade()),
+						gradeStr: g.grade(),
 					});
 
 					if (stored) {
@@ -220,7 +220,7 @@
 								var classId = classInfo && classInfo.id;
 
 								var grade = new Grade(
-									gradeConverter(g.grade()),
+									g.grade(),
 									weight,
 									classId,
 									userId

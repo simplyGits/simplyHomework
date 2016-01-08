@@ -14,7 +14,7 @@ englishGradeMap =
 # @param grade {String|Number} The grade to convert.
 # @return {Number} `grade` converted to a number. Defaults to NaN.
 ###
-@gradeConverter = (grade) ->
+gradeConverter = (grade) ->
 	return grade if _.isFinite grade
 	check grade, String
 	number = parseFloat grade.replace(',', '.').replace(/[^\d\.]/g, '')
@@ -38,14 +38,35 @@ englishGradeMap =
 #
 # @class Grade
 # @constructor
-# @param grade {Number} The grade as a Number, the grade should be converted by a converter first if it wasn't a number at first.
+# @param grade {String|Number}
 # @param weight {Number} The weight of the grade.
 # @param classId {ObjectID} The ID of the Class which this grade is for.
 # @param ownerId {String} The ID of the owner of this grade.
 ###
 class @Grade
-	constructor: (@grade, @weight, @classId, @ownerId) ->
+	@gradeConverter: gradeConverter
+
+	constructor: (grade, @weight, @classId, @ownerId) ->
 		@_id = new Meteor.Collection.ObjectID()
+
+		###*
+		# The grade guaranteed to be a number.
+		# Will be NaN if the grade failed to convert to a number.
+		#
+		# @property grade
+		# @type Number
+		###
+		@grade = gradeConverter grade
+
+		###*
+		# The grade guaranteed to be a string.
+		#
+		# @property gradeStr
+		# @type String
+		###
+		@gradeStr = switch typeof grade
+			when 'string' then grade
+			when 'number' then grade.toPrecision 2
 
 		###*
 		# Can be one of: [ 'number', 'percentage' ]
@@ -124,7 +145,7 @@ class @Grade
 		@period = null
 
 	class: -> Classes.findOne @classId
-	toString: (precision = 2) -> @grade.toPrecision precision
+	toString: (precision = 2) -> @gradeStr ? @grade.toPrecision precision
 	valueOf: -> @grade
 
 ###*
