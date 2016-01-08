@@ -39,15 +39,15 @@ Template.mobileChatWindow.events
 
 Template.mobileChatWindow.onCreated ->
 	@sticky = yes
-	@subscribe 'basicChatInfo', onReady: =>
+	@subscribe 'basicChatInfo'
+
+	@autorun =>
 		room = chatRoom()
 		if room?
 			@subscribe 'status', room.users
 			setPageOptions
 				title: "Chat: #{room.friendlyName()}"
 				color: null
-		else
-			notFound()
 
 Template.mobileChatWindow.onRendered ->
 	slide()

@@ -1,4 +1,5 @@
 <template name="mobileChatWindow">
+{{#if Template.subscriptionsReady}}
 	{{#with chat}}
 		<div class="mobileChatWindow {{status}} {{__noHeader}}" id="{{_id}}">
 			<div class="header">
@@ -16,6 +17,9 @@
 			</div>
 		</div>
 	{{else}}
-		{{> loading}}
+		{{> notFound}}
 	{{/with}}
+{{else}}
+	{{> loading}}
+{{/if}}
 </template>
