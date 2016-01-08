@@ -88,7 +88,7 @@ Meteor.publish null, ->
 			done: $ne: userId
 	]
 
-Meteor.publish 'classes', (options) ->
+Meteor.publishComposite 'classes', (options) ->
 	check options, Match.Optional Object
 
 	{ hidden, all } = options ? {}
@@ -101,26 +101,29 @@ Meteor.publish 'classes', (options) ->
 		@ready()
 		return undefined
 
-	user = Meteor.users.findOne @userId,
-		fields:
-			'classInfos': 1
-			'profile.courseInfo': 1
+	find: ->
+		Meteor.users.find @userId,
+			fields:
+				'classInfos': 1
+				'profile.courseInfo': 1
+	children: [{
+		find: (user) ->
+			classInfos = user.classInfos ? []
+			nonhidden = _.reject classInfos, 'hidden'
+			courseInfo = user.profile.courseInfo
 
-	classInfos = user.classInfos ? []
-	nonhidden = _.reject classInfos, 'hidden'
-	courseInfo = user.profile.courseInfo
+			# TODO: add fields filter?
+			Classes.find (
+				if all
+					if courseInfo?
+						{ year, schoolVariant } = courseInfo
+						{ schoolVariant, year }
+					else {}
 
-	# TODO: add fields filter?
-	Classes.find (
-		if all
-			if courseInfo?
-				{ year, schoolVariant } = courseInfo
-				{ schoolVariant, year }
-			else {}
-
-		else if hidden then { _id: $in: _.pluck classInfos, 'id' }
-		else { _id: $in: _.pluck nonhidden, 'id' }
-	)
+				else if hidden then { _id: $in: _.pluck classInfos, 'id' }
+				else { _id: $in: _.pluck nonhidden, 'id' }
+			)
+	}]
 
 Meteor.publishComposite 'classInfo', (classId) ->
 	check classId, String
