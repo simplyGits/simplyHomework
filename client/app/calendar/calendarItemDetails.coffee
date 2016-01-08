@@ -10,5 +10,5 @@ Template.calendarItemDetails.onCreated ->
 
 Template.calendarItemDetailsPerson.onRendered ->
 	@$('[data-toggle="tooltip"]').tooltip
-		container: '#calendarItemDetails'
+		container: 'body'
 		placement: 'bottom'
