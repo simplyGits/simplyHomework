@@ -59,7 +59,7 @@ chatMessageReplaceMap =
 	':innocent:': /\(a\)/ig
 	':sunglasses:': /\(h\)/ig
 	':sweat_smile:': /\^\^'/ig
-	':tada:': /:fissa:/ig
+	':tada:': /:(fissa|hype):/ig
 	':cheese:': /:kaas:/ig
 	':middle_finger:': /:fu:/ig
 	'¯\\\\\\_(ツ)\\_/¯': /(:|\/)shrug(:|\/)/ig
