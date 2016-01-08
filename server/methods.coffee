@@ -35,7 +35,7 @@ Meteor.methods
 	changeMail: (mail) ->
 		check mail, String
 		Meteor.users.update @userId, $set: emails: [ { address: mail, verified: no } ]
-		Accounts.sendVerificationEmail user._id
+		Accounts.sendVerificationEmail @userId
 
 	###*
 	# Checks if the given mail address exists in the database.
