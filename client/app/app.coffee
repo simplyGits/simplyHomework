@@ -228,25 +228,8 @@ Template.app.onCreated ->
 				text: "Gefeliciteerd met je #{moment().diff val, 'years'}e verjaardag!"
 			Meteor.call 'markUserEvent', 'congratulated'
 
-	@autorun ->
-		# Disabled for now. It isn't working probably, and heck, we should even
-		# refactor it too, since the logic now spans 3 files in unlogical places.
-		return undefined
-		if Meteor.status().connected and Meteor.userId()? and not has 'noAds'
-			setTimeout (-> Meteor.defer ->
-				unless Session.get 'adsAllowed'
-					App.logout()
-					swalert
-						title: 'Adblock :c'
-						html: '''
-							Om simplyHomework gratis beschikbaar te kunnen houden zijn we afhankelijk van reclame-inkomsten.
-							Om simplyHomework te kunnen gebruiken, moet je daarom je AdBlocker uitzetten.
-							Wil je simplyHomework toch zonder reclame gebruiken, dan kan je <a href="/">premium</a> nemen.
-						'''
-						type: 'error'
-			), 3000
-
 	# REVIEW: Maybe use a cleaner method using Blaze and stuff?
+	# TODO: move this in the 'notices' packages
 	notifmap = {}
 	notifications = Notifications.find(
 		userIds: Meteor.userId()
