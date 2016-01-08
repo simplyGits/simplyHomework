@@ -60,14 +60,11 @@ Meteor.publish null, ->
 			classInfos: 1
 			createdAt: 1
 			events: 1
-			gradeNotificationDismissTime: 1
-			magisterCredentials: 1
 			premiumInfo: 1
 			settings: 1
 			profile: 1
 			roles: 1
 			setupProgress: 1
-			#studyGuidesHashes: 1
 
 		Schools.find { _id: user.profile.schoolId }, fields:
 			externalInfo: 0
@@ -83,6 +80,7 @@ Meteor.publish null, ->
 			deadline: 1
 			participants: 1
 
+		# TODO: move this to the notices package
 		Notifications.find
 			userIds: userId
 			done: $ne: userId
