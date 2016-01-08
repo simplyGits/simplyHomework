@@ -186,17 +186,22 @@ Meteor.publishComposite 'project', (id) ->
 		}]
 	}]
 
-Meteor.publish "books", (classId) ->
-	check classId, String
+Meteor.publishComposite 'books', (classId) ->
+	check classId, Match.Optional String
 	unless @userId?
 		@ready()
 		return undefined
 
 	if classId?
-		Books.find { classId }
+		find: -> Books.find { classId }
 	else
-		classInfos = getClassInfos @userId
-		Books.find _id: $in: _.pluck classInfos, 'bookId'
+		find: ->
+			Meteor.users.find @userId,
+				fields:
+					classInfos: 1
+		children: [{
+			find: (user) -> Books.find _id: $in: _.pluck user.classInfos, 'bookId'
+		}]
 
 Meteor.publish 'foreignCalendarItems', (userId, from, to) ->
 	check userId, String
