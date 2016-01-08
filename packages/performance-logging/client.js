@@ -2,8 +2,9 @@
 
 Meteor.startup(function () {
 	if (
-		performance != null &&
-		PerformanceTiming && PerformanceTiming.prototype.toJSON
+		'performance' in window &&
+		'PerformanceTiming' in window &&
+		PerformanceTiming.prototype.toJSON
 	) {
 		const res = performance.timing.toJSON();
 
