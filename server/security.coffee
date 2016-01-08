@@ -34,14 +34,10 @@ Meteor.users.allow
 		allowed = [
 			'events'
 			'classInfos'
-			#'gradeNotificationDismissTime'
-			#'hasGravatar'
 			'mailSignup'
 			'settings'
 			'profile'
-			'schedular'
 			'setupProgress'
-			#'studyGuidesHashes'
 		]
 		userId is doc._id and not _.any fields, (f) -> not _.contains allowed, f
 

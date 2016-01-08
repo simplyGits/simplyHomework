@@ -395,7 +395,7 @@ class @Helpers
 			arr.push "#{Math.abs minutes}m"
 		if hours is 0 and minutes is 0
 			arr.push "minder dan 1 minuut"
-		time = arr.join ' en '
+		arr.join ' en '
 
 	###*
 	# @method formatDateRelative
