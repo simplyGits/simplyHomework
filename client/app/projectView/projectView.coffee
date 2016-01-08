@@ -228,7 +228,7 @@ addUser = ->
 			shake '#addParticipantModal'
 			return
 
-	Projects.update currentProject()._id, $push: participants: val._id
+	Projects.update currentProject()._id, $addToSet: participants: val._id
 	$('#addParticipantModal').modal 'hide'
 	notify Locals['nl-NL'].ProjectPersonAddedNotice(val.profile.firstName), 'notice'
 
