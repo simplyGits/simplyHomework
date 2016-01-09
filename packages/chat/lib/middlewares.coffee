@@ -1,4 +1,3 @@
-# TODO: Use middlewares serverside. Naughty url stripping?
 ###*
 # @class ChatMiddlewares
 # @static
@@ -44,13 +43,6 @@ ChatMiddlewares =
 # Always keep this middleware on top, please.
 ChatMiddlewares.attach 'preserve original content', 'client', (message) ->
 	message._originalContent = message.content
-	message
-
-ChatMiddlewares.attach 'strip naughty urls', 'client', (message) ->
-	message.content = message.content.replace(
-		/<a +href *= *('|"?) *javascript *:[^\1]+\1 *>([^<]*)(<\/a>)?/ig
-		(match, qoute, content) -> content
-	)
 	message
 
 chatMessageReplaceMap =
@@ -107,6 +99,13 @@ ChatMiddlewares.attach 'add hidden fields', 'client', (cm) ->
 			}, {
 				limit: 3
 			}
+
+ChatMiddlewares.attach 'strip naughty urls', 'insert', (message) ->
+	message.content = message.content.replace(
+		/<a +href *= *('|"?) *javascript *:[^\1]+\1 *>([^<]*)(<\/a>)?/ig
+		(match, qoute, content) -> content
+	)
+	message
 
 ChatMiddlewares.attach 'clickable names', 'insert', (message) ->
 	schoolId = Meteor.user().profile.schoolId
