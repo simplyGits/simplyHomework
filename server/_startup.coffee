@@ -29,12 +29,12 @@ Meteor.startup ->
 
 		doc
 
-	Projects.find({}).observe
+	Projects.find({}, fields: _id: 1, participants: 1).observe
 		changed: (newDoc, oldDoc) ->
 			if newDoc.participants.length is 0
 				Projects.remove newDoc._id
 
-	Meteor.users.find().observe
+	Meteor.users.find({}, fields: services: 1, emails: 1, 'profile.firstName': 1).observe
 		changed: (newDoc, old) ->
 			passChanged = old.services.password.bcrypt isnt newDoc.services.password.bcrypt
 			mailChanged = old.emails[0].address isnt newDoc.emails[0].address

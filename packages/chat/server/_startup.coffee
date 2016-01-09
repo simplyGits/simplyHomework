@@ -1,12 +1,16 @@
 Meteor.startup ->
 	loadingObserve = yes
 
-	ChatRooms.find({}).observe
+	ChatRooms.find({}, fields: _id: 1).observe
+		changed: (newDoc, oldDoc) ->
+			if newDoc.users.length is 0
+				ChatRooms.remove newDoc._id
+
 		removed: (doc) ->
 			# Remove the ChatMessages when the parent ChatRoom is removed.
 			ChatMessages.remove chatRoomId: doc._id
 
-	Projects.find({}).observe
+	Projects.find({}, fields: _id: 1, creatorId: 1, participants: 1).observe
 		added: (doc) ->
 			return if loadingObserve
 			# Create a new ChatRoom for a Project when one is created.
@@ -16,7 +20,13 @@ Meteor.startup ->
 
 		changed: (newDoc, oldDoc) ->
 			if newDoc.participants.length > 0
-				chatRoom = ChatRooms.findOne projectId: newDoc._id
+				chatRoom = ChatRooms.findOne {
+					projectId: newDoc._id
+				}, {
+					fields:
+						_id: 1
+						users: 1
+				}
 
 				newPersons = _.difference newDoc.participants, chatRoom.users
 				leftPersons = _.difference chatRoom.users, newDoc.participants
@@ -38,10 +48,12 @@ Meteor.startup ->
 			# Remove the ChatRoom when the linked Project is removed.
 			ChatRooms.remove projectId: doc._id
 
-	Meteor.users.find({}).observe
+	Meteor.users.find({}, fields: _id: 1).observe
 		removed: (doc) ->
 			ChatRooms.remove
 				type: 'private'
 				users: doc._id
+
+			ChatRooms.update { users: doc._id }, $pull: users: doc._id
 
 	loadingObserve = no
