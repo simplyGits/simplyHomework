@@ -193,6 +193,8 @@ updateCalendarItems = (userId, from, to) ->
 				calendarItem.absenceInfo.permitted
 			)
 			absenceInfo.description = calendarItem.absenceInfo.description
+			absenceInfo.fetchedBy = calendarItem.fetchedBy
+			absenceInfo.externalId = calendarItem.absenceInfo.externalId
 
 			if val?
 				Absences.update val._id, { $set: absenceInfo }, modifier: no
