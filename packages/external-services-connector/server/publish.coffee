@@ -23,10 +23,11 @@ Meteor.publish 'externalCalendarItems', (from, to) ->
 
 	findAbsence = (calendarItemId) -> Absences.findOne { calendarItemId, userId }
 	transform = (doc) ->
-		doc.usersDone = (
-			if userId in doc.usersDone then [ userId ]
-			else []
-		)
+		if doc.usersDone?
+			doc.usersDone = (
+				if userId in doc.usersDone then [ userId ]
+				else []
+			)
 		doc
 
 	cursor.observeChanges
