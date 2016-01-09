@@ -345,6 +345,7 @@ Meteor.methods
 		@unblock()
 
 		userId = @userId
+		{ firstName, schoolId } = Meteor.users.findOne(userId).profile
 		res = []
 		hours = CalendarItems.find({
 			userIds: userId
@@ -357,9 +358,26 @@ Meteor.methods
 			fields:
 				userIds: 1
 		}).fetch()
+		users = Meteor.users.find({
+			_id: $ne: userId
+			'profile.firstName': firstName
+		}, {
+			fields:
+				'profile.firstName': 1
+				'profile.schoolId': 1
+		}).fetch()
 
 		if hours.length > 0
 			res.push "Aantal lesuren in één week: #{hours.length}"
+
+		if users.length > 1
+			s = "Er zijn #{users.length} anderen die ook #{firstName} heten op simplyHomework"
+
+			filtered = _.filter users, (u) -> u.profile.schoolId is schoolId
+			if filtered.length > 0
+				s += " (waarvan #{filtered.length} van jouw school)"
+
+			res.push s
 
 		inbetweenHoursCount = getInbetweenHours(userId).length
 		if inbetweenHoursCount > 0
