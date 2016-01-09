@@ -150,6 +150,7 @@ Meteor.publishComposite 'classInfo', (classId) ->
 		find: (c) ->
 			ChatRooms.find
 				type: 'class'
+				users: @userId
 				'classInfo.ids': c._id
 		children: [{
 			find: (room) ->
