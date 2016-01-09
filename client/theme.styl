@@ -1,3 +1,5 @@
+@require '/client/utils'
+
 // == colors
 errorColor = #F44336
 errorFocusColor = darken(errorColor, 30%)
@@ -106,6 +108,10 @@ setFormColors(color, focusColor)
 
 .tooltip.right .tooltip-arrow
 	border-right-color: rgba(0, 0, 0, .8)
+
++mobile()
+	.tooltip
+		display: none !important
 
 .popover
 	border-radius: 0
