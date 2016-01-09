@@ -372,6 +372,10 @@ Meteor.methods
 
 		if _.isArray(frequent)
 			user = Meteor.users.findOne frequent[0]
-			res.push "Je deelt de meeste lessen met #{user.profile.firstName} #{user.profile.lastName}"
+
+			path = FlowRouter.path 'personView', id: user._id
+			link = "<a href='#{path}'>#{user.profile.firstName} #{user.profile.lastName}</a>"
+
+			res.push "Je deelt de meeste lessen met #{link}"
 
 		res
