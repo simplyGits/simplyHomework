@@ -225,8 +225,10 @@ Schemas.StudyUtils = new SimpleSchema
 Schemas.Absences = new SimpleSchema
 	userId:
 		type: String
+		index: 1
 	calendarItemId:
 		type: String
+		index: 1
 	type:
 		type: String
 		# TODO: fill in allowedValues
