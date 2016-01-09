@@ -372,6 +372,6 @@ Meteor.methods
 
 		if _.isArray(frequent)
 			user = Meteor.users.findOne frequent[0]
-			res.push "Je deelt de meeste lessen met #{user.profile.firstName} #{user.profile.lastName}!"
+			res.push "Je deelt de meeste lessen met #{user.profile.firstName} #{user.profile.lastName}"
 
 		res
