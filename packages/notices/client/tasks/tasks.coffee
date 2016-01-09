@@ -42,6 +42,10 @@ NoticeManager.provide 'tasks', ->
 Template.tasks.helpers
 	tasks: -> getTasks()
 
+Template.taskRow.helpers
+	__done: -> if @done() then 'done' else ''
+	__checked: -> if @done() then 'checked' else ''
+
 Template.taskRow.events
 	'change': (event) ->
 		$target = $ event.target

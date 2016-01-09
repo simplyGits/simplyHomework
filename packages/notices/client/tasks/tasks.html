@@ -5,21 +5,12 @@
 </template>
 
 <template name="taskRow">
-	<div class="taskRow">
-		{{#if done}}
-			<label style="text-decoration: line-through; opacity: .4">
-				<input type="checkbox" id="checkbox" checked>
-				<span id="checkboxLabel" class="robotoThin" style="font-weight: 300; font-size: 15px">
-					<b>{{{description}}}</b> voor {{class.name}}
-				</span>
-			</label>
-		{{else}}
-			<label>
-				<input type="checkbox" id="checkbox">
-				<span id="checkboxLabel" class="robotoThin" style="font-weight: 300; font-size: 15px">
-					<b>{{{description}}}</b> voor {{class.name}}
-				</span>
-			</label>
-		{{/if}}
+	<div class="taskRow {{__done}}">
+		<label>
+			<input type="checkbox" {{__checked}}>
+			<span class="robotoThin">
+				<strong>{{{description}}}</strong> voor {{class.name}}
+			</span>
+		</label>
 	</div>
 </template>
