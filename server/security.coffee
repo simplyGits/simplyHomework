@@ -9,6 +9,7 @@ Meteor.startup -> # my eyes feel dizzy, i think. cant remember. please. help.
 	BrowserPolicy.content.allowImageOrigin 'https://stats.g.doubleclick.net'
 	BrowserPolicy.content.allowImageOrigin 'https://adelbert.magister.net/'
 	BrowserPolicy.content.allowImageOrigin 'www.google-analytics.com'
+	BrowserPolicy.content.allowImageOrigin 'https://www.google.com/'
 	BrowserPolicy.content.allowImageOrigin 'https://cdn.jsdelivr.net/'
 	BrowserPolicy.content.allowImageOrigin 'ssl.gstatic.com'
 	BrowserPolicy.content.allowImageOrigin 'apis.google.com'
