@@ -123,6 +123,14 @@ Meteor.publishComposite 'classes', (options) ->
 			)
 	}]
 
+Meteor.publish 'fr_classes', ->
+	unless @userId?
+		@ready()
+		return undefined
+
+	classInfos = getClassInfos @userId
+	Classes.find _id: $in: _.pluck classInfos, 'id'
+
 Meteor.publishComposite 'classInfo', (classId) ->
 	check classId, String
 	unless @userId? and classId

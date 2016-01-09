@@ -33,7 +33,7 @@ FastRender.onAllRoutes ->
 	# when the app is opened.).
 
 	if @userId?
-		@subscribe 'classes'
+		@subscribe 'fr_classes'
 
 FastRender.route '/', ->
 	@subscribe 'externalCalendarItems', Date.today(), Date.today().addDays 4
