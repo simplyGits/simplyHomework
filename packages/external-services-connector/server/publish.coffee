@@ -21,23 +21,29 @@ Meteor.publish 'externalCalendarItems', (from, to) ->
 			startDate: $gte: from
 			endDate: $lte: to
 
-	findAbsence = (query) -> Absences.findOne query
+	findAbsence = (calendarItemId) -> Absences.findOne { calendarItemId, userId }
+	transform = (doc) ->
+		doc.usersDone = (
+			if userId in doc.usersDone then [ userId ]
+			else []
+		)
+		doc
 
 	cursor.observeChanges
 		added: (id, doc) =>
-			@added 'calendarItems', id, doc
+			@added 'calendarItems', id, transform doc
 
-			absence = findAbsence calendarItemId: id
+			absence = findAbsence id
 			if absence?
 				@added 'absences', absence._id, absence
 
 		changed: (id, doc) =>
-			@changed 'calendarItems', id, doc
+			@changed 'calendarItems', id, transform doc
 
 		removed: (id) =>
 			@removed 'calendarItems', id
 
-			findAbsence calendarItemId: id
+			absence = findAbsence id
 			if absence?
 				@removed 'absences', absence._id
 
