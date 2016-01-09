@@ -6,17 +6,17 @@
 	"theme_color": "#34A8CE",
 	"icons": [
 		{
-			"src": "/images/simplyLogo-white.png",
+			"src": "/images/app_icon.png",
 			"sizes": "96x96",
 			"type": "image/png"
 		},
 		{
-			"src": "/images/simplyLogo-white.png",
+			"src": "/images/app_icon.png",
 			"sizes": "144x144",
 			"type": "image/png"
 		},
 		{
-			"src": "/images/simplyLogo-white.png",
+			"src": "/images/app_icon.png",
 			"sizes": "192x192",
 			"type": "image/png"
 		}
