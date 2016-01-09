@@ -346,11 +346,6 @@ Meteor.methods
 
 		userId = @userId
 		res = []
-
-		inbetweenHoursCount = getInbetweenHours(userId).length
-		if inbetweenHoursCount > 0
-			res.push "Aantal tussenuren in één week: #{inbetweenHoursCount}"
-
 		hours = CalendarItems.find({
 			userIds: userId
 			startDate: $gte: Date.today()
@@ -362,6 +357,14 @@ Meteor.methods
 			fields:
 				userIds: 1
 		}).fetch()
+
+		if hours.length > 0
+			res.push "Aantal lesuren in één week: #{hours.length}"
+
+		inbetweenHoursCount = getInbetweenHours(userId).length
+		if inbetweenHoursCount > 0
+			res.push "Aantal tussenuren in één week: #{inbetweenHoursCount}"
+
 		frequent = _(hours)
 			.pluck 'userIds'
 			.flatten()
