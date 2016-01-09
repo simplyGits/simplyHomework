@@ -29,7 +29,11 @@
 		{{/if}}
 	</div>
 {{else}}
-	{{> loading}}
+	{{#if Template.subscriptionsReady}}
+		{{> notFound}}
+	{{else}}
+		{{> loading}}
+	{{/if}}
 {{/with}}
 </template>
 

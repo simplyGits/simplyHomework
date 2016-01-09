@@ -33,23 +33,15 @@ Template.personView.events
 
 Template.personView.onCreated ->
 	@autorun =>
-		personStats.set undefined
 		id = FlowRouter.getParam 'id'
-
-		if sameUser()
-			Meteor.call 'getPersonStats', (e, r) -> personStats.set r unless e?
-		else
-			@subscribe 'externalCalendarItems', Date.today(), Date.today().addDays 7
-			@subscribe 'classes', hidden: yes
-
 		@subscribe 'status', [ id ]
-		@subscribe 'usersData', [ id ], onReady: ->
-			person = Meteor.users.findOne id
-			if person?
-				setPageOptions
-					title: "#{person.profile.firstName} #{person.profile.lastName}"
-			else
-				notFound()
+		@subscribe 'usersData', [ id ]
+
+	@autorun ->
+		person = currentPerson()
+		if person?
+			setPageOptions
+				title: "#{person.profile.firstName} #{person.profile.lastName}"
 
 Template.personView.onRendered ->
 	slide()
@@ -61,32 +53,9 @@ Template.personView.onRendered ->
 				.tooltip "destroy"
 				.tooltip container: "body"
 
-# TODO: take a look if this can be thrown away.
-###
-Template.personsInClasses.helpers
-	people: ->
-		return []
-		calendarItems = CalendarItems.find(
-			userIds: Meteor.userId()
-			startDate: $gte: Date.today()
-			endDate: $lte: Date.today().addDays 7
-		).fetch()
-
-		userIds = _(calendarItems)
-			.filter (item) -> item.length > 1
-			.pluck 'userIds'
-			.flatten()
-			.uniq()
-			.reject (id) -> id is Meteor.userId()
-			.value()
-
-		Meteor.users.find {
-			_id: Meteor.userId()
-			#_id: $in: userIds
-		}, {
-			limit: if Session.get('isPhone') then 5 else 30
-		}
-###
+Template.personSharedHours.onCreated ->
+	@subscribe 'externalCalendarItems', Date.today(), Date.today().addDays 7
+	@subscribe 'classes', hidden: yes
 
 Template.personSharedHours.helpers
 	days: ->
@@ -114,6 +83,15 @@ Template.personSharedHours.helpers
 						.value()
 				)
 			.value()
+
+Template.personStats.helpers
+	stats: -> personStats.get()
+
+Template.personStats.onCreated ->
+	@autorun ->
+		personStats.set undefined
+		id = FlowRouter.getParam 'id'
+		Meteor.call 'getPersonStats', (e, r) -> personStats.set r unless e?
 
 Template.reportUserModal.events
 	'click button#goButton': ->
@@ -177,6 +155,3 @@ Template.pictureSelectorItem.events
 
 		analytics?.track 'Profile Picture Changed'
 		$('#changePictureModal').modal 'hide'
-
-Template.personStats.helpers
-	stats: -> personStats.get()
