@@ -94,7 +94,7 @@ div.personDetailsContainer
 	.itemContainer
 		margin-top: 0
 
-#personSharedHours, #personStats
+#personSharedHours, #personStats, #sharedChats
 	col(1/2)
 
 	+mobile()
@@ -110,6 +110,21 @@ div.personDetailsContainer
 			text-decoration: none
 		a:hover
 			text-decoration: underline
+
+#sharedChats > div
+	padding: 0
+
+	.chatRow
+		padding: 5px
+		padding-left: 20px
+		font-size: 20px
+		cursor: pointer
+
+		background-color: #fff
+		transition: .1s background-color linear
+
+	.chatRow:hover
+		background-color: hoverColor
 
 div#reportUserModal div.modal-body
 	text-align: center

@@ -84,6 +84,22 @@ Template.personSharedHours.helpers
 				)
 			.value()
 
+Template.sharedChats.onCreated ->
+	@subscribe 'basicChatInfo'
+
+Template.sharedChats.helpers
+	chats: ->
+		ChatRooms.find {
+			$and: [
+				{ users: Meteor.userId() }
+				{ users: Template.currentData()._id }
+			]
+			type: $nin: ['private', 'class']
+		}, sort: lastMessageTime: -1
+
+Template['sharedChats_chatRow'].events
+	'click': -> ChatManager.openChat @_id
+
 Template.personStats.helpers
 	stats: -> personStats.get()
 

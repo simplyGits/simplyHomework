@@ -26,6 +26,7 @@
 			{{> personStats}}
 		{{else}}
 			{{> personSharedHours}}
+			{{> sharedChats}}
 		{{/if}}
 	</div>
 {{else}}
@@ -74,6 +75,25 @@
 			</div>
 		</div>
 	{{/if}}
+</template>
+
+<template name="sharedChats">
+	{{#if chats}}
+		<div class="itemContainer" id="sharedChats">
+			<header>Groepschats met {{profile.firstName}}</header>
+			<div>
+				{{#each chats}}
+					{{> sharedChats_chatRow}}
+				{{/each}}
+			</div>
+		</div>
+	{{/if}}
+</template>
+
+<template name="sharedChats_chatRow">
+	<div class="chatRow">
+		{{friendlyName}}
+	</div>
 </template>
 
 <template name="reportUserModal">
