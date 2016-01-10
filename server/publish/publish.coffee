@@ -163,7 +163,11 @@ Meteor.publishComposite 'classInfo', (classId) ->
 				}
 		}, {
 			find: (room) ->
-				Meteor.users.find _id: $in: room.users
+				Meteor.users.find {
+					_id: $in: room.users
+				}, {
+					fields: profile: 1
+				}
 		}]
 	}]
 
