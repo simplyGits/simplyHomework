@@ -54,15 +54,15 @@
 </template>
 
 <template name="personSharedHours">
-	{{#if days}}
-		<div class="itemContainer" id="personSharedHours">
-			<header>
-				Lessen met {{profile.firstName}} volgende week
-				{{#if canCompare}}
-					<i class="fa fa-calendar" id="compareButton"></i>
-				{{/if}}
-			</header>
-			<div>
+	<div class="itemContainer" id="personSharedHours">
+		<header>
+			Lessen met {{profile.firstName}} volgende week
+			{{#if canCompare}}
+				<i class="fa fa-calendar" id="compareButton" data-action="compare"></i>
+			{{/if}}
+		</header>
+		<div>
+			{{#if days}}
 				<ul>
 					{{#each days}}
 						{{name}}:
@@ -77,9 +77,13 @@
 						</li>
 					{{/each}}
 				</ul>
-			</div>
+			{{else}}
+				<div class="notice">
+					Je deelt geen lessen met {{profile.firstName}}, je kan alsnog wel jullie <a href="#" data-action="compare">roosters vergelijken</a>.
+				</div>
+			{{/if}}
 		</div>
-	{{/if}}
+	</div>
 </template>
 
 <template name="sharedChats">

@@ -58,7 +58,8 @@ Template.personSharedHours.onCreated ->
 	@subscribe 'classes', hidden: yes
 
 Template.personSharedHours.events
-	'click #compareButton': ->
+	'click [data-action="compare"]': (event) ->
+		event.preventDefault()
 		FlowRouter.go 'calendar', undefined, userIds: [ @_id ]
 
 Template.personSharedHours.helpers
