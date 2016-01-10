@@ -96,6 +96,6 @@ Meteor.startup ->
 		endDate: -1
 
 	Meteor.users._ensureIndex
+		'profile.schoolId': 1
 		'profile.firstName': 1
 		'profile.lastName': 1
-		'profile.schoolId': 1
