@@ -84,6 +84,8 @@ Template.calendar.onRendered ->
 		allDayText: 'hele dag'
 		scrollTime: '07:00:00'
 		snapDuration: '00:05:00'
+		weekNumbers: yes
+		weekNumberTitle: 'week '
 		slotDuration: '00:30:00'
 		titleFormat:
 			month: 'MMMM YYYY'
@@ -159,9 +161,6 @@ Template.calendar.onRendered ->
 			Meteor.defer ->
 				FlowRouter.withReplaceState ->
 					FlowRouter.setParams time: +view.start
-
-				$header = $ ".fc-left h2"
-				$header.html "#{$header.text()} <small>week: #{view.start.week()}</small>"
 
 		# REVIEW: handle updating with methods?
 		eventDrop: (event) ->
