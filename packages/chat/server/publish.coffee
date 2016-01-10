@@ -2,7 +2,6 @@ Meteor.publishComposite 'basicChatInfo',
 	find: ->
 		ChatRooms.find {
 			users: @userId
-			lastMessageTime: $exists: yes
 		},
 			limit: 50 # REVIEW: is this a good value?
 			sort:
