@@ -20,7 +20,11 @@ Meteor.publish 'usersData', (ids) ->
 			)
 			'profile.schoolId': schoolId
 			'profile.firstName': $ne: ''
-		}, fields: profile: 1
+		}, {
+			fields:
+				profile: 1
+				'settings.privacy.publishCalendarItems': 1
+		}
 
 		ChatRooms.find
 			userIds: _.union ids, [ userId ]
@@ -214,24 +218,21 @@ Meteor.publishComposite 'books', (classId) ->
 			find: (user) -> Books.find _id: $in: _.pluck user.classInfos, 'bookId'
 		}]
 
-Meteor.publish 'foreignCalendarItems', (userId, from, to) ->
-	check userId, String
+Meteor.publish 'foreignCalendarItems', (userIds, from, to) ->
+	check userIds, [String]
 	check from, Date
 	check to, Date
 	unless @userId?
 		@ready()
 		return undefined
 
-	user = Meteor.users.findOne userId
-	unless Privacy.getOptions(userId).publishCalendarItems
-		@ready()
-		return undefined
-
-	from ?= new Date().addDays -7
-	to ?= new Date().addDays 7
+	userIds = _.filter userIds, (id) ->
+		Privacy.getOptions(id).publishCalendarItems
 
 	CalendarItems.find
-		userIds: userId
+		userIds:
+			$in: userIds
+			$ne: @userId
 		startDate: $gte: from
 		endDate: $lte: to
 

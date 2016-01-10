@@ -57,7 +57,15 @@ Template.personSharedHours.onCreated ->
 	@subscribe 'externalCalendarItems', Date.today(), Date.today().addDays 7
 	@subscribe 'classes', hidden: yes
 
+Template.personSharedHours.events
+	'click #compareButton': ->
+		FlowRouter.go 'calendar', undefined, userIds: [ @_id ]
+
 Template.personSharedHours.helpers
+	canCompare: ->
+		not Session.equals('deviceType', 'phone') and
+		Privacy.getOptions(@_id).publishCalendarItems
+
 	days: ->
 		sharedCalendarItems = CalendarItems.find(
 			$and: [
@@ -89,13 +97,15 @@ Template.sharedChats.onCreated ->
 
 Template.sharedChats.helpers
 	chats: ->
-		ChatRooms.find {
+		ChatRooms.find({
 			$and: [
 				{ users: Meteor.userId() }
 				{ users: Template.currentData()._id }
 			]
 			type: $nin: ['private', 'class']
-		}, sort: lastMessageTime: -1
+		}, {
+			sort: lastMessageTime: -1
+		}).fetch()
 
 Template['sharedChats_chatRow'].events
 	'click': -> ChatManager.openChat @_id

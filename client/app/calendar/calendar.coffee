@@ -21,12 +21,11 @@ openCalendarItemsModal = (id) ->
 		onHide: -> setQueryParam undefined
 	}, -> CalendarItems.findOne id
 
-calendarItemToEvent = (calendarItem) ->
+calendarItemToEvent = (calendarItem, compare) ->
 	# commented out since this is currently not needed, but we have to keep
 	# remembered about.
 	#calendarItem = _.extend new CalendarItem, calendarItem
 
-	own = Meteor.userId() in calendarItem.userIds
 	_class = Classes.findOne calendarItem.classId
 
 	id: calendarItem._id
@@ -36,7 +35,7 @@ calendarItemToEvent = (calendarItem) ->
 	end: calendarItem.endDate
 	color: (
 		if calendarItem.scrapped then 'gray'
-		else if not own then '#A938FF'
+		else if compare then '#009688'
 		else switch calendarItem.content?.type
 			when 'homework' then '#32A8CE'
 			when 'test', 'exam' then '#FF4136'
@@ -45,10 +44,10 @@ calendarItemToEvent = (calendarItem) ->
 			else '#3a87ad'
 	)
 	className: (
-		switch calendarItem.getAbsenceInfo()?.type
-			when 'absent', 'sick', 'exemption', 'discharged' then 'opaque'
-			else ''
-	)
+		type = calendarItem.getAbsenceInfo()?.type
+		if not compare and type in [ 'absent', 'sick', 'exemption', 'discharged' ]
+			'opaque'
+	) ? ''
 	clickable: not calendarItem.scrapped
 	open: no
 	calendarItem: calendarItem
@@ -204,10 +203,24 @@ Template.calendar.onRendered ->
 		[ start, end ] = dates.get()
 		@subscribe 'externalCalendarItems', start, end
 		currentItems = CalendarItems.find({
+			userIds: Meteor.userId()
 			startDate: $gte: start
 			endDate: $lte: end
-		}, sort: startDate: 1
-		).map calendarItemToEvent
+		}, {
+			sort: startDate: 1
+		}).map (item) -> calendarItemToEvent item, no
+
+		ids = FlowRouter.getQueryParam 'userIds'
+		if ids? and ids.length > 0
+			@subscribe 'foreignCalendarItems', ids, start, end
+			currentItems = currentItems.concat CalendarItems.find({
+				userIds: $in: ids
+				startDate: $gte: start
+				endDate: $lte: end
+			}, {
+				sort: startDate: 1
+			}).map (item) -> calendarItemToEvent item, yes
+
 		$calendar.fullCalendar 'refetchEvents'
 
 	Mousetrap.bind 'left', ->
