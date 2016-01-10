@@ -97,28 +97,32 @@ setMobileSettings = ->
 	window.closeSidebar = -> snapper.close()
 
 setKeyboardShortcuts = ->
-	Mousetrap.bind 'o', ->
+	Mousetrap.bind 'g o', ->
 		FlowRouter.go 'overview'
 		no
 
-	Mousetrap.bind 'a', ->
+	Mousetrap.bind ['g a', 'g c'], ->
 		FlowRouter.go 'calendar'
 		no
 
-	Mousetrap.bind 'b', ->
+	Mousetrap.bind ['g b', 'g m'], ->
 		FlowRouter.go 'messages'
 		no
 
-	Mousetrap.bind 'i', ->
+	Mousetrap.bind ['g i', 'g s'], ->
 		FlowRouter.go 'settings'
 		no
 
-	Mousetrap.bind ['/', '?'], ->
+	Mousetrap.bind '/', ->
 		FlowRouter.go 'overview'
 		$('#searchBar > input, #searchBar .tt-input').focus()
 		no
 
 	Mousetrap.bind 'c', ->
+		$('.searchBox > input').focus()
+		no
+
+	Mousetrap.bind 'g c', ->
 		id = FlowRouter.getParam 'id'
 		routeName = FlowRouter.getRouteName()
 
@@ -126,8 +130,8 @@ setKeyboardShortcuts = ->
 			ChatManager.openPrivateChat id
 		else if routeName is 'classView'
 			ChatManager.openClassChat id
-		else
-			$('.searchBox > input').focus()
+		else if routeName is 'projectView'
+			ChatManager.openProjectChat new Meteor.Collection.ObjectID id
 		no
 
 	buttonGoto = (delta) ->
@@ -150,7 +154,7 @@ setKeyboardShortcuts = ->
 		buttonGoto 1
 		no
 
-	Mousetrap.bind ['ctrl+/', 'command+/', 'ctrl+?', 'command+?'], ->
+	Mousetrap.bind ['ctrl+/', 'command+/', 'ctrl+?', 'command+?', '?'], ->
 		alertModal(
 			'Toetsenbord shortcuts'
 			Locals['nl-NL'].KeyboardShortcuts()

@@ -18,10 +18,13 @@
 			'''
 				Gebruik simplyHomework als een pro met deze keyboard shortcuts:
 
-				<b>Overzicht</b>: <kbd>o</kbd>
-				<b>Agenda</b>: <kbd>a</kbd>
-				<b>Zoeken</b>: <kbd>/</kbd> of <kbd>?</kbd>
+				<b>Overzicht</b>: <kbd>go</kbd>
+				<b>Agenda</b>: <kbd>ga</kbd> of <kbd>gc</kbd>
+				<b>Berichten</b>: <kbd>gb</kbd> of <kbd>gm</kbd>
+				<b>Instellingen</b>: <kbd>gi</kbd> of <kbd>gs</kbd>
+				<b>Zoeken</b>: <kbd>/</kbd>
 				<b>Chatbalk zoeken</b>: <kbd>c</kbd>
+				<b>Chatten met huidige persoon, vak of project</b>: <kbd>gc</kbd>
 				<b>Vorige zijbalk item</b>: <kbd>shift</kbd> + <kbd>pijltje boven</kbd> of <kbd>shift</kbd> + <kbd>k</kbd>
 				<b>Volgende zijbalk item</b>: <kbd>shift</kbd> + <kbd>pijltje beneden</kbd> of<kbd>shift</kbd> + <kbd>j</kbd>
 			'''
