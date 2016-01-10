@@ -218,24 +218,6 @@ Meteor.publishComposite 'books', (classId) ->
 			find: (user) -> Books.find _id: $in: _.pluck user.classInfos, 'bookId'
 		}]
 
-Meteor.publish 'foreignCalendarItems', (userIds, from, to) ->
-	check userIds, [String]
-	check from, Date
-	check to, Date
-	unless @userId?
-		@ready()
-		return undefined
-
-	userIds = _.filter userIds, (id) ->
-		Privacy.getOptions(id).publishCalendarItems
-
-	CalendarItems.find
-		userIds:
-			$in: userIds
-			$ne: @userId
-		startDate: $gte: from
-		endDate: $lte: to
-
 # OPTIMIZE
 
 Meteor.publish 'scholieren.com', ->

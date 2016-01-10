@@ -50,6 +50,32 @@ Meteor.publish 'externalCalendarItems', (from, to) ->
 
 	@ready()
 
+Meteor.publish 'foreignCalendarItems', (userIds, from, to) ->
+	check userIds, [String]
+	check from, Date
+	check to, Date
+	unless @userId?
+		@ready()
+		return undefined
+
+	userIds = _.filter userIds, (id) ->
+		Privacy.getOptions(id).publishCalendarItems
+
+	handle = Helpers.interval (->
+		for id in userIds
+			updateCalendarItems id, from, to
+	), 1000 * 60 * 20 # 20 minutes
+
+	@onStop ->
+		Meteor.clearInterval handle
+
+	CalendarItems.find
+		userIds:
+			$in: userIds
+			$ne: @userId
+		startDate: $gte: from
+		endDate: $lte: to
+
 Meteor.publish 'externalGrades', (options) ->
 	check options, Object
 	{ classId, onlyRecent } = options
