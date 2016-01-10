@@ -13,7 +13,7 @@ Template.resetPass.events
 				else
 					swalert
 						title: 'Fout'
-						text: 'Onbekende fout, we zijn op de hoogte gesteld'
+						text: 'Onbekende fout, we zijn op de hoogte gesteld.'
 						type: 'error'
 
 					Kadira.trackError 'resetPass-client', err.message, stacks: EJSON.stringify err
