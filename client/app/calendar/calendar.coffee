@@ -34,8 +34,10 @@ calendarItemToEvent = (calendarItem, compare) ->
 	start: calendarItem.startDate
 	end: calendarItem.endDate
 	color: (
-		if calendarItem.scrapped then 'gray'
-		else if compare then '#009688'
+		if compare
+			if calendarItem.scrapped then '#458A83'
+			else '#009688'
+		else if calendarItem.scrapped then 'gray'
 		else switch calendarItem.content?.type
 			when 'homework' then '#32A8CE'
 			when 'test', 'exam' then '#FF4136'
