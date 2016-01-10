@@ -19,7 +19,7 @@
 				Gebruik simplyHomework als een pro met deze keyboard shortcuts:
 
 				<b>Overzicht</b>: <kbd>go</kbd>
-				<b>Agenda</b>: <kbd>ga</kbd> of <kbd>gc</kbd>
+				<b>Agenda</b>: <kbd>ga</kbd>
 				<b>Berichten</b>: <kbd>gb</kbd> of <kbd>gm</kbd>
 				<b>Instellingen</b>: <kbd>gi</kbd> of <kbd>gs</kbd>
 				<b>Zoeken</b>: <kbd>/</kbd>

@@ -101,7 +101,7 @@ setKeyboardShortcuts = ->
 		FlowRouter.go 'overview'
 		no
 
-	Mousetrap.bind ['g a', 'g c'], ->
+	Mousetrap.bind 'g a', ->
 		FlowRouter.go 'calendar'
 		no
 
