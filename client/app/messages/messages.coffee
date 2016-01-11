@@ -75,7 +75,7 @@ Template.messages.onCreated ->
 
 			if e?.error is 'magister-only'
 				hasMagister.set no
-			else
+			else unless e?
 				messages.set r
 
 	@fillMessage = (message) ->
