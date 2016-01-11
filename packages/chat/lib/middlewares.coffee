@@ -126,7 +126,7 @@ ChatMiddlewares.attach 'clickable names', 'insert', (message) ->
 
 	for user in users
 		{ firstName, lastName } = user.profile
-		regex = new RegExp "@?(#{firstName} #{lastName}|#{firstName}|#{lastName})", 'g'
+		regex = new RegExp "@?(#{firstName} #{lastName}|#{firstName}|#{lastName})", 'ig'
 		message.content = message.content.replace regex, (str) ->
 			path = FlowRouter.path 'personView', id: user._id
 			"<a href='#{path}' class='name'>#{str}</a>"
