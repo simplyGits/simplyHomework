@@ -1,12 +1,15 @@
+@require "/client/utils"
+
 div.taskRow
 	margin-left: 5px
 	margin-top: 10px
 
 	label > span
-		font-weight: 300
+		roboto(300)
 		font-size: 15px
 
 div.taskRow.done
 	label
-		text-decoration: line-through
 		opacity: .4
+		span
+			text-decoration: line-through
