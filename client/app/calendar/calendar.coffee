@@ -50,8 +50,6 @@ calendarItemToEvent = (calendarItem, compare) ->
 		if not compare and type in [ 'absent', 'sick', 'exemption', 'discharged' ]
 			'opaque'
 	) ? ''
-	clickable: not calendarItem.scrapped
-	open: no
 	calendarItem: calendarItem
 	editable: not calendarItem.fetchedBy?
 	content: calendarItem.content
@@ -151,10 +149,6 @@ Template.calendar.onRendered ->
 			Meteor.clearInterval popoverTimeout
 			currentOpenEvent.set undefined
 			openCalendarItemsModal calendarEvent.calendarItem._id
-
-		eventAfterRender: (event, element) ->
-			return unless event.clickable
-			element.css cursor: "pointer"
 
 		viewRender: (view, element) ->
 			dates.set (d.toDate().date() for d in [ view.start, view.end ])
