@@ -79,7 +79,11 @@
 				</ul>
 			{{else}}
 				<div class="notice">
-					Je geen lessen met {{profile.firstName}} volgende week, je kan alsnog wel jullie <a href="#" data-action="compare">roosters vergelijken</a>.
+					{{#if canCompare}}
+						Je deelt geen lessen met {{profile.firstName}} volgende week; je kan wel jullie <a href="#" data-action="compare">roosters vergelijken</a>.
+					{{else}}
+						Je deelt geen lessen met {{profile.firstName}} volgende week.
+					{{/if}}
 				</div>
 			{{/if}}
 		</div>
