@@ -1,7 +1,7 @@
 getScrappedHours = ->
 	CalendarItems.find({
 		userIds: Meteor.userId()
-		startDate: $gt: new Date
+		startDate: $gte: Date.today()
 		scrapped: yes
 
 		schoolHour:
