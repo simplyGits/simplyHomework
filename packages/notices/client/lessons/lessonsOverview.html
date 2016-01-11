@@ -1,0 +1,13 @@
+<template name="lessonsOverview">
+	<div class="lessonsOverview">
+		{{#each items}}
+			<div class="lessonGroup">
+				<div class="back" style="background-color: {{class.__color}}"></div>
+				{{class.name}}
+			</div>
+		{{/each}}
+		{{#if hidden}}
+			<div class="details">{{hidden}} verborgen {{plural hidden 'vak is' 'vakken zijn'}} niet weergegeven.</div>
+		{{/if}}
+	</div>
+</template>

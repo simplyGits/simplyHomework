@@ -50,6 +50,9 @@ Package.onUse(function(api) {
 		'client/lessons/currentLesson.coffee',
 		'client/lessons/nextlesson.html',
 		'client/lessons/nextlesson.coffee',
+		'client/lessons/lessonsOverview.html',
+		'client/lessons/lessonsOverview.styl',
+		'client/lessons/lessonsOverview.coffee',
 
 		'client/scrappedHours/srappedHours.html',
 		'client/scrappedHours/srappedHours.styl',

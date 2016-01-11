@@ -500,6 +500,7 @@ Meteor.startup ->
 	Template.registerHelper 'has', has
 	Template.registerHelper 'toUpperCase', (str) -> str.toUpperCase()
 	Template.registerHelper 'cap', (str) -> Helpers.cap str
+	Template.registerHelper 'plural', (count, a, b) -> if count is 1 then a else b
 
 	Template.registerHelper 'isPhone', -> Session.equals 'deviceType', 'phone'
 	Template.registerHelper 'isTablet', -> Session.equals 'deviceType', 'tablet'
