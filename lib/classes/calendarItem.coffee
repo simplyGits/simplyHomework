@@ -103,6 +103,13 @@ class @CalendarItem
 		###
 		@teacher = null
 
+		###*
+		# @property type
+		# @type String|undefined
+		# @default undefined
+		###
+		@type = undefined
+
 	###*
 	# @method class
 	# @return {SchoolClass}

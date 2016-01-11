@@ -421,6 +421,14 @@
 					calendarItem.fullDay = a.fullDay();
 					calendarItem.schoolHour = a.beginBySchoolHour();
 					calendarItem.location = a.location();
+					calendarItem.type = (function (a) {
+						switch (a.type()) {
+						case 1: return 'personal';
+						case 3: return 'schoolwide';
+						case 7: return 'kwt';
+						case 13: return 'lesson';
+						}
+					})(a);
 
 					var teacher = a.teachers()[0];
 					if (teacher != null) {
