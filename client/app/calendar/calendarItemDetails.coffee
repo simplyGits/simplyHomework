@@ -6,7 +6,9 @@ Template.calendarItemDetails.helpers
 				$ne: Meteor.userId()
 
 Template.calendarItemDetails.onCreated ->
-	@subscribe 'usersData', @data?.userIds ? []
+	unless @data.type is 'schoolwide'
+		userIds = _.take @data?.userIds, 40
+		@subscribe 'usersData', userIds
 
 Template.calendarItemDetailsPerson.onRendered ->
 	@$('[data-toggle="tooltip"]').tooltip
