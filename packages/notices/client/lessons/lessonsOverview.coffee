@@ -21,7 +21,7 @@ getItems = ->
 	show = (
 		if today.length > 0 and new Date() < today[0].startDate
 			'today'
-		else if tomorrow.length > 0 and (today.length is 0 or new Date() > _.last(today).startDate)
+		else if tomorrow.length > 0 and (today.length is 0 or new Date() > _.last(today).endDate)
 			'tomorrow'
 	)
 	if show?
