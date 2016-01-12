@@ -13,6 +13,7 @@ getScrappedHours = ->
 	}).fetch()
 
 NoticeManager.provide 'scrappedHours', ->
+	dateTracker.depend()
 	# REVIEW the date range here.
 	@subscribe 'externalCalendarItems', Date.today(), Date.today().addDays 4
 
