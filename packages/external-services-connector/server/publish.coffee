@@ -75,6 +75,7 @@ Meteor.publish 'foreignCalendarItems', (userIds, from, to) ->
 			$ne: @userId
 		startDate: $gte: from
 		endDate: $lte: to
+		type: $ne: 'personal' # REVIEW: `CalendarItem::private` field?
 
 Meteor.publish 'externalGrades', (options) ->
 	check options, Object
