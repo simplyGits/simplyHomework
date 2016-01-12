@@ -247,6 +247,11 @@ Meteor.methods
 				path: path
 				params: params
 
+			res.push
+				type: 'modal'
+				title: 'Help'
+				id: 'addTicketModal'
+
 		_(res)
 			.filter (obj) ->
 				obj.filtered or
@@ -400,3 +405,15 @@ Meteor.methods
 				res.push "Je deelt de meeste lessen met #{link}"
 
 		res
+
+	###*
+	# @method insertTicket
+	# @param {String} body
+	###
+	insertTicket: (body) ->
+		check body, String
+		body = body.trim()
+		if body.length is 0
+			throw new Meteor.Error 'empty-body'
+
+		Tickets.insert new Ticket body, @userId

@@ -85,6 +85,31 @@ Template.newSchoolYearModal.events
 
 		target.find("span").css color: if checked then "lightred" else "white"
 
+Template.addTicketModal.helpers
+	body: -> Session.get('addTicketModalContent') ? ''
+
+Template.addTicketModal.events
+	'keyup': ->
+		body = $('#ticketBodyInput').val()
+		Session.set 'addTicketModalContent', body
+
+	'click #sendButton': ->
+		body = $('#ticketBodyInput').val()
+		$modal = $ '#addTicketModal'
+
+		Meteor.call 'insertTicket', body, (e, r) ->
+			if e?
+				notify (
+					switch e.error
+						when 'empty-body' then 'Inhoud kan niet leeg zijn'
+						else 'Onbekende fout, we zijn op de hoogte gesteld'
+				), 'error'
+				shake $modal
+			else
+				notify 'Ticket aangemaakt', 'success'
+				$modal.modal 'hide'
+				Session.set 'addTicketModalContent', ''
+
 # == End Modals ==
 
 setMobileSettings = ->

@@ -176,3 +176,27 @@
 		</div>
 	</div>
 </template>
+
+<template name="addTicketModal">
+	<div class="modal fade" aria-hidden="true" id="addTicketModal">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+					<h4 class="modal-title">Contact</h4>
+				</div>
+				<div class="modal-body">
+					<div>
+						Probleem? Vraag? Ideën voor nieuwe dingen?<br>
+						Typ hieronder je bericht en druk dan op 'verzenden', we sturen je een reactie terug via de mail.
+					</div>
+					<textarea id="ticketBodyInput" placeholder="Typ hier je bericht">{{body}}</textarea>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Annuleren</button>
+					<button type="button" class="btn btn-primary" id="sendButton">Verzenden</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</template>

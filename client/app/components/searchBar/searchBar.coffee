@@ -33,6 +33,7 @@ fetch = (query, sync, callback) ->
 route = (query, d) ->
 	return unless d?
 	if d.type is 'route' then FlowRouter.go d.path, d.params
+	else if d.type is 'modal' then showModal d.id
 	else
 		FlowRouter.go (
 			switch d.type

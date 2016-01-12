@@ -19,6 +19,7 @@
 @ScholierenClasses     = new Meteor.Collection 'scholieren.com'
 @WoordjesLerenClasses  = new Meteor.Collection 'woordjesleren'
 @Analytics             = new Meteor.Collection 'analytics'
+@Tickets               = new Mongo.Collection 'tickets'
 
 Meteor.users._transform = (u) ->
 	u.hasRole = (roles) -> userIsInRole u._id, roles
