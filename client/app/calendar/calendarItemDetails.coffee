@@ -1,9 +1,12 @@
 Template.calendarItemDetails.helpers
 	people: ->
-		Meteor.users.find
-			_id:
-				$in: @userIds ? []
-				$ne: Meteor.userId()
+		if @type is 'schoolwide'
+			[]
+		else
+			Meteor.users.find
+				_id:
+					$in: @userIds ? []
+					$ne: Meteor.userId()
 
 Template.calendarItemDetails.onCreated ->
 	unless @data.type is 'schoolwide'
