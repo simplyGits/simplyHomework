@@ -176,6 +176,7 @@ Template.classView.events
 			userIds: Meteor.userId()
 			classId: classId()
 			startDate: $gte: new Date
+			scrapped: false
 		}, {
 			sort:
 				startDate: 1
