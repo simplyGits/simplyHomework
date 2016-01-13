@@ -506,7 +506,6 @@ Meteor.startup ->
 	Template.registerHelper 'isTablet', -> Session.equals 'deviceType', 'tablet'
 	Template.registerHelper 'isDesktop', -> Session.equals 'deviceType', 'desktop'
 
-	Template.registerHelper 'currentYear', -> new Date().getFullYear()
 	Template.registerHelper 'dateFormat', (format, date) -> moment(date).format format
 	Template.registerHelper 'time', (date) -> moment(date).format 'HH:mm'
 	Template.registerHelper 'numberFormat', (number) ->
