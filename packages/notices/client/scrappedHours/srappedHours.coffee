@@ -1,7 +1,7 @@
 getScrappedHours = ->
 	CalendarItems.find({
 		userIds: Meteor.userId()
-		startDate: $gte: Date.today()
+		endDate: $gt: new Date()
 		scrapped: yes
 
 		schoolHour:
@@ -13,7 +13,7 @@ getScrappedHours = ->
 	}).fetch()
 
 NoticeManager.provide 'scrappedHours', ->
-	dateTracker.depend()
+	minuteTracker.depend()
 	# REVIEW the date range here.
 	@subscribe 'externalCalendarItems', Date.today(), Date.today().addDays 4
 
