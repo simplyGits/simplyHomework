@@ -103,9 +103,8 @@ Template.chatMessages.onDestroyed ->
 	sub.stop()
 
 Template.messageRow.events
-	"click .senderImage": ->
-		ChatManager.closeChat()
-		$(".tooltip").tooltip "destroy"
+	'click .senderImage': ->
+		$('.tooltip').tooltip 'destroy'
 
 Template.messageRow.rendered = ->
 	$node = $ @firstNode
