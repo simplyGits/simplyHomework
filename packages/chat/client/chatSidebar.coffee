@@ -121,13 +121,19 @@ class @ChatManager
 		if Session.equals 'deviceType', 'phone'
 			FlowRouter.go 'mobileChat', id: id
 		else
-			FlowRouter.setQueryParams openChatId: id
+			FlowRouter.withReplaceState ->
+				FlowRouter.setQueryParams openChatId: id
 
 	###*
 	# Closes the currently open chat.
 	# @method closeChat
 	###
-	@closeChat: -> history.back()
+	@closeChat: ->
+		if Session.equals 'deviceType', 'phone'
+			FlowRouter.go 'overview'
+		else
+			FlowRouter.withReplaceState ->
+				FlowRouter.setQueryParams openChatId: undefined
 
 ###*
 # Get the current chats, based on search term, if one.
