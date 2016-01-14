@@ -32,21 +32,3 @@ Template.notices.onCreated ->
 			if timeDiff <= 600000 and nextAppointment._id not in notified
 				new Notification "#{nextAppointment.class().name} start in #{~~(timeDiff / 1000 / 60)} minuten"
 				notified.push nextAppointment._id
-
-	###
-	@autorun ->
-		tomorrow = CalendarItems.find({
-			userIds: Meteor.userId()
-			startDate: $gte: Date.today().addDays 1
-			endDate: $lte: Date.today().addDays 2
-			scrapped: false
-			schoolHour:
-				$exists: yes
-				$ne: null
-		}, sort: 'startDate': 1).fetch()
-
-		nextAppointmentToday = _.find today, (a) -> new Date() < a.startDate
-
-		foundAppointment = (today.length + tomorrow.length) > 0
-		dayOver = not nextAppointmentToday?
-	###
