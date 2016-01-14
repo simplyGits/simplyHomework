@@ -7,6 +7,7 @@ Template.calendarItemDetails.helpers
 				_id:
 					$in: @userIds ? []
 					$ne: Meteor.userId()
+	relativeTime: -> @relativeTime yes
 
 Template.calendarItemDetails.onCreated ->
 	unless @data.type is 'schoolwide'
