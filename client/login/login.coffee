@@ -15,10 +15,11 @@ Template.login.events
 		Meteor.loginWithPassword $emailInput.val().toLowerCase(), $passwordInput.val(), (error) ->
 			loading.set no
 			if error?
-				if error.reason is 'Incorrect password'
-					setFieldError '#passwordGroup', 'Wachtwoord is fout'
-				else if error.reason is 'User not found'
-					setFieldError '#emailGroup', 'Account niet gevonden'
+				Meteor.defer ->
+					if error.reason is 'Incorrect password'
+						setFieldError '#passwordGroup', 'Wachtwoord is fout'
+					else if error.reason is 'User not found'
+						setFieldError '#emailGroup', 'Account niet gevonden'
 			else FlowRouter.go 'overview'
 
 Template.login.onRendered ->
