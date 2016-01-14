@@ -12,7 +12,9 @@ class NoticeManager
 	###
 	@get: (query = {}) ->
 		@notices.find query,
-			sort: priority: -1
+			sort:
+				priority: -1
+				name: 1
 			transform: (n) -> _.extend n,
 				clickable: if n.onClick? then 'clickable' else ''
 
