@@ -1,60 +1,60 @@
-@ScheduleFunctions.get-inbetween-hours = (userId = Meteor.userId!) ->
+@ScheduleFunctions.get-inbetween-hours = (user-id = Meteor.user-id!) ->
 	res = []
 	hours = CalendarItems.find(
-		userIds: userId
-		startDate: $gte: Date.today!
-		endDate: $lte: Date.today!addDays 7
-		schoolHour:
+		user-ids: user-id
+		start-date: $gte: Date.today!
+		end-date: $lte: Date.today!add-days 7
+		school-hour:
 			$exists: yes
 			$ne: null
 	).fetch!
 
 	for daydelta from 0 til 7
-		date = Date.today!addDays daydelta
+		date = Date.today!add-days daydelta
 		items = _(hours)
-			.filter (item) -> item.startDate.date!getTime! is date.getTime!
-			.sortBy 'startDate'
+			.filter (item) -> item.start-date.date!get-time! is date.get-time!
+			.sort-by \startDate
 			.value!
 
 		if items.length > 0
 			# REVIEW: Use mean?
-			timeThreshold = items.0.endDate.getTime! - items.0.startDate.getTime!
+			time-threshold = items.0.end-date.get-time! - items.0.start-date.get-time!
 
-			endPrev = undefined
+			end-prev = undefined
 			for item in items
-				timeSpan = if endPrev?
-					then item.startDate.getTime! - endPrev.getTime!
+				time-span = if end-prev?
+					then item.start-date.get-time! - end-prev.get-time!
 					else 0
-				amount = Math.floor (timeSpan / timeThreshold)
+				amount = Math.floor (time-span / time-threshold)
 				for i from 0 til amount
 					res.push do
-						start: new Date (endPrev.getTime! + timeThreshold * i)
-						end: new Date (endPrev.getTime! + timeThreshold * ( 1 + i ))
+						start: new Date (end-prev.get-time! + time-threshold * i)
+						end: new Date (end-prev.get-time! + time-threshold * ( 1 + i ))
 
-				endPrev = item.endDate
+				end-prev = item.end-date
 
 	res
 
-@ScheduleFunctions.current-day-over = (userId = Meteor.userId!) ->
+@ScheduleFunctions.current-day-over = (user-id = Meteor.user-id!) ->
 	minuteTracker?depend!
 	CalendarItems.find(
-		userIds: userId
-		startDate: $gte: new Date!
-		endDate: $lte: Date.today!addDays 1
+		user-ids: user-id
+		start-date: $gte: new Date
+		end-date: $lte: Date.today!add-days 1
 		scrapped: false
-		schoolHour:
+		school-hour:
 			$exists: yes
 			$ne: null
 	).count! is 0
 
-@ScheduleFunctions.lessons-for-date = (userId = Meteor.userId!, date = new Date!) ->
+@ScheduleFunctions.lessons-for-date = (user-id = Meteor.user-id!, date = new Date!) ->
 	dateTracker?depend!
-	date = date.date!
+	date .= date!
 	CalendarItems.find do
-		userIds: userId
-		startDate: $gte: new Date!
-		endDate: $lte: Date.today!addDays 1
+		user-ids: user-id
+		start-date: $gte: new Date
+		end-date: $lte: Date.today!add-days 1
 		scrapped: false
-		schoolHour:
+		school-hour:
 			$exists: yes
 			$ne: null
