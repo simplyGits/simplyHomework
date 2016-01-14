@@ -20,6 +20,7 @@ Package.onUse(function(api) {
 		'templating',
 		'mquandalle:stylus',
 		'handlebars',
+		'schedule-functions',
 	], 'client');
 	/*
 	api.use([

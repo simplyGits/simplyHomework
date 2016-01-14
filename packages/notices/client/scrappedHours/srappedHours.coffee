@@ -1,7 +1,8 @@
 getScrappedHours = ->
+	dayOver = ScheduleFunctions.currentDayOver()
 	CalendarItems.find({
 		userIds: Meteor.userId()
-		endDate: $gt: new Date()
+		startDate: $gte: Date.today().addDays if dayOver then 1 else 0
 		scrapped: yes
 
 		schoolHour:
