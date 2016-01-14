@@ -81,6 +81,9 @@ Meteor.publish 'foreignCalendarItems', (userIds, from, to) ->
 		type: $ne: 'personal' # REVIEW: `CalendarItem::private` field?
 	}, {
 		sort: startDate: 1
+		fields:
+			usersDone: 0
+			content: 0
 	}
 
 Meteor.publish 'externalGrades', (options) ->
