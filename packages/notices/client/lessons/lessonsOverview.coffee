@@ -25,7 +25,15 @@ getItems = ->
 			'tomorrow'
 	)
 	if show?
-		[ (if show is 'today' then today else tomorrow), show ]
+		items = _(
+			if show is 'today' then today
+			else tomorrow
+		)
+			.map (item) -> item.class()
+			.uniq '_id'
+			.value()
+
+		[ items, show ]
 
 NoticeManager.provide 'lessonsOverview', ->
 	minuteTracker.depend()
@@ -47,8 +55,8 @@ NoticeManager.provide 'lessonsOverview', ->
 Template.lessonsOverview.helpers
 	items: ->
 		items = getItems()[0]
-		_.reject items, (item) -> item.class().__classInfo.hidden
+		_.reject items, '__classInfo.hidden'
 
 	hidden: ->
 		items = getItems()[0]
-		_.filter(items, (item) -> item.class().__classInfo.hidden).length
+		_.filter(items, '__classInfo.hidden').length
