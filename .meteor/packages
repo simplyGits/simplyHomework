@@ -77,3 +77,4 @@ simply:performance-logging
 simply:tether
 force-ssl
 service-configuration
+schedule-functions

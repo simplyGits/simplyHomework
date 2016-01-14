@@ -117,6 +117,7 @@ reywood:publish-composite@1.4.2
 rosh93:dataset-filter@0.0.6
 routepolicy@1.0.6
 rzymek:moment-locale-nl@2.9.0
+schedule-functions@0.0.1
 scholieren@0.0.1
 service-configuration@1.0.5
 session@1.1.1
@@ -152,3 +153,4 @@ url@1.0.5
 viewport-units-buggyfill@0.5.5
 webapp@1.2.3
 webapp-hashing@1.0.5
+zardak:livescript@0.1.0

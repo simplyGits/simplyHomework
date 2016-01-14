@@ -384,7 +384,7 @@ Meteor.methods
 
 			res.push s
 
-		inbetweenHoursCount = getInbetweenHours(userId).length
+		inbetweenHoursCount = ScheduleFunctions.getInbetweenHours(userId).length
 		if inbetweenHoursCount > 0
 			res.push "Aantal tussenuren in één week: #{inbetweenHoursCount}"
 
