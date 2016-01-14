@@ -109,7 +109,7 @@ Template.messageRow.events
 Template.messageRow.rendered = ->
 	$node = $ @firstNode
 
-	if Session.equals 'deviceType', 'desktop'
+	if Helpers.isDesktop()
 		# TODO: fix this when opening multiple times.
 		$node.find('[data-toggle="tooltip"]').tooltip
 			container: 'body'

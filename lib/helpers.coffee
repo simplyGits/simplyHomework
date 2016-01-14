@@ -425,6 +425,10 @@ class @Helpers
 			else date
 		)
 
+	@isPhone: -> Session.equals 'deviceType', 'phone'
+	@isTablet: -> Session.equals 'deviceType', 'tablet'
+	@isDesktop: -> Session.equals 'deviceType', 'desktop'
+
 ###*
 # @method getUserField
 # @param {String} [userId=Meteor.userId()]

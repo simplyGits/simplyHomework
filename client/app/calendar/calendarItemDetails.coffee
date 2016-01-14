@@ -15,6 +15,7 @@ Template.calendarItemDetails.onCreated ->
 		@subscribe 'usersData', userIds
 
 Template.calendarItemDetailsPerson.onRendered ->
-	@$('[data-toggle="tooltip"]').tooltip
-		container: 'body'
-		placement: 'bottom'
+	if Helpers.isDesktop()
+		@$('[data-toggle="tooltip"]').tooltip
+			container: 'body'
+			placement: 'bottom'

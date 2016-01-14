@@ -46,12 +46,13 @@ Template.personView.onCreated ->
 Template.personView.onRendered ->
 	slide()
 
-	@autorun ->
-		FlowRouter.watchPathChange()
-		Meteor.defer ->
-			$('[data-toggle="tooltip"]')
-				.tooltip "destroy"
-				.tooltip container: "body"
+	if Helpers.isDesktop()
+		@autorun ->
+			FlowRouter.watchPathChange()
+			Meteor.defer ->
+				$('[data-toggle="tooltip"]')
+					.tooltip "destroy"
+					.tooltip container: "body"
 
 Template.personSharedHours.onCreated ->
 	@subscribe 'externalCalendarItems', Date.today(), Date.today().addDays 7
