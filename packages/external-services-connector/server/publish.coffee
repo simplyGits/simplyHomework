@@ -16,10 +16,13 @@ Meteor.publish 'externalCalendarItems', (from, to) ->
 		Meteor.clearInterval handle
 
 	cursor =
-		CalendarItems.find
+		CalendarItems.find {
 			userIds: userId
 			startDate: $gte: from
 			endDate: $lte: to
+		}, {
+			sort: startDate: 1
+		}
 
 	findAbsence = (calendarItemId) -> Absences.findOne { calendarItemId, userId }
 	transform = (doc) ->
@@ -69,13 +72,16 @@ Meteor.publish 'foreignCalendarItems', (userIds, from, to) ->
 	@onStop ->
 		Meteor.clearInterval handle
 
-	CalendarItems.find
+	CalendarItems.find {
 		userIds:
 			$in: userIds
 			$ne: @userId
 		startDate: $gte: from
 		endDate: $lte: to
 		type: $ne: 'personal' # REVIEW: `CalendarItem::private` field?
+	}, {
+		sort: startDate: 1
+	}
 
 Meteor.publish 'externalGrades', (options) ->
 	check options, Object
@@ -98,7 +104,7 @@ Meteor.publish 'externalGrades', (options) ->
 	query = ownerId: @userId
 	query.classId = classId if classId?
 	query.dateFilledIn = { $gte: date } if onlyRecent
-	Grades.find query
+	Grades.find query, sort: dateFilledIn: -1
 
 Meteor.publish 'externalStudyUtils', (classId) ->
 	check classId, String
