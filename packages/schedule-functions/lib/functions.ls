@@ -45,12 +45,12 @@
 		school-hour:
 			$exists: yes
 			$ne: null
-	).count! is 0
+	, fields: _id: 1).count! is 0
 
 @ScheduleFunctions.lessons-for-date = (user-id = Meteor.user-id!, date = new Date!) ->
 	dateTracker?depend!
 	date .= date!
-	CalendarItems.find do
+	CalendarItems.find(
 		user-ids: user-id
 		start-date: $gte: new Date
 		end-date: $lte: Date.today!add-days 1
@@ -58,3 +58,4 @@
 		school-hour:
 			$exists: yes
 			$ne: null
+	).fetch!
