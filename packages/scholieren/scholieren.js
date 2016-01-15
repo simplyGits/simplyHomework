@@ -1,8 +1,6 @@
 /* global Scholieren:true */
 'use strict';
 
-// TODO: make this an external service
-
 const settings = Meteor.settings && Meteor.settings.scholieren;
 
 if (settings == null) {

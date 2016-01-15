@@ -1,8 +1,6 @@
 /* global cheerio, WoordjesLeren:true */
 'use strict';
 
-// TODO: make this an external service
-
 var $ = cheerio;
 var urls = {
 	categories: 'http://www.woordjesleren.nl/api/select_categories.php',
