@@ -91,7 +91,7 @@ Meteor.publish 'externalGrades', (options) ->
 	{ classId, onlyRecent } = options
 
 	@unblock()
-	unless @userId?
+	unless @userId? and (classId? or onlyRecent?)
 		@ready()
 		return undefined
 
