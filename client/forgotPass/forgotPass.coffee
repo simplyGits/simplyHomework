@@ -5,6 +5,7 @@ Template.forgotPass.events
 
 		if event.which isnt 13
 			$emailInput.tooltip 'destroy'
+			document.getElementById('hint').className = 'visible'
 			return undefined
 
 		Accounts.forgotPassword { email }, (e) ->
