@@ -410,7 +410,7 @@ getProfileData = (userId) ->
 		res[service.name] = data
 	res
 
-AD_STRING = '\n\n---\nDit bericht is verzonden met <a href="http://www.simplyHomework.nl">simplyHomework</a>.'
+AD_STRING = '\n\n---\nVerzonden vanuit <a href="http://www.simplyHomework.nl">simplyHomework</a>.'
 getMessages = (folder, skip, limit, userId) ->
 	check folder, String
 	check skip, Number
