@@ -141,8 +141,6 @@ Schemas.ReportItems = new SimpleSchema
 
 ###
 Schemas.Grades = new SimpleSchema
-	_id:
-		type: Meteor.Collection.ObjectID
 	grade:
 		type: null
 		custom: -> _.isNumber @value

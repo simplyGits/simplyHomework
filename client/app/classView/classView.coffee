@@ -3,7 +3,7 @@
 noticeBanner = new ReactiveVar
 searchRes = new ReactiveVar undefined
 
-selectedGradeId = new SReactiveVar Match.Optional Mongo.ObjectID
+selectedGradeId = new SReactiveVar Match.Optional String
 digitalSchoolUtilities = new ReactiveVar []
 
 classId = -> FlowRouter.getParam 'id'
@@ -128,7 +128,7 @@ Template.classView.onCreated ->
 					showModal 'changeClassModal', undefined, currentClass
 
 	@autorun ->
-		unless _.any(getGrades().fetch(), (g) -> EJSON.equals selectedGradeId.get(), g._id)
+		unless _.any(getGrades().fetch(), (g) -> selectedGradeId.get() is g._id)
 			selectedGradeId.set getGrades().fetch()[0]?._id
 
 Template.classView.onRendered ->

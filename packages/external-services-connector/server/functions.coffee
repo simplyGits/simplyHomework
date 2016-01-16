@@ -58,7 +58,6 @@ updateGrades = (userId, forceUpdate = no) ->
 				externalId: grade.externalId
 
 			if val? and Meteor.isServer
-				delete grade._id
 				Grades.update val._id, grade, modifier: no
 			else
 				Grades.insert grade
