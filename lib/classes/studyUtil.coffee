@@ -12,8 +12,6 @@
 ###
 class @StudyUtil
 	constructor: (@name, @description, @classId, @ownerId) ->
-		@_id = new Meteor.Collection.ObjectID
-
 		###*
 		# The date from which this studyUtil is accesible from.
 		# @property visibleFrom

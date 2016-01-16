@@ -183,8 +183,6 @@ Schemas.Grades = new SimpleSchema
 ###
 
 Schemas.StudyUtils = new SimpleSchema
-	_id:
-		type: Meteor.Collection.ObjectID
 	name:
 		type: String
 		trim: yes
