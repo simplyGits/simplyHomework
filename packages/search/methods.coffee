@@ -6,16 +6,15 @@ Meteor.methods
 	# @method search
 	# @param {String} query
 	# @param {Object} [options]
-	# 	@param {String[]} [classIds]
 	# @return {Object[]}
 	###
 	search: (query, options = {}) ->
 		check query, String
 		check options, Object
 		@unblock()
-		Search.search @userId,
-			query: query
-			classIds: options.classIds
+
+		options.query = query
+		Search.search @userId, options
 
 	'search.analytics.store': (query, choosenId) ->
 		@unblock()

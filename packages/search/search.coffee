@@ -47,6 +47,7 @@ class Search
 		if _.find(@_providers, { name })?
 			throw new Error "Provider '#{name}' already inserted."
 
+		handles ?= []
 		@_providers.push { name, handles, fn }
 		undefined
 
@@ -59,6 +60,7 @@ class Search
 	# @param {Object} options
 	# 	@param {String} options.query
 	# 	@param {String[]} [options.classIds]
+	# 	@param {String[]} [options.onlyFrom]
 	# @return {Object[]}
 	###
 	@search: (userId, options) ->
@@ -66,12 +68,15 @@ class Search
 		check options, Object
 		check options.query, String
 		check options.classIds, Match.Optional [String]
+		check options.onlyFrom, Match.Optional [String]
 
 		query = options.query.trim().toLowerCase()
 		###
 		orig = query.trim().toLowerCase()
 		query = orig.replace /(woordenlijst(en))/g, ''
 		###
+		options.classIds ?= []
+		options.onlyFrom ?= []
 
 		return [] if query.length is 0
 
@@ -79,12 +84,34 @@ class Search
 		calcDistance = (s) -> dam query, s.trim().toLowerCase()
 		user = Meteor.users.findOne userId
 
+		querySplitted = options.query.split ' '
+		if options.classIds.length is 0 and querySplitted.length >= 1
+			{ year, schoolVariant } = getCourseInfo userId
+			classIds = _(getClassInfos userId)
+				.reject 'hidden'
+				.pluck 'id'
+				.value()
+
+			for word in querySplitted
+				c = Classes.findOne
+					_id: $in: classIds
+					$or: [
+						{ name: $regex: word, $options: 'i' }
+						{ abbreviations: word.toLowerCase() }
+					]
+					schoolVariant: schoolVariant
+					year: year
+
+				options.classIds.push c._id if c?
+
+		classes = options.classIds.map (id) -> Classes.findOne _id: id
+
 		keywords = filterKeywords query
-		providers = (
-			if keywords.length is 0 then @_providers
-			else _.filter @_providers, (p) ->
-				_.any keywords, (keyword) -> keyword in p.handles
-		)
+		providers = _.filter @_providers, (p) ->
+			askedFor = p.name in options.onlyFrom
+			handles = _.any keywords, (keyword) -> keyword in p.handles
+
+			askedFor or handles or p.handles.length is 0
 
 		res = []
 		for provider in providers
@@ -92,7 +119,8 @@ class Search
 				out = provider.fn
 					user: user
 					query: query
-					classIds: options.classIds ? []
+					classIds: options.classIds
+					classes: classes
 				res = res.concat out if _.isArray out
 			catch e
 				console.warn "Search provider '#{provider.name}' errored.", e

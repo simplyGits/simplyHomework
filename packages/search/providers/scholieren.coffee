@@ -1,10 +1,9 @@
 Search.provide 'scholieren', [
 	'report'
-], ({ query, user, classIds }) ->
+], ({ query, user, classes }) ->
 	res = []
-	for classId in classIds
-		c = Classes.findOne _id: classId
-		classInfo = _.find getClassInfos(user._id), id: classId
+	for c in classes
+		classInfo = _.find getClassInfos(user._id), id: c._id
 
 		bookName = Books.findOne(classInfo.bookId)?.title ? ''
 		query = "#{normalizeClassName c.name} #{bookName} #{query}"

@@ -159,6 +159,7 @@ Template.classView.events
 			searchRes.set undefined
 			Meteor.call 'search', query, {
 				classIds: [ classId() ]
+				onlyFrom: [ 'woordjesleren', 'scholieren' ]
 			}, (e, r) ->
 				if e? then notify 'Fout tijdens zoeken', 'error'
 				else searchRes.set r
