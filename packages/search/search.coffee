@@ -14,14 +14,20 @@ types = [{
 }].map (t) -> _.extend t,
 	regex: (
 		keywords = t.keywords.map((w) -> "#{w}(en|s)?").join '|'
-		new RegExp "\b(#{keywords})\b"
+		new RegExp "\\b(#{keywords})\\b"
 	)
 
 filterKeywords = (query) ->
-	_(types)
-		.filter (type) -> type.regex.test query
+	keywords = _(types)
+		.filter (type) ->
+			match = type.regex.exec query
+			if match?
+				query = query.replace match[0], ''
+				yes
+			else no
 		.pluck 'type'
 		.value()
+	[keywords, query]
 
 ###*
 # @class Search
@@ -70,11 +76,7 @@ class Search
 		check options.classIds, Match.Optional [String]
 		check options.onlyFrom, Match.Optional [String]
 
-		query = options.query.trim().toLowerCase()
-		###
-		orig = query.trim().toLowerCase()
-		query = orig.replace /(woordenlijst(en))/g, ''
-		###
+		query = originalQuery = options.query.trim().toLowerCase()
 		options.classIds ?= []
 		options.onlyFrom ?= []
 
@@ -102,23 +104,27 @@ class Search
 					schoolVariant: schoolVariant
 					year: year
 
-				options.classIds.push c._id if c?
+				if c?
+					options.classIds.push c._id
+					query = query.replace word, ''
 
 		classes = options.classIds.map (id) -> Classes.findOne _id: id
 
-		keywords = filterKeywords query
+		[keywords, query] = filterKeywords query
 		providers = _.filter @_providers, (p) ->
 			askedFor = p.name in options.onlyFrom
 			handles = _.any keywords, (keyword) -> keyword in p.handles
 
 			askedFor or handles or p.handles.length is 0
 
+		query = query.trim()
 		res = []
 		for provider in providers
 			try
 				out = provider.fn
 					user: user
 					query: query
+					rawQuery: originalQuery
 					classIds: options.classIds
 					classes: classes
 				res = res.concat out if _.isArray out
@@ -126,6 +132,7 @@ class Search
 				console.warn "Search provider '#{provider.name}' errored.", e
 				Kadira.trackError 'search-provider-failure', e.toString(), stacks: JSON.stringify e
 
+		query = if query.length > 0 then query else originalQuery
 		_(res)
 			.filter (obj) ->
 				obj.filtered or
