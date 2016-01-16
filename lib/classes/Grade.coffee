@@ -61,7 +61,7 @@ gradeConverter = (grade) ->
 # @constructor
 # @param grade {String|Number}
 # @param weight {Number} The weight of the grade.
-# @param classId {ObjectID} The ID of the Class which this grade is for.
+# @param classId {String} The ID of the Class which this grade is for.
 # @param ownerId {String} The ID of the owner of this grade.
 ###
 class @Grade

@@ -69,7 +69,7 @@ updateGrades = (userId, forceUpdate = no) ->
 # in of current connection, unless the utils were updated shortly before.
 #
 # @method updateStudyUtils
-# @param userId {String} `userId` overwrites the `this.userId` which is used by default which is used by default.
+# @param userId {String} `userId` overwrites the `this.userId` which is used by default.
 # @param [forceUpdate=false] {Boolean} If true the utils will be forced to update, otherwise the utils will only be updated if they weren't updated in the last 20 minutes.
 # @return {Error[]} An array containing errors from ExternalServices.
 ###

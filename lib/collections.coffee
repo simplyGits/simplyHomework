@@ -27,8 +27,6 @@ Meteor.users._transform = (u) ->
 
 ###
 Schemas.Classes = new SimpleSchema
-	_id:
-		type: Meteor.Collection.ObjectID
 	name:
 		type: String
 		label: "Vaknaam"
