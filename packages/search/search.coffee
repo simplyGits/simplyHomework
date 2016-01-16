@@ -41,7 +41,7 @@ class Search
 	# @param {String[]} [handles]
 	# @param {Function} fn
 	###
-	@provide: (name, fn) ->
+	@provide: ->
 		name = _.find arguments, (a) -> _.isString a
 		handles = _.find arguments, (a) -> _.isArray a
 		fn = _.find arguments, (a) -> _.isFunction a
