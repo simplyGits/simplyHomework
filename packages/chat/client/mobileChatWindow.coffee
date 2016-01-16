@@ -15,7 +15,7 @@ Template.mobileChatWindow.events
 		if @type is 'private'
 			FlowRouter.go 'personView', id: @user()._id
 		else if @type is 'private'
-			FlowRouter.go 'projectView', id: @project()._id.toHexString()
+			FlowRouter.go 'projectView', id: @project()._id
 		else if @type is 'class' and @class()?
 			FlowRouter.go 'classView', id: @class()._id
 

@@ -186,7 +186,7 @@ Meteor.publish 'schools', (externalId) ->
 Meteor.publish "goaledSchedules", -> GoaledSchedules.find { ownerId: @userId }
 
 Meteor.publishComposite 'project', (id) ->
-	check id, Mongo.ObjectID
+	check id, String
 	find: -> Projects.find _id: id, participants: @userId
 	children: [{
 		find: (project) -> ChatRooms.find projectId: project._id

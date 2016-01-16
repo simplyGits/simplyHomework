@@ -302,7 +302,7 @@ Template.projectsModal.helpers
 Template.projectsModal.events
 	'click #addProjectButton': -> showModal 'addProjectModal'
 Template.projectRow.events
-	'click': -> FlowRouter.go 'projectView', id: @_id.toHexString()
+	'click': -> FlowRouter.go 'projectView', id: @_id
 
 externalAssignments = new ReactiveVar
 Template.addProjectModal.helpers

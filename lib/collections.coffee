@@ -87,8 +87,6 @@ Schemas.Schools = new SimpleSchema
 		blackbox: yes
 
 Schemas.Projects = new SimpleSchema
-	_id:
-		type: Meteor.Collection.ObjectID
 	name:
 		type: String
 		autoValue: ->

@@ -10,8 +10,6 @@
 ###
 class @Project
 	constructor: (@name, @description, @deadline, @creatorId, @classId) ->
-		@_id = new Meteor.Collection.ObjectID()
-
 		###*
 		# The IDs of the participants of this project.
 		# @property participants
