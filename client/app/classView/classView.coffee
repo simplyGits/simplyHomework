@@ -1,12 +1,7 @@
-# TODO: cleanup
-
 gradesSub = undefined
 
 noticeBanner = new ReactiveVar
 searchRes = new ReactiveVar undefined
-
-selectedGradeId = new SReactiveVar Match.Optional String
-digitalSchoolUtilities = new ReactiveVar []
 
 classId = -> FlowRouter.getParam 'id'
 currentClass = -> Classes.findOne classId()
@@ -129,24 +124,6 @@ Template.classView.onCreated ->
 					analytics?.track 'Click no book banner', className: c.name
 					showModal 'changeClassModal', undefined, currentClass
 
-	@autorun ->
-		unless _.any(getGrades().fetch(), (g) -> selectedGradeId.get() is g._id)
-			selectedGradeId.set getGrades().fetch()[0]?._id
-
-Template.classView.onRendered ->
-	$searchInput = @$ '#searchBar > input'
-
-	@autorun ->
-		classId()
-		$searchInput.val ''
-
-	Mousetrap.bind 's', ->
-		$searchInput.focus()
-		no
-
-Template.classView.onDestroyed ->
-	Mousetrap.unbind 's'
-
 Template.classView.events
 	"click #changeClassIcon": ->
 		analytics?.track 'Open ChangeClassModal', className: @name
@@ -197,16 +174,22 @@ Template.classView.events
 	'click #chatContainer > header': ->
 		ChatManager.openClassChat @_id
 
+Template.classView.onRendered ->
+	$searchInput = @$ '#searchBar > input'
+
+	@autorun ->
+		classId()
+		$searchInput.val ''
+
+	Mousetrap.bind 's', ->
+		$searchInput.focus()
+		no
+
+Template.classView.onDestroyed ->
+	Mousetrap.unbind 's'
+
 Template.chatPersonRow.events
 	'click': -> FlowRouter.go 'personView', id: @_id
-
-Template.changeClassModal.onRendered ->
-	@autorun -> BooksHandler.run currentClass()
-
-	@$('#changeBookInput').typeahead(null,
-		source: BooksHandler.engine.ttAdapter()
-		displayKey: 'title'
-	).on 'typeahead:selected', (obj, datum) -> Session.set 'currentSelectedBookDatum', datum
 
 Template.changeClassModal.events
 	'click #goButton': ->
@@ -252,7 +235,7 @@ Template.changeClassModal.events
 		$('#changeClassModal').modal 'hide'
 		if getEvent('classHideHint')?
 			hide()
-		else
+		else # show one-time hint modal.
 			alertModal(
 				'Zeker weten?'
 				'''
@@ -267,9 +250,13 @@ Template.changeClassModal.events
 					Meteor.call 'markUserEvent', 'classHideHint'
 			)
 
-Template.gradeRow.events "click .gradeRow": -> selectedGradeId.set @_id
+Template.changeClassModal.onRendered ->
+	@autorun -> BooksHandler.run currentClass()
 
-Template.gradeRow.helpers selected: -> if selectedGradeId.get() is @_id then "selected" else ""
+	@$('#changeBookInput').typeahead(null,
+		source: BooksHandler.engine.ttAdapter()
+		displayKey: 'title'
+	).on 'typeahead:selected', (obj, datum) -> Session.set 'currentSelectedBookDatum', datum
 
 Template.searchResultsModal.helpers
 	isLoading: -> not searchRes.get()?
@@ -400,6 +387,3 @@ Template.grades.helpers
 			.value()
 
 	isLoading: -> not gradesSub.ready()
-
-	selectedGrade: ->
-		Grades.findOne selectedGradeId.get()

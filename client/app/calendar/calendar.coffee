@@ -163,7 +163,11 @@ Template.calendar.onRendered ->
 				startDate: event.start.toDate()
 				endDate: event.end?.toDate() ? event.start.add(1, "hour").toDate()
 
-		eventResize: (event) -> CalendarItems.update event.calendarItem._id, $set: startDate: event.start.toDate(), endDate: event.end.toDate()
+		eventResize: (event) ->
+			CalendarItems.update event.calendarItem._id, $set:
+				startDate: event.start.toDate()
+				endDate: event.end.toDate()
+
 		eventAfterAllRender: ->
 			Blaze.remove popoverView if popoverView?
 			popoverView = Blaze.renderWithData Template.eventDetailsTooltip, (->

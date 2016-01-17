@@ -24,6 +24,7 @@ Package.onUse(function(api) {
 		'mquandalle:stylus',
 		'reactive-var',
 		'simply:reactive-local-storage',
+		'notifications-manager',
 	], 'client');
 	api.use([
 		'reywood:publish-composite',

@@ -94,6 +94,7 @@ mongo-livedata@1.0.9
 mousetrap:mousetrap@1.4.6_1
 mquandalle:stylus@1.1.1
 natestrauser:animate-css@3.4.0
+notifications-manager@0.0.1
 npm-bcrypt@0.7.8_2
 npm-container@1.2.0
 npm-mongo@1.4.39_1
