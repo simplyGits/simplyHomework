@@ -191,7 +191,7 @@ setupItems = [
 							externalInfo: c.externalInfo
 							hidden: no
 
-					Meteor.call 'enterClassChats'
+					Meteor.call 'bootstrapUser'
 					callback true
 	}
 

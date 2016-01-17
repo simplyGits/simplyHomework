@@ -304,9 +304,9 @@ Meteor.methods
 		undefined
 
 	###*
-	# @method enterClassChats
+	# @method bootstrapUser
 	###
-	'enterClassChats': ->
+	'bootstrapUser': ->
 		@unblock()
 		userId = @userId
 
@@ -314,8 +314,11 @@ Meteor.methods
 			throw new Meteor.Error 'notLoggedIn', 'User not logged in.'
 
 		updateCalendarItems userId, Date.today(), Date.today().addDays 14
+		user = Meteor.users.findOne userId,
+			fields:
+				classInfos: 1
+				'profile.schoolId': 1
 
-		user = Meteor.users.findOne userId
 		for info in user.classInfos
 			calendarItem = CalendarItems.findOne
 				classId: info.id
@@ -345,6 +348,8 @@ Meteor.methods
 
 				Meteor.users.update Meteor.userId(), $pull: classInfos: id: info.id
 				Meteor.users.update Meteor.userId(), $push: classInfos: info
+
+		updateGrades userId
 
 	'getPersonStats': ->
 		@unblock()
