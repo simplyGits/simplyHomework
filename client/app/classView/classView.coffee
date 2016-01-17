@@ -1,5 +1,7 @@
 # TODO: cleanup
 
+gradesSub = undefined
+
 noticeBanner = new ReactiveVar
 searchRes = new ReactiveVar undefined
 
@@ -108,7 +110,7 @@ Template.classView.onCreated ->
 		slide id
 		@subscribe 'classInfo', id
 		@subscribe 'externalStudyUtils', id
-		@subscribe 'externalGrades', classId: id
+		gradesSub = @subscribe 'externalGrades', classId: id
 
 	@autorun ->
 		c = currentClass()
@@ -373,23 +375,31 @@ Template.addProjectModal.onRendered ->
 		externalAssignments.set r unless e?
 	###
 
-Template.gradesModal.helpers
+Template.grades.helpers
+	endGrade: ->
+		Grades.findOne
+			classId: classId()
+			ownerId: Meteor.userId()
+			isEnd: yes
 	gradeGroups: ->
 		arr = getGrades().fetch()
 		_(arr)
-			.reject (g) -> g.isEnd
-			.uniq (g) -> g.period.id
-			.map (g) ->
-				name: g.period.name
+			.reject 'isEnd'
+			.map 'period'
+			.uniq 'id'
+			.sortBy 'from'
+			.map (period) ->
+				name: period.name
 				grades: (
 					_(arr)
-						.filter (x) -> x.period.id is g.period.id
+						.filter (g) -> g.period.id is period.id
+						.sortBy 'dateFilledIn'
 						.value()
 				)
-			.filter (gp) -> gp.grades.length isnt 0
+			.filter (group) -> group.grades.length isnt 0
 			.value()
 
-	hasGrades: -> getGrades().count() > 0
+	isLoading: -> not gradesSub.ready()
 
 	selectedGrade: ->
 		Grades.findOne selectedGradeId.get()
