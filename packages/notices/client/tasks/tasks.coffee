@@ -22,7 +22,7 @@ getTasks = ->
 		sort:
 			startDate: 1
 		transform: (item) ->
-			description: item.content.description
+			description: item.content.description.replace /\n/g, '; '
 			class: -> Classes.findOne item.classId
 			date: item.startDate
 			done: (d) ->
