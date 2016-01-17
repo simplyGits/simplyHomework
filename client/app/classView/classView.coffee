@@ -224,8 +224,10 @@ Template.changeClassModal.events
 				body: "<b>#{@name} verborgen</b>"
 				html: yes
 
-				labels: [ 'ongedaan maken' ]
-				callbacks: [ show ]
+				buttons: [{
+					label: 'ongedaan maken'
+					callback: show
+				}]
 		show = =>
 			deleteOld()
 			Meteor.users.update userId, $push: classInfos:
