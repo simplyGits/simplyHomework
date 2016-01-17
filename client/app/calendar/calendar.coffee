@@ -217,6 +217,8 @@ Template.calendar.onRendered ->
 				sort: startDate: 1
 			}).map (item) -> calendarItemToEvent item, yes
 
+			currentItems = _.reject currentItems, (item) -> item.calendarItem.type is 'schoolwide'
+
 		$calendar.fullCalendar 'refetchEvents'
 
 	Mousetrap.bind 'left', ->
