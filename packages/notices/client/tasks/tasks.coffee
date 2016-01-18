@@ -1,4 +1,14 @@
 ###*
+# @method getDate
+# @return {Date}
+###
+getDate = ->
+	Date.today().addDays switch new Date().getDay()
+		when 5 then 3
+		when 6 then 2
+		else 1
+
+###*
 # @method getTasks
 # @return {Object[]}
 ###
@@ -6,18 +16,14 @@ getTasks = ->
 	# TODO: Also mix homework for tommorow and homework for days where the day
 	# before has no time. Unless today has no time.
 
-	delta = switch new Date().getDay()
-		when 5 then 3
-		when 6 then 2
-		else 1
-
+	date = getDate()
 	CalendarItems.find({
 		'userIds': Meteor.userId()
 		'content': $exists: yes
 		'content.type': $ne: 'information'
 		'content.description': $exists: yes
-		'startDate': $gte: Date.today().addDays delta
-		'endDate': $lte: Date.today().addDays delta + 1
+		'startDate': $gte: date
+		'endDate': $lte: date.addDays 1, yes
 	}, {
 		sort:
 			startDate: 1
@@ -34,9 +40,11 @@ NoticeManager.provide 'tasks', ->
 	dateTracker.depend()
 	@subscribe 'externalCalendarItems', Date.today(), Date.today().addDays 4
 
+	day = Helpers.formatDateRelative getDate(), no
+
 	if getTasks().length > 0
 		template: 'tasks'
-		header: 'Nu te doen'
+		header: "Huiswerk voor #{day}"
 		priority: 1
 
 Template.tasks.helpers
