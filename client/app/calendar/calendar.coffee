@@ -16,10 +16,11 @@ setQueryParam = (id) ->
 openCalendarItemsModal = (id) ->
 	return unless id?
 
-	setQueryParam id
-	showModal 'calendarItemDetailsModal', {
-		onHide: -> setQueryParam undefined
-	}, -> CalendarItems.findOne id
+	Meteor.defer ->
+		setQueryParam id
+		showModal 'calendarItemDetailsModal', {
+			onHide: -> setQueryParam undefined
+		}, -> CalendarItems.findOne id
 
 calendarItemToEvent = (calendarItem, compare) ->
 	# commented out since this is currently not needed, but we have to keep

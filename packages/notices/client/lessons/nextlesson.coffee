@@ -29,6 +29,8 @@ NoticeManager.provide 'nextLesson', ->
 			route: 'calendar'
 			params:
 				time: +Date.today()
+			queryParams:
+				openCalendarItemId: nextAppointmentToday._id
 
 Template.infoNextLesson.helpers
 	timeLeft: ->

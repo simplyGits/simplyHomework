@@ -53,4 +53,9 @@ Template.scrappedHour.helpers
 	name: -> @class()?.name ? @description
 
 Template.scrappedHour.events
-	'click': -> FlowRouter.go 'calendar', time: @startDate.date().getTime()
+	'click': ->
+		FlowRouter.go(
+			'calendar'
+			{ time: @startDate.date().getTime() }
+			{ openCalendarItemId: @_id }
+		)
