@@ -67,7 +67,7 @@ ChatMiddlewares.attach 'convert smileys', 'client', (message) ->
 	message
 
 ChatMiddlewares.attach 'emojione', 'client', (message) ->
-	unless localStorage['no-chat-emojis']
+	unless getUserField Meteor.userId(), 'settings.devSettings.noChatEmojis'
 		message.content = emojione.toImage message.content
 	message
 
