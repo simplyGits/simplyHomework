@@ -26,7 +26,9 @@ Template.tests.helpers
 	tests: -> getTests()
 
 Template.testItem.helpers
-	relative: -> Helpers.formatDateRelative @startDate, no
+	relative: ->
+		dateTracker.depend()
+		@relativeTime() or Helpers.formatDateRelative @startDate, no
 
 Template.testItem.events
 	'click': ->
