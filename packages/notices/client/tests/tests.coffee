@@ -10,6 +10,7 @@ getTests = ->
 		'content.type': $in: [ 'test', 'exam', 'quiz', 'oral' ]
 		'content.description': $exists: yes
 		'startDate': $gt: new Date
+		'scrapped': no
 	}, {
 		sort:
 			startDate: 1
