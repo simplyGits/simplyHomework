@@ -29,6 +29,29 @@ filterKeywords = (query) ->
 		.value()
 	[keywords, query]
 
+filterClasses = (query, userId) ->
+	querySplitted = query.split ' '
+	res = []
+	if querySplitted.length >= 1
+		{ year, schoolVariant } = getCourseInfo userId
+		classIds = _.pluck getClassInfos(userId), 'id'
+
+		for word in querySplitted
+			c = Classes.findOne
+				_id: $in: classIds
+				$or: [
+					{ name: $regex: word, $options: 'i' }
+					{ abbreviations: word.toLowerCase() }
+				]
+				schoolVariant: schoolVariant
+				year: year
+
+			if c?
+				res.push c._id
+				query = query.replace word, ''
+
+	[res, query]
+
 ###*
 # @class Search
 # @static
@@ -38,23 +61,19 @@ class Search
 	###*
 	# @method provide
 	# @param {String} name
-	# @param {String[]} [handles]
 	# @param {Function} fn
 	###
 	@provide: ->
 		name = _.find arguments, (a) -> _.isString a
-		handles = _.find arguments, (a) -> _.isArray a
 		fn = _.find arguments, (a) -> _.isFunction a
 
 		check name, String
-		check handles, Match.Optional [String]
 		check fn, Function
 
 		if _.find(@_providers, { name })?
 			throw new Error "Provider '#{name}' already inserted."
 
-		handles ?= []
-		@_providers.push { name, handles, fn }
+		@_providers.push { name, fn }
 		undefined
 
 	# TODO: Allow for smart searching, instead of just keyword searching it could
@@ -67,6 +86,7 @@ class Search
 	# 	@param {String} options.query
 	# 	@param {String[]} [options.classIds]
 	# 	@param {String[]} [options.onlyFrom]
+	# 	@param {String[]} [options.defaultKeywords]
 	# @return {Object[]}
 	###
 	@search: (userId, options) ->
@@ -75,6 +95,7 @@ class Search
 		check options.query, String
 		check options.classIds, Match.Optional [String]
 		check options.onlyFrom, Match.Optional [String]
+		check options.defaultKeywords, Match.Optional [String]
 
 		query = originalQuery = options.query.trim().toLowerCase()
 		options.classIds ?= []
@@ -82,42 +103,24 @@ class Search
 
 		return [] if query.length is 0
 
-		dam = DamerauLevenshtein insert: 0
-		calcDistance = (s) -> dam query, s.trim().toLowerCase()
-		user = Meteor.users.findOne userId
-
-		querySplitted = options.query.split ' '
-		if options.classIds.length is 0 and querySplitted.length >= 1
-			{ year, schoolVariant } = getCourseInfo userId
-			classIds = _(getClassInfos userId)
-				.reject 'hidden'
-				.pluck 'id'
-				.value()
-
-			for word in querySplitted
-				c = Classes.findOne
-					_id: $in: classIds
-					$or: [
-						{ name: $regex: word, $options: 'i' }
-						{ abbreviations: word.toLowerCase() }
-					]
-					schoolVariant: schoolVariant
-					year: year
-
-				if c?
-					options.classIds.push c._id
-					query = query.replace word, ''
-
-		classes = options.classIds.map (id) -> Classes.findOne _id: id
+		if options.classIds.length is 0
+			[classIds, query] = filterClasses query, userId
+		else
+			classIds = options.classIds
+		classes = classIds.map (id) -> Classes.findOne _id: id
 
 		[keywords, query] = filterKeywords query
-		providers = _.filter @_providers, (p) ->
-			askedFor = p.name in options.onlyFrom
-			handles = _.any keywords, (keyword) -> keyword in p.handles
-
-			askedFor or handles or p.handles.length is 0
+		if _.isEmpty(keywords) and _.isArray(options.defaultKeywords)
+			keywords = options.defaultKeywords
 
 		query = query.trim()
+		providers = _.filter @_providers, (p) ->
+			askedFor = options.onlyFrom.length is 0 or p.name in options.onlyFrom
+			askedFor
+
+		user = Meteor.users.findOne userId
+		dam = DamerauLevenshtein insert: 0
+		calcDistance = (s) -> dam query, s.trim().toLowerCase()
 		res = []
 		for provider in providers
 			try
@@ -127,6 +130,7 @@ class Search
 					rawQuery: originalQuery
 					classIds: options.classIds
 					classes: classes
+					keywords: keywords
 				res = res.concat out if _.isArray out
 			catch e
 				console.warn "Search provider '#{provider.name}' errored.", e
