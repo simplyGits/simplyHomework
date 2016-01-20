@@ -20,7 +20,7 @@ Meteor.methods
 	# @return {String} The id of the newely inserted class.
 	###
 	insertClass: (name, course) ->
-		check title, String
+		check name, String
 		check course, String
 
 		{ year, schoolVariant } = getCourseInfo @userId
@@ -35,28 +35,12 @@ Meteor.methods
 		if c?
 			c._id
 		else
-			c = new SchoolClass(
+			insertClass new SchoolClass(
 				name
 				course
 				year
 				schoolVariant
 			)
-
-			scholierenClass = ScholierenClasses.findOne ->
-				@name
-					.toLowerCase()
-					.indexOf(name.toLowerCase()) > -1
-			if scholierenClass?
-				c.externalInfo['scholieren'] = id: scholierenClass.scholierenId
-
-			woordjesLerenClass = WoordjesLerenClasses.findOne ->
-				@name
-					.toLowerCase()
-					.indexOf(name.toLowerCase()) > -1
-			if woordjesLerenClass?
-				c.externalInfo['woordjesLeren'] = id: woordjesLerenClass.woordjesLerenId
-
-			Classes.insert c
 
 	###*
 	# @method insertBook
@@ -68,8 +52,11 @@ Meteor.methods
 		check title, String
 		check classId, String
 
+		if title.trim().length is 0
+			throw new Meteor.Error 'empty-title'
+
 		book = Books.findOne title: title
-		if book? and title.trim() isnt ''
+		if book?
 			book._id
 		else
 			Books.insert new Book(

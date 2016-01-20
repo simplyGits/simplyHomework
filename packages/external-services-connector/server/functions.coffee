@@ -266,29 +266,22 @@ getExternalClasses = (userId) ->
 				year: year
 
 			unless _class?
-				# TODO: update.
-				scholierenClass = ScholierenClasses.findOne do (c) -> (sc) ->
-					sc.name
-						.toLowerCase()
-						.indexOf(c.name.toLowerCase()) > -1
-
 				_class = new SchoolClass(
 					c.name.toLowerCase(),
 					c.abbreviation.toLowerCase(),
 					year,
 					schoolVariant
 				)
-				_class.scholierenClassId = scholierenClass?.id
 				_class.fetchedBy = service.name
-				_class.externalInfo =
+				_class.externalInfo[service.name] =
 					id: c.id
 					abbreviation: c.abbreviation
 					name: c.name
 
 				# Insert the class and set the id to the class object.
-				# This is needed because we removed the OjectID method we were using
-				# before.
-				_class._id = Classes.insert _class
+				# This is needed since the class object doesn't have an ID yet, but the
+				# things further down the road requires it.
+				_class._id = insertClass _class
 
 			_class
 
