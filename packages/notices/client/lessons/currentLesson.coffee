@@ -10,7 +10,7 @@ NoticeManager.provide 'currentLesson', ->
 		schoolHour:
 			$exists: yes
 			$ne: null
-	}, sort: 'startDate': 1
+	}
 
 	if currentAppointment?
 		template: 'infoCurrentAppointment'
