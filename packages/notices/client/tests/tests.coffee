@@ -17,6 +17,9 @@ getTests = ->
 	}).fetch()
 
 NoticeManager.provide 'tests', ->
+	dateTracker.depend()
+	@subscribe 'externalCalendarItems', Date.today(), Date.today().addDays 7
+
 	if getTests().length > 0
 		template: 'tests'
 		header: 'Aankomende toetsen'
