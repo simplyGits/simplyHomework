@@ -34,10 +34,11 @@ Template.settings.onRendered ->
 
 		if not has and getUserField Meteor.userId(), field
 			Mousetrap.unbind sequence
-			items.set items.get().concat
+			items.set [{
 				name: 'devSettings'
 				friendlyName: "🐊  instellingen"
 				templateName: 'settings_page_devSettings'
+			}].concat items.get()
 			c.stop()
 		else
 			Mousetrap.bind sequence, ->
