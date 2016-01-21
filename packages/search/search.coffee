@@ -133,7 +133,7 @@ class Search
 					classIds: options.classIds
 					classes: classes
 					keywords: keywords
-				res = res.concat out if _.isArray out
+				res = res.concat out
 			catch e
 				console.warn "Search provider '#{provider.name}' errored.", e
 				Kadira.trackError 'search-provider-failure', e.toString(), stacks: JSON.stringify e
