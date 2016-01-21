@@ -87,6 +87,7 @@ class Search
 	# 	@param {String[]} [options.classIds]
 	# 	@param {String[]} [options.onlyFrom]
 	# 	@param {String[]} [options.defaultKeywords]
+	# 	@param {Number} [options.maxItems=7]
 	# @return {Object[]}
 	###
 	@search: (userId, options) ->
@@ -96,10 +97,12 @@ class Search
 		check options.classIds, Match.Optional [String]
 		check options.onlyFrom, Match.Optional [String]
 		check options.defaultKeywords, Match.Optional [String]
+		check options.maxItems, Match.Optional Number
 
 		query = originalQuery = options.query.trim().toLowerCase()
 		options.classIds ?= []
 		options.onlyFrom ?= []
+		options.maxItems ?= 7
 
 		return [] if query.length is 0
 
@@ -166,9 +169,7 @@ class Search
 				'title'
 			]
 
-			# amount that is visibile on client is limited to 7, we don't want to send
-			# unnecessary data to the client:
-			.take 7
+			.take options.maxItems
 			.value()
 
 @Search = Search
