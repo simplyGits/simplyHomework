@@ -187,8 +187,8 @@ setupItems = [
 						r.map (c, i) ->
 							id: c._id
 							color: colors[ i % colors.length ]
-							createdBy: c.fetchedBy
-							externalInfo: c.externalInfo[c.fetchedBy]
+							createdBy: c.externalInfo.fetchedBy
+							externalInfo: c.externalInfo
 							hidden: no
 
 					Meteor.call 'bootstrapUser'

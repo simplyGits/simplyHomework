@@ -15,6 +15,9 @@
 	if old?
 		old._id
 	else
+		delete c.fetchedBy
+		c.externalInfo = {}
+
 		containsName = (str) -> Helpers.contains str, c.name, yes
 
 		scholierenClass = ScholierenClasses.findOne -> containsName @name

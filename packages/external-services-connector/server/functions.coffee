@@ -272,11 +272,11 @@ getExternalClasses = (userId) ->
 					year,
 					schoolVariant
 				)
-				_class.fetchedBy = service.name
-				_class.externalInfo[service.name] =
+				_class.externalInfo =
 					id: c.id
 					abbreviation: c.abbreviation
 					name: c.name
+					fetchedBy: service.name
 
 				# Insert the class and set the id to the class object.
 				# This is needed since the class object doesn't have an ID yet, but the
