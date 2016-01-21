@@ -24,23 +24,12 @@ Meteor.methods
 		check course, String
 
 		{ year, schoolVariant } = getCourseInfo @userId
-		c = Classes.findOne
-			$or: [
-				{ name: $regex: name, $options: 'i' }
-				{ abbreviations: course.toLowerCase() }
-			]
-			schoolVariant: schoolVariant
-			year: year
-
-		if c?
-			c._id
-		else
-			insertClass new SchoolClass(
-				name
-				course
-				year
-				schoolVariant
-			)
+		insertClass new SchoolClass(
+			name
+			course
+			year
+			schoolVariant
+		)
 
 	###*
 	# @method insertBook
