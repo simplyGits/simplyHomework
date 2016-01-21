@@ -161,7 +161,7 @@ Template.classView.events
 				classIds: [ classId() ]
 				defaultKeywords: [ 'vocab', 'report' ]
 				onlyFrom: [ 'woordjesleren', 'scholieren' ] # REVIEW: is this needed?
-				maxItems: Infinity
+				maxItems: 30
 			}, (e, r) ->
 				if e? then notify 'Fout tijdens zoeken', 'error'
 				else searchRes.set r
