@@ -115,8 +115,7 @@ class Search
 
 		query = query.trim()
 		providers = _.filter @_providers, (p) ->
-			askedFor = options.onlyFrom.length is 0 or p.name in options.onlyFrom
-			askedFor
+			options.onlyFrom.length is 0 or p.name in options.onlyFrom
 
 		user = Meteor.users.findOne userId
 		dam = DamerauLevenshtein insert: 0

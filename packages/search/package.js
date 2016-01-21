@@ -22,7 +22,6 @@ Package.onUse(function(api) {
 		'providers/modals.coffee',
 		'providers/projects.coffee',
 		'providers/routes.coffee',
-		'providers/scholieren.coffee',
 		'providers/users.coffee',
 	], 'server')
 	api.export('Search', 'server')
