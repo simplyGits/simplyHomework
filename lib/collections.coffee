@@ -25,21 +25,16 @@ Meteor.users._transform = (u) ->
 	u.hasRole = (roles) -> userIsInRole u._id, roles
 	u
 
-###
 Schemas.Classes = new SimpleSchema
 	name:
 		type: String
-		label: "Vaknaam"
+		label: 'Vaknaam'
 		trim: yes
-		# TODO: Because of issues with some classes, the regex is disabled. Maybe we
-		# can find another, better regex? Some weird names for classes are passed
-		# through now.
-		#regEx: /^[a-z ]+$/i
+		regEx: /^[A-Z][^A-Z]+$/
 		index: 1
 	abbreviations:
 		type: [String]
-		label: "Vakafkortingen"
-		regEx: /^[\w&+-]*$/
+		label: 'Vakafkortingen'
 	year:
 		type: Number
 		index: 1
@@ -47,13 +42,9 @@ Schemas.Classes = new SimpleSchema
 		type: String
 		index: 1
 		regEx: /^[a-z]+$/
-	schedules:
-		type: [Object]
-		blackbox: yes
 	externalInfo:
 		type: Object
 		blackbox: yes
-###
 
 Schemas.Books = new SimpleSchema
 	title:
@@ -143,50 +134,45 @@ Schemas.ReportItems = new SimpleSchema
 	'resolvedInfo.at'
 		type: Date
 
-###
 Schemas.Grades = new SimpleSchema
 	grade:
 		type: null
 		custom: -> _.isNumber @value
 		index: 1
-	description:
+	gradeStr:
 		type: String
-		defaultValue: ""
-		trim: yes
+	gradeType:
+		type: String
+		allowedValues: [ 'number', 'percentage' ]
 	weight:
-		# HACK: Number wasn't working, but should be used.
-		#type: Number
-		type: null
-	dateFilledIn:
-		type: Date
-		index: 1
-		optional: yes
-	dateTestMade:
-		type: Date
-		index: 1
-		optional: yes
+		type: Number
+		decimal: yes
+		min: 0
 	classId:
 		type: String
-		# REVIEW: optional?
-		optional: yes
 	ownerId:
 		type: String
+	description:
+		type: String
+		defaultValue: ''
+		trim: yes
 	passed:
 		type: Boolean
 	isEnd:
 		type: Boolean
+	dateFilledIn:
+		type: Date
 		optional: yes
-		index: 1
+	dateTestMade:
+		type: Date
+		optional: yes
 	externalId:
-		type: null # any type.
-		optional: yes
+		type: null
 	fetchedBy:
 		type: String
 		optional: yes
 	period:
-		# TODO: make schema for `GradePeriod`
-		type: null
-###
+		type: GradePeriod
 
 Schemas.StudyUtils = new SimpleSchema
 	name:
@@ -240,6 +226,53 @@ Schemas.Absences = new SimpleSchema
 		type: null # any type
 		optional: yes
 	fetchedBy:
+		type: String
+		optional: yes
+
+Schemas.CalendarItems = new SimpleSchema
+	userIds:
+		type: [String]
+		index: 1
+	description:
+		type: String
+	startDate:
+		type: Date
+		index: -1
+	endDate:
+		type: Date
+		index: -1
+	classId:
+		type: String
+		optional: yes
+	usersDone:
+		type: [String]
+	content:
+		type: Object
+		optional: yes
+		blackbox: yes
+	repeatInterval:
+		type: Number
+		optional: yes
+	externalId:
+		type: null
+	fetchedBy:
+		type: String
+		optional: yes
+	scrapped:
+		type: Boolean
+	fullDay:
+		type: Boolean
+	schoolHour:
+		type: Number
+		optional: yes
+	location:
+		type: String
+		optional: yes
+	teacher:
+		type: Object
+		optional: yes
+		blackbox: yes
+	type:
 		type: String
 		optional: yes
 

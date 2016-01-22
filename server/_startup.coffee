@@ -89,12 +89,6 @@ Meteor.startup ->
 
 			val.mailSentAt = _.now()
 
-	# TODO: make a schema for CalendarItems and set the indices there.
-	CalendarItems._ensureIndex
-		userIds: 1
-		startDate: -1
-		endDate: -1
-
 	Meteor.users._ensureIndex
 		'profile.schoolId': 1
 		'profile.firstName': 1
