@@ -8,7 +8,7 @@ Package.describe({
 
 Package.onUse(function(api) {
 	api.versionsFrom('1.1.0.2')
-	api.use(['mongo', 'reactive-var'])
+	api.use(['mongo', 'reactive-var', 'ecmascript'])
 	api.addFiles('sessions.js', 'client')
 	api.addFiles('sessions.server.js', 'server')
 

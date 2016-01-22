@@ -4,15 +4,15 @@
  */
 
 Meteor.startup(function () {
-	var sessions = new Mongo.Collection('sessions')
-	var currentSession = new ReactiveVar(null)
+	const sessions = new Mongo.Collection('sessions')
+	const currentSession = new ReactiveVar(null)
 
-	var cookies = function () {
-		var res = {}
+	const cookies = function () {
+		const res = {}
 		document.cookie
 			.split(/[\s;]+/g)
 			.forEach(function (cookie) {
-				var splitted = cookie.split('=')
+				const splitted = cookie.split('=')
 				res[splitted[0]] = splitted[1]
 			})
 		return res
@@ -31,18 +31,18 @@ Meteor.startup(function () {
 	})
 
 	Sessions = {
-		current: function () {
+		current() {
 			return currentSession.get()
 		},
-		all: function () {
+		all() {
 			return sessions.find().fetch()
 		},
-		others: function () {
+		others() {
 			return sessions.find({
-				_id: { $ne: currentSession.get()._id }
+				_id: { $ne: currentSession.get()._id },
 			}).fetch()
 		},
-		kill: function (sessionId) {
+		kill(sessionId) {
 			console.err('not yet implemented, m8')
 		},
 	}
