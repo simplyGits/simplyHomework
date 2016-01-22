@@ -411,19 +411,17 @@ class @Helpers
 		sameYear = date.year() is moment().year()
 
 		date = switch @daysRange new Date, date.toDate(), no
-			when -6, -5, -4, -3 then "Afgelopen #{day}"
-			when -2 then 'Eergisteren'
-			when -1 then 'Gisteren'
-			when 0 then 'Vandaag'
-			when 1 then 'Morgen'
-			when 2 then 'Overmorgen'
-			when 3, 4, 5, 6 then "Aanstaande #{day}"
+			when -6, -5, -4, -3 then "afgelopen #{day}"
+			when -2 then 'eergisteren'
+			when -1 then 'gisteren'
+			when 0 then 'vandaag'
+			when 1 then 'morgen'
+			when 2 then 'overmorgen'
+			when 3, 4, 5, 6 then "aanstaande #{day}"
 			else "#{day} #{DateToDutch date.toDate(), not sameYear}"
 
-		@cap (
-			if showTime then "#{date} #{time}"
-			else date
-		)
+		if showTime then "#{date} #{time}"
+		else date
 
 	@isPhone: -> Session.equals 'deviceType', 'phone'
 	@isTablet: -> Session.equals 'deviceType', 'tablet'

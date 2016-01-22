@@ -270,7 +270,7 @@ Schemas.Absences = new SimpleSchema
 		)
 		__friendlyDeadline: (
 			if p.deadline?
-				Helpers.formatDateRelative p.deadline, yes
+				Helpers.cap Helpers.formatDateRelative p.deadline, yes
 		)
 		__chatRoom: -> ChatRooms.findOne projectId: p._id
 		__lastChatMessage: ->
