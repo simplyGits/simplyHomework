@@ -2,7 +2,7 @@
 # @class Assignment
 # @constructor
 # @param name {String}
-# @param classId {ObjectID}
+# @param classId {String}
 # @param deadline {Date}
 ###
 class @Assignment

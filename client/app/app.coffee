@@ -156,7 +156,7 @@ setKeyboardShortcuts = ->
 		else if routeName is 'classView'
 			ChatManager.openClassChat id
 		else if routeName is 'projectView'
-			ChatManager.openProjectChat new Meteor.Collection.ObjectID id
+			ChatManager.openProjectChat id
 		no
 
 	buttonGoto = (delta) ->

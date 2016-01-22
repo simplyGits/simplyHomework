@@ -20,45 +20,19 @@ Meteor.methods
 	# @return {String} The id of the newely inserted class.
 	###
 	insertClass: (name, course) ->
-		check title, String
+		check name, String
 		check course, String
 
 		{ year, schoolVariant } = getCourseInfo @userId
-		c = Classes.findOne
-			$or: [
-				{ name: $regex: name, $options: 'i' }
-				{ abbreviations: course.toLowerCase() }
-			]
-			schoolVariant: schoolVariant
-			year: year
-
-		if c?
-			c._id
-		else
-			c = new SchoolClass(
-				name
-				course
-				year
-				schoolVariant
-			)
-
-			scholierenClass = ScholierenClasses.findOne ->
-				@name
-					.toLowerCase()
-					.indexOf(name.toLowerCase()) > -1
-			if scholierenClass?
-				c.externalInfo['scholieren'] = id: scholierenClass.scholierenId
-
-			woordjesLerenClass = WoordjesLerenClasses.findOne ->
-				@name
-					.toLowerCase()
-					.indexOf(name.toLowerCase()) > -1
-			if woordjesLerenClass?
-				c.externalInfo['woordjesLeren'] = id: woordjesLerenClass.woordjesLerenId
-
-			Classes.insert c
+		insertClass new SchoolClass(
+			name
+			course
+			year
+			schoolVariant
+		)
 
 	###*
+	# Creates and inserts a book.
 	# @method insertBook
 	# @param {String} title
 	# @param {String} classId
@@ -68,16 +42,39 @@ Meteor.methods
 		check title, String
 		check classId, String
 
+		if title.trim().length is 0
+			throw new Meteor.Error 'empty-title'
+
+		c = Classes.findOne classId
+		unless c?
+			throw new Meteor.Error 'non-existing-class'
+
 		book = Books.findOne title: title
-		if book? and title.trim() isnt ''
+		if book?
 			book._id
 		else
-			Books.insert new Book(
-				title
-				undefined
-				undefined
-				classId
-			)
+			book = new Book title, classId
+
+			containsTitle = (str) -> Helpers.contains str, title, yes
+			if c.externalInfo['woordjesleren']?
+				wlbooks = WoordjesLerenClasses.findOne(
+					id: c.externalInfo['woordjesleren'].id
+				).books
+				wlbook = _.find wlbooks, (b) -> containsTitle b.title
+
+				if wlbook?
+					book.externalInfo['woordjesleren'] = wlbook.id
+
+			if c.externalInfo['scholieren']?
+				slbooks = ScholierenClasses.findOne(
+					id: c.externalInfo['scholieren'].id
+				).books
+				slbook = _.find slbooks, (b) -> containsTitle b.title
+
+				if slbook?
+					book.externalInfo['scholieren'] = slbook.id
+
+			Books.insert book
 
 	insertProject: (name, description, deadline, classId) ->
 		check name, String

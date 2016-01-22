@@ -1,0 +1,12 @@
+<template name="settings_page_devSettings">
+	{{#each items}}
+		{{> devOption}}
+	{{/each}}
+</template>
+
+<template name="devOption">
+	<label>
+		<input type="checkbox" {{checked}}/>
+		{{description}}
+	</label>
+</template>

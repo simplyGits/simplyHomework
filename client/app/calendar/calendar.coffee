@@ -16,10 +16,11 @@ setQueryParam = (id) ->
 openCalendarItemsModal = (id) ->
 	return unless id?
 
-	setQueryParam id
-	showModal 'calendarItemDetailsModal', {
-		onHide: -> setQueryParam undefined
-	}, -> CalendarItems.findOne id
+	Meteor.defer ->
+		setQueryParam id
+		showModal 'calendarItemDetailsModal', {
+			onHide: -> setQueryParam undefined
+		}, -> CalendarItems.findOne id
 
 calendarItemToEvent = (calendarItem, compare) ->
 	# commented out since this is currently not needed, but we have to keep
@@ -163,7 +164,11 @@ Template.calendar.onRendered ->
 				startDate: event.start.toDate()
 				endDate: event.end?.toDate() ? event.start.add(1, "hour").toDate()
 
-		eventResize: (event) -> CalendarItems.update event.calendarItem._id, $set: startDate: event.start.toDate(), endDate: event.end.toDate()
+		eventResize: (event) ->
+			CalendarItems.update event.calendarItem._id, $set:
+				startDate: event.start.toDate()
+				endDate: event.end.toDate()
+
 		eventAfterAllRender: ->
 			Blaze.remove popoverView if popoverView?
 			popoverView = Blaze.renderWithData Template.eventDetailsTooltip, (->
@@ -216,6 +221,8 @@ Template.calendar.onRendered ->
 			}, {
 				sort: startDate: 1
 			}).map (item) -> calendarItemToEvent item, yes
+
+			currentItems = _.reject currentItems, (item) -> item.calendarItem.type is 'schoolwide'
 
 		$calendar.fullCalendar 'refetchEvents'
 

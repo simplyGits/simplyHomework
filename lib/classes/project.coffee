@@ -6,12 +6,10 @@
 # @param [description] {String} The desctiption of the project. Manually entered or copied from Magister.
 # @param deadline {Date} The time this project has to be finished.
 # @param creatorId {String} The ID of the creator of this project.
-# @param [classId] {ObjectID} The ID of the class for this project.
+# @param [classId] {String} The ID of the class for this project.
 ###
 class @Project
 	constructor: (@name, @description, @deadline, @creatorId, @classId) ->
-		@_id = new Meteor.Collection.ObjectID()
-
 		###*
 		# The IDs of the participants of this project.
 		# @property participants

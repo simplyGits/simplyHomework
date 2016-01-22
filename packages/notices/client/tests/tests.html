@@ -1,0 +1,17 @@
+<template name="tests">
+	<div id="tests">
+		{{#each tests}}
+			{{> testItem}}
+		{{/each}}
+	</div>
+</template>
+
+<template name="testItem">
+	<div class="test">
+		<div class="back" style="background-color: {{class.__color}}"></div>
+		<div class="date">{{relative}}</div>
+		<div class="className">{{class.name}}</div>
+		<div class="type">{{contentTypeLong}}</div>
+		<div class="description">{{content.description}}</div>
+	</div>
+</template>

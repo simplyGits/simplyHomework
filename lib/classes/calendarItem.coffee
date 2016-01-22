@@ -144,7 +144,7 @@ class @CalendarItem
 			when 'exam' then 'TT'
 			when 'quiz' then 'SO'
 			when 'oral' then 'LT'
-			when 'information' then 'IN'
+			when 'information' then 'INF'
 
 			else '??'
 

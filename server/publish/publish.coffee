@@ -186,7 +186,7 @@ Meteor.publish 'schools', (externalId) ->
 Meteor.publish "goaledSchedules", -> GoaledSchedules.find { ownerId: @userId }
 
 Meteor.publishComposite 'project', (id) ->
-	check id, Mongo.ObjectID
+	check id, String
 	find: -> Projects.find _id: id, participants: @userId
 	children: [{
 		find: (project) -> ChatRooms.find projectId: project._id
@@ -218,16 +218,16 @@ Meteor.publishComposite 'books', (classId) ->
 			find: (user) -> Books.find _id: $in: _.pluck user.classInfos, 'bookId'
 		}]
 
-# OPTIMIZE
-
-Meteor.publish 'scholieren.com', ->
+Meteor.publish 'scholieren.com', (id) ->
+	check id, Number
 	unless @userId?
 		@ready()
 		return undefined
-	ScholierenClasses.find()
+	ScholierenClasses.find { id }
 
-Meteor.publish 'woordjesleren', ->
+Meteor.publish 'woordjesleren', (id) ->
+	check id, Number
 	unless @userId?
 		@ready()
 		return undefined
-	WoordjesLerenClasses.find()
+	WoordjesLerenClasses.find { id }

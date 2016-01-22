@@ -39,7 +39,7 @@ Template.scrappedHours.helpers
 			.map (h) ->
 				today = h.startDate.date().getTime() is Date.today().getTime()
 
-				day: Helpers.formatDateRelative h.startDate, no
+				day: Helpers.cap Helpers.formatDateRelative h.startDate, no
 				today: if today then 'today' else ''
 				hours: (
 					_(arr)
@@ -53,4 +53,9 @@ Template.scrappedHour.helpers
 	name: -> @class()?.name ? @description
 
 Template.scrappedHour.events
-	'click': -> FlowRouter.go 'calendar', time: @startDate.date().getTime()
+	'click': ->
+		FlowRouter.go(
+			'calendar'
+			{ time: @startDate.date().getTime() }
+			{ openCalendarItemId: @_id }
+		)

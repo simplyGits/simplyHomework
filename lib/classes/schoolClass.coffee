@@ -48,8 +48,6 @@ class @SchoolClass
 		@abbreviations = []
 		@abbreviations.push abbreviation unless _.isEmpty abbreviation
 
-		@schedules = [] # Contains schedule ID's.
-
 		###*
 		# @property externalInfo
 		# @type Object

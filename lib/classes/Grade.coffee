@@ -61,15 +61,13 @@ gradeConverter = (grade) ->
 # @constructor
 # @param grade {String|Number}
 # @param weight {Number} The weight of the grade.
-# @param classId {ObjectID} The ID of the Class which this grade is for.
+# @param classId {String} The ID of the Class which this grade is for.
 # @param ownerId {String} The ID of the owner of this grade.
 ###
 class @Grade
 	@gradeConverter: gradeConverter
 
 	constructor: (grade, @weight, @classId, @ownerId) ->
-		@_id = new Meteor.Collection.ObjectID()
-
 		###*
 		# The grade guaranteed to be a number.
 		# Will be NaN if the grade failed to convert to a number.

@@ -9,12 +9,12 @@
 Date.today = -> new Date().date()
 
 ###*
-# Adds the given ammount of days to the current/new Date object.
+# Adds the given amount of days to the current/new Date object.
 #
 # @method addDays
 # @param days {Number} The amount of days to add.
 # @param newDate {Boolean} Whether or not to create a new Object.
-# @return {Date} A Date object with the given ammount of days added.
+# @return {Date} A Date object with the given amount of days added.
 ###
 Date::addDays = (days, newDate = false) ->
 	check days, Match.Integer
@@ -41,7 +41,7 @@ class @Helpers
 	# @method daysRange
 	# @param firstDate {Date} First date as a Date object.
 	# @param lastDate {Date} Last date as a Date object.
-	# @param useTime {Boolean} If true the calculation will conisder the time of the given dates.
+	# @param useTime {Boolean} If true the calculation will consider the time of the given dates.
 	# @param round {Boolean} Whether or not to round the result.
 	# @return {Number} Amount of days between the two given dates. Can be negative.
 	###
@@ -242,7 +242,7 @@ class @Helpers
 		handle = Meteor.setInterval func, interval
 
 	###*
-	# Returns an array containg each day of the week starting on monday.
+	# Returns an array containing each day of the week starting on Monday.
 	# Respects the current moment locale.
 	#
 	# @method weekdays
@@ -307,7 +307,7 @@ class @Helpers
 	#
 	# @method emboxValue
 	# @param fn {Function}
-	# @param [equals] {Function} An comperison value used instead of `EJSON.equals`.
+	# @param [equals] {Function} An comparison value used instead of `EJSON.equals`.
 	# @return {any} The return value of `fn`.
 	###
 	@emboxValue: (fn, equals) -> emboxValue(fn, { equals, lazy: yes })()
@@ -381,11 +381,10 @@ class @Helpers
 	# @return {String}
 	###
 	@timeDiff: (a, b) ->
-		diff = moment(b).diff a
-		secIn = diff / 1000
+		seconds = moment(b).diff(a) / 1000
 
-		hours = ~~(secIn / 3600)
-		remainder = ~~(secIn % 3600)
+		hours = ~~(seconds / 3600)
+		remainder = ~~(seconds % 3600)
 		minutes = ~~(remainder / 60)
 
 		arr = []
@@ -411,19 +410,17 @@ class @Helpers
 		sameYear = date.year() is moment().year()
 
 		date = switch @daysRange new Date, date.toDate(), no
-			when -6, -5, -4, -3 then "Afgelopen #{day}"
-			when -2 then 'Eergisteren'
-			when -1 then 'Gisteren'
-			when 0 then 'Vandaag'
-			when 1 then 'Morgen'
-			when 2 then 'Overmorgen'
-			when 3, 4, 5, 6 then "Aanstaande #{day}"
+			when -6, -5, -4, -3 then "afgelopen #{day}"
+			when -2 then 'eergisteren'
+			when -1 then 'gisteren'
+			when 0 then 'vandaag'
+			when 1 then 'morgen'
+			when 2 then 'overmorgen'
+			when 3, 4, 5, 6 then "aanstaande #{day}"
 			else "#{day} #{DateToDutch date.toDate(), not sameYear}"
 
-		@cap (
-			if showTime then "#{date} #{time}"
-			else date
-		)
+		if showTime then "#{date} #{time}"
+		else date
 
 	@isPhone: -> Session.equals 'deviceType', 'phone'
 	@isTablet: -> Session.equals 'deviceType', 'tablet'

@@ -48,133 +48,6 @@ button#hideClassButton
 		width: 100%
 		float: initial
 
-div.gradeInfoContainer
-	margin-top: 10px
-	border: 1px lightgray solid
-	height: 200px
-	position: relative
-
-	div.notice
-		absolute: top 50%
-		width: 100%
-		text-align: center
-		opacity: .7
-		transform: translateY(-50%)
-		word-break: break-word
-
-	div.gradeContainer
-		span(1/2)
-		height: 100%
-		overflow-x: hidden
-		overflow-y: auto
-		position: relative
-		border-right: 1px lightgray solid
-
-		div.gradeGroup
-			div.gradeGroupName
-				text-align: center
-				font-size: 17px
-				opacity: .6
-				border-bottom: 1px lightgray solid
-				line-height: .1em
-				margin-top: 15px
-				margin-bottom: 10px
-
-				span
-					background-color: #fff
-
-					padding = 5px
-					padding-left: padding
-					padding-right: padding
-
-			div.gradeRow
-				width: 100%
-				font-size: 40px
-				height: 58px
-				padding: 5px
-				line-height: 1.2
-
-				cursor: pointer
-				transition: .1s background-color linear
-
-				roboto(100)
-
-				span#weight
-					font-size: 20px
-					position: relative
-					top: -0.8em
-
-			div.gradeRow:hover
-				background-color: lightgray
-
-			div.gradeRow.selected
-				cursor: default
-				background-color: #ECECEC
-
-			div.gradeRow.insufficient > span#grade
-				color: red
-				font-weight: 300
-
-	div.gradeContainerGradeDetail
-		span(1/2)
-		height: 100%
-		overflow: hidden
-		overflow-y: auto
-		padding-left: 5px
-
-		div.gradeSquare
-			height: 75px
-			width: 75px
-			margin-top: 0
-			margin-left: -5px
-
-			roboto(600)
-			font-size: 40px
-			text-align: center
-			padding-top: 7px
-
-			border: 1px lightgray solid
-			border-top: none
-			border-left: none
-
-			float: left
-
-			+mobile()
-				display: block
-				center(75px)
-
-				border-left: 1px lightgray solid
-
-		div.gradeSquare.insufficient
-			color: white
-			background-color: #FF4136
-
-		div.gradeInfoRow
-			vertical-align: top
-			overflow: hidden
-
-			white-space: nowrap
-			text-overflow: ellipsis
-
-			line-height: 1.5
-			margin-left: -4px
-			padding-left: 4px
-
-			border-bottom: 1px lightgray solid
-
-			div
-				display: inline-block
-				font-weight: bold
-				padding-right: 5px
-				border-right: 1px lightgray solid
-
-			+mobile()
-				width: 100%
-
-		+mobile()
-			div.gradeInfoRow:nth-child(5)
-				margin-top: 6px
-
 div.studyGuides
 	height: calc(100vh - 365px)
 
@@ -463,3 +336,86 @@ modalPadding = 15px
 
 		.projectRow:hover
 			background-color: hoverColor
+
+#grades
+	position: relative
+	font-size: 1.3em
+
+	#end
+		height: 55px
+		background-color: hoverColor
+
+		padSides = 20px
+		padding: 10px
+		padding-left: padSides
+		padding-right: padSides
+
+		font-size: 1.4em
+
+		#label
+			roboto(300)
+			float: left
+		#grade
+			float: right
+
+	#end.insufficient
+		#grade
+			margin-top: -2px
+			border-bottom: 2px red solid
+
+	#gradeGroupList
+		/*
+		fixed: top endGradeHeight left right bottom
+		overflow-y: scroll
+		-webkit-overflow-scrolling: touch
+		*/
+
+		.gradeGroup
+			.name
+				text-align: center
+				font-size: 17px
+				opacity: .6
+				border-bottom: 1px lightgray solid
+				line-height: .1em
+				margin-top: 15px
+				margin-bottom: 10px
+
+				span
+					background-color: #fff
+
+					padding = 5px
+					padding-left: padding
+					padding-right: padding
+
+			.gradeRow
+				padSides = 20px
+				padding: 5px
+				padding-left: padSides
+				padding-right: padSides
+
+				height: 70px
+				.description
+					col(3/4, cycle: 2)
+					white-space: nowrap
+					overflow: hidden
+					text-overflow: ellipsis
+				.grade
+					col(1/4, cycle: 2)
+					text-align: right
+				.dateFilledIn
+					col(1/2, cycle: 2)
+					opacity: .7
+				.weight
+					col(1/2, cycle: 2)
+					opacity: .7
+					text-align: right
+
+			.gradeRow.insufficient
+				.grade
+					color: red
+
+		#notice
+			padding-top: 30px
+			padding-bottom: 30px
+
+			text-align: center

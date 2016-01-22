@@ -1,3 +1,4 @@
+initted = no
 @BooksHandler =
 	engine: new Bloodhound
 		name: 'books'
@@ -5,20 +6,17 @@
 		queryTokenizer: Bloodhound.tokenizers.whitespace
 		local: []
 
-	run: (c) ->
-		@engine.initialize() # TODO: make this only run once.
+	init: ->
+		unless initted
+			@engine.initialize()
+			initted = yes
 
-		# TODO: search on basis of scholierenId stored on SchoolClass object.
+	run: (c) ->
+		@init()
 
 		Meteor.subscribe 'books', c._id
 
-		classes = getAvailableClasses()
-		externalClass = _.find classes, (x) ->
-			a = Helpers.contains c.name, x.name, yes
-			b = Helpers.contains x.name, c.name, yes
-			a or b
-
-		books = _(externalClass?.books)
+		books = _(getAvailableBooks c._id)
 			.concat Books.find(classId: c._id).fetch()
 			.uniq 'title'
 			.value()

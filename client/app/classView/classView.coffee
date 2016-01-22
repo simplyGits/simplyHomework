@@ -1,10 +1,7 @@
-# TODO: cleanup
+gradesSub = undefined
 
 noticeBanner = new ReactiveVar
 searchRes = new ReactiveVar undefined
-
-selectedGradeId = new SReactiveVar Match.Optional Mongo.ObjectID
-digitalSchoolUtilities = new ReactiveVar []
 
 classId = -> FlowRouter.getParam 'id'
 currentClass = -> Classes.findOne classId()
@@ -108,7 +105,7 @@ Template.classView.onCreated ->
 		slide id
 		@subscribe 'classInfo', id
 		@subscribe 'externalStudyUtils', id
-		@subscribe 'externalGrades', classId: id
+		gradesSub = @subscribe 'externalGrades', classId: id
 
 	@autorun ->
 		c = currentClass()
@@ -126,24 +123,6 @@ Template.classView.onCreated ->
 				onClick: ->
 					analytics?.track 'Click no book banner', className: c.name
 					showModal 'changeClassModal', undefined, currentClass
-
-	@autorun ->
-		unless _.any(getGrades().fetch(), (g) -> EJSON.equals selectedGradeId.get(), g._id)
-			selectedGradeId.set getGrades().fetch()[0]?._id
-
-Template.classView.onRendered ->
-	$searchInput = @$ '#searchBar > input'
-
-	@autorun ->
-		classId()
-		$searchInput.val ''
-
-	Mousetrap.bind 's', ->
-		$searchInput.focus()
-		no
-
-Template.classView.onDestroyed ->
-	Mousetrap.unbind 's'
 
 Template.classView.events
 	"click #changeClassIcon": ->
@@ -198,16 +177,22 @@ Template.classView.events
 	'click #chatContainer > header': ->
 		ChatManager.openClassChat @_id
 
+Template.classView.onRendered ->
+	$searchInput = @$ '#searchBar > input'
+
+	@autorun ->
+		classId()
+		$searchInput.val ''
+
+	Mousetrap.bind 's', ->
+		$searchInput.focus()
+		no
+
+Template.classView.onDestroyed ->
+	Mousetrap.unbind 's'
+
 Template.chatPersonRow.events
 	'click': -> FlowRouter.go 'personView', id: @_id
-
-Template.changeClassModal.onRendered ->
-	@autorun -> BooksHandler.run currentClass()
-
-	@$('#changeBookInput').typeahead(null,
-		source: BooksHandler.engine.ttAdapter()
-		displayKey: 'title'
-	).on 'typeahead:selected', (obj, datum) -> Session.set 'currentSelectedBookDatum', datum
 
 Template.changeClassModal.events
 	'click #goButton': ->
@@ -242,8 +227,10 @@ Template.changeClassModal.events
 				body: "<b>#{@name} verborgen</b>"
 				html: yes
 
-				labels: [ 'ongedaan maken' ]
-				callbacks: [ show ]
+				buttons: [{
+					label: 'ongedaan maken'
+					callback: show
+				}]
 		show = =>
 			deleteOld()
 			Meteor.users.update userId, $push: classInfos:
@@ -253,7 +240,7 @@ Template.changeClassModal.events
 		$('#changeClassModal').modal 'hide'
 		if getEvent('classHideHint')?
 			hide()
-		else
+		else # show one-time hint modal.
 			alertModal(
 				'Zeker weten?'
 				'''
@@ -268,9 +255,13 @@ Template.changeClassModal.events
 					Meteor.call 'markUserEvent', 'classHideHint'
 			)
 
-Template.gradeRow.events "click .gradeRow": -> selectedGradeId.set @_id
+Template.changeClassModal.onRendered ->
+	@autorun -> BooksHandler.run currentClass()
 
-Template.gradeRow.helpers selected: -> if selectedGradeId.get() is @_id then "selected" else ""
+	@$('#changeBookInput').typeahead(null,
+		source: BooksHandler.engine.ttAdapter()
+		displayKey: 'title'
+	).on 'typeahead:selected', (obj, datum) -> Session.set 'currentSelectedBookDatum', datum
 
 Template.searchResultsModal.helpers
 	isLoading: -> not searchRes.get()?
@@ -305,7 +296,7 @@ Template.projectsModal.helpers
 Template.projectsModal.events
 	'click #addProjectButton': -> showModal 'addProjectModal'
 Template.projectRow.events
-	'click': -> FlowRouter.go 'projectView', id: @_id.toHexString()
+	'click': -> FlowRouter.go 'projectView', id: @_id
 
 externalAssignments = new ReactiveVar
 Template.addProjectModal.helpers
@@ -376,23 +367,28 @@ Template.addProjectModal.onRendered ->
 		externalAssignments.set r unless e?
 	###
 
-Template.gradesModal.helpers
+Template.grades.helpers
+	endGrade: ->
+		Grades.findOne
+			classId: classId()
+			ownerId: Meteor.userId()
+			isEnd: yes
 	gradeGroups: ->
 		arr = getGrades().fetch()
 		_(arr)
-			.reject (g) -> g.isEnd
-			.uniq (g) -> g.period.id
-			.map (g) ->
-				name: g.period.name
+			.reject 'isEnd'
+			.map 'period'
+			.uniq 'id'
+			.sortBy 'from'
+			.map (period) ->
+				name: period.name
 				grades: (
 					_(arr)
-						.filter (x) -> x.period.id is g.period.id
+						.filter (g) -> g.period.id is period.id
+						.sortBy 'dateFilledIn'
 						.value()
 				)
-			.filter (gp) -> gp.grades.length isnt 0
+			.filter (group) -> group.grades.length isnt 0
 			.value()
 
-	hasGrades: -> getGrades().count() > 0
-
-	selectedGrade: ->
-		Grades.findOne selectedGradeId.get()
+	isLoading: -> not gradesSub.ready()

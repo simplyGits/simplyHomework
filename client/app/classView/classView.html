@@ -91,29 +91,6 @@
 	</div>
 </template>
 
-<template name="gradeGroup">
-	<div class="gradeGroup">
-		<div class="gradeGroupName"><span>{{name}}</span></div><div class="gradeGroupDivider"></div>
-		{{#each grades}}
-			{{> gradeRow}}
-		{{/each}}
-	</div>
-</template>
-
-<template name="gradeRow">
-	<div class="gradeRow {{selected}} {{__insufficient}}">
-		<span id="grade">{{__grade}}</span> <span id="weight">{{weight}}</span>
-	</div>
-</template>
-
-<template name="gradeDetail">
-	<div class="gradeContainerGradeDetail">
-		<div class="gradeSquare {{__insufficient}}">{{__grade}}</div>
-		<div class="gradeInfoRow"><div>Beschrijving</div> {{description}}</div>
-		<div class="gradeInfoRow"><div>Gewicht</div> {{weight}}</div>
-	</div>
-</template>
-
 <template name="studyUtil">
 	<div class="studyUtil">
 		<div class="studyUtilName">
@@ -169,33 +146,54 @@
 	</div>
 </template>
 
+<template name="grades">
+	<div id="grades">
+		{{#with endGrade}}
+			<div id="end" class="{{__insufficient}}">
+				<div id="label">Gemiddelde</div>
+				<div id="grade">{{__grade}}</div>
+			</div>
+		{{/with}}
+		<div id="gradeGroupList">
+			{{#each gradeGroups}}
+				<div class="gradeGroup">
+					<div class="name"><span>{{name}}</span></div>
+					{{#each grades}}
+						{{> gradeRow}}
+					{{/each}}
+				</div>
+			{{else}}
+				<div id="notice">
+					{{#if isLoading}}
+						Cijfers laden...
+					{{else}}
+						Geen cijfers
+					{{/if}}
+				</div>
+			{{/each}}
+		</div>
+	</div>
+</template>
+
+<template name="gradeRow">
+	<div class="gradeRow {{__insufficient}}">
+		<div class="description">{{description}}</div>
+		<div class="grade">{{__grade}}</div>
+		<div class="dateFilledIn"><time datetime="{{dateFormat 'YYYY-MM-DDTHH:mm' dateFilledIn}}">{{dateFormat 'D MMMM YYYY' dateFilledIn}}</time></div>
+		<div class="weight">weging: {{weight}}</div>
+	</div>
+</template>
+
 <template name="gradesModal">
 	<div class="modal fade" aria-hidden="true" id="gradesModal">
-		{{! TODO: improve this, a lot. }}
-		<div class="modal-dialog" style="width: 90%">
+		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
 					<h4 class="modal-title">Cijfers</h4>
 				</div>
-				<div class="modal-body">
-					<div class="gradeInfoContainer">
-						{{#if hasGrades}}
-							<div class="gradeContainer">
-								{{#each gradeGroups}}
-									{{> gradeGroup}}
-								{{/each}}
-							</div>
-
-							{{#with selectedGrade}}
-								{{> gradeDetail}}
-							{{/with}}
-						{{else}}
-							<div class="notice">
-								Geen cijfers gevonden.
-							</div>
-						{{/if}}
-					</div>
+				<div class="modal-body" style="padding: 0">
+					{{> grades}}
 				</div>
 			</div>
 		</div>

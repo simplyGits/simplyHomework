@@ -7,13 +7,11 @@
 # @consturctor
 # @param name {String} The name of the studyUtil.
 # @param description {String} A description.
-# @param classId {ObjectID} The ID of a SchoolClass this studyUtil is for.
+# @param classId {String} The ID of a SchoolClass this studyUtil is for.
 # @param ownerId {String} The ID of the owner of this studyUtil.
 ###
 class @StudyUtil
 	constructor: (@name, @description, @classId, @ownerId) ->
-		@_id = new Meteor.Collection.ObjectID
-
 		###*
 		# The date from which this studyUtil is accesible from.
 		# @property visibleFrom

@@ -7,8 +7,6 @@
 ###
 class @ExternalFile
 	constructor: (@name) ->
-		@_id = new Meteor.Collection.ObjectID
-
 		###*
 		# The MIME type of the file.
 		# @property mime

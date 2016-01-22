@@ -58,6 +58,10 @@ Package.onUse(function(api) {
 		'client/scrappedHours/srappedHours.html',
 		'client/scrappedHours/srappedHours.styl',
 		'client/scrappedHours/srappedHours.coffee',
+
+		'client/tests/tests.html',
+		'client/tests/tests.styl',
+		'client/tests/tests.coffee',
 	], 'client');
 	api.addFiles([
 		'server/security.coffee',

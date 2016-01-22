@@ -58,7 +58,6 @@ updateGrades = (userId, forceUpdate = no) ->
 				externalId: grade.externalId
 
 			if val? and Meteor.isServer
-				delete grade._id
 				Grades.update val._id, grade, modifier: no
 			else
 				Grades.insert grade
@@ -70,7 +69,7 @@ updateGrades = (userId, forceUpdate = no) ->
 # in of current connection, unless the utils were updated shortly before.
 #
 # @method updateStudyUtils
-# @param userId {String} `userId` overwrites the `this.userId` which is used by default which is used by default.
+# @param userId {String} `userId` overwrites the `this.userId` which is used by default.
 # @param [forceUpdate=false] {Boolean} If true the utils will be forced to update, otherwise the utils will only be updated if they weren't updated in the last 20 minutes.
 # @return {Error[]} An array containing errors from ExternalServices.
 ###
@@ -113,7 +112,7 @@ updateStudyUtils = (userId, forceUpdate = no) ->
 	errors
 
 # REVIEW: Should we have different functions for absenceInfo and calendarItems?
-# TODO: think out some throtthling for this.
+# TODO: think out some throttling for this.
 ###*
 # Updates the CalendarItems in the database for the given `userId` or the user
 # in of current connection, unless the utils were updated shortly before.
@@ -267,29 +266,22 @@ getExternalClasses = (userId) ->
 				year: year
 
 			unless _class?
-				# TODO: update.
-				scholierenClass = ScholierenClasses.findOne do (c) -> (sc) ->
-					sc.name
-						.toLowerCase()
-						.indexOf(c.name.toLowerCase()) > -1
-
 				_class = new SchoolClass(
 					c.name.toLowerCase(),
 					c.abbreviation.toLowerCase(),
 					year,
 					schoolVariant
 				)
-				_class.scholierenClassId = scholierenClass?.id
-				_class.fetchedBy = service.name
 				_class.externalInfo =
 					id: c.id
 					abbreviation: c.abbreviation
 					name: c.name
+					fetchedBy: service.name
 
 				# Insert the class and set the id to the class object.
-				# This is needed because we removed the OjectID method we were using
-				# before.
-				_class._id = Classes.insert _class
+				# This is needed since the class object doesn't have an ID yet, but the
+				# things further down the road requires it.
+				_class._id = insertClass _.cloneDeep _class
 
 			_class
 
@@ -458,10 +450,10 @@ replyMessage = (body, id, all, service, userId) ->
 	serivce.replyMessage body, id, all, userId
 
 ###*
-# Returns an array containg info about available services.
+# Returns an array containing info about available services.
 # @method getModuleInfo
 # @param userId {String} The ID of the user to use for the service info.
-# return {Object[]} An array containg objects that hold the info about all the services.
+# return {Object[]} An array containing objects that hold the info about all the services.
 ###
 getModuleInfo = (userId) ->
 	check userId, String

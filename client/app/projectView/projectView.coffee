@@ -1,7 +1,7 @@
 cachedProjectFiles = new ReactiveVar {}
 
 currentProject = ->
-	id = new Meteor.Collection.ObjectID FlowRouter.getParam 'id'
+	id = FlowRouter.getParam 'id'
 	Projects.findOne _id: id
 
 # == Notes:
@@ -52,7 +52,7 @@ fileTypes =
 
 Template.projectView.onCreated ->
 	@autorun =>
-		id = new Meteor.Collection.ObjectID FlowRouter.getParam 'id'
+		id = FlowRouter.getParam 'id'
 		@subscribe 'project', id, onReady: =>
 			p = Projects.findOne _id: id
 			if p?
