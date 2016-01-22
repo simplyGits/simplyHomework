@@ -55,33 +55,29 @@
 			else throw new Error "Don't know anything about '#{info.fetchedBy}'"
 
 # Issue: #156
-@getAvailableClasses = ->
+@getAvailableBooks = (classId) ->
 	clean = (s) -> s.replace(/\W/g, '').toLowerCase()
 
-	Meteor.subscribe 'scholieren.com'
-	Meteor.subscribe 'woordjesleren'
+	c = Classes.findOne classId
+	unless c?
+		throw new Meteor.Error 'non-existing-class'
 
-	results = [
-		ScholierenClasses.find().fetch()
-		WoordjesLerenClasses.find().fetch()
+	Meteor.subscribe 'scholieren.com', c.externalInfo.scholieren?.id
+	Meteor.subscribe 'woordjesleren', c.externalInfo.woordjesleren?.id
+
+	externalClasses = [
+		ScholierenClasses.findOne id: c.externalInfo.scholieren?.id
+		WoordjesLerenClasses.findOne id: c.externalInfo.woordjesleren?.id
 	]
 
 	res = []
-	for result in results # array from classs from one provider.
-		for c in result # class from one provider
-			classBase = _.find res, (x) -> clean(x.name) is clean(c.name)
+	for c in externalClasses # class from one provider
+		for b in c?.books ? [] # loop over every book the new class provides
+			oldBook = _.find res, (x) -> clean(x.title) is clean(b.title)
 
-			if classBase?
-				_.defaults classBase, c
-
-				for b in c.books ? [] # loop over every book the new class provides
-					bookBase = _.find classBase.books, (x) -> clean(x.title) is clean(b.title)
-
-					if bookBase?
-						_.defaults bookBase, b
-					else
-						classBase.books.push b
+			if oldBook?
+				_.defaults oldBook, b
 			else
-				res.push c
+				res.push b
 
 	res

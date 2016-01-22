@@ -32,6 +32,7 @@ Meteor.methods
 		)
 
 	###*
+	# Creates and inserts a book.
 	# @method insertBook
 	# @param {String} title
 	# @param {String} classId
@@ -44,16 +45,36 @@ Meteor.methods
 		if title.trim().length is 0
 			throw new Meteor.Error 'empty-title'
 
+		c = Classes.findOne classId
+		unless c?
+			throw new Meteor.Error 'non-existing-class'
+
 		book = Books.findOne title: title
 		if book?
 			book._id
 		else
-			Books.insert new Book(
-				title
-				undefined
-				undefined
-				classId
-			)
+			book = new Book title, classId
+
+			containsTitle = (str) -> Helpers.contains str, title, yes
+			if c.externalInfo['woordjesleren']?
+				wlbooks = WoordjesLerenClasses.findOne(
+					id: c.externalInfo['woordjesleren'].id
+				).books
+				wlbook = _.find wlbooks, (b) -> containsTitle b.title
+
+				if wlbook?
+					book.externalInfo['woordjesleren'] = wlbook.id
+
+			if c.externalInfo['scholieren']?
+				slbooks = ScholierenClasses.findOne(
+					id: c.externalInfo['scholieren'].id
+				).books
+				slbook = _.find slbooks, (b) -> containsTitle b.title
+
+				if slbook?
+					book.externalInfo['scholieren'] = slbook.id
+
+			Books.insert book
 
 	insertProject: (name, description, deadline, classId) ->
 		check name, String

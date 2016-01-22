@@ -58,14 +58,14 @@ Schemas.Classes = new SimpleSchema
 Schemas.Books = new SimpleSchema
 	title:
 		type: String
+	classId:
+		type: String
 	publisher:
 		type: String
 		optional: yes
 	release:
 		type: Number
 		optional: yes
-	classId:
-		type: String
 	utils:
 		type: [Object]
 		blackbox: yes

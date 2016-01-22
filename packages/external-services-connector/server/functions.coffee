@@ -281,7 +281,7 @@ getExternalClasses = (userId) ->
 				# Insert the class and set the id to the class object.
 				# This is needed since the class object doesn't have an ID yet, but the
 				# things further down the road requires it.
-				_class._id = insertClass _class
+				_class._id = insertClass _.cloneDeep _class
 
 			_class
 

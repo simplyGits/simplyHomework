@@ -4,18 +4,30 @@
 # @class Book
 # @constructor
 # @param {String} title
-# @param {String} publisher
-# @param {Number} release The 'version' of the book.
 # @param {Object} classId The ID of the Class this Book is part of.
 ###
 class @Book
-	constructor: (@title, @publisher, @release, @classId) ->
+	constructor: (@title, @classId) ->
 		###*
 		# @property utils
 		# @type [String]
 		# @default []
 		###
 		@utils = []
+
+		###*
+		# @property publisher
+		# @type String|undefined
+		# @default undefined
+		###
+		@publisher = undefined
+
+		###*
+		# @property release
+		# @type Number|undefined
+		# @default undefined
+		###
+		@release = undefined
 
 		###*
 		# @property externalInfo

@@ -15,17 +15,19 @@
 	if old?
 		old._id
 	else
-		delete c.fetchedBy
 		c.externalInfo = {}
 
-		containsName = (str) -> Helpers.contains str, c.name, yes
+		containsName = (str) ->
+			a = Helpers.contains str, c.name, yes
+			b = Helpers.contains c.name, str, yes
+			a or b
 
-		scholierenClass = ScholierenClasses.findOne -> containsName @name
+		scholierenClass = _.find ScholierenClasses.find({}).fetch(), (c) -> containsName c.name
 		if scholierenClass?
-			c.externalInfo['scholieren'] = id: scholierenClass.scholierenId
+			c.externalInfo['scholieren'] = id: scholierenClass.id
 
-		woordjesLerenClass = WoordjesLerenClasses.findOne -> containsName @name
+		woordjesLerenClass = _.find WoordjesLerenClasses.find({}).fetch(), (c) -> containsName c.name
 		if woordjesLerenClass?
-			c.externalInfo['woordjesLeren'] = id: woordjesLerenClass.woordjesLerenId
+			c.externalInfo['woordjesleren'] = id: woordjesLerenClass.id
 
 		Classes.insert c

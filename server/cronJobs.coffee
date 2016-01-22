@@ -1,6 +1,7 @@
 Future = Npm.require 'fibers/future'
 
 SyncedCron.add
+	# REVIEW: exclude premium users? ;)
 	name: 'Clear inactive users'
 	schedule: (parser) -> parser.recur().on(3).hour()
 	job: ->
@@ -45,7 +46,7 @@ SyncedCron.add
 			try
 				classes = Scholieren.getClasses().map (c) ->
 					name: c.name
-					scholierenId: c.id
+					id: c.id
 			catch e
 				console.error 'Scholieren.getClasses error', e
 				return
@@ -68,15 +69,15 @@ SyncedCron.add
 			for c in classes
 				# Put the matching books inside of the current class.
 				c.books = _(books)
-					.filter (b) -> b.classId is c.scholierenId
+					.filter (b) -> b.classId is c.id
 					.map (b) ->
-						scholierenId: b.id
+						id: b.id
 						title: b.title
 				c.books = c.books.value() if c.books.value?
 
 				# Update or, if it doesn't currently exist, the scholierenClass in
 				# the database.
-				ScholierenClasses.upsert { scholierenId: c.scholierenId }, c
+				ScholierenClasses.upsert { id: c.id }, c
 
 			# We're done here, stop looping.
 			@stop()
@@ -108,20 +109,20 @@ SyncedCron.add
 			try
 				classes = WoordjesLeren.getClasses().map (c) ->
 					name: c.name
-					woordjesLerenId: c.id
+					id: c.id
 			catch e
 				console.error 'WoordjesLerenClasses.getClasses error', e
 				return
 
 			for c in classes
 				try
-					c.books = WoordjesLeren.getBooks(c.woordjesLerenId).map (b) ->
-						woordjesLerenId: b.id
+					c.books = WoordjesLeren.getBooks(c.id).map (b) ->
+						id: b.id
 						title: b.title
 						woordjesLerenListCount: b.listCount
 
 				# Update or, if it doesn't currently exist, the class in the database.
-				WoordjesLerenClasses.upsert { woordjesLerenId: c.woordjesLerenId }, c
+				WoordjesLerenClasses.upsert { id: c.id }, c
 
 			# We're done here, stop looping.
 			@stop()
