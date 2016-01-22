@@ -11,7 +11,9 @@ Package.onUse(function(api) {
 	api.versionsFrom('1.1.0.3');
 	api.use([
 		'particle4dev:cheerio',
+		'search',
 		'ecmascript',
+		'stevezhu:lodash@3.10.1',
 	], 'server');
 	api.addFiles('woordjesleren.js', 'server');
 	api.export('WoordjesLeren', 'server');

@@ -35,6 +35,7 @@ route = (query, d) ->
 	if d.type is 'route' then FlowRouter.go d.path, d.params
 	else if d.type is 'modal' then showModal d.id
 	else if d.type is 'report' then window.open d.url, '_blank'
+	else if d.type is 'wordlist' then window.open d.url, '_blank'
 	else
 		FlowRouter.go (
 			switch d.type
