@@ -381,11 +381,10 @@ class @Helpers
 	# @return {String}
 	###
 	@timeDiff: (a, b) ->
-		diff = moment(b).diff a
-		secIn = diff / 1000
+		seconds = moment(b).diff(a) / 1000
 
-		hours = ~~(secIn / 3600)
-		remainder = ~~(secIn % 3600)
+		hours = ~~(seconds / 3600)
+		remainder = ~~(seconds % 3600)
 		minutes = ~~(remainder / 60)
 
 		arr = []
