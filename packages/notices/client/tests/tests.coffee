@@ -18,7 +18,7 @@ getTests = ->
 
 NoticeManager.provide 'tests', ->
 	dateTracker.depend()
-	@subscribe 'externalCalendarItems', Date.today(), Date.today().addDays 7
+	@subscribe 'tests'
 
 	if getTests().length > 0
 		template: 'tests'
@@ -29,9 +29,13 @@ Template.tests.helpers
 	tests: -> getTests()
 
 Template.testItem.helpers
-	relative: ->
+	friendlyDate: ->
 		dateTracker.depend()
 		@relativeTime() or Helpers.formatDateRelative @startDate, no
+	opacity: ->
+		days = Helpers.daysRange new Date, @startDate, no
+		days = Math.min days, 30
+		opacity = (2 / days) ** .2
 
 Template.testItem.events
 	'click': ->

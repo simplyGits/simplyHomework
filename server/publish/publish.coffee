@@ -218,6 +218,23 @@ Meteor.publishComposite 'books', (classId) ->
 			find: (user) -> Books.find _id: $in: _.pluck user.classInfos, 'bookId'
 		}]
 
+Meteor.publish 'tests', ->
+	unless @userId?
+		@ready()
+		return undefined
+
+	CalendarItems.find {
+		'userIds': @userId
+		'content': $exists: yes
+		'content.type': $in: [ 'test', 'exam', 'quiz', 'oral' ]
+		'content.description': $exists: yes
+		'startDate': $gt: Date.today()
+		'scrapped': no
+	}, {
+		sort:
+			startDate: 1
+	}
+
 Meteor.publish 'scholieren.com', (id) ->
 	check id, Number
 	unless @userId?
