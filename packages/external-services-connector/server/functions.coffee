@@ -58,7 +58,7 @@ updateGrades = (userId, forceUpdate = no) ->
 				externalId: grade.externalId
 
 			if val? and Meteor.isServer
-				Grades.update val._id, grade, modifier: no
+				Grades.update val._id, grade, validate: no
 			else
 				Grades.insert grade
 
@@ -105,7 +105,7 @@ updateStudyUtils = (userId, forceUpdate = no) ->
 
 			if val? and Meteor.isServer
 				delete studyUtil._id
-				StudyUtils.update val._id, { $set: studyUtil }, modifier: no
+				StudyUtils.update val._id, $set: studyUtil
 			else
 				StudyUtils.insert studyUtil
 
@@ -175,7 +175,7 @@ updateCalendarItems = (userId, from, to) ->
 						.value()
 				mergeUserIdsField 'userIds'
 				mergeUserIdsField 'usersDone'
-				CalendarItems.update val._id, { $set: obj }, modifier: no
+				CalendarItems.update val._id, $set: obj
 				calendarItem._id = val._id
 			else
 				calendarItem._id = CalendarItems.insert obj
@@ -196,7 +196,7 @@ updateCalendarItems = (userId, from, to) ->
 			absenceInfo.externalId = calendarItem.absenceInfo.externalId
 
 			if val?
-				Absences.update val._id, { $set: absenceInfo }, modifier: no
+				Absences.update val._id, $set: absenceInfo
 			else
 				Absences.insert absenceInfo
 
