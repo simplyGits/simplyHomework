@@ -17,7 +17,7 @@ SyncedCron.add
 				Hey #{user.profile.firstName}!
 
 				Je hebt al voor #{moment().diff user.status.lastActivity, 'days'} dagen niet ingelogd.
-				Om onze database schoon te houden verwijderen we je account als je niet binnen 30 dagen ingelogd.
+				Om onze database schoon te houden verwijderen we je account als je niet binnen 30 dagen <a href='#{Meteor.absoluteUrl()}login'>ingelogd</a>.
 				Als we je account verwijderd hebben kunnen we het niet terug halen.
 			"""
 
