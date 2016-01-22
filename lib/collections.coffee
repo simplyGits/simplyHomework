@@ -134,8 +134,14 @@ Schemas.ReportItems = new SimpleSchema
 		type: Date
 		autoValue: -> if @isInsert then new Date()
 		denyUpdate: yes
-	resolved:
-		type: Boolean
+
+	resolvedInfo:
+		type: Object
+		optional: yes
+	'resolvedInfo.by'
+		type: String
+	'resolvedInfo.at'
+		type: Date
 
 ###
 Schemas.Grades = new SimpleSchema

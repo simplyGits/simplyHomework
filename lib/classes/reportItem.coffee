@@ -26,11 +26,9 @@ class @ReportItem
 		@time = new Date()
 
 		###*
-		# Whether or not this Report is resolved (taken a look at, and if needed,
-		# taken action) or not.
-		#
-		# @property resolved
-		# @type Boolean
-		# @default false
+		# Object containing the info about the resolvement of this item.
+		# @property resolvedInfo
+		# @type Object|undefined
+		# @default undefined
 		###
-		@resolved = no
+		@resolvedInfo = undefined
