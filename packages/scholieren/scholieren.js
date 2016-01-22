@@ -1,4 +1,5 @@
-/* global Scholieren:true */
+/* global Scholieren:true, getClassInfos:true, Books:true,
+   normalizeClassName:true, Search:true */
 'use strict';
 
 const settings = Meteor.settings && Meteor.settings.scholieren;
@@ -15,9 +16,10 @@ Scholieren = {
 	getClasses: function (options) {
 		options = options || {};
 
+		let optionsKey = undefined;
 		for (const key in options) {
 			if (options[key] != null) {
-				var optionsKey = key;
+				optionsKey = key;
 				break;
 			}
 		}
@@ -38,9 +40,10 @@ Scholieren = {
 	getBooks: function (options) {
 		options = options || {};
 
+		let optionsKey = undefined;
 		for (const key in options) {
 			if (options[key] != null) {
-				var optionsKey = key;
+				optionsKey = key;
 				break;
 			}
 		}
@@ -99,9 +102,10 @@ Search.provide('scholieren', function ({ query, user, classes, keywords }) {
 		return [];
 	} else {
 		let res = [];
+		const classInfos = getClassInfos(user._id);
 
 		classes.forEach(function (c) {
-			const classInfo = _.find(getClassInfos(user._id), { id: c._id });
+			const classInfo = _.find(classInfos, { id: c._id });
 
 			const book = Books.findOne(classInfo.bookId);
 			const bookName = (book && book.title) || '';
