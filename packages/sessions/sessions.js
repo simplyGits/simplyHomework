@@ -24,7 +24,6 @@ Meteor.startup(function () {
 			'sessions_extend',
 			Accounts.connection._lastSessionId,
 			{
-				chromeInfo: (chrome && chrome.loadTimes && chrome.loadTimes()),
 				loginToken: cookies()['meteor_login_token'],
 			}
 		)
