@@ -166,7 +166,7 @@ chats = (searchTerm = currentSearchTerm.get(), onlyFirst = no) ->
 			else
 				distance = calcDistance name
 
-				# If the name contains a word beginning with the query; lower distance a substensional amount.
+				# If the name contains a word beginning with the query; lower distance a substantial amount.
 				splitted = name.trim().toLowerCase().split ' '
 				if _.any(splitted, (s) -> s.indexOf(searchTerm.trim().toLowerCase()) is 0)
 					distance - 10

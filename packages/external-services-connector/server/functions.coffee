@@ -112,7 +112,7 @@ updateStudyUtils = (userId, forceUpdate = no) ->
 	errors
 
 # REVIEW: Should we have different functions for absenceInfo and calendarItems?
-# TODO: think out some throtthling for this.
+# TODO: think out some throttling for this.
 ###*
 # Updates the CalendarItems in the database for the given `userId` or the user
 # in of current connection, unless the utils were updated shortly before.
@@ -450,10 +450,10 @@ replyMessage = (body, id, all, service, userId) ->
 	serivce.replyMessage body, id, all, userId
 
 ###*
-# Returns an array containg info about available services.
+# Returns an array containing info about available services.
 # @method getModuleInfo
 # @param userId {String} The ID of the user to use for the service info.
-# return {Object[]} An array containg objects that hold the info about all the services.
+# return {Object[]} An array containing objects that hold the info about all the services.
 ###
 getModuleInfo = (userId) ->
 	check userId, String

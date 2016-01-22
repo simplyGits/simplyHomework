@@ -9,12 +9,12 @@
 Date.today = -> new Date().date()
 
 ###*
-# Adds the given ammount of days to the current/new Date object.
+# Adds the given amount of days to the current/new Date object.
 #
 # @method addDays
 # @param days {Number} The amount of days to add.
 # @param newDate {Boolean} Whether or not to create a new Object.
-# @return {Date} A Date object with the given ammount of days added.
+# @return {Date} A Date object with the given amount of days added.
 ###
 Date::addDays = (days, newDate = false) ->
 	check days, Match.Integer
@@ -41,7 +41,7 @@ class @Helpers
 	# @method daysRange
 	# @param firstDate {Date} First date as a Date object.
 	# @param lastDate {Date} Last date as a Date object.
-	# @param useTime {Boolean} If true the calculation will conisder the time of the given dates.
+	# @param useTime {Boolean} If true the calculation will consider the time of the given dates.
 	# @param round {Boolean} Whether or not to round the result.
 	# @return {Number} Amount of days between the two given dates. Can be negative.
 	###
@@ -242,7 +242,7 @@ class @Helpers
 		handle = Meteor.setInterval func, interval
 
 	###*
-	# Returns an array containg each day of the week starting on monday.
+	# Returns an array containing each day of the week starting on Monday.
 	# Respects the current moment locale.
 	#
 	# @method weekdays
@@ -307,7 +307,7 @@ class @Helpers
 	#
 	# @method emboxValue
 	# @param fn {Function}
-	# @param [equals] {Function} An comperison value used instead of `EJSON.equals`.
+	# @param [equals] {Function} An comparison value used instead of `EJSON.equals`.
 	# @return {any} The return value of `fn`.
 	###
 	@emboxValue: (fn, equals) -> emboxValue(fn, { equals, lazy: yes })()
