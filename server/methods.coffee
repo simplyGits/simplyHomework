@@ -409,6 +409,16 @@ Meteor.methods
 
 				res.push "Je deelt de meeste lessen met #{link}"
 
+		grades = GradeFunctions.getAllGrades yes, userId
+		if grades.length > 0
+			grades = _(grades)
+				.pluck 'grade'
+				.compact()
+				.value()
+			mean = Helpers.getAverage grades
+
+			res.push "Het gemiddelde van je eindcijfers is #{mean.toFixed(1).replace '.', ','}"
+
 		res
 
 	###*
