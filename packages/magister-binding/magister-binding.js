@@ -182,6 +182,10 @@
 			lastUpdateTime && (_.now() - lastUpdateTime.getTime() <= ONLY_RECENT_LIMIT);
 
 		var course = getCurrentCourse(magister);
+		if (course == null) {
+			throw new Meteor.Error('no-course');
+		}
+
 		course.grades(false, false, onlyRecent, function (e, r) {
 			if (e) {
 				fut.throw(e);
@@ -212,8 +216,6 @@
 							if (e) {
 								gradeFut.throw(e);
 							} else  {
-								// REVIEW: Do we want a seperate weight field?
-								var weight = g.counts() ? g.weight() : 0;
 								var classInfo = _.find(user.classInfos, function (i) {
 									return i.externalInfo.id === g.class().id;
 								});
@@ -221,7 +223,7 @@
 
 								var grade = new Grade(
 									g.grade(),
-									weight,
+									g.counts() ? g.weight() : 0,
 									classId,
 									userId
 								);
@@ -462,7 +464,12 @@
 		var fut = new Future();
 		var magister = getMagisterObject(userId);
 
-		getCurrentCourse(magister).classes(function (e, r) {
+		var course = getCurrentCourse(magister);
+		if (course == null) {
+			throw new Meteor.Error('no-course');
+		}
+
+		course.classes(function (e, r) {
 			if (e) {
 				fut.throw(e);
 			} else {

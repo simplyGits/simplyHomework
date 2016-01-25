@@ -150,6 +150,7 @@ Schemas.Grades = new SimpleSchema
 		min: 0
 	classId:
 		type: String
+		optional: yes # REVIEW
 	ownerId:
 		type: String
 	description:
