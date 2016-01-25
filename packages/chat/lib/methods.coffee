@@ -38,7 +38,7 @@ Meteor.methods
 			throw new Meteor.Error 'not-in-room'
 
 		message = new ChatMessage content, @userId, chatRoomId
-		ChatMiddlewares.run message, 'insert'
+		message = ChatMiddlewares.run message, 'insert'
 		if @isSimulation
 			message.pending = yes
 

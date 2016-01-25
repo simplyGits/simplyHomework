@@ -45,34 +45,56 @@ ChatMiddlewares.attach 'preserve original content', 'client', (message) ->
 	message._originalContent = message.content
 	message
 
-chatMessageReplaceMap =
-	':thumbsup:': /\(y\)/ig
-	':thumbsdown:': /\(n\)/ig
-	':innocent:': /\(a\)/ig
-	':sunglasses:': /\(h\)/ig
-	':sweat_smile:': /\^\^'/ig
-	':tada:': /:(fissa|hype):/ig
-	':cheese:': /:kaas:/ig
-	':middle_finger:': /:fu:/ig
-	'¯\\\\\\_(ツ)\\_/¯': /(:|\/)shrug(:|\/)/ig
+ChatMiddlewares.attach 'shitdown', 'client', (message) ->
+	s = message.content
+
+	s = s.replace /###(.+)/g, '<h3>$1</h3>'
+	s = s.replace /##(.+)/g, '<h2>$1</h2>'
+	s = s.replace /#(.+)/g, '<h1>$1</h1>'
+	s = s.replace /([_*])\1(.*?)\1\1/g, '<strong>$2</strong>'
+	s = s.replace /([_*])(.*?)\1/g, '<em>$2</em>'
+
+	message.content = s
+	message
+
+chatReplacements = [
+	[[ '(y)'                ], ':thumbsup:'        ]
+	[[ '(n)'                ], ':thumbsdown:'      ]
+	[[ '(a)'                ], ':innocent:'        ]
+	[[ '(h)'                ], ':sunglasses:'      ]
+	[[ '^^'                 ], ':sweat_smile:'     ]
+	[[ ':fissa:', ':hype:'  ], ':tada:'            ]
+	[[ ':kaas:'             ], ':cheese:'          ]
+	[[ ':fu:'               ], ':middle_finger:'   ]
+	[[ '/shrug/', ':shrug:' ], '¯\\_(ツ)_/¯' ]
+]
 
 ChatMiddlewares.attach 'convert smileys', 'client', (message) ->
 	s = message.content
 
-	for key of chatMessageReplaceMap
-		regex = chatMessageReplaceMap[key]
-		s = s.replace regex, key
+	for [ keys, value ] in chatReplacements
+		for key in keys
+			s = s.split(key).join value
+
+	matchesOrig = Helpers.allMatches /`[^`]*`/g, message._originalContent
+	matchesNew = Helpers.allMatches /`[^`]*`/g, s
+	for match, i in matchesOrig
+		s = s.replace matchesNew[i], match
 
 	message.content = s
+	message
+
+ChatMiddlewares.attach 'code blocks', 'client', (message) ->
+	message.content = message.content.replace /`([^`]*)`/g, '<code>$1</code>'
+	message
+
+ChatMiddlewares.attach 'links', 'client', (message) ->
+	message.content = Helpers.convertLinksToAnchor message.content
 	message
 
 ChatMiddlewares.attach 'emojione', 'client', (message) ->
 	unless getUserField Meteor.userId(), 'settings.devSettings.noChatEmojis'
 		message.content = emojione.toImage message.content
-	message
-
-ChatMiddlewares.attach 'markdown', 'client', (message) ->
-	message.content = marked message.content
 	message
 
 ChatMiddlewares.attach 'katex', 'client', (message) ->
@@ -100,11 +122,8 @@ ChatMiddlewares.attach 'add hidden fields', 'client', (cm) ->
 				limit: 3
 			}
 
-ChatMiddlewares.attach 'strip naughty urls', 'insert', (message) ->
-	message.content = message.content.replace(
-		/<a +href *= *('|"?) *javascript *:[^\1]+\1 *>([^<]*)(<\/a>)?/ig
-		(match, qoute, content) -> content
-	)
+ChatMiddlewares.attach 'strip html', 'insert', (message) ->
+	message.content = message.content.replace /<[^>]*>/g, ''
 	message
 
 ChatMiddlewares.attach 'clickable names', 'insert', (message) ->
