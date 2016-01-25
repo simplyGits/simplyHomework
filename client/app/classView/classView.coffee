@@ -11,11 +11,6 @@ getChatRoom = ->
 		type: 'class'
 		'classInfo.ids': id
 
-getGrades = ->
-	Grades.find
-		ownerId: Meteor.userId()
-		classId: classId()
-
 Template.classView.helpers
 	class: -> currentClass()
 	classBorderColor: -> chroma(@__color).darken().hex()
@@ -33,11 +28,7 @@ Template.classView.helpers
 			'Samenvatting hoofdstuk 5'
 		]
 
-	endGrade: ->
-		Grades.findOne
-			classId: @_id
-			ownerId: Meteor.userId()
-			isEnd: yes
+	endGrade: -> GradeFunctions.getEndGrade @_id, Meteor.userId()
 
 	hoursPerWeek: ->
 		CalendarItems.find(
@@ -365,13 +356,9 @@ Template.addProjectModal.onRendered ->
 	###
 
 Template.grades.helpers
-	endGrade: ->
-		Grades.findOne
-			classId: classId()
-			ownerId: Meteor.userId()
-			isEnd: yes
+	endGrade: -> GradeFunctions.getEndGrade classId(), Meteor.userId()
 	gradeGroups: ->
-		arr = getGrades().fetch()
+		arr = GradeFunctions.getClassGrades classId(), Meteor.userId()
 		_(arr)
 			.reject 'isEnd'
 			.map 'period'
