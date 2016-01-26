@@ -162,7 +162,7 @@ updateCalendarItems = (userId, from, to) ->
 
 			content = calendarItem.content
 			if content? and (not content.type? or content.type is 'homework')
-				content.type = 'quiz' if /^(so|schriftelijke overhoring|(\w+\W?)?toets)\b/i.test content.description
+				content.type = 'quiz' if /^(so|schriftelijke overhoring|(\w+\W?)?(toets|test))\b/i.test content.description
 				content.type = 'test' if /^(proefwerk|pw|examen|tentamen)\b/i.test content.description
 			calendarItem.content = content
 
