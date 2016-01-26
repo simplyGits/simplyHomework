@@ -2,7 +2,9 @@ loading = new ReactiveVar no
 
 Template['login_signup'].helpers
 	loggingIn: -> FlowRouter.getRouteName() is 'login'
+
 	isLoading: -> loading.get()
+	__loading: -> if loading.get() then 'loading' else ''
 
 Template.login.events
 	'submit': (event) ->

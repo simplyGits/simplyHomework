@@ -7,7 +7,9 @@
 			<div id="loadingContainer">
 				{{> loading}}
 			</div>
-		{{else}}
+		{{/if}}
+
+		<div id="content" class="{{__loading}}">
 			<div class="appNameHeader"></div>
 			<h1>Jouw overzicht</h1>
 
@@ -28,7 +30,7 @@
 					{{> signup}}
 				{{/if}}
 			</div>
-		{{/if}}
+		</div>
 	</div>
 </template>
 
