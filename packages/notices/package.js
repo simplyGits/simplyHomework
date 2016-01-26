@@ -21,6 +21,7 @@ Package.onUse(function(api) {
 		'mquandalle:stylus',
 		'handlebars',
 		'schedule-functions',
+		'meteorhacks:subs-manager',
 	], 'client');
 	/*
 	api.use([

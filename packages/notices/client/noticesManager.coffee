@@ -1,3 +1,7 @@
+subs = new SubsManager
+	expireIn: 60
+	cacheLimit: 50
+
 ###*
 # @class NoticeManager
 # @static
@@ -54,7 +58,7 @@ class NoticeManager
 				try
 					res = provider.fn.apply
 						subscribe: ->
-							handle = Meteor.subscribe.apply this, arguments
+							handle = subs.subscribe arguments...
 							handles.push handle
 							handle
 
