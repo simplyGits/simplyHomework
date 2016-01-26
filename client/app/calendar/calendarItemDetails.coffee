@@ -8,6 +8,10 @@ Template.calendarItemDetails.helpers
 					$in: @userIds ? []
 					$ne: Meteor.userId()
 	relativeTime: -> @relativeTime? yes
+	contentDescription: ->
+		description = @content?.description
+		if description?
+			Helpers.convertLinksToAnchor _.escape description
 
 Template.calendarItemDetails.onCreated ->
 	unless @data.type is 'schoolwide'
