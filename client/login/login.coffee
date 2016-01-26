@@ -18,8 +18,10 @@ Template.login.events
 				Meteor.defer ->
 					if error.reason is 'Incorrect password'
 						setFieldError '#passwordGroup', 'Wachtwoord is fout'
+						$passwordInput.focus()
 					else if error.reason is 'User not found'
 						setFieldError '#emailGroup', 'Account niet gevonden'
+						$emailInput.focus()
 			else FlowRouter.go 'overview'
 
 Template.login.onRendered ->
