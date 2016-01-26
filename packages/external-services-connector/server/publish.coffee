@@ -57,6 +57,8 @@ Meteor.publish 'foreignCalendarItems', (userIds, from, to) ->
 	check userIds, [String]
 	check from, Date
 	check to, Date
+
+	@unblock()
 	unless @userId?
 		@ready()
 		return undefined

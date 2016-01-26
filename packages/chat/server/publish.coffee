@@ -1,4 +1,5 @@
-Meteor.publishComposite 'basicChatInfo',
+Meteor.publishComposite 'basicChatInfo', ->
+	@unblock()
 	find: ->
 		ChatRooms.find {
 			users: @userId
@@ -36,6 +37,8 @@ Meteor.publishComposite 'basicChatInfo',
 	}]
 
 Meteor.publish 'chatMessages', (chatRoomId, limit) ->
+	@unblock()
+
 	check chatRoomId, String
 	check limit, Number
 
@@ -82,7 +85,19 @@ Meteor.publish 'chatMessages', (chatRoomId, limit) ->
 		handle.stop()
 
 Meteor.publish 'messageCount', (chatRoomId) ->
-	# TODO: secure this method.
 	check chatRoomId, String
-	Counts.publish this, 'chatMessageCount', ChatMessages.find { chatRoomId }
+	@unblock()
+
+	room = (
+		if @userId
+			ChatRooms.findOne
+				_id: chatRoomId
+				users: @userId
+	)
+
+	if room?
+		Counts.publish this, 'chatMessageCount', ChatMessages.find { chatRoomId }
+	else
+		@ready()
+
 	undefined

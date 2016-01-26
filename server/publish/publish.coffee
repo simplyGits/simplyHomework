@@ -1,4 +1,5 @@
 Meteor.publish 'usersData', (ids) ->
+	@unblock()
 	check ids, Match.Optional [String]
 	userId = @userId
 	# `if ids?` is needed to not create an array when ids is undefined, which is
@@ -31,6 +32,7 @@ Meteor.publish 'usersData', (ids) ->
 	]
 
 Meteor.publish 'status', (ids) ->
+	@unblock()
 	check ids, [String]
 	unless @userId?
 		@ready()
@@ -136,6 +138,7 @@ Meteor.publish 'fr_classes', ->
 	Classes.find _id: $in: _.pluck classInfos, 'id'
 
 Meteor.publishComposite 'classInfo', (classId) ->
+	@unblock()
 	check classId, String
 	unless @userId? and classId
 		@ready()
@@ -186,6 +189,7 @@ Meteor.publish 'schools', (externalId) ->
 Meteor.publish "goaledSchedules", -> GoaledSchedules.find { ownerId: @userId }
 
 Meteor.publishComposite 'project', (id) ->
+	@unblock()
 	check id, String
 	find: -> Projects.find _id: id, participants: @userId
 	children: [{
@@ -202,6 +206,7 @@ Meteor.publishComposite 'project', (id) ->
 	}]
 
 Meteor.publishComposite 'books', (classId) ->
+	@unblock()
 	check classId, Match.Optional String
 	unless @userId?
 		@ready()
@@ -219,6 +224,7 @@ Meteor.publishComposite 'books', (classId) ->
 		}]
 
 Meteor.publish 'tests', ->
+	@unblock()
 	unless @userId?
 		@ready()
 		return undefined
@@ -236,6 +242,7 @@ Meteor.publish 'tests', ->
 	}
 
 Meteor.publish 'scholieren.com', (id) ->
+	@unblock()
 	check id, Number
 	unless @userId?
 		@ready()
@@ -243,6 +250,7 @@ Meteor.publish 'scholieren.com', (id) ->
 	ScholierenClasses.find { id }
 
 Meteor.publish 'woordjesleren', (id) ->
+	@unblock()
 	check id, Number
 	unless @userId?
 		@ready()
