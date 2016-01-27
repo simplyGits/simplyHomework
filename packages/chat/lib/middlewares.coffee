@@ -91,16 +91,25 @@ chatReplacements = [
 ChatMiddlewares.attach 'convert smileys', 'client', (message) ->
 	unless getUserField Meteor.userId(), 'settings.devSettings.noChatEmojis'
 		s = message.content
+		res = ''
+		cursor = 0
 
-		for [ regexp, value ] in chatReplacements
-			s = s.replace regexp, value
+		while cursor < s.length
+			idx = s.indexOf '`', cursor
+			idx = s.length if idx is -1
+			sl = s.slice cursor, idx
 
-		matchesOrig = Helpers.allMatches /`[^`]*`/g, message.content
-		matchesNew = Helpers.allMatches /`[^`]*`/g, s
-		for match, i in matchesOrig
-			s = s.replace matchesNew[i], match
+			for [ regexp, value ] in chatReplacements
+				sl = sl.replace regexp, value
 
-		message.content = s
+			res += sl
+
+			cursor = 1 + s.indexOf '`', idx + 1
+			cursor = s.length if cursor is 0
+
+			res += s.slice idx, cursor
+
+		message.content = res
 	message
 
 ChatMiddlewares.attach 'code blocks', 'client', (message) ->
@@ -108,7 +117,24 @@ ChatMiddlewares.attach 'code blocks', 'client', (message) ->
 	message
 
 ChatMiddlewares.attach 'links', 'client', (message) ->
-	message.content = Helpers.convertLinksToAnchor message.content
+	s = message.content
+	res = ''
+	cursor = 0
+
+	while cursor < s.length
+		idx = s.indexOf '<code>', cursor
+		idx = s.length if idx is -1
+
+		res += Helpers.convertLinksToAnchor s.slice cursor, idx
+		break if idx is s.length
+
+		idx2 = s.indexOf '</code>', idx + 6
+		idx2 = s.length if idx2 is -1
+
+		res += s.slice idx, idx2
+		cursor = idx2 + 7
+
+	message.content = res
 	message
 
 ChatMiddlewares.attach 'emojione', 'client', (message) ->
