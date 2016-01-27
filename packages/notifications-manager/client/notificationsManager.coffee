@@ -184,10 +184,14 @@ class NotificationsManager
 
 			for b in buttons
 				b.style ?= 'btn-default'
+				b.hide ?= yes
 				btn = $.parseHTML("<button type='button' class='btn #{b.style}'>#{b.label}</button>")[0]
 
 				b.callback ?= (->)
-				do (b) -> btn.onclick = (event) -> b.callback event, handle
+				do (b) ->
+					btn.onclick = (event) ->
+						b.callback event, handle
+						handle.hide() if b.hide
 
 				d.append btn
 

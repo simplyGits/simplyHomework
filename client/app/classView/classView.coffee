@@ -202,16 +202,19 @@ Template.changeClassModal.events
 	'click #hideClassButton': ->
 		userId = Meteor.userId()
 
-		deleteOld = =>
+		setHidden = (val) =>
 			Meteor.users.update userId, $pull: classInfos: id: @_id
+			Meteor.users.update userId, $push: classInfos:
+				_.extend @__classInfo, hidden: val
+
+		show = =>
+			setHidden no
+			notify "#{@name} zichtbaar gemaakt", 'success'
+
 		hide = =>
 			FlowRouter.go 'overview'
-
-			deleteOld()
-			Meteor.users.update userId, $push: classInfos:
-				_.extend @__classInfo, hidden: yes
-
-			NotificationsManager.notify
+			setHidden yes
+			handle = NotificationsManager.notify
 				body: "<b>#{@name} verborgen</b>"
 				html: yes
 
@@ -219,11 +222,6 @@ Template.changeClassModal.events
 					label: 'ongedaan maken'
 					callback: show
 				}]
-		show = =>
-			deleteOld()
-			Meteor.users.update userId, $push: classInfos:
-				_.extend @__classInfo, hidden: no
-			notify "#{@name} zichtbaar gemaakt", 'success'
 
 		$('#changeClassModal').modal 'hide'
 		if getEvent('classHideHint')?
