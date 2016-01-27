@@ -62,8 +62,11 @@
 	unless c?
 		throw new Meteor.Error 'non-existing-class'
 
-	Meteor.subscribe 'scholieren.com', c.externalInfo.scholieren?.id
-	Meteor.subscribe 'woordjesleren', c.externalInfo.woordjesleren?.id
+	sid = c.externalInfo.scholieren?.id
+	Meteor.subscribe 'scholieren.com', sid if sid?
+
+	wid = c.externalInfo.woordjesleren?.id
+	Meteor.subscribe 'woordjesleren', wid if wid?
 
 	externalClasses = [
 		ScholierenClasses.findOne id: c.externalInfo.scholieren?.id
