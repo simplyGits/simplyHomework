@@ -39,8 +39,9 @@
 	minuteTracker?depend!
 	CalendarItems.find(
 		user-ids: user-id
-		start-date: $gte: new Date
-		end-date: $lte: Date.today!add-days 1
+		end-date:
+			$gte: new Date
+			$lte: Date.today!add-days 1
 		scrapped: false
 		school-hour:
 			$exists: yes
