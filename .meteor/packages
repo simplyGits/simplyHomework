@@ -77,5 +77,6 @@ simply:tether
 force-ssl
 service-configuration
 schedule-functions
+search
 notifications-manager
 grade-functions

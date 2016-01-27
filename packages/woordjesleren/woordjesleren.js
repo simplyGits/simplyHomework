@@ -1,8 +1,10 @@
-/* global cheerio, WoordjesLeren:true */
+/* global cheerio, WoordjesLeren:true, Books:true, Search:true */
 'use strict';
 
-var $ = cheerio;
-var urls = {
+// TODO: make this an external service
+
+const $ = cheerio;
+const urls = {
 	categories: 'http://www.woordjesleren.nl/api/select_categories.php',
 	books: 'http://www.woordjesleren.nl/api/select_books.php',
 	listsByBook: 'http://www.woordjesleren.nl/api/select_lists.php',
@@ -18,7 +20,7 @@ WoordjesLeren = {
 };
 
 WoordjesLeren.getClasses = function () {
-	var result = HTTP.get(urls.categories).content;
+	const result = HTTP.get(urls.categories).content;
 	return $(result).find('categories').contents().toArray().map(function (n) {
 		return {
 			id: parseInt(n.attribs.id, 10),
@@ -28,7 +30,7 @@ WoordjesLeren.getClasses = function () {
 };
 
 WoordjesLeren.getBooks = function (classId) {
-	var result = HTTP.get(urls.books, {
+	const result = HTTP.get(urls.books, {
 		params: {
 			category: classId,
 		},
@@ -48,7 +50,7 @@ WoordjesLeren.getListsByBook = function (options) {
 		throw new Error('options.bookId is required');
 	}
 
-	var result = HTTP.get(urls.listsByBook, {
+	const result = HTTP.get(urls.listsByBook, {
 		params: {
 			book: options.bookId,
 			part: options.part || '',
@@ -66,7 +68,7 @@ WoordjesLeren.getListsByBook = function (options) {
 };
 
 WoordjesLeren.getListsByUser = function (userId) {
-	var result = HTTP.get(urls.listsByUser, {
+	const result = HTTP.get(urls.listsByUser, {
 		params: {
 			poster: userId,
 		},
@@ -81,20 +83,20 @@ WoordjesLeren.getListsByUser = function (userId) {
 };
 
 WoordjesLeren.getList = function (listId) {
-	var parseDate = function (str) {
-		var splitted = str.split('-');
+	const parseDate = function (str) {
+		const splitted = str.split('-');
 		return new Date(splitted[2], splitted[1] - 1, splitted[0]);
 	};
 
-	var result = HTTP.get(urls.list, {
+	const result = HTTP.get(urls.list, {
 		params: {
 			list: listId,
 		},
 	}).content;
-	var node =  $(result).find('list')[0]
+	const node =  $(result).find('list')[0]
 
-	var rows = node.firstChild.data.split('\n');
-	var content = rows.map(function (row) {
+	const rows = node.firstChild.data.split('\n');
+	const content = rows.map(function (row) {
 		return row.replace(/{[^}]*}/g, '').trim().split(/ ?= ?/);
 	});
 
@@ -110,13 +112,13 @@ WoordjesLeren.getList = function (listId) {
 
 WoordjesLeren.search = function (query) {
 	query = encodeURIComponent(query);
-	var result = HTTP.get(urls.search, {
+	const result = HTTP.get(urls.search, {
 		params: {
 			q: query,
 		},
 	}).content;
 	return $(result).find('searchitems').contents().toArray().map(function (n) {
-		var id = parseInt(n.attribs.id, 10);
+		const id = parseInt(n.attribs.id, 10);
 		return {
 			type: n.attribs.type,
 			id: id >= 0 ? id : undefined,
@@ -124,3 +126,33 @@ WoordjesLeren.search = function (query) {
 		};
 	});
 };
+
+Search.provide('woordjesleren', function ({ user, classes, keywords }) {
+	let res = [];
+
+	if (_.contains(keywords, 'vocab')) {
+		classes.forEach(function (c) {
+			const { year, schoolVariant } = user.profile.courseInfo;
+			const classInfo = _.find(user.classInfos, { id: c._id });
+			const book = Books.findOne(classInfo.bookId);
+
+			if (_.has(book, 'externalInfo.woordjesleren')) {
+				const lists = WoordjesLeren.getListsByBook({
+					year: year,
+					schooltype: schoolVariant,
+					bookId: book.externalInfo.woordjesleren,
+				}).map(function (item) {
+					return {
+						type: 'wordlist',
+						id: item.id,
+						title: item.name,
+						url: `https://www.woordjesleren.nl/questions.php?chapter=${item.id}`,
+					};
+				});
+				res = res.concat(lists);
+			}
+		});
+	}
+
+	return res;
+});
