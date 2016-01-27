@@ -71,15 +71,15 @@ ChatMiddlewares.attach 'shitdown', 'client', (message) ->
 	message
 
 chatReplacements = [
-	[[ '(y)'                ], ':thumbsup:'        ]
-	[[ '(n)'                ], ':thumbsdown:'      ]
-	[[ '(a)'                ], ':innocent:'        ]
-	[[ '(h)'                ], ':sunglasses:'      ]
-	[[ '^^'                 ], ':sweat_smile:'     ]
-	[[ ':fissa:', ':hype:'  ], ':tada:'            ]
-	[[ ':kaas:'             ], ':cheese:'          ]
-	[[ ':fu:'               ], ':middle_finger:'   ]
-	[[ '/shrug/', ':shrug:' ], '¯\\_(ツ)_/¯' ]
+	[[ '(y)'                ], ':thumbsup:'      ]
+	[[ '(n)'                ], ':thumbsdown:'    ]
+	[[ '(a)'                ], ':innocent:'      ]
+	[[ '(h)'                ], ':sunglasses:'    ]
+	[[ '^^'                 ], ':sweat_smile:'   ]
+	[[ ':fissa:', ':hype:'  ], ':tada:'          ]
+	[[ ':kaas:'             ], ':cheese:'        ]
+	[[ ':fu:'               ], ':middle_finger:' ]
+	[[ '/shrug/', ':shrug:' ], '¯\\_(ツ)_/¯'     ]
 ]
 ChatMiddlewares.attach 'convert smileys', 'client', (message) ->
 	unless getUserField Meteor.userId(), 'settings.devSettings.noChatEmojis'
