@@ -45,6 +45,19 @@ ChatMiddlewares.attach 'preserve original content', 'client', (message) ->
 	message._originalContent = message.content
 	message
 
+escapeMap = [
+	[ /</g, '&lt;' ]
+	[ />/g, '&gt;' ]
+]
+ChatMiddlewares.attach 'escape', 'client', (message) ->
+	s = message.content
+
+	for [ reg, val ] in escapeMap
+		s = s.replace reg, val
+
+	message.content = s
+	message
+
 ChatMiddlewares.attach 'shitdown', 'client', (message) ->
 	s = message.content
 
@@ -68,7 +81,6 @@ chatReplacements = [
 	[[ ':fu:'               ], ':middle_finger:'   ]
 	[[ '/shrug/', ':shrug:' ], '¯\\_(ツ)_/¯' ]
 ]
-
 ChatMiddlewares.attach 'convert smileys', 'client', (message) ->
 	unless getUserField Meteor.userId(), 'settings.devSettings.noChatEmojis'
 		s = message.content
@@ -77,7 +89,7 @@ ChatMiddlewares.attach 'convert smileys', 'client', (message) ->
 			for key in keys
 				s = s.split(key).join value
 
-		matchesOrig = Helpers.allMatches /`[^`]*`/g, message._originalContent
+		matchesOrig = Helpers.allMatches /`[^`]*`/g, message.content
 		matchesNew = Helpers.allMatches /`[^`]*`/g, s
 		for match, i in matchesOrig
 			s = s.replace matchesNew[i], match
@@ -122,10 +134,6 @@ ChatMiddlewares.attach 'add hidden fields', 'client', (cm) ->
 			}, {
 				limit: 3
 			}
-
-ChatMiddlewares.attach 'strip html', 'insert', (message) ->
-	message.content = message.content.replace /<[^>]*>/g, ''
-	message
 
 ChatMiddlewares.attach 'clickable names', 'insert', (message) ->
 	schoolId = Meteor.user().profile.schoolId
