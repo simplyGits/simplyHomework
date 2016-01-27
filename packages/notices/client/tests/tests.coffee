@@ -35,7 +35,7 @@ Template.testItem.helpers
 	opacity: ->
 		days = Helpers.daysRange new Date, @startDate, no
 		days = Math.min days, 30
-		opacity = (2 / days) ** .2
+		(days / 2 + 1) ** -.2
 
 Template.testItem.events
 	'click': ->
