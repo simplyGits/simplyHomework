@@ -114,7 +114,18 @@ ChatMiddlewares.attach 'code blocks', 'client', (message) ->
 	message
 
 ChatMiddlewares.attach 'links', 'client', (message) ->
-	message.content = Helpers.convertLinksToAnchor message.content
+	s = message.content
+	res = ""
+	cursor = 0
+	while cursor < s.length
+		idx = s.indexOf '<code>', cursor
+		if idx == -1
+			idx = s.length
+		res += Helpers.convertLinksToAnchor s.slice cursor, idx
+		idx = s.indexOf '</code>', idx + 6
+		if idx == -1
+			idx = s.length
+		cursor = idx + 7
 	message
 
 ChatMiddlewares.attach 'emojione', 'client', (message) ->
