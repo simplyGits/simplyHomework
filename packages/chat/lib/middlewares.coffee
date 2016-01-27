@@ -126,12 +126,13 @@ ChatMiddlewares.attach 'links', 'client', (message) ->
 		idx = s.length if idx is -1
 
 		res += Helpers.convertLinksToAnchor s.slice cursor, idx
-
-		idx = s.indexOf '</code>', idx + 6
-		idx = s.length if idx is -1
-
-		cursor = idx + 7
-
+		if idx == s.length
+			break
+		idx2 = s.indexOf '</code>', idx + 6
+		idx2 = s.length if idx2 == -1
+		res += s.slice idx, idx2
+		cursor = idx2 + 7
+	message.content = res
 	message
 
 ChatMiddlewares.attach 'emojione', 'client', (message) ->
