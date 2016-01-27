@@ -91,16 +91,22 @@ chatReplacements = [
 ChatMiddlewares.attach 'convert smileys', 'client', (message) ->
 	unless getUserField Meteor.userId(), 'settings.devSettings.noChatEmojis'
 		s = message.content
+		res = ""
+		cursor = 0
+		while cursor < s.length
+			idx = s.indexOf '`', cursor
+			if idx == -1
+				idx = s.length
+			sl = s.slice cursor, idx
+			for [ regexp, value ] in chatReplacements
+				sl = sl.replace regexp, value
+			res += sl
+			cursor = 1 + s.indexOf '`', idx + 1
+			if cursor == 0
+				cursor = s.length
+			res += s.slice idx, cursor
 
-		for [ regexp, value ] in chatReplacements
-			s = s.replace regexp, value
-
-		matchesOrig = Helpers.allMatches /`[^`]*`/g, message.content
-		matchesNew = Helpers.allMatches /`[^`]*`/g, s
-		for match, i in matchesOrig
-			s = s.replace matchesNew[i], match
-
-		message.content = s
+		message.content = res
 	message
 
 ChatMiddlewares.attach 'code blocks', 'client', (message) ->
