@@ -49,6 +49,7 @@ escapeMap = [
 	[ /</g, '&lt;' ]
 	[ />/g, '&gt;' ]
 ]
+
 ChatMiddlewares.attach 'escape', 'client', (message) ->
 	s = message.content
 
@@ -80,14 +81,19 @@ chatReplacements = [
 	[[ ':kaas:'             ], ':cheese:'        ]
 	[[ ':fu:'               ], ':middle_finger:' ]
 	[[ '/shrug/', ':shrug:' ], '¯\\_(ツ)_/¯'     ]
-]
+].map ([ keys, value ]) ->
+	regexp = new RegExp(
+		"#{keys.map(_.escapeRegExp).join '|'}"
+		'g'
+	)
+	[ regexp, value ]
+
 ChatMiddlewares.attach 'convert smileys', 'client', (message) ->
 	unless getUserField Meteor.userId(), 'settings.devSettings.noChatEmojis'
 		s = message.content
 
-		for [ keys, value ] in chatReplacements
-			for key in keys
-				s = s.split(key).join value
+		for [ regexp, value ] in chatReplacements
+			s = s.replace regexp, value
 
 		matchesOrig = Helpers.allMatches /`[^`]*`/g, message.content
 		matchesNew = Helpers.allMatches /`[^`]*`/g, s
