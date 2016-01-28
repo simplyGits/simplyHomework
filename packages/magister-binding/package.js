@@ -15,24 +15,25 @@ Package.onUse(function(api) {
 	api.versionsFrom('1.1.0.1');
 
 	api.use([
-		"stevezhu:lodash",
-		"simply:magisterjs@1.15.0",
-		"simply:external-services-connector",
-		"ejson",
-	], "server");
+		'stevezhu:lodash',
+		'simply:magisterjs@1.15.0',
+		'simply:external-services-connector',
+		'ejson',
+		'ecmascript',
+	], 'server');
 	api.use([
-		"coffeescript",
-		"templating",
-		"handlebars",
-	], "client");
+		'coffeescript',
+		'templating',
+		'handlebars',
+	], 'client');
 
-	api.addFiles("magister-binding.js", "server");
+	api.addFiles('magister-binding.js', 'server');
 	api.addFiles([
-		"modal.html",
-		"modal.coffee",
-	], "client");
+		'modal.html',
+		'modal.coffee',
+	], 'client');
 
-	//api.export("MagisterBinding", "server");
+	//api.export('MagisterBinding', 'server');
 });
 
 Package.onTest(function(api) {

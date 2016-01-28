@@ -4,17 +4,17 @@
  * @module magister-binding
  */
  /* global Magister, ExternalServicesConnector, Schools, Grades,
-  * Grade, StudyUtil, StudyUtils, GradePeriod, ExternalPerson, CalendarItem,
-  * Assignment */
+  Grade, StudyUtil, StudyUtils, GradePeriod, ExternalPerson, CalendarItem,
+  Assignment */
 
 // One heck of a binding this is.
 
 (function (Magister, Future, request, LRU) {
 	'use strict';
 
-	var ONLY_RECENT_LIMIT = 1000*60*60*24*6; // 6 days
+	const ONLY_RECENT_LIMIT = 1000*60*60*24*6; // 6 days
 
-	var cache = LRU({
+	const cache = LRU({
 		max: 50,
 		// we cache magister objects infinitely currently since we also uesr
 		// sessionIds infinitely, so we stay in style ;)
@@ -26,7 +26,7 @@
 	 * @class MagisterBinding
 	 * @static
 	 */
-	var MagisterBinding = {
+	const MagisterBinding = {
 		name: 'magister',
 		friendlyName: 'Magister',
 		loginNeeded: true,
@@ -96,13 +96,13 @@
 	function getMagisterObject (userId) {
 		check(userId, String);
 
-		var fut = new Future();
-		var data = MagisterBinding.storedInfo(userId);
+		const fut = new Future();
+		const data = MagisterBinding.storedInfo(userId);
 		if (_.isEmpty(data)) {
 			cache.del(userId);
 			throw new Error('No credentials found.');
 		} else {
-			var m = cache.get(userId);
+			let m = cache.get(userId);
 			if (m !== undefined) {
 				return m;
 			}
@@ -110,9 +110,9 @@
 			// REVIEW:
 			// Currently not invalidating sessionIds, since it's unknown when
 			// they retire at Magister's servers. Maybe they're even infinite.
-			var useSessionId = !_.isEmpty(data.lastLogin);
+			const useSessionId = !_.isEmpty(data.lastLogin);
 
-			var magister = new Magister.Magister({
+			const magister = new Magister.Magister({
 				school: {
 					url: data.credentials.schoolurl,
 				},
@@ -135,7 +135,7 @@
 				if (err) {
 					fut.throw(new Error(err.message));
 				} else {
-					var school = Schools.findOne({
+					const school = Schools.findOne({
 						'externalInfo.magister.url': magister.magisterSchool.url,
 					});
 					magister.magisterSchool.id = school && school.externalInfo.magister.id;
@@ -157,7 +157,7 @@
 	 * @return {Course} The current course.
 	 */
 	function getCurrentCourse (magister) {
-		var fut = new Future();
+		const fut = new Future();
 		magister.currentCourse(fut.resolver());
 		return fut.wait();
 	}
@@ -173,15 +173,15 @@
 		check(userId, String);
 		check(options, Match.Optional(Object));
 
-		var fut = new Future();
+		const fut = new Future();
 
-		var magister = getMagisterObject(userId);
-		var user = Meteor.users.findOne(userId);
-		var lastUpdateTime = user.events.gradeUpdate;
-		var onlyRecent = options.onlyRecent ||
+		const magister = getMagisterObject(userId);
+		const user = Meteor.users.findOne(userId);
+		const lastUpdateTime = user.events.gradeUpdate;
+		const onlyRecent = options.onlyRecent ||
 			lastUpdateTime && (_.now() - lastUpdateTime.getTime() <= ONLY_RECENT_LIMIT);
 
-		var course = getCurrentCourse(magister);
+		const course = getCurrentCourse(magister);
 		if (course == null) {
 			throw new Meteor.Error('no-course');
 		}
@@ -190,8 +190,8 @@
 			if (e) {
 				fut.throw(e);
 			} else {
-				var result = new Array(r.length);
-				var futs = [];
+				const result = new Array(r.length);
+				const futs = [];
 
 				r
 				.filter(function (g) {
@@ -199,7 +199,7 @@
 				})
 				.forEach(function (g, i) {
 					// HACK: WET (unDRY, ;)) code.
-					var stored = Grades.findOne({
+					const stored = Grades.findOne({
 						fetchedBy: MagisterBinding.name,
 						externalId: magister.magisterSchool.id + '_' + g.id(),
 						weight: g.counts() ? g.weight() : 0,
@@ -209,19 +209,19 @@
 					if (stored) {
 						result[i] = stored;
 					} else {
-						var gradeFut = new Future();
+						const gradeFut = new Future();
 						futs.push(gradeFut);
 
 						g.fillGrade(function (e) {
 							if (e) {
 								gradeFut.throw(e);
 							} else  {
-								var classInfo = _.find(user.classInfos, function (i) {
+								const classInfo = _.find(user.classInfos, function (i) {
 									return i.externalInfo.id === g.class().id;
 								});
-								var classId = classInfo && classInfo.id;
+								const classId = classInfo && classInfo.id;
 
-								var grade = new Grade(
+								const grade = new Grade(
 									g.grade(),
 									g.counts() ? g.weight() : 0,
 									classId,
@@ -252,7 +252,7 @@
 					}
 				});
 
-				for(var i = 0; i < futs.length; i++) futs[i].wait();
+				for(let i = 0; i < futs.length; i++) futs[i].wait();
 				fut.return(result);
 			}
 		});
@@ -270,20 +270,20 @@
 		check(userId, String);
 		check(options, Match.Optional(Object));
 
-		var fut = new Future();
+		const fut = new Future();
 
-		var magister = getMagisterObject(userId);
-		var user = Meteor.users.findOne(userId);
+		const magister = getMagisterObject(userId);
+		const user = Meteor.users.findOne(userId);
 
 		magister.studyGuides(false, function (e, r) {
 			if (e) {
 				fut.throw(e);
 			} else {
-				var result = [];
-				var futs = [];
+				const result = [];
+				const futs = [];
 
 				r.forEach(function (sg) {
-					var studyGuideFut = new Future();
+					const studyGuideFut = new Future();
 					futs.push(studyGuideFut);
 
 					sg.parts(function (e, r) {
@@ -291,7 +291,7 @@
 							studyGuideFut.throw(e);
 						} else {
 							r.forEach(function (sgp) {
-								var stored = StudyUtils.findOne({
+								const stored = StudyUtils.findOne({
 									fetchedBy: MagisterBinding.name,
 									externalInfo: {
 										partId: sgp.id(),
@@ -302,11 +302,11 @@
 								if (stored) {
 									result.push(stored);
 								} else {
-									var classId = _.filter(user.classInfos, function (i) {
+									const classId = _.filter(user.classInfos, function (i) {
 										return i.externalInfo.abbreviation === sg.classCodes()[0];
 									}).id;
 
-									var studyUtil = new StudyUtil(
+									const studyUtil = new StudyUtil(
 										sgp.name(),
 										sgp.description(),
 										classId,
@@ -315,7 +315,7 @@
 
 									studyUtil.fetchedBy = MagisterBinding.name;
 									studyUtil.visibleFrom = sgp.from();
-									studyUtil.visibleTo = sgp.to();
+									studyUtil.visibconsto = sgp.to();
 									studyUtil.externalInfo = {
 										partId: sgp.id(),
 										parentId: sg.id(),
@@ -332,7 +332,7 @@
 					});
 				});
 
-				for(var i = 0; i < futs.length; i++) futs[i].wait();
+				for(let i = 0; i < futs.length; i++) futs[i].wait();
 				fut.return(result);
 			}
 		});
@@ -355,14 +355,14 @@
 		check(query, String);
 		check(type, Match.Optional(String));
 
-		var fut = new Future();
-		var magister = getMagisterObject(userId);
+		const fut = new Future();
+		const magister = getMagisterObject(userId);
 		magister.getPersons(query, type, function (e, r) {
 			if (e) {
 				fut.error(e);
 			} else {
 				fut.return(r.map(function (p) {
-					var person = new ExternalPerson(
+					const person = new ExternalPerson(
 						p.firstName(),
 						p.lastName()
 					);
@@ -388,21 +388,21 @@
 		check(from, Date);
 		check(to, Date);
 
-		var fut = new Future();
-		var user = Meteor.users.findOne(userId);
+		const fut = new Future();
+		const user = Meteor.users.findOne(userId);
 
-		var magister = getMagisterObject(userId);
+		const magister = getMagisterObject(userId);
 		magister.appointments(from, to, false, function (e, r) {
 			if (e) {
 				fut.throw(e);
 			} else {
 				fut.return(r.map(function (a) {
-					var classInfo = _.find(user.classInfos, function (i) {
+					const classInfo = _.find(user.classInfos, function (i) {
 						return i.externalInfo.name === a.classes()[0];
 					});
-					var classId = classInfo && classInfo.id;
+					const classId = classInfo && classInfo.id;
 
-					var calendarItem = new CalendarItem(
+					const calendarItem = new CalendarItem(
 						userId,
 						a.description(),
 						a.begin(),
@@ -432,7 +432,7 @@
 						}
 					})(a);
 
-					var teacher = a.teachers()[0];
+					const teacher = a.teachers()[0];
 					if (teacher != null) {
 						calendarItem.teacher = {
 							name: teacher.fullName(),
@@ -440,7 +440,7 @@
 						};
 					}
 
-					var absenceInfo = a.absenceInfo();
+					const absenceInfo = a.absenceInfo();
 					if (absenceInfo != null) {
 						calendarItem.absenceInfo = {
 							externalId: magister.magisterSchool.id + '_' + absenceInfo.id(),
@@ -461,10 +461,10 @@
 	MagisterBinding.getClasses = function (userId) {
 		check(userId, String);
 
-		var fut = new Future();
-		var magister = getMagisterObject(userId);
+		const fut = new Future();
+		const magister = getMagisterObject(userId);
 
-		var course = getCurrentCourse(magister);
+		const course = getCurrentCourse(magister);
 		if (course == null) {
 			throw new Meteor.Error('no-course');
 		}
@@ -482,7 +482,7 @@
 						name: c.description(),
 						id: c.id(),
 						teacher: (function (t) {
-							var person = new ExternalPerson();
+							const person = new ExternalPerson();
 							person.teacherCode = t.teacherCode();
 							person.fetchedBy = MagisterBinding.name;
 							return person;
@@ -504,7 +504,7 @@
 	MagisterBinding.getSchools = function (query) {
 		check(query, String);
 
-		var fut = new Future();
+		const fut = new Future();
 
 		Magister.MagisterSchool.getSchools(query, function (e, r) {
 			if (e) {
@@ -520,11 +520,11 @@
 	MagisterBinding.getProfileData = function (userId) {
 		check(userId, String);
 
-		var magister = getMagisterObject(userId);
-		var pictureUrl = magister.profileInfo().profilePicture(350, 350, true);
+		const magister = getMagisterObject(userId);
+		const pictureUrl = magister.profileInfo().profilePicture(350, 350, true);
 
-		var pictureFut = new Future();
-		var courseInfoFut = new Future();
+		const pictureFut = new Future();
+		const courseInfoFut = new Future();
 
 		request.get({
 			url: pictureUrl,
@@ -541,7 +541,7 @@
 		});
 
 		magister.getLimitedCurrentCourseInfo(function (e, r) {
-			var result;
+			let result;
 			if (e != null) {
 				result = { type: {} };
 			} else {
@@ -550,8 +550,8 @@
 			courseInfoFut.return(result);
 		});
 
-		var courseInfo = courseInfoFut.wait();
-		var pf = magister.profileInfo();
+		const courseInfo = courseInfoFut.wait();
+		const pf = magister.profileInfo();
 		return {
 			nameInfo: {
 				firstName: pf.firstName(),
@@ -561,7 +561,7 @@
 			picture: pictureFut.wait(),
 			courseInfo: {
 				year: courseInfo.type.year,
-				schoolVariant: courseInfo.type.schoolVariant != null ? courseInfo.type.schoolVariant.toLowerCase() : '',
+				schoolconstiant: courseInfo.type.schoolconstiant != null ? courseInfo.type.schoolconstiant.toLowerCase() : '',
 				profile: courseInfo.profile,
 			},
 			mainGroup: courseInfo.group,
@@ -572,8 +572,8 @@
 	MagisterBinding.getAssignments = function (userId) {
 		check (userId, String);
 
-		var fut = new Future();
-		var user = Meteor.users.findOne(userId);
+		const fut = new Future();
+		const user = Meteor.users.findOne(userId);
 
 		//# @method assignments
 		//# @async
@@ -584,17 +584,17 @@
 		//# @param callback {Function} A standard callback.
 		//# 	@param [callback.error] {Object} The error, if it exists.
 		//# 	@param [callback.result] {Assignment[]} An array containing Assignments.
-		var magister = getMagisterObject(userId);
+		const magister = getMagisterObject(userId);
 		magister.assignments(function (e, r) {
 			if (e) {
 				fut.throw(e);
 			} else {
 				fut.return(r.map(function (a) {
-					var classInfo = _.find(user.classInfos, function (i) {
+					const classInfo = _.find(user.classInfos, function (i) {
 						return i.externalInfo.id === a.class().id();
 					});
 
-					var assignment = new Assignment(
+					const assignment = new Assignment(
 						a.name(),
 						classInfo ? classInfo.id : undefined,
 						a.deadline()
@@ -618,9 +618,9 @@
 		check(limit, Number);
 		check(userId, String);
 
-		var fut = new Future();
+		const fut = new Future();
 
-		var magister = getMagisterObject(userId);
+		const magister = getMagisterObject(userId);
 		if (folder === 'inbox') {
 			folder = magister.inbox();
 		} else if (folder === 'outbox') {
@@ -654,50 +654,18 @@
 		return fut.wait();
 	};
 
-	MagisterBinding.fillMessage = function (obj, userId) {
-		check(obj, Object);
-		check(userId, String);
-
-		// TODO: this function doesn't make sense at all.
-		return obj; // tmp until function is fixed.
-
-		var message = _.extend(new Magister.Message(), obj);
-		var fut = new Future();
-
-		message.fillMessage(function (e, r) {
-			if (e) {
-				fut.throw(e);
-			} else {
-				console.log(r);
-				fut.return({
-					_id: m.id(),
-					sendDate: r.sendDate(),
-					summary: r.body(),
-					sender: r.sender().description(),
-					subject: r.subject(),
-					recipients: _.pluck(r.recipients(), '_description'),
-					read: r.isRead(),
-
-					_fillUrl: r._fillUrl,
-				});
-			}
-		});
-
-		return fut.wait();
-	};
-
 	MagisterBinding.composeMessage = function (subject, body, recipients, userId) {
 		check(subject, String);
 		check(body, String);
 		check(recipients, [String]);
 		check(userId, String);
 
-		var fut = new Future();
+		const fut = new Future();
 		getMagisterObject(userId).composeAndSendMessage(subject, body, recipients, function (e, r) {
 			if (e) {
 				fut.throw(e);
 			} else {
-				fut.return();
+				fut.return(r);
 			}
 		});
 
