@@ -13,7 +13,7 @@ Package.describe({
 Package.onUse(function(api) {
 	api.versionsFrom('1.2.1');
 	api.use([
-		'stevezhu:lodash',
+		'stevezhu:lodash@3.10.1',
 		'coffeescript',
 		'check',
 		'ejson',

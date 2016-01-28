@@ -11,7 +11,7 @@ Package.onUse(function(api) {
 	api.use([
 		'coffeescript',
 		'check',
-		'stevezhu:lodash',
+		'stevezhu:lodash@3.10.1',
 		'mongo',
 	]);
 	api.use([

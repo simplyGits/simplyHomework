@@ -15,7 +15,7 @@ Package.onUse(function(api) {
 		'coffeescript',
 		'check',
 		'tmeasday:publish-counts',
-		'stevezhu:lodash',
+		'stevezhu:lodash@3.10.1',
 		'mongo',
 	]);
 	api.use([

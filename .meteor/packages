@@ -52,7 +52,6 @@ emojione:emojione
 rcy:chromajs
 okgrow:analytics
 audit-argument-checks
-stevezhu:lodash
 magister-binding
 kadira:flow-router
 kadira:blaze-layout
@@ -80,3 +79,4 @@ schedule-functions
 search
 notifications-manager
 grade-functions
+stevezhu:lodash@3.10.1

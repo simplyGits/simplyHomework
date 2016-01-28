@@ -15,7 +15,7 @@ Package.onUse(function(api) {
 	api.versionsFrom('1.1.0.1');
 
 	api.use([
-		'stevezhu:lodash',
+		'stevezhu:lodash@3.10.1',
 		'simply:magisterjs@1.15.0',
 		'simply:external-services-connector',
 		'ejson',
