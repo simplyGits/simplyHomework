@@ -9,11 +9,14 @@
 @CalendarItems         = new Meteor.Collection 'calendarItems', transform: (c) -> _.extend new CalendarItem, c
 @ReportItems           = new Meteor.Collection 'reportItems'
 @Grades                = new Meteor.Collection 'grades', transform: (g) ->
-	g = _.extend new Grade(g.gradeStr), g
-	_.extend g,
-		__insufficient: if g.passed then '' else 'insufficient'
-		# TODO: do this on a i18n friendly way.
-		__grade: g.toString().replace '.', ','
+	if Meteor.isServer
+		g
+	else
+		g = _.extend new Grade(g.gradeStr), g
+		_.extend g,
+			__insufficient: if g.passed then '' else 'insufficient'
+			# TODO: do this on a i18n friendly way.
+			__grade: g.toString().replace '.', ','
 
 @StudyUtils            = new Meteor.Collection 'studyUtils',   transform: (s) -> _.extend new StudyUtil, s
 @ScholierenClasses     = new Meteor.Collection 'scholieren.com'
@@ -138,7 +141,6 @@ Schemas.Grades = new SimpleSchema
 	grade:
 		type: null
 		custom: -> _.isNumber @value
-		index: 1
 	gradeStr:
 		type: String
 	gradeType:
@@ -155,25 +157,33 @@ Schemas.Grades = new SimpleSchema
 		type: String
 	description:
 		type: String
-		defaultValue: ''
 		trim: yes
+		optional: yes
 	passed:
 		type: Boolean
 	isEnd:
 		type: Boolean
 	dateFilledIn:
 		type: Date
-		optional: yes
 	dateTestMade:
 		type: Date
 		optional: yes
 	externalId:
 		type: null
+		optional: yes
 	fetchedBy:
 		type: String
 		optional: yes
 	period:
+		type: null
+		blackbox: yes
+	###
+	# TODO: This had problems because in magister-binding we're returning a stored
+	# grade when it hasn't changed, this grade from the database doesn't have a
+	# GradePeriod type but an object type thanks to how EJSON stringification.
+	period:
 		type: GradePeriod
+	###
 
 Schemas.StudyUtils = new SimpleSchema
 	name:

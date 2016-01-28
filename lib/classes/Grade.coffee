@@ -125,19 +125,19 @@ class @Grade
 		#
 		# @property dateFilledIn
 		# @type Date
-		# @default null
+		# @default undefined
 		###
-		@dateFilledIn = null
+		@dateFilledIn = undefined
 
 		###*
 		# The date on which the test or assignment was made for this grade.
 		# This can be filled in incorrectly by the teacher.
 		#
 		# @property dateTestMade
-		# @type Date
-		# @default null
+		# @type Date|undefined
+		# @default undefined
 		###
-		@dateTestMade = null
+		@dateTestMade = undefined
 
 		###*
 		# The ID of the Grade on the external service (eg Magister)
@@ -145,17 +145,17 @@ class @Grade
 		#
 		# @property externalId
 		# @type mixed
-		# @default null
+		# @default undefined
 		###
-		@externalId = null
+		@externalId = undefined
 
 		###*
 		# The name of the externalService that fetched this Grade.
 		# @property fetchedBy
-		# @type String|null
-		# @default null
+		# @type String|undefined
+		# @default undefined
 		###
-		@fetchedBy = null
+		@fetchedBy = undefined
 
 		###*
 		# @property period

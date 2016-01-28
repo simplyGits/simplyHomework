@@ -89,6 +89,12 @@ Meteor.startup ->
 
 			val.mailSentAt = _.now()
 
+	Grades._ensureIndex
+		ownerId: 1
+		dateFilledIn: -1
+		classId: 1
+		grade: 1
+
 	Meteor.users._ensureIndex
 		'profile.schoolId': 1
 		'profile.firstName': 1

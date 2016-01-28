@@ -51,14 +51,13 @@ updateGrades = (userId, forceUpdate = no) ->
 			continue
 
 		for grade in result ? []
-			# Update the grade if we're on the server and if it's changed.
 			continue unless grade?
 			val = Grades.findOne
 				ownerId: userId
 				externalId: grade.externalId
 
 			if val?
-				Grades.update val._id, grade, validate: no
+				Grades.update val._id, $set: grade
 			else
 				Grades.insert grade
 
