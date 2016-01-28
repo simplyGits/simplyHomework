@@ -177,8 +177,17 @@
 
 <template name="gradeRow">
 	<div class="gradeRow {{__insufficient}}">
-		<div class="description">{{description}}</div>
+		<div class="description">
+			{{#with description}}
+				{{this}}
+			{{else}}
+				<span class="none">
+					Geen beschrijving.
+				</span>
+			{{/with}}
+		</div>
 		<div class="grade">{{__grade}}</div>
+
 		<div class="dateFilledIn"><time datetime="{{dateFormat 'YYYY-MM-DDTHH:mm' dateFilledIn}}">{{dateFormat 'D MMMM YYYY' dateFilledIn}}</time></div>
 		<div class="weight">weging: {{weight}}</div>
 	</div>
