@@ -18,6 +18,7 @@ FlowRouter.triggers.exit [
 		$('.modal-backdrop').remove()
 		$('body').removeClass 'modal-open'
 		$('.tooltip').tooltip 'destroy'
+		$('.content').scrollTop 0
 ]
 
 FlowRouter.route '/login',
