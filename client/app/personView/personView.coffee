@@ -44,11 +44,10 @@ Template.personView.onCreated ->
 				title: "#{person.profile.firstName} #{person.profile.lastName}"
 
 Template.personView.onRendered ->
-	slide()
-
-	if Helpers.isDesktop()
-		@autorun ->
-			FlowRouter.watchPathChange()
+	@autorun ->
+		FlowRouter.watchPathChange()
+		slide()
+		if Helpers.isDesktop()
 			Meteor.defer ->
 				$('[data-toggle="tooltip"]')
 					.tooltip "destroy"
