@@ -82,7 +82,7 @@ Template.mobileCalendar.onCreated ->
 		handle = calendarSubs.subscribe(
 			'externalCalendarItems',
 			date.addDays -1
-			date.addDays 1
+			date.addDays 2
 		)
 		@loading = _.negate handle.ready
 
