@@ -81,8 +81,8 @@ Template.mobileCalendar.onCreated ->
 		date = currentDate()
 		handle = calendarSubs.subscribe(
 			'externalCalendarItems',
-			date.addDays -1, yes
-			date.addDays 1, yes
+			date.addDays -1
+			date.addDays 1
 		)
 		@loading = _.negate handle.ready
 
@@ -109,7 +109,7 @@ Template.mobileCalendar.onRendered ->
 			cursor =
 				CalendarItems.find {
 					startDate: $gte: date
-					endDate: $lte: date.addDays 1, yes
+					endDate: $lte: date.addDays 1
 				},
 					transform: calendarItemToMobileCalendar
 					sort:

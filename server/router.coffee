@@ -48,8 +48,8 @@ FastRender.route '/calendar/:date?', (params) ->
 	)
 	@subscribe(
 		'externalCalendarItems'
-		date.addDays -1, yes
-		date.addDays 2, yes
+		date.addDays -1
+		date.addDays 2
 	)
 	@subscribe 'classes', all: yes
 

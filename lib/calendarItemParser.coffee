@@ -215,7 +215,7 @@ repeats = [
 			descriptionOnly = descriptionOnly.replace match, ""
 
 			date = date.date() # yup. fully readable.
-			endDate = date.addDays 1, yes
+			endDate = date.addDays 1
 
 		else if (match = /\S+ ?(-|tot) ?(\S+)/i.exec(input)?[2])? # Explicit end gate given.
 			descriptionOnly = descriptionOnly.replace match, ""

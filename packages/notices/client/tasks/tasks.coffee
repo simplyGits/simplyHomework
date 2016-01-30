@@ -23,7 +23,7 @@ getTasks = ->
 		'content.type': $ne: 'information'
 		'content.description': $exists: yes
 		'startDate': $gte: date
-		'endDate': $lte: date.addDays 1, yes
+		'endDate': $lte: date.addDays 1
 	}, {
 		sort:
 			startDate: 1

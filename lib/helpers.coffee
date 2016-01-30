@@ -13,18 +13,11 @@ Date.today = -> new Date().date()
 #
 # @method addDays
 # @param days {Number} The amount of days to add.
-# @param newDate {Boolean} Whether or not to create a new Object.
 # @return {Date} A Date object with the given amount of days added.
 ###
-Date::addDays = (days, newDate = false) ->
+Date::addDays = (days) ->
 	check days, Match.Integer
-	check newDate, Boolean
-
-	if newDate
-		new Date @getTime() + (86400000 * days)
-	else
-		@setDate @getDate() + days
-		this
+	new Date @getTime() + (86400000 * days)
 
 Date::date = -> new Date @getFullYear(), @getMonth(), @getDate()
 
