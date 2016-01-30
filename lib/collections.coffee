@@ -15,8 +15,15 @@
 		g = _.extend new Grade(g.gradeStr), g
 		_.extend g,
 			__insufficient: if g.passed then '' else 'insufficient'
+
 			# TODO: do this on a i18n friendly way.
 			__grade: g.toString().replace '.', ','
+			__weight: (
+				if Math.floor(g.weight) is g.weight
+					g.weight
+				else
+					g.weight.toFixed(1).replace '.', ','
+			)
 
 @StudyUtils            = new Meteor.Collection 'studyUtils',   transform: (s) -> _.extend new StudyUtil, s
 @ScholierenClasses     = new Meteor.Collection 'scholieren.com'
