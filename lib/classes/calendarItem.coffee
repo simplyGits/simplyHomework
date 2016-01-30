@@ -11,6 +11,7 @@
 ###
 class @CalendarItem
 	constructor: (ownerId, @description, @startDate, @endDate, @classId) ->
+		@_id = new Mongo.ObjectID().toHexString()
 		@endDate ?= moment(@startDate).add(1, "hour").toDate()
 
 		###*

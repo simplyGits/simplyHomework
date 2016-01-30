@@ -34,6 +34,7 @@ updateGrades = (userId, forceUpdate = no) ->
 	services = _.filter Services, (s) -> s.getGrades? and s.active userId
 	markUserEvent userId, 'gradeUpdate' if services.length > 0
 
+	inserts = []
 	for externalService in services
 		result = null
 		try
@@ -57,10 +58,12 @@ updateGrades = (userId, forceUpdate = no) ->
 				externalId: grade.externalId
 
 			if val?
-				Grades.update val._id, $set: grade
+				unless EJSON.equals val, grade
+					Grades.update val._id, { $set: grade }, (->)
 			else
-				Grades.insert grade
+				inserts.push grade
 
+	Grades.batchInsert inserts if inserts.length > 0
 	errors
 
 ###*
@@ -87,6 +90,7 @@ updateStudyUtils = (userId, forceUpdate = no) ->
 	services = _.filter Services, (s) -> s.getStudyUtil? and s.active userId
 	markUserEvent userId, 'studyUtilsUpdate' if services.length > 0
 
+	inserts = []
 	for externalService in services
 		result = null
 		try
@@ -104,10 +108,11 @@ updateStudyUtils = (userId, forceUpdate = no) ->
 
 			if val? and Meteor.isServer
 				delete studyUtil._id
-				StudyUtils.update val._id, $set: studyUtil
+				StudyUtils.update val._id, { $set: studyUtil }, (->)
 			else
-				StudyUtils.insert studyUtil
+				inserts.push studyUtil
 
+	StudyUtils.batchInsert inserts if inserts.length > 0
 	errors
 
 # REVIEW: Should we have different functions for absenceInfo and calendarItems?
@@ -143,6 +148,8 @@ updateCalendarItems = (userId, from, to) ->
 	services = _.filter Services, (s) -> s.getCalendarItems? and s.active userId
 	markUserEvent userId, 'calendarItemsUpdate' if services.length > 0
 
+	calendarItemInserts = []
+	absenceInserts = []
 	for externalService in services
 		result = null
 		try
@@ -174,10 +181,11 @@ updateCalendarItems = (userId, from, to) ->
 						.value()
 				mergeUserIdsField 'userIds'
 				mergeUserIdsField 'usersDone'
-				CalendarItems.update val._id, $set: obj
-				calendarItem._id = val._id
+
+				unless EJSON.equals val, obj
+					CalendarItems.update val._id, { $set: obj }, (->)
 			else
-				calendarItem._id = CalendarItems.insert obj
+				calendarItemInserts.push obj
 
 		for calendarItem in result when calendarItem.absenceInfo?
 			val = Absences.findOne
@@ -195,10 +203,13 @@ updateCalendarItems = (userId, from, to) ->
 			absenceInfo.externalId = calendarItem.absenceInfo.externalId
 
 			if val?
-				Absences.update val._id, $set: absenceInfo
+				unless EJSON.equals val, absenceInfo
+					Absences.update val._id, { $set: absenceInfo }, (->)
 			else
-				Absences.insert absenceInfo
+				absenceInserts.push absenceInfo
 
+	CalendarItems.batchInsert calendarItemInserts if calendarItemInserts.length > 0
+	Absences.batchInsert absenceInserts if absenceInserts.length > 0
 	errors
 
 ###*
@@ -327,6 +338,7 @@ getServiceSchools = (serviceName, query, userId) ->
 		ExternalServicesConnector.handleServiceError service.name, userId, e
 		throw new Meteor.Error 'externalError', "Error while retreiving schools from #{serviceName}"
 
+	inserts = []
 	for school in result
 		val = Schools.findOne "externalInfo.#{serviceName}.id": school.id
 
@@ -335,8 +347,9 @@ getServiceSchools = (serviceName, query, userId) ->
 			s.externalInfo[serviceName] =
 				id: school.id
 				url: school.url
-			Schools.insert s
+			inserts.push s
 
+	Schools.batchInsert inserts if inserts.length > 0
 	Schools.find(
 		"externalInfo.#{serviceName}": $exists: yes
 		name: $regex: query, $options: 'i'
