@@ -315,7 +315,7 @@
 
 									studyUtil.fetchedBy = MagisterBinding.name;
 									studyUtil.visibleFrom = sgp.from();
-									studyUtil.visibconsto = sgp.to();
+									studyUtil.visibleTo = sgp.to();
 									studyUtil.externalInfo = {
 										partId: sgp.id(),
 										parentId: sg.id(),
@@ -561,7 +561,7 @@
 			picture: pictureFut.wait(),
 			courseInfo: {
 				year: courseInfo.type.year,
-				schoolconstiant: courseInfo.type.schoolconstiant != null ? courseInfo.type.schoolconstiant.toLowerCase() : '',
+				schoolVariant: courseInfo.type.schoolVariant != null ? courseInfo.type.schoolVariant.toLowerCase() : '',
 				profile: courseInfo.profile,
 			},
 			mainGroup: courseInfo.group,
