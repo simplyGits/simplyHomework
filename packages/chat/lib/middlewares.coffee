@@ -31,7 +31,7 @@ ChatMiddlewares =
 	run: (message, platform) ->
 		platform ?= if Meteor.isClient then 'client' else 'server'
 
-		for item in _.filter(@_middlewares, { platform })
+		for item in @_middlewares when item.platform is platform
 			try
 				message = item.fn message
 			catch e
@@ -115,7 +115,7 @@ ChatMiddlewares.attach 'convert smileys', 'client', (message) ->
 		message.content = res
 	message
 
-ChatMiddlewares.attach 'code blocks', 'client', (message) ->
+ChatMiddlewares.attach 'shitdown code blocks', 'client', (message) ->
 	message.content = message.content.replace /`([^`]*)`/g, '<code>$1</code>'
 	message
 
