@@ -10,6 +10,7 @@ types = [{
 	type: 'report'
 	keywords: [
 		'samenvatting'
+		'sv'
 	]
 }].map (t) -> _.extend t,
 	regex: (
