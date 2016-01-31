@@ -364,7 +364,6 @@ Template.grades.helpers
 			.reject 'isEnd'
 			.map 'period'
 			.uniq 'id'
-			.sortBy 'from'
 			.map (period) ->
 				name: period.name
 				grades: (
@@ -373,7 +372,8 @@ Template.grades.helpers
 						.sortBy 'dateFilledIn'
 						.value()
 				)
-			.filter (group) -> group.grades.length isnt 0
+			.reject (group) -> group.grades.length is 0
+			.sortBy (group) -> group.grades[0].dateFilledIn
 			.value()
 
 	isLoading: -> not gradesSub.ready()
