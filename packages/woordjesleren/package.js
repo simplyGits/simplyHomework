@@ -10,10 +10,11 @@ Package.describe({
 Package.onUse(function(api) {
 	api.versionsFrom('1.1.0.3');
 	api.use([
-		'particle4dev:cheerio',
-		'search',
 		'ecmascript',
+		'http',
+		'particle4dev:cheerio',
 		'stevezhu:lodash@3.10.1',
+		'search',
 	], 'server');
 	api.addFiles('woordjesleren.js', 'server');
 	api.export('WoordjesLeren', 'server');
