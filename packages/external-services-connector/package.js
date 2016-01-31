@@ -28,6 +28,7 @@ Package.onUse(function(api) {
 		'ExternalServicesConnector',
 		'Services',
 		'updateCalendarItems',
+		'updateGrades',
 	], 'server');
 });
 
