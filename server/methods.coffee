@@ -236,11 +236,10 @@ Meteor.methods
 
 		grades = GradeFunctions.getAllGrades yes, userId
 		if grades.length > 0
-			grades = _(grades)
+			mean = _(grades)
 				.pluck 'grade'
 				.compact()
-				.value()
-			mean = Helpers.getAverage grades
+				.mean()
 
 			res.push "Het gemiddelde van je eindcijfers is #{mean.toFixed(1).replace '.', ','}"
 
