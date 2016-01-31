@@ -63,6 +63,10 @@ Package.onUse(function(api) {
 		'client/tests/tests.html',
 		'client/tests/tests.styl',
 		'client/tests/tests.coffee',
+
+		'client/birthday/birthday.html',
+		'client/birthday/birthday.styl',
+		'client/birthday/birthday.coffee',
 	], 'client');
 	api.addFiles([
 		'server/security.coffee',
