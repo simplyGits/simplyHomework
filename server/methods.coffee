@@ -240,6 +240,7 @@ Meteor.methods
 				.pluck 'grade'
 				.compact()
 				.mean()
+				.value()
 
 			res.push "Het gemiddelde van je eindcijfers is #{mean.toFixed(1).replace '.', ','}"
 
