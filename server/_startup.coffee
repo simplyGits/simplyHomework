@@ -83,8 +83,7 @@ Meteor.startup ->
 				Hey #{user.profile.firstName},
 
 				Pas heeft iemand in een korte tijd meerdere keren een fout wachtwoord ingevuld.
-				Als jij dit niet was en je wachtwoord is zwak, verander hem dan zo snel mogelijk in <a href='#{Meteor.absoluteUrl()}'>simplyHomework</a>.
-				Als jij dit wel was en je bent je wachtwoord vergeten kan je het <a href='#{Meteor.absoluteUrl()}forgot'>hier</a> veranderen.
+				Als jij je wachtwoord vergeten bent kan je het <a href='#{Meteor.absoluteUrl()}forgot'>hier</a> veranderen.
 			"""
 
 			val.mailSentAt = _.now()
