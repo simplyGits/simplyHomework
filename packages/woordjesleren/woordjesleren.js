@@ -145,7 +145,7 @@ Search.provide('woordjesleren', function ({ user, classes, keywords }) {
 					return {
 						type: 'wordlist',
 						id: item.id,
-						title: item.name,
+						title: `Hoofdstuk ${item.name}`,
 						url: `https://www.woordjesleren.nl/questions.php?chapter=${item.id}`,
 					};
 				});
