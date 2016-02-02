@@ -53,9 +53,14 @@ Template.personView.onRendered ->
 					.tooltip "destroy"
 					.tooltip container: "body"
 
+sharedInbetweenHours = new ReactiveVar []
 Template.personSharedHours.onCreated ->
 	@subscribe 'externalCalendarItems', Date.today(), Date.today().addDays 7
 	@subscribe 'classes', hidden: yes
+
+	sharedInbetweenHours.set []
+	Meteor.call 'sharedInbetweenHours', @data._id, (e, r) ->
+		sharedInbetweenHours.set r ? []
 
 Template.personSharedHours.events
 	'click [data-action="compare"]': (event) ->
@@ -78,17 +83,28 @@ Template.personSharedHours.helpers
 			schoolHour:
 				$exists: yes
 				$ne: null
-		).fetch()
+		).map (item) ->
+			date: item.startDate
+			schoolHour: item.schoolHour
+			class: item.class()
+
+		inbetweenHours = sharedInbetweenHours.get().map (obj) ->
+			date: obj.start
+			schoolHour: obj.schoolHour
+			description: 'Tussenuur'
 
 		_(sharedCalendarItems)
-			.uniq (a) -> a.startDate.date().getTime()
-			.sortBy (a) -> a.startDate.getDay() + 1
+			.concat inbetweenHours
+			.uniq (a) -> a.date.date().getTime()
+			.sortBy (a) -> a.date.getDay() + 1
 			.map (a) ->
-				name: Helpers.cap DayToDutch Helpers.weekDay a.startDate.date()
+				m = moment a.date
+				name: Helpers.cap DayToDutch Helpers.weekDay a.date.date()
 				hours: (
 					_(sharedCalendarItems)
-						.filter (x) -> EJSON.equals x.startDate.date(), a.startDate.date()
-						.sortBy 'startDate'
+						.concat inbetweenHours
+						.filter (x) -> m.isSame x.date, 'day'
+						.sortBy 'date'
 						.value()
 				)
 			.value()

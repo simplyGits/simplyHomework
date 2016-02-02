@@ -69,9 +69,13 @@
 						<li>
 							<ul>
 								{{#each hours}}
-									<a href="{{pathFor 'classView' id=class._id}}">
-										<li><b>{{schoolHour}}</b>: {{class.name}}</li>
-									</a>
+									{{#if class}}
+										<a href="{{pathFor 'classView' id=class._id}}">
+											<li><b>{{schoolHour}}</b>: {{class.name}}</li>
+										</a>
+									{{else}}
+										<li><b>{{schoolHour}}</b>: {{description}}</li>
+									{{/if}}
 								{{/each}}
 							</ul>
 						</li>

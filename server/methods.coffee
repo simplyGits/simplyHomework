@@ -257,3 +257,20 @@ Meteor.methods
 			throw new Meteor.Error 'empty-body'
 
 		Tickets.insert new Ticket body, @userId
+
+	sharedInbetweenHours: (userId) ->
+		@unblock()
+		check userId, String
+		unless @userId?
+			@ready()
+			return undefined
+
+		if Meteor.users.find(userId).count() is 0
+			throw new Meteor.Error 'user-not-found'
+
+		mine = ScheduleFunctions.getInbetweenHours @userId
+		theirs = ScheduleFunctions.getInbetweenHours userId
+
+		_.filter theirs, (x) ->
+			m = moment x.start
+			_.any mine, (y) -> m.isSame y.start
