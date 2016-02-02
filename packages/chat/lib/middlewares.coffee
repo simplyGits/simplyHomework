@@ -45,20 +45,6 @@ ChatMiddlewares.attach 'preserve original content', 'client', (message) ->
 	message._originalContent = message.content
 	message
 
-escapeMap = [
-	[ /</g, '&lt;' ]
-	[ />/g, '&gt;' ]
-]
-
-ChatMiddlewares.attach 'escape', 'client', (message) ->
-	s = message.content
-
-	for [ reg, val ] in escapeMap
-		s = s.replace reg, val
-
-	message.content = s
-	message
-
 ChatMiddlewares.attach 'shitdown', 'client', (message) ->
 	s = message.content
 
@@ -169,6 +155,20 @@ ChatMiddlewares.attach 'add hidden fields', 'client', (cm) ->
 			}, {
 				limit: 3
 			}
+
+escapeMap = [
+	[ /</g, '&lt;' ]
+	[ />/g, '&gt;' ]
+]
+
+ChatMiddlewares.attach 'escape', 'insert', (message) ->
+	s = message.content
+
+	for [ reg, val ] in escapeMap
+		s = s.replace reg, val
+
+	message.content = s
+	message
 
 ChatMiddlewares.attach 'clickable names', 'insert', (message) ->
 	schoolId = Meteor.user().profile.schoolId
