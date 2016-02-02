@@ -398,7 +398,8 @@
 			} else {
 				fut.return(r.map(function (a) {
 					const classInfo = _.find(user.classInfos, function (i) {
-						return i.externalInfo.name === a.classes()[0];
+						const name = i.externalInfo.name;
+						return name != null && name === a.classes()[0];
 					});
 					const classId = classInfo && classInfo.id;
 
