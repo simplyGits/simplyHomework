@@ -127,32 +127,34 @@ WoordjesLeren.search = function (query) {
 	});
 };
 
-Search.provide('woordjesleren', function ({ user, classes, keywords }) {
-	let res = [];
+if (Package.search != null) {
+	Package.search.Search.provide('woordjesleren', function ({ user, classes, keywords }) {
+		let res = [];
 
-	if (_.contains(keywords, 'vocab')) {
-		classes.forEach(function (c) {
-			const { year, schoolVariant } = user.profile.courseInfo;
-			const classInfo = _.find(user.classInfos, { id: c._id });
-			const book = Books.findOne(classInfo.bookId);
+		if (_.contains(keywords, 'vocab')) {
+			classes.forEach(function (c) {
+				const { year, schoolVariant } = user.profile.courseInfo;
+				const classInfo = _.find(user.classInfos, { id: c._id });
+				const book = Books.findOne(classInfo.bookId);
 
-			if (_.has(book, 'externalInfo.woordjesleren')) {
-				const lists = WoordjesLeren.getListsByBook({
-					year: year,
-					schooltype: schoolVariant,
-					bookId: book.externalInfo.woordjesleren,
-				}).map(function (item) {
-					return {
-						type: 'wordlist',
-						id: item.id,
-						title: `Hoofdstuk ${item.name}`,
-						url: `https://www.woordjesleren.nl/questions.php?chapter=${item.id}`,
-					};
-				});
-				res = res.concat(lists);
-			}
-		});
-	}
+				if (_.has(book, 'externalInfo.woordjesleren')) {
+					const lists = WoordjesLeren.getListsByBook({
+						year: year,
+						schooltype: schoolVariant,
+						bookId: book.externalInfo.woordjesleren,
+					}).map(function (item) {
+						return {
+							type: 'wordlist',
+							id: item.id,
+							title: `Hoofdstuk ${item.name}`,
+							url: `https://www.woordjesleren.nl/questions.php?chapter=${item.id}`,
+						};
+					});
+					res = res.concat(lists);
+				}
+			});
+		}
 
-	return res;
-});
+		return res;
+	});
+}

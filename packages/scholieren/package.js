@@ -17,8 +17,8 @@ Package.onUse(function(api) {
 		'http',
 		'ecmascript',
 		'stevezhu:lodash@3.10.1',
-		'search',
 	], 'server');
+	api.use('search', 'server', { weak: true });
 
 	api.addFiles('scholieren.js', 'server');
 

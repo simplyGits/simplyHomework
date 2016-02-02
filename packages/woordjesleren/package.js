@@ -14,8 +14,8 @@ Package.onUse(function(api) {
 		'http',
 		'particle4dev:cheerio',
 		'stevezhu:lodash@3.10.1',
-		'search',
 	], 'server');
+	api.use('search', 'server', { weak: true });
 	api.addFiles('woordjesleren.js', 'server');
 	api.export('WoordjesLeren', 'server');
 });
