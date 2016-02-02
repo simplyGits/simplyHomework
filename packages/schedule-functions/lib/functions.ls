@@ -20,7 +20,7 @@
 			# REVIEW: Use mean?
 			time-threshold = items.0.end-date.get-time! - items.0.start-date.get-time!
 
-			end-prev = undefined
+			end-prev = school-hour-prev = undefined
 			for item in items
 				time-span = if end-prev?
 					then item.start-date.get-time! - end-prev.get-time!
@@ -30,7 +30,9 @@
 					res.push do
 						start: new Date (end-prev.get-time! + time-threshold * i)
 						end: new Date (end-prev.get-time! + time-threshold * ( 1 + i ))
+						school-hour: school-hour-prev + i + 1
 
+				school-hour-prev = item.school-hour
 				end-prev = item.end-date
 
 	res
