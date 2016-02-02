@@ -88,6 +88,11 @@ Meteor.startup ->
 
 			val.mailSentAt = _.now()
 
+	CalendarItems._ensureIndex
+		userIds: 1
+		startDate: -1
+		endDate: -1
+
 	Grades._ensureIndex
 		ownerId: 1
 		dateFilledIn: -1

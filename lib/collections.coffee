@@ -250,15 +250,12 @@ Schemas.Absences = new SimpleSchema
 Schemas.CalendarItems = new SimpleSchema
 	userIds:
 		type: [String]
-		index: 1
 	description:
 		type: String
 	startDate:
 		type: Date
-		index: -1
 	endDate:
 		type: Date
-		index: -1
 	classId:
 		type: String
 		optional: yes
