@@ -10,14 +10,14 @@ parseCookies = (str = '') ->
 	res
 
 Picker.route '/su/:suid/file/:fid', (params, req, res) ->
-	err = (str) ->
-		res.writeHead 403, 'Content-Type': 'text/plain'
+	err = (code, str) ->
+		res.writeHead code, 'Content-Type': 'text/plain'
 		res.end str
 
 	cookies = parseCookies req.headers.cookie
 	token = cookies['meteor_login_token']
 	unless token?
-		err 'not logged in'
+		err 401, 'not logged in'
 		return undefined
 
 	userId = Meteor.users.findOne({
@@ -26,19 +26,19 @@ Picker.route '/su/:suid/file/:fid', (params, req, res) ->
 		fields: _id: 1
 	})?._id
 	unless userId?
-		err 'no user found with provided logintoken'
+		err 404, 'no user found with provided logintoken'
 		return undefined
 
 	studyUtil = StudyUtils.findOne
 		_id: params.suid
 		userIds: userId
 	unless studyUtil?
-		err 'studyutil not found'
+		err 404, 'studyutil not found'
 		return undefined
 
 	file = _.find studyUtil.files, _id: params.fid
 	unless file?
-		err 'file not found'
+		err 404, 'file not found'
 		return undefined
 
 	info = file.downloadInfo
@@ -50,7 +50,7 @@ Picker.route '/su/:suid/file/:fid', (params, req, res) ->
 	else
 		service = _.find Services, name: file.fetchedBy
 		unless service?
-			err 'service not found'
+			err 500, 'service not found'
 			return undefined
 
 		if info.redirect?
