@@ -39,7 +39,7 @@ filterClasses = (query, userId) ->
 			c = Classes.findOne
 				_id: $in: classIds
 				$or: [
-					{ name: $regex: word, $options: 'i' }
+					{ name: $regex: "\\b#{_.escapeRegExp word}", $options: 'i' }
 					{ abbreviations: word.toLowerCase() }
 				]
 				schoolVariant: schoolVariant
