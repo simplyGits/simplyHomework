@@ -3,7 +3,8 @@ types = [{
 	keywords: [
 		'woordenlijst'
 		'woordlijst'
-		'woorden'
+		'woord'
+		'word'
 		'vocab'
 	]
 }, {
@@ -13,10 +14,7 @@ types = [{
 		'sv'
 	]
 }].map (t) -> _.extend t,
-	regex: (
-		keywords = t.keywords.map((w) -> "#{w}(en|s)?").join '|'
-		new RegExp "\\b(#{keywords})\\b"
-	)
+	regex: new RegExp "\\b(#{t.keywords.join '|'})(en|s)?\\b"
 
 filterKeywords = (query) ->
 	keywords = _(types)
