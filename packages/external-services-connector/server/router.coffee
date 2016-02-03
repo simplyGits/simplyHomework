@@ -1,6 +1,6 @@
 request = Npm.require 'request'
 
-parseCookies = (str) ->
+parseCookies = (str = '') ->
 	res = {}
 	str
 		.split /[\s;]+/g
