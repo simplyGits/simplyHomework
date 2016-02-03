@@ -41,16 +41,13 @@ Schemas.Classes = new SimpleSchema
 		label: 'Vaknaam'
 		trim: yes
 		regEx: /^[A-Z][^A-Z]+$/
-		index: 1
 	abbreviations:
 		type: [String]
 		label: 'Vakafkortingen'
 	year:
 		type: Number
-		index: 1
 	schoolVariant:
 		type: String
-		index: 1
 		regEx: /^[a-z]+$/
 	externalInfo:
 		type: Object
@@ -91,13 +88,11 @@ Schemas.Projects = new SimpleSchema
 		autoValue: ->
 			# Remove emojis.
 			@value.replace /[\uD83C-\uDBFF\uDC00-\uDFFF]+/g, '' if @value?
-		index: 1
 	description:
 		type: String
 		optional: yes
 	deadline:
 		type: Date
-		index: 1
 	magisterId:
 		type: Number
 		optional: yes
@@ -110,7 +105,6 @@ Schemas.Projects = new SimpleSchema
 		autoValue: -> if not @isFromTrustedCode and @isInsert then @userId else @value
 	participants:
 		type: [String]
-		index: 1
 		autoValue: ->
 			if not @isFromTrustedCode and @isInsert
 				[@userId]
@@ -228,10 +222,8 @@ Schemas.StudyUtils = new SimpleSchema
 Schemas.Absences = new SimpleSchema
 	userId:
 		type: String
-		index: 1
 	calendarItemId:
 		type: String
-		index: 1
 	type:
 		type: String
 		# TODO: fill in allowedValues
