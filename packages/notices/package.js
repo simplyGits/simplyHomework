@@ -64,6 +64,10 @@ Package.onUse(function(api) {
 		'client/tests/tests.styl',
 		'client/tests/tests.coffee',
 
+		'client/studyUtils/studyUtils.html',
+		'client/studyUtils/studyUtils.styl',
+		'client/studyUtils/studyUtils.coffee',
+
 		'client/birthday/birthday.html',
 		'client/birthday/birthday.styl',
 		'client/birthday/birthday.coffee',

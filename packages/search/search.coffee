@@ -126,6 +126,7 @@ class Search
 		for provider in providers
 			try
 				out = provider.fn
+					# TODO: `classIds` here isn't the same as `classes`.
 					user: user
 					query: query
 					rawQuery: originalQuery

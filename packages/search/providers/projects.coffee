@@ -3,7 +3,7 @@ Search.provide 'projects', ({ query, user, classIds }) ->
 		participants: user._id
 		classId: (
 			if classIds.length > 0 then { $in: classIds }
-			else { $nin: classIds }
+			else { $nin: classIds } # match all classes
 		)
 	}, {
 		fields:

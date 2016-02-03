@@ -95,7 +95,6 @@ Template.classView.onCreated ->
 		id = classId()
 		slide id
 		@subscribe 'classInfo', id
-		@subscribe 'externalStudyUtils', id
 		gradesSub = @subscribe 'externalGrades', classId: id
 
 	@autorun ->
@@ -377,3 +376,13 @@ Template.grades.helpers
 			.value()
 
 	isLoading: -> not gradesSub.ready()
+
+Template.infoContainer.onCreated ->
+	@autorun =>
+		@subscribe 'externalStudyUtils', classId: classId()
+
+Template.infoContainer.helpers
+	items: ->
+		StudyUtils.find
+			userIds: Meteor.userId()
+			classId: classId()

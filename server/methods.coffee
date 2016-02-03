@@ -175,6 +175,7 @@ Meteor.methods
 				Meteor.users.update Meteor.userId(), $push: classInfos: info
 
 		updateGrades userId
+		updateStudyUtils userId
 
 	'getPersonStats': ->
 		@unblock()

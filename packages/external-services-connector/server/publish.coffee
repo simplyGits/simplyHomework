@@ -111,8 +111,9 @@ Meteor.publish 'externalGrades', (options) ->
 	query.dateFilledIn = { $gte: date } if onlyRecent
 	Grades.find query, sort: dateFilledIn: -1
 
-Meteor.publish 'externalStudyUtils', (classId) ->
-	check classId, String
+Meteor.publish 'externalStudyUtils', (options) ->
+	check options, Object
+	{ classId, onlyRecent } = options
 
 	@unblock()
 	unless @userId?
@@ -126,6 +127,7 @@ Meteor.publish 'externalStudyUtils', (classId) ->
 	@onStop ->
 		Meteor.clearInterval handle
 
-	StudyUtils.find
-		ownerId: @userId
-		classId: classId
+	query = userIds: @userId
+	query.classId = classId if classId?
+	query.updatedOn =  { $gte: Date.today().addDays -4 } if onlyRecent
+	StudyUtils.find query

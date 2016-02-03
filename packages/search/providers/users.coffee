@@ -1,4 +1,4 @@
-Search.provide 'users', ({ user, query }) ->
+Search.provide 'users', ({ user }) ->
 	Meteor.users.find({
 		'profile.firstName': $ne: ''
 		'profile.schoolId': user.profile.schoolId

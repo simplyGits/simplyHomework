@@ -1,0 +1,12 @@
+<template name="recentStudyUtils">
+	{{#each groups}}
+		{{> recentStudyUtilGroup}}
+	{{/each}}
+</template>
+
+<template name="recentStudyUtilGroup">
+	<div class="recentStudyUtilGroup">
+		<div class="back" style="background-color: {{class.__color}}"></div>
+		{{class.name}}: {{utils}}
+	</div>
+</template>

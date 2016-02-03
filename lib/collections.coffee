@@ -25,7 +25,13 @@
 					g.weight.toFixed(1).replace '.', ','
 			)
 
-@StudyUtils            = new Meteor.Collection 'studyUtils',   transform: (s) -> _.extend new StudyUtil, s
+@StudyUtils = new Meteor.Collection 'studyUtils',   transform: (su) ->
+	su = _.extend new StudyUtil, su
+	su.files = su.files.map (file) ->
+		_.extend file,
+			_url: "/su/#{su._id}/file/#{file._id}"
+	su
+
 @ScholierenClasses     = new Meteor.Collection 'scholieren.com'
 @WoordjesLerenClasses  = new Meteor.Collection 'woordjesleren'
 @Analytics             = new Meteor.Collection 'analytics'
@@ -204,20 +210,30 @@ Schemas.StudyUtils = new SimpleSchema
 	visibleFrom:
 		type: Date
 		optional: yes
-		defaultValue: new Date()
+		autoValue: ->
+			if @isInsert and not @value? then new Date()
+			else @value
 	visibleTo:
 		type: Date
 		optional: yes
 	files:
-		type: [Object]
+		#type: [Object]
+		type: null
 		blackbox: yes
 		defaultValue: []
+	userIds:
+		type: [String]
 	fetchedBy:
 		type: String
 		optional: yes
 	externalInfo:
 		type: Object
+		optional: yes
 		blackbox: yes
+	updatedOn:
+		type: Date
+		optional: yes
+		autoValue: -> if @isInsert then undefined else new Date
 
 Schemas.Absences = new SimpleSchema
 	userId:

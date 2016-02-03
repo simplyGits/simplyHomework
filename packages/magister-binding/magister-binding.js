@@ -5,7 +5,7 @@
  */
  /* global Magister, ExternalServicesConnector, Schools, Grades,
   Grade, StudyUtil, StudyUtils, GradePeriod, ExternalPerson, CalendarItem,
-  Assignment */
+  Assignment, ExternalFile, getClassInfos */
 
 // One heck of a binding this is.
 
@@ -260,7 +260,55 @@
 		return fut.wait();
 	};
 
-	/*
+	/**
+	 * Converts the given `file` to a ExternalFile.
+	 * @method convertMagisterFile
+	 * @param prefix {String}
+	 * @param file {File} The Magister file to convert.
+	 * @return {ExternalFile} The given `file` converted to a ExternalFile.
+	 */
+	const convertMagisterFile = function (prefix, file) {
+		check(prefix, String);
+		check(file, Magister.File);
+
+		const res = new ExternalFile(file.name());
+
+		res.name = file.name();
+		res.mime = file.mime();
+		res.creationDate = file.creationDate();
+		res.size = file.size();
+
+		const uri = file.uri();
+		if (uri) {
+			res.downloadInfo = {
+				redirect: uri,
+			};
+		} else {
+			res.downloadInfo = {
+				personalPath: prefix + file.id(),
+			};
+		}
+		res.fetchedBy = MagisterBinding.name;
+		res.externalId = `${file._magisterObj.magisterSchool.id}_${file.id()}`;
+
+		return res;
+	};
+
+	MagisterBinding.getFile = function (userId, info) {
+		check(userId, String);
+		check(info, Object);
+
+		const magister = getMagisterObject(userId);
+		return request({
+			method: 'get',
+			url: `${magister._pupilUrl}/${info.personalPath}`,
+			headers: {
+				cookie: magister.http._cookie,
+			},
+		});
+	};
+
+	/**
 	 * Get the studyUtil for the given userId from Magister.
 	 * @method getStudyUtils
 	 * @param {String} userId The ID of the user to get the studyUtil from.
@@ -273,7 +321,7 @@
 		const fut = new Future();
 
 		const magister = getMagisterObject(userId);
-		const user = Meteor.users.findOne(userId);
+		const classInfos = getClassInfos(userId);
 
 		magister.studyGuides(false, function (e, r) {
 			if (e) {
@@ -291,41 +339,29 @@
 							studyGuideFut.throw(e);
 						} else {
 							r.forEach(function (sgp) {
-								const stored = StudyUtils.findOne({
-									fetchedBy: MagisterBinding.name,
-									externalInfo: {
-										partId: sgp.id(),
-										parentId: sg.id(),
-									},
+								const path = `/studiewijzers/${sg.id()}/onderdelen/${sgp.id()}/bijlagen/`;
+								const classInfo = _.find(classInfos, (i) => {
+									return _.contains(sg.classCodes(), i.externalInfo.abbreviation);
 								});
+								const classId = classInfo && classInfo.id;
 
-								if (stored) {
-									result.push(stored);
-								} else {
-									const classId = _.filter(user.classInfos, function (i) {
-										return i.externalInfo.abbreviation === sg.classCodes()[0];
-									}).id;
+								const studyUtil = new StudyUtil(
+									sgp.name(),
+									sgp.description(),
+									classId,
+									userId
+								);
 
-									const studyUtil = new StudyUtil(
-										sgp.name(),
-										sgp.description(),
-										classId,
-										userId
-									);
+								studyUtil.visibleFrom = sgp.from();
+								studyUtil.visibleTo = sgp.to();
+								studyUtil.fetchedBy = MagisterBinding.name;
+								studyUtil.externalInfo = {
+									partId: sgp.id(),
+									parentId: sg.id(),
+								};
+								studyUtil.files = sgp.files().map((file) => convertMagisterFile(path, file));
 
-									studyUtil.fetchedBy = MagisterBinding.name;
-									studyUtil.visibleFrom = sgp.from();
-									studyUtil.visibleTo = sgp.to();
-									studyUtil.externalInfo = {
-										partId: sgp.id(),
-										parentId: sg.id(),
-									};
-									// TODO == Find a good universal file class profile and make a magister
-									// file converter for it.
-									//studyUtil.files = xxx.fromMagister files
-
-									result.push(studyUtil);
-								}
+								result.push(studyUtil);
 							});
 							studyGuideFut.return();
 						}

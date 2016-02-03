@@ -60,7 +60,7 @@ FastRender.route '/person/:id', (params) ->
 		@subscribe 'externalCalendarItems', Date.today(), Date.today().addDays 7
 
 FastRender.route '/class/:id', (params) ->
-		@subscribe 'externalStudyUtils', params.id
+		@subscribe 'externalStudyUtils', classId: params.id
 		@subscribe 'externalGrades', classId: params.id
 		@subscribe 'classInfo', params.id
 

@@ -11,7 +11,7 @@
 # @param ownerId {String} The ID of the owner of this studyUtil.
 ###
 class @StudyUtil
-	constructor: (@name, @description, @classId, @ownerId) ->
+	constructor: (@name, @description, @classId, ownerId) ->
 		###*
 		# The date from which this studyUtil is accesible from.
 		# @property visibleFrom
@@ -23,10 +23,10 @@ class @StudyUtil
 		###*
 		# The date till this studyUtil is accesible.
 		# @property visibleTo
-		# @type Date|null
-		# @default null
+		# @type Date|undefined
+		# @default undefined
 		###
-		@visibleTo = null
+		@visibleTo = undefined
 
 		###*
 		# The files in this studyUtil.
@@ -37,17 +37,23 @@ class @StudyUtil
 		@files = []
 
 		###*
+		# @property userIds
+		# @type String[]
+		# @default [ ownerId ]
+		###
+		@userIds = [ ownerId ]
+
+		###*
 		# The name of the externalService that fetched this StudyUtil.
 		# @property fetchedBy
-		# @type String|null
-		# @defualt null
+		# @type String|undefined
+		# @defualt undefined
 		###
-		@fetchedBy = null
+		@fetchedBy = undefined
 
-		###
-		# Info about the external object, ( studyGuide this StudyUtil is from, for exmaple )
+		###*
 		# @property externalInfo
-		# @type Object|null
-		# @default null
+		# @type Object|undefined
+		# @default undefined
 		###
-		@externalInfo = null
+		@externalInfo = undefined

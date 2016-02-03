@@ -3,6 +3,33 @@ GRADES_INVALIDATION_TIME         = 1000 * 60 * 20 # 20 minutes
 STUDYUTILS_INVALIDATION_TIME     = 1000 * 60 * 20 # 20 minutes
 CALENDAR_ITEMS_INVALIDATION_TIME = 1000 * 60 * 10 # 10 minutes
 
+hasChanged = (a, b, omit = []) ->
+	a = EJSON.clone a
+	b = EJSON.clone b
+
+	omitKeys = [ '_id' ].concat omit
+	omit = (obj) ->
+		if _.isArray obj
+			_.map obj, omit
+		else if _.isPlainObject obj
+			for key in omitKeys
+				obj = _.omit obj, key
+
+			for key of obj
+				if obj[key] is null
+					delete obj[key]
+				else
+					obj[key] = omit obj[key]
+
+			obj
+		else
+			obj
+
+	not EJSON.equals(
+		omit a
+		omit b
+	)
+
 markUserEvent = (userId, name) ->
 	check userId, String
 	check name, String
@@ -58,7 +85,7 @@ updateGrades = (userId, forceUpdate = no) ->
 				externalId: grade.externalId
 
 			if val?
-				unless EJSON.equals val, grade
+				if hasChanged val, grade, [ 'dateTestMade' ]
 					Grades.update val._id, { $set: grade }, (->)
 			else
 				inserts.push grade
@@ -78,16 +105,24 @@ updateGrades = (userId, forceUpdate = no) ->
 updateStudyUtils = (userId, forceUpdate = no) ->
 	check userId, String
 	check forceUpdate, Boolean
+	UPDATE_CHECK_OMITTED = [
+		'creationDate'
+		'classId'
+		'visibleFrom'
+		'visibleTo'
+		'updatedOn'
+	]
 
 	user = Meteor.users.findOne userId
 	studyUtilsUpdateTime = user.events.studyUtilsUpdate?.getTime()
 	errors = []
 
-	if not forceUpdate and studyUtilsUpdateTime? and
-	studyUtilsUpdate > _.now() - STUDYUTILS_INVALIDATION_TIME
+	if not forceUpdate and
+	studyUtilsUpdateTime? and
+	studyUtilsUpdateTime > _.now() - STUDYUTILS_INVALIDATION_TIME
 		return errors
 
-	services = _.filter Services, (s) -> s.getStudyUtil? and s.active userId
+	services = _.filter Services, (s) -> s.getStudyUtils? and s.active userId
 	markUserEvent userId, 'studyUtilsUpdate' if services.length > 0
 
 	inserts = []
@@ -102,13 +137,22 @@ updateStudyUtils = (userId, forceUpdate = no) ->
 			continue
 
 		for studyUtil in result ? []
-			val = StudyUtils.findOne
-				ownerId: userId
+			val = StudyUtils.findOne {
 				externalInfo: studyUtil.externalInfo
+				fetchedBy: externalService.name
+			}, {
+				transform: null
+			}
 
-			if val? and Meteor.isServer
-				delete studyUtil._id
-				StudyUtils.update val._id, { $set: studyUtil }, (->)
+			if val?
+				studyUtil.userIds = _(val.userIds)
+					.concat studyUtil.userIds
+					.uniq()
+					.value()
+
+				if hasChanged val, studyUtil, UPDATE_CHECK_OMITTED
+					studyUtil.updatedOn = new Date()
+					StudyUtils.update val._id, { $set: studyUtil }, (->)
 			else
 				inserts.push studyUtil
 
@@ -182,7 +226,7 @@ updateCalendarItems = (userId, from, to) ->
 				mergeUserIdsField 'userIds'
 				mergeUserIdsField 'usersDone'
 
-				unless EJSON.equals val, obj
+				if hasChanged val, obj
 					CalendarItems.update val._id, { $set: obj }, (->)
 			else
 				calendarItemInserts.push obj
@@ -203,7 +247,7 @@ updateCalendarItems = (userId, from, to) ->
 			absenceInfo.externalId = calendarItem.absenceInfo.externalId
 
 			if val?
-				unless EJSON.equals val, absenceInfo
+				if hasChanged val, absenceInfo
 					Absences.update val._id, { $set: absenceInfo }, (->)
 			else
 				absenceInserts.push absenceInfo

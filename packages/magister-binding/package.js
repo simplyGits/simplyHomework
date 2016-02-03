@@ -16,7 +16,7 @@ Package.onUse(function(api) {
 
 	api.use([
 		'stevezhu:lodash@3.10.1',
-		'simply:magisterjs@1.15.0',
+		'simply:magisterjs@1.15.1',
 		'simply:external-services-connector',
 		'ejson',
 		'ecmascript',
