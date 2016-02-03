@@ -16,6 +16,11 @@ types = [{
 }].map (t) -> _.extend t,
 	regex: new RegExp "\\b(#{t.keywords.join '|'})(en|s)?\\b"
 
+###*
+# @method filterKeywords
+# @param {String} query
+# @return [mixed[]} [ keywords, newQuery ]
+###
 filterKeywords = (query) ->
 	keywords = _(types)
 		.filter (type) ->
@@ -28,6 +33,12 @@ filterKeywords = (query) ->
 		.value()
 	[keywords, query]
 
+###*
+# @method filterClasses
+# @param {String} query
+# @param {String} userId
+# @return [mixed[]} [ classes, newQuery ]
+###
 filterClasses = (query, userId) ->
 	querySplitted = query.split ' '
 	res = []
