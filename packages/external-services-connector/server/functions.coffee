@@ -79,10 +79,15 @@ updateGrades = (userId, forceUpdate = no) ->
 			errors.push e
 			continue
 
+		grades = Grades.find(
+			ownerId: userId
+			fetchedBy: externalService.name
+			externalId: $in: _.pluck result, 'externalId'
+		).fetch()
+
 		for grade in result ? []
 			continue unless grade?
-			val = Grades.findOne
-				ownerId: userId
+			val = _.find grades,
 				externalId: grade.externalId
 
 			if val?
@@ -137,13 +142,16 @@ updateStudyUtils = (userId, forceUpdate = no) ->
 			errors.push e
 			continue
 
+		studyUtils = StudyUtils.find({
+			fetchedBy: externalService.name
+			externalInfo: $in: _.pluck result, 'externalInfo'
+		}, {
+			transform: null
+		}).fetch()
+
 		for studyUtil in result ? []
-			val = StudyUtils.findOne {
+			val = _.find studyUtils,
 				externalInfo: studyUtil.externalInfo
-				fetchedBy: externalService.name
-			}, {
-				transform: null
-			}
 
 			if val?
 				studyUtil.userIds = _(val.userIds)
@@ -208,10 +216,24 @@ updateCalendarItems = (userId, from, to) ->
 			errors.push e
 			continue
 
+		calendarItems = CalendarItems.find(
+			fetchedBy: externalService.name
+			externalId: $in: _.pluck result, 'externalId'
+		).fetch()
+
+		absences = Absences.find(
+			userId: userId
+			fetchedBy: externalService.name
+			externalId: $in:
+				_(result)
+					.pluck 'absenceInfo.externalId'
+					.compact()
+					.value()
+		).fetch()
+
 		result ?= []
 		for calendarItem in result
-			val = CalendarItems.findOne
-				fetchedBy: calendarItem.fetchedBy
+			val = _.find calendarItems,
 				externalId: calendarItem.externalId
 
 			content = calendarItem.content
@@ -236,8 +258,7 @@ updateCalendarItems = (userId, from, to) ->
 				calendarItemInserts.push obj
 
 		for calendarItem in result when calendarItem.absenceInfo?
-			val = Absences.findOne
-				fetchedBy: calendarItem.fetchedBy
+			val = _.find absences,
 				externalId: calendarItem.absenceInfo.externalId
 
 			absenceInfo = new AbsenceInfo(
