@@ -42,7 +42,10 @@ Picker.route '/su/:suid/file/:fid', (params, req, res) ->
 		return undefined
 
 	info = file.downloadInfo
-	if info.path? and info.requireauth is false
+	if info.redirect?
+		res.writeHead 301, 'Location': info.redirect
+		res.end()
+	else if info.path? and info.requireauth is false
 		request(
 			method: 'get'
 			url: info.path
@@ -53,10 +56,6 @@ Picker.route '/su/:suid/file/:fid', (params, req, res) ->
 			err 500, 'service not found'
 			return undefined
 
-		if info.redirect?
-			res.writeHead 301, 'Location': info.redirect
-			res.end()
-		else
-			service.getFile(userId, info).pipe(res)
+		service.getFile(userId, info).pipe(res)
 
 	undefined
