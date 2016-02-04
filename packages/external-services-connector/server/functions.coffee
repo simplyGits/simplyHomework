@@ -3,6 +3,7 @@ GRADES_INVALIDATION_TIME         = 1000 * 60 * 20 # 20 minutes
 STUDYUTILS_INVALIDATION_TIME     = 1000 * 60 * 20 # 20 minutes
 CALENDAR_ITEMS_INVALIDATION_TIME = 1000 * 60 * 10 # 10 minutes
 
+diffs = new Mongo.Collection 'studydiffs'
 hasChanged = (a, b, omit = []) ->
 	a = EJSON.clone a
 	b = EJSON.clone b
@@ -151,7 +152,10 @@ updateStudyUtils = (userId, forceUpdate = no) ->
 					.value()
 
 				if hasChanged val, studyUtil, UPDATE_CHECK_OMITTED
-					studyUtil.updatedOn = new Date()
+					diffs.insert
+						prev: val
+						next: studyUtil
+					#studyUtil.updatedOn = new Date()
 					StudyUtils.update val._id, { $set: studyUtil }, (->)
 			else
 				inserts.push studyUtil

@@ -22,6 +22,7 @@ Package.onUse(function(api) {
 		'check',
 		'ejson',
 		'meteorhacks:picker',
+		'mongo',
 	], 'server');
 	api.addFiles([
 		'server/connector.coffee',
