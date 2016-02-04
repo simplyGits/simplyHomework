@@ -5,20 +5,16 @@ if Package['aldeed:collection2']?
 			max: 1000
 		creatorId:
 			type: String
-			index: 1
 			autoValue: -> if not @isFromTrustedCode and @isInsert then @userId
 			denyUpdate: yes
 		time:
 			type: Date
-			index: -1
 			autoValue: -> if @isInsert then new Date()
 			denyUpdate: yes
 		chatRoomId:
 			type: String
-			index: 1
 		readBy:
 			type: [String]
-			index: 1
 			autoValue: -> if @isInsert then [@userId] else @value
 		attachments:
 			type: [String]
@@ -33,22 +29,17 @@ if Package['aldeed:collection2']?
 		type:
 			type: String
 			allowedValues: ['private', 'project', 'group', 'class']
-			index: 1
 		users:
 			type: [String]
-			index: 1
 		projectId:
 			type: String
 			optional: yes
-			index: 1
 		subject:
 			type: String
 			optional: yes
-			index: 1
 		lastMessageTime:
 			type: Date
 			optional: yes
-			index: -1
 		events:
 			type: [Object]
 			blackbox: yes

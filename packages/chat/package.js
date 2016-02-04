@@ -61,6 +61,7 @@ Package.onUse(function(api) {
 		'server/security.coffee',
 		'server/publish.coffee',
 		'server/rateLimits.coffee',
+		'server/indices.coffee',
 	], 'server');
 
 	api.export([
