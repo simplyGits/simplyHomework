@@ -3,12 +3,8 @@ GRADES_INVALIDATION_TIME         = 1000 * 60 * 20 # 20 minutes
 STUDYUTILS_INVALIDATION_TIME     = 1000 * 60 * 20 # 20 minutes
 CALENDAR_ITEMS_INVALIDATION_TIME = 1000 * 60 * 10 # 10 minutes
 
-diffs = new Mongo.Collection 'studydiffs'
-hasChanged = (a, b, omit = []) ->
-	a = EJSON.clone a
-	b = EJSON.clone b
-
-	omitKeys = [ '_id' ].concat omit
+hasChanged = (a, b, omitExtra = []) ->
+	omitKeys = [ '_id' ].concat omitExtra
 	omit = (obj) ->
 		if _.isArray obj
 			_.map obj, omit
@@ -27,8 +23,8 @@ hasChanged = (a, b, omit = []) ->
 			obj
 
 	not EJSON.equals(
-		omit a
-		omit b
+		omit EJSON.clone a
+		omit EJSON.clone b
 	)
 
 markUserEvent = (userId, name) ->
@@ -113,10 +109,11 @@ updateStudyUtils = (userId, forceUpdate = no) ->
 	check forceUpdate, Boolean
 	UPDATE_CHECK_OMITTED = [
 		'creationDate'
-		'classId'
 		'visibleFrom'
 		'visibleTo'
 		'updatedOn'
+		'userIds'
+		'classId'
 	]
 
 	user = Meteor.users.findOne userId
@@ -152,6 +149,7 @@ updateStudyUtils = (userId, forceUpdate = no) ->
 		for studyUtil in result ? []
 			val = _.find studyUtils,
 				externalInfo: studyUtil.externalInfo
+				classId: studyUtil.classId
 
 			if val?
 				studyUtil.userIds = _(val.userIds)
@@ -160,10 +158,9 @@ updateStudyUtils = (userId, forceUpdate = no) ->
 					.value()
 
 				if hasChanged val, studyUtil, UPDATE_CHECK_OMITTED
-					diffs.insert
-						prev: val
-						next: studyUtil
-					#studyUtil.updatedOn = new Date()
+					studyUtil.updatedOn = new Date()
+					StudyUtils.update val._id, { $set: studyUtil }, (->)
+				else if studyUtil.userIds.length isnt val.userIds.length
 					StudyUtils.update val._id, { $set: studyUtil }, (->)
 			else
 				inserts.push studyUtil
