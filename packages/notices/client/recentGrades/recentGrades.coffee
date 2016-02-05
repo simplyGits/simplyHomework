@@ -26,7 +26,19 @@ Template.recentGrades.helpers
 					_(grades)
 						.filter (x) -> x.classId is g.classId
 						.sortBy 'dateFilledIn'
-						.map (x) -> if x.passed then x.__grade else "<b style='color: red'>#{x.__grade}</b>"
+						.map (x) ->
+							isPerfect = x.passed and x.grade is (
+								switch x.gradeType
+									when 'number' then 10
+									when 'percentage' then 100
+							)
+
+							if isPerfect
+								"<b>#{x.__grade}!</b>"
+							else unless x.passed
+								"<b style='color: red'>#{x.__grade}</b>"
+							else
+								x.__grade
 						.join ' & '
 				)
 			.value()
