@@ -129,7 +129,7 @@ Template.classView.events
 			Meteor.call 'search', query, {
 				classIds: [ classId() ]
 				defaultKeywords: [ 'vocab', 'report' ]
-				onlyFrom: [ 'woordjesleren', 'scholieren' ] # REVIEW: is this needed?
+				onlyFrom: [ 'woordjesleren', 'scholieren', 'studyUtil files' ] # REVIEW: is this needed?
 				maxItems: 30
 			}, (e, r) ->
 				if e? then notify 'Fout tijdens zoeken', 'error'
