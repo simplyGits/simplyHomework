@@ -93,6 +93,7 @@ Meteor.publish null, ->
 	]
 
 Meteor.publishComposite 'classes', (options) ->
+	@unblock()
 	check options, Match.Optional Object
 
 	{ hidden, all } = options ? {}
