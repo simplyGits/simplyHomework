@@ -12,9 +12,6 @@ Meteor.publish 'externalCalendarItems', (from, to) ->
 		updateCalendarItems userId, from, to
 	), 1000 * 60 * 20 # 20 minutes
 
-	@onStop ->
-		Meteor.clearInterval handle
-
 	cursor =
 		CalendarItems.find {
 			userIds: userId
@@ -33,7 +30,7 @@ Meteor.publish 'externalCalendarItems', (from, to) ->
 			)
 		doc
 
-	cursor.observeChanges
+	observer = cursor.observeChanges
 		added: (id, doc) =>
 			@added 'calendarItems', id, transform doc
 
@@ -50,6 +47,10 @@ Meteor.publish 'externalCalendarItems', (from, to) ->
 			absence = findAbsence id
 			if absence?
 				@removed 'absences', absence._id
+
+	@onStop ->
+		Meteor.clearInterval handle
+		observer.stop()
 
 	@ready()
 
