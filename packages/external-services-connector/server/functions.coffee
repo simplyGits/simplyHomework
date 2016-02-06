@@ -4,6 +4,8 @@ STUDYUTILS_INVALIDATION_TIME     = 1000 * 60 * 20 # 20 minutes
 CALENDAR_ITEMS_INVALIDATION_TIME = 1000 * 60 * 10 # 10 minutes
 
 hasChanged = (a, b, omitExtra = []) ->
+	clone = (obj) -> EJSON.parse EJSON.stringify obj
+
 	omitKeys = [ '_id' ].concat omitExtra
 	omit = (obj) ->
 		if _.isArray obj
@@ -23,8 +25,8 @@ hasChanged = (a, b, omitExtra = []) ->
 			obj
 
 	not EJSON.equals(
-		omit EJSON.clone a
-		omit EJSON.clone b
+		omit clone a
+		omit clone b
 	)
 
 markUserEvent = (userId, name) ->
@@ -83,6 +85,7 @@ updateGrades = (userId, forceUpdate = no) ->
 
 		for grade in result ? []
 			continue unless grade?
+			Schemas.Grades.clean grade
 			val = _.find grades,
 				externalId: grade.externalId
 
@@ -240,6 +243,8 @@ updateCalendarItems = (userId, from, to) ->
 			calendarItem.content = content
 
 			obj = _.omit calendarItem, 'absenceInfo'
+			Schemas.CalendarItems.clean obj, filter: no
+
 			if val?
 				mergeUserIdsField = (fieldName) ->
 					obj[fieldName] = _(val[fieldName])
