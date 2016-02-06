@@ -24,6 +24,10 @@ Meteor.startup ->
 		classId: 1
 		grade: 1
 
+	StudyUtils._ensureIndex
+		userIds: 1
+		classId: 1
+
 	Meteor.users._ensureIndex
 		'profile.schoolId': 1
 		'profile.firstName': 1

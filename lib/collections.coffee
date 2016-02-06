@@ -205,8 +205,6 @@ Schemas.StudyUtils = new SimpleSchema
 		type: String
 		# REVIEW: optional?
 		optional: yes
-	ownerId:
-		type: String
 	visibleFrom:
 		type: Date
 		optional: yes
