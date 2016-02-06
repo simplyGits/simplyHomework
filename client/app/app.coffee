@@ -13,7 +13,10 @@ class @App
 	@logout: ->
 		Meteor.logout()
 		NotificationsManager.hideAll()
-		document.location.href = 'https://simplyhomework.nl/'
+		Tracker.autorun (c) ->
+			unless Meteor.userId()?
+				c.stop()
+				document.location.href = 'https://simplyhomework.nl/'
 
 # == Modals ==
 addClassModalBooks = new ReactiveVar []
