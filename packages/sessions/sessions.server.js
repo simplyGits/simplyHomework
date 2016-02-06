@@ -1,32 +1,90 @@
-Meteor.startup(function () {
-	const sessions = new Mongo.Collection('sessions')
+const sessions = new Mongo.Collection('sessions')
 
-	Meteor.onConnection(function (connection) {
-		const headers = connection.httpHeaders
-		const useragent = headers && headers['user-agent']
+Meteor.users.find({
+	'profile.firstName': { $ne: '' },
+}, {
+	fields: {
+		_id: 1,
+		'services.resume.loginTokens': 1,
+	},
+}).observe({
+	changed(newDoc, oldDoc) {
+		const oldTokens = oldDoc.services.resume.loginTokens
+		const newTokens = newDoc.services.resume.loginTokens
 
-		sessions.insert({
-			_id: connection.id,
-			useragent: useragent,
-			creation: new Date(),
-		})
-
-		connection.onClose(function () {
-			sessions.remove(connection.id)
-		})
-	})
-
-	Meteor.methods({
-		'sessions_extend': function (id, info) {
-			const x = {}
-			for (const key in info) {
-				x[key] = info[key]
-			}
-			x.userId = this.userId
-
-			sessions.update(id, {
-				$set: x,
+		const addedSessions = _.difference(newTokens, oldTokens)
+		addedSessions.forEach((session) => {
+			sessions.insert({
+				hashedToken: session.hashedToken,
+				creation: session.when,
+				userId: newDoc._id,
 			})
+		})
+
+		const removedSessions = _.difference(oldTokens, newTokens)
+		removedSessions.forEach((session) => {
+			sessions.remove({
+				hashedToken: session.hashedToken,
+			})
+		})
+	},
+})
+
+Meteor.methods({
+	'sessions_extend': function (token) {
+		this.unblock()
+		check(token, String)
+		const hashed = Accounts._hashLoginToken(token)
+		const session = sessions.findOne({
+			hashedToken: hashed,
+		})
+		if (session == null) {
+			throw new Meteor.Error('not-found')
+		}
+
+		sessions.update(session._id, {
+			$set: {
+				ip: this.connection.clientAddress,
+				userAgent: this.connection.httpHeaders['user-agent'],
+				lastLogin: new Date(),
+			},
+		})
+		return session._id
+	},
+
+	'sessions_kill': function (id) {
+		check(id, String)
+		if (this.userId == null) {
+			throw new Meteor.Error('not-logged-in')
+		}
+
+		const session = sessions.findOne(id)
+		if (session == null) {
+			throw new Meteor.Error('not-found')
+		}
+
+		Meteor.users.update(this.userId, {
+			$pull: {
+				'services.resume.loginTokens': {
+					hashedToken: session.hashedToken,
+				},
+			},
+		})
+	},
+})
+
+Meteor.publish('sessions', function () {
+	this.unblock()
+	if (!this.userId) {
+		this.ready()
+		return undefined
+	}
+
+	return sessions.find({
+		userId: this.userId,
+	}, {
+		fields: {
+			hashedToken: 0,
 		},
 	})
 })

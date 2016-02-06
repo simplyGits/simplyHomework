@@ -1,48 +1,41 @@
-/*
- * TODO:
- * 		- Add stuff to kill sessions.
- */
+const sessions = new Mongo.Collection('sessions')
+const currentSessionId = new ReactiveVar()
 
-Meteor.startup(function () {
-	const sessions = new Mongo.Collection('sessions')
-	const currentSession = new ReactiveVar(null)
-
-	const cookies = function () {
-		const res = {}
-		document.cookie
-			.split(/[\s;]+/g)
-			.forEach(function (cookie) {
-				const splitted = cookie.split('=')
-				res[splitted[0]] = splitted[1]
-			})
-		return res
-	}
-
-	Tracker.autorun(function () {
-		Meteor.connection._userIdDeps.depend()
-		Meteor.call(
-			'sessions_extend',
-			Accounts.connection._lastSessionId,
-			{
-				loginToken: cookies()['meteor_login_token'],
-			}
-		)
+Tracker.autorun(function () {
+	Meteor.connection._userIdDeps.depend()
+	Meteor.defer(function () {
+		const token = localStorage.getItem('Meteor.loginToken')
+		if (token != null) {
+			Meteor.call(
+				'sessions_extend',
+				token,
+				function (e, r) {
+					currentSessionId.set(r)
+				}
+			)
+		}
 	})
+})
 
-	Sessions = {
-		current() {
-			return currentSession.get()
-		},
-		all() {
-			return sessions.find().fetch()
-		},
-		others() {
-			return sessions.find({
-				_id: { $ne: currentSession.get()._id },
-			}).fetch()
-		},
-		kill(sessionId) {
-			console.err('not yet implemented, m8')
-		},
+Tracker.autorun(function () {
+	if (Meteor.userId() != null) {
+		Meteor.subscribe('sessions')
 	}
 })
+
+Sessions = {
+	all() {
+		return sessions.find().fetch()
+	},
+	current() {
+		return sessions.findOne(currentSessionId.get())
+	},
+	others() {
+		return sessions.find({
+			_id: { $ne: currentSessionId.get() },
+		}).fetch()
+	},
+	kill(sessionId, callback) {
+		Meteor.call('sessions_kill', sessionId, callback)
+	},
+}
