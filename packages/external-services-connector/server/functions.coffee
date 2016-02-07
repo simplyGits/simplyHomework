@@ -152,7 +152,7 @@ updateStudyUtils = (userId, forceUpdate = no) ->
 		for studyUtil in result ? []
 			val = _.find studyUtils,
 				externalInfo: studyUtil.externalInfo
-				classId: studyUtil.classId
+				classId: studyUtil.classId ? null
 
 			if val?
 				studyUtil.userIds = _(val.userIds)
