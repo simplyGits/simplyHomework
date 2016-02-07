@@ -82,3 +82,4 @@ grade-functions
 stevezhu:lodash@3.10.1
 mikowals:batch-insert
 sessions
+simply:lru

@@ -4,12 +4,12 @@
  * @module magister-binding
  */
  /* global Magister, ExternalServicesConnector, Schools, Grades,
-  Grade, StudyUtil, StudyUtils, GradePeriod, ExternalPerson, CalendarItem,
-  Assignment, ExternalFile, getClassInfos */
+  Grade, StudyUtil, GradePeriod, ExternalPerson, CalendarItem, Assignment,
+  ExternalFile, getClassInfos, LRU */
 
 // One heck of a binding this is.
 
-(function (Magister, Future, request, LRU) {
+(function (Magister, Future, request) {
 	'use strict';
 
 	const ONLY_RECENT_LIMIT = 1000*60*60*24*6; // 6 days
@@ -710,4 +710,4 @@
 	};
 
 	ExternalServicesConnector.pushExternalService(MagisterBinding);
-})(Magister, Npm.require('fibers/future'), Npm.require('request'), Npm.require('lru-cache'));
+})(Magister, Npm.require('fibers/future'), Npm.require('request'));

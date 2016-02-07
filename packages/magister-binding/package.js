@@ -8,7 +8,6 @@ Package.describe({
 
 Npm.depends({
 	request: '2.67.0',
-	'lru-cache': '3.2.0',
 });
 
 Package.onUse(function(api) {
@@ -20,6 +19,7 @@ Package.onUse(function(api) {
 		'simply:external-services-connector',
 		'ejson',
 		'ecmascript',
+		'simply:lru'
 	], 'server');
 	api.use([
 		'coffeescript',
