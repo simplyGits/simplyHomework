@@ -46,7 +46,7 @@ route = (query, d) ->
 					when 'class' then 'classView'
 			), id: d._id
 
-	Meteor.call 'search.analytics.store', query, d._id
+		Meteor.call 'search.analytics.store', query, d._id
 
 Template.searchBar.helpers
 	placeholder: ->
