@@ -7,7 +7,7 @@ Tracker.autorun(function () {
 		const token = localStorage.getItem('Meteor.loginToken')
 		if (token != null) {
 			Meteor.call(
-				'sessions_extend',
+				'sessions_updateLastLogin',
 				token,
 				function (e, r) {
 					currentSessionId.set(r)

@@ -31,7 +31,7 @@ Meteor.users.find({
 })
 
 Meteor.methods({
-	'sessions_extend': function (token) {
+	'sessions_updateLastLogin': function (token) {
 		this.unblock()
 		check(token, String)
 		const hashed = Accounts._hashLoginToken(token)
