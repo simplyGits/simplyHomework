@@ -188,14 +188,14 @@ Template.chatSidebar.events
 
 	'click #toggleChatNotify': ->
 		# REVIEW: Should we sync this between clients?
-		ReactiveLocalStorage 'chatNotify', not ReactiveLocalStorage 'chatNotify'
+		RLocalStorage.setItem 'chatNotify', not RLocalStorage.getItem('chatNotify')
 
 	'click .chatSidebarItem': ->
 		closeSidebar?()
 		ChatManager.openChat @_id
 
 Template.chatSidebar.helpers
-	chatNotifyEnabled: -> ReactiveLocalStorage 'chatNotify'
+	chatNotifyEnabled: -> RLocalStorage.getItem 'chatNotify'
 	chats: chats
 
 Template.chatSidebar.onCreated ->
@@ -211,7 +211,7 @@ Template.chatSidebar.onCreated ->
 			readBy: $ne: Meteor.userId()
 		).observe
 			added: (doc) ->
-				return if loadingObserve or not ReactiveLocalStorage 'chatNotify'
+				return if loadingObserve or not RLocalStorage.getItem 'chatNotify'
 
 				id = FlowRouter.getQueryParam 'openChatId'
 				unless id? and
@@ -268,8 +268,8 @@ Template.chatSidebar.onRendered ->
 	$chats = @$ '.chats'
 	$input = @$ 'input'
 
-	unless ReactiveLocalStorage('chatNotify')?
-		ReactiveLocalStorage 'chatNotify', yes
+	unless RLocalStorage.getItem('chatNotify')?
+		RLocalStorage.setItem 'chatNotify', yes
 
 	$input.on 'blur', (event) ->
 		currentSearchTerm.set ''
