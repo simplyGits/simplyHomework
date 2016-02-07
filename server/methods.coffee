@@ -1,6 +1,10 @@
 request = Meteor.npmRequire 'request'
 Future = Npm.require 'fibers/future'
 
+statsCache = LRU
+	max: 75
+	maxAge: 1000 * 60 * 15 # 15 minutes
+
 Meteor.methods
 	###*
 	# Streams the file from the given `fromUrl` to the given `destUrl`.
@@ -179,71 +183,75 @@ Meteor.methods
 
 	'getPersonStats': ->
 		@unblock()
-
 		userId = @userId
-		{ firstName, schoolId } = Meteor.users.findOne(userId).profile
-		res = []
-		hours = CalendarItems.find({
-			userIds: userId
-			startDate: $gte: Date.today()
-			endDate: $lte: Date.today().addDays 7
-			schoolHour:
-				$exists: yes
-				$ne: null
-		}, {
-			fields:
-				userIds: 1
-		}).fetch()
-		users = Meteor.users.find({
-			_id: $ne: userId
-			'profile.firstName': firstName
-		}, {
-			fields:
-				'profile.firstName': 1
-				'profile.schoolId': 1
-		}).fetch()
 
-		if hours.length > 0
-			res.push "Aantal lesuren in één week: #{hours.length}"
+		res = statsCache.get userId
+		unless res?
+			{ firstName, schoolId } = Meteor.users.findOne(userId).profile
+			res = []
+			hours = CalendarItems.find({
+				userIds: userId
+				startDate: $gte: Date.today()
+				endDate: $lte: Date.today().addDays 7
+				schoolHour:
+					$exists: yes
+					$ne: null
+			}, {
+				fields:
+					userIds: 1
+			}).fetch()
+			users = Meteor.users.find({
+				_id: $ne: userId
+				'profile.firstName': firstName
+			}, {
+				fields:
+					'profile.firstName': 1
+					'profile.schoolId': 1
+			}).fetch()
 
-		if users.length > 1
-			s = "Er zijn #{users.length} anderen die ook #{firstName} heten op simplyHomework"
+			if hours.length > 0
+				res.push "Aantal lesuren in één week: #{hours.length}"
 
-			filtered = _.filter users, (u) -> u.profile.schoolId is schoolId
-			if filtered.length > 0
-				s += " (waarvan #{filtered.length} van jouw school)"
+			if users.length > 1
+				s = "Er zijn #{users.length} anderen die ook #{firstName} heten op simplyHomework"
 
-			res.push s
+				filtered = _.filter users, (u) -> u.profile.schoolId is schoolId
+				if filtered.length > 0
+					s += " (waarvan #{filtered.length} van jouw school)"
 
-		inbetweenHoursCount = ScheduleFunctions.getInbetweenHours(userId).length
-		if inbetweenHoursCount > 0
-			res.push "Aantal tussenuren in één week: #{inbetweenHoursCount}"
+				res.push s
 
-		frequent = _(hours)
-			.pluck 'userIds'
-			.flatten()
-			.without userId
-			.countBy()
-			.pairs()
-			.max _.last
+			inbetweenHoursCount = ScheduleFunctions.getInbetweenHours(userId).length
+			if inbetweenHoursCount > 0
+				res.push "Aantal tussenuren in één week: #{inbetweenHoursCount}"
 
-		if _.isArray(frequent)
-			user = Meteor.users.findOne frequent[0]
-			if user?
-				path = FlowRouter.path 'personView', id: user._id
-				link = "<a href='#{path}'>#{user.profile.firstName} #{user.profile.lastName}</a>"
+			frequent = _(hours)
+				.pluck 'userIds'
+				.flatten()
+				.without userId
+				.countBy()
+				.pairs()
+				.max _.last
 
-				res.push "Je deelt de meeste lessen met #{link}"
+			if _.isArray(frequent)
+				user = Meteor.users.findOne frequent[0]
+				if user?
+					path = FlowRouter.path 'personView', id: user._id
+					link = "<a href='#{path}'>#{user.profile.firstName} #{user.profile.lastName}</a>"
 
-		grades = GradeFunctions.getAllGrades yes, userId
-		if grades.length > 0
-			mean = _(grades)
-				.pluck 'grade'
-				.compact()
-				.mean()
-				.value()
+					res.push "Je deelt de meeste lessen met #{link}"
 
-			res.push "Het gemiddelde van je eindcijfers is #{mean.toFixed(1).replace '.', ','}"
+			grades = GradeFunctions.getAllGrades yes, userId
+			if grades.length > 0
+				mean = _(grades)
+					.pluck 'grade'
+					.compact()
+					.mean()
+					.value()
+
+				res.push "Het gemiddelde van je eindcijfers is #{mean.toFixed(1).replace '.', ','}"
+
+			statsCache.set userId, res
 
 		res
 
