@@ -8,6 +8,7 @@ canCompare = (userId) ->
 	Privacy.getOptions(userId).publishCalendarItems
 
 compare = (userId) ->
+	analytics?.track 'Compare Schedule'
 	FlowRouter.go 'calendar', undefined, userIds: [ userId ]
 
 Template.personView.helpers
