@@ -73,7 +73,7 @@ chatReplacements = [
 ].map ([ keys, value ]) ->
 	regexp = new RegExp(
 		"#{keys.map(_.escapeRegExp).join '|'}"
-		'g'
+		'gi'
 	)
 	[ regexp, value ]
 
