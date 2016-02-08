@@ -3,6 +3,13 @@ sameUser = -> Meteor.userId() is FlowRouter.getParam 'id'
 pictures = new ReactiveVar []
 personStats = new ReactiveVar
 
+canCompare = (userId) ->
+	not Session.equals('deviceType', 'phone') and
+	Privacy.getOptions(userId).publishCalendarItems
+
+compare = (userId) ->
+	FlowRouter.go 'calendar', undefined, userIds: [ userId ]
+
 Template.personView.helpers
 	person: currentPerson
 
@@ -44,6 +51,10 @@ Template.personView.onCreated ->
 				title: "#{person.profile.firstName} #{person.profile.lastName}"
 
 Template.personView.onRendered ->
+	Mousetrap.bind 'g v', ->
+		id = currentPerson()._id
+		compare id if canCompare id
+
 	@autorun ->
 		FlowRouter.watchPathChange()
 		slide()
@@ -52,6 +63,9 @@ Template.personView.onRendered ->
 				$('[data-toggle="tooltip"]')
 					.tooltip "destroy"
 					.tooltip container: "body"
+
+Template.personView.onDestroyed ->
+	Mousetrap.unbind 'g v'
 
 sharedInbetweenHours = new ReactiveVar []
 Template.personSharedHours.onCreated ->
@@ -65,13 +79,10 @@ Template.personSharedHours.onCreated ->
 Template.personSharedHours.events
 	'click [data-action="compare"]': (event) ->
 		event.preventDefault()
-		FlowRouter.go 'calendar', undefined, userIds: [ @_id ]
+		compare @_id
 
 Template.personSharedHours.helpers
-	canCompare: ->
-		not Session.equals('deviceType', 'phone') and
-		Privacy.getOptions(@_id).publishCalendarItems
-
+	canCompare: -> canCompare @_id
 	days: ->
 		sharedCalendarItems = CalendarItems.find(
 			$and: [
