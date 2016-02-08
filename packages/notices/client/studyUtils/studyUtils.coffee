@@ -1,9 +1,12 @@
 recentStudyUtils = ->
 	dateTracker.depend()
 	date = Date.today().addDays -4
-	StudyUtils.find(
+	StudyUtils.find({
 		updatedOn: $gte: date
-	).fetch()
+	}, {
+		sort:
+			updatedOn: -1
+	}).fetch()
 
 NoticeManager.provide 'studyUtils', ->
 	@subscribe 'externalStudyUtils', onlyRecent: yes
