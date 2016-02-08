@@ -91,10 +91,12 @@
 	 * @method getMagisterObject
 	 * @private
 	 * @param {String} userId The ID of the user to get a Magister object for.
+	 * @param {Boolean} [forceNew=false] Get a new sessionId, even when there is a previous one.
 	 * @return {Magister} A Magister object for the given `userId`.
 	 */
-	function getMagisterObject (userId) {
+	function getMagisterObject (userId, forceNew = false) {
 		check(userId, String);
+		check(forceNew, Boolean);
 
 		const fut = new Future();
 		const data = MagisterBinding.storedInfo(userId);
@@ -107,10 +109,7 @@
 				return m;
 			}
 
-			// REVIEW:
-			// Currently not invalidating sessionIds, since it's unknown when
-			// they retire at Magister's servers. Maybe they're even infinite.
-			const useSessionId = !_.isEmpty(data.lastLogin);
+			const useSessionId = !forceNew && !_.isEmpty(data.lastLogin);
 
 			const magister = new Magister.Magister({
 				school: {
@@ -143,7 +142,14 @@
 				}
 			});
 
-			m = fut.wait();
+			try {
+				m = fut.wait();
+			} catch (e) {
+				if (useSessionId) { // retry with new sessionId when currently using an older one.
+					return getMagisterObject(userId, true);
+				}
+				throw e;
+			}
 			cache.set(userId, m);
 			return m;
 		}
