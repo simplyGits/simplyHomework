@@ -223,7 +223,9 @@
 								gradeFut.throw(e);
 							} else  {
 								const classInfo = _.find(user.classInfos, function (i) {
-									return i.externalInfo.id === g.class().id;
+									const abbr = i.externalInfo.abbreviation == g.class().abbreviation;
+									const id = i.externalInfo.id === g.class().id;
+									return abbr || id;
 								});
 								const classId = classInfo && classInfo.id;
 
