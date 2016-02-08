@@ -55,8 +55,8 @@
 	date .= date!
 	CalendarItems.find(
 		user-ids: user-id
-		start-date: $gte: new Date
-		end-date: $lte: Date.today!add-days 1
+		start-date: $gte: date
+		end-date: $lte: date.add-days 1
 		scrapped: false
 		school-hour:
 			$exists: yes
