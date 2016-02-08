@@ -9,7 +9,7 @@ currentProject = ->
 # - `__isOwner` is really badly designed, this looks like we specifiy if the
 # 	root user object is the owner, but we specifiy if `Meteor.user()` is the
 # 	owner.
-@getParticipants = ->
+getParticipants = ->
 	Meteor.users.find {
 		_id:
 			$in: currentProject().participants ? []
@@ -25,7 +25,7 @@ currentProject = ->
 			#__isOwner: Router.current().data().ownerId is Meteor.userId()
 	}
 
-@getOthers = ->
+getOthers = ->
 	Meteor.users.find {
 		_id: $nin: currentProject().participants ? []
 	}, {
