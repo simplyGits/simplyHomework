@@ -28,15 +28,12 @@ WebApp.connectHandlers.use (req, res, next) ->
 	undefined
 
 FastRender.onAllRoutes ->
-	# Don't a 'basicChatInfo' subscription here, this will mess up the
-	# notification handling (will sound a dong when there are unread messages
-	# when the app is opened.).
+	# Don't subscribe on 'basicChatInfo' here, this will mess up the notification
+	# handling (will sound a dong when there are unread messages when the app is
+	# opened.).
 
 	if @userId?
 		@subscribe 'fr_classes'
-
-FastRender.route '/', ->
-	@subscribe 'externalCalendarItems', Date.today(), Date.today().addDays 4
 
 FastRender.route '/calendar/:date?', (params) ->
 	date = (
@@ -56,8 +53,6 @@ FastRender.route '/calendar/:date?', (params) ->
 FastRender.route '/person/:id', (params) ->
 	@subscribe 'status', [ params.id ]
 	@subscribe 'usersData', [ params.id ]
-	if params.id isnt @userId
-		@subscribe 'externalCalendarItems', Date.today(), Date.today().addDays 7
 
 FastRender.route '/class/:id', (params) ->
 		@subscribe 'externalStudyUtils', classId: params.id
