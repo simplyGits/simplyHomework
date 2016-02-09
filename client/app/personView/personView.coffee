@@ -92,6 +92,7 @@ Template.personSharedHours.helpers
 			]
 			startDate: $gte: Date.today()
 			endDate: $lte: Date.today().addDays 7
+			scrapped: no
 			schoolHour:
 				$exists: yes
 				$ne: null

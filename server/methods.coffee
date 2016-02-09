@@ -277,8 +277,8 @@ Meteor.methods
 		if Meteor.users.find(userId).count() is 0
 			throw new Meteor.Error 'user-not-found'
 
-		mine = ScheduleFunctions.getInbetweenHours @userId
-		theirs = ScheduleFunctions.getInbetweenHours userId
+		mine = ScheduleFunctions.getInbetweenHours @userId, yes
+		theirs = ScheduleFunctions.getInbetweenHours userId, yes
 
 		_.filter theirs, (x) ->
 			m = moment x.start

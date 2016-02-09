@@ -1,9 +1,10 @@
-@ScheduleFunctions.get-inbetween-hours = (user-id = Meteor.user-id!) ->
+@ScheduleFunctions.get-inbetween-hours = (user-id = Meteor.user-id!, count-scrapped = no) ->
 	res = []
 	hours = CalendarItems.find(
 		user-ids: user-id
 		start-date: $gte: Date.today!
 		end-date: $lte: Date.today!add-days 7
+		scrapped: no if count-scrapped
 		school-hour:
 			$exists: yes
 			$ne: null
