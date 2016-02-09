@@ -383,6 +383,11 @@ Template.infoContainer.onCreated ->
 
 Template.infoContainer.helpers
 	items: ->
-		StudyUtils.find
+		StudyUtils.find {
 			userIds: Meteor.userId()
 			classId: classId()
+		}, {
+			sort:
+				updatedOn: -1
+				name: 1
+		}
