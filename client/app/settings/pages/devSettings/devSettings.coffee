@@ -1,6 +1,9 @@
 items = [{
 	name: 'noChatEmojis'
 	description: 'Zet smiley-naar-emoji conversie uit in chat.'
+}, {
+	name: 'noticeAlwaysHoverColor'
+	description: 'Maak altijd het randje van een kaart op het overzicht zwart als je er met je muis over gaat.'
 }]
 
 Template['settings_page_devSettings'].helpers

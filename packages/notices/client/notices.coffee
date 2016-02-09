@@ -5,6 +5,12 @@ Template.notices.helpers
 	notices: -> NoticeManager.get()
 	timeGreeting: -> TimeGreeting()
 
+	hover: ->
+		if getUserField Meteor.userId(), 'settings.devSettings.noticeAlwaysHoverColor'
+			'hover'
+		else
+			''
+
 Template.notices.events
 	'click .notice': ->
 		a = @onClick
