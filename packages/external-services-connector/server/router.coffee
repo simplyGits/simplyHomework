@@ -9,7 +9,7 @@ parseCookies = (str = '') ->
 			res[splitted[0]] = splitted[1]
 	res
 
-Picker.route '/su/:suid/file/:fid', (params, req, res) ->
+Picker.route '/su/:suid/f/:fid', (params, req, res) ->
 	err = (code, str) ->
 		res.writeHead code, 'Content-Type': 'text/plain'
 		res.end str

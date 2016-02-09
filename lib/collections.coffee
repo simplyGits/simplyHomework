@@ -29,7 +29,7 @@
 	su = _.extend new StudyUtil, su
 	su.files = su.files.map (file) ->
 		_.extend file,
-			_url: "/su/#{su._id}/file/#{file._id}"
+			_url: "/su/#{su._id}/f/#{file._id}"
 	su
 
 @ScholierenClasses     = new Meteor.Collection 'scholieren.com'
