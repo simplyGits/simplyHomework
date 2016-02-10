@@ -1,6 +1,6 @@
 recentStudyUtils = ->
 	dateTracker.depend()
-	date = Date.today().addDays -4
+	date = Date.today().addDays -3
 	StudyUtils.find({
 		updatedOn: $gte: date
 	}, {
