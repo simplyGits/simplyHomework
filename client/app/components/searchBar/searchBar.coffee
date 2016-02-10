@@ -11,6 +11,19 @@ fallbackClass = _.sample [
 	'Engels'
 ]
 
+getClassName = ->
+	currentLesson = ScheduleFunctions.currentLesson()
+	c = (
+		if currentLesson?
+			currentLesson.class()
+		else
+			_.sample classes().fetch()
+	)
+	if c?
+		if _.random(1) then c.name else c.abbreviations[0]
+	else
+		fallbackClass
+
 cache = {}
 _fetch = _.throttle ((query, callback) ->
 	Meteor.apply 'search', [ query ],
@@ -49,13 +62,7 @@ route = (query, d) ->
 		Meteor.call 'search.analytics.store', query, d._id
 
 Template.searchBar.helpers
-	placeholder: ->
-		_.sample(placeholders).replace '%class%', ->
-			c = _.sample classes().fetch()
-			if c?
-				if _.random(1) then c.name else c.abbreviations[0]
-			else
-				fallbackClass
+	placeholder: -> _.sample(placeholders).replace '%class%', getClassName
 
 Template.searchBar.events
 	'keyup input': (event) ->
