@@ -137,7 +137,12 @@ SyncedCron.add
 	name: 'Congratulate users'
 	schedule: (parser) -> parser.recur().on(5).hour()
 	job: ->
-		users = _.filter Meteor.users.find({}).fetch(), (u) ->
+		users = _.filter Meteor.users.find({}, {
+			fields:
+				'profile.birthDate': 1
+				'profile.firstName': 1
+				'emails': 1
+		}).fetch(), (u) ->
 			birthDate = u.profile.birthDate
 			birthDate? and Helpers.datesEqual new Date, birthDate
 
