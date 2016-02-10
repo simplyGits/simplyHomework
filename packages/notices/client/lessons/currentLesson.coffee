@@ -2,16 +2,7 @@ NoticeManager.provide 'currentLesson', ->
 	minuteTracker.depend()
 	@subscribe 'externalCalendarItems', Date.today(), Date.today().addDays 1
 
-	currentAppointment = CalendarItems.findOne {
-		userIds: Meteor.userId()
-		startDate: $lt: new Date
-		endDate: $gt: new Date
-		scrapped: false
-		schoolHour:
-			$exists: yes
-			$ne: null
-	}, sort: 'startDate': 1
-
+	currentAppointment = ScheduleFunctions.currentLesson()
 	if currentAppointment?
 		template: 'infoCurrentAppointment'
 		data: currentAppointment

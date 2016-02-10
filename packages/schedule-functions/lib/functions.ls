@@ -63,3 +63,13 @@
 			$exists: yes
 			$ne: null
 	).fetch!
+
+@ScheduleFunctions.current-lesson = (user-id = Meteor.user-id!) ->
+	CalendarItems.find-one do
+		user-ids: user-id
+		start-date: $lt: new Date
+		end-date: $gt: new Date
+		scrapped: false
+		school-hour:
+			$exists: yes
+			$ne: null
