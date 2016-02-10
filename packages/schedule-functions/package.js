@@ -8,7 +8,10 @@ Package.describe({
 
 Package.onUse(function(api) {
 	api.versionsFrom('1.2.1');
-	api.use('zardak:livescript');
+	api.use([
+		'zardak:livescript',
+		'check',
+	]);
 	api.addFiles([
 		'lib/init.ls',
 		'lib/functions.ls',

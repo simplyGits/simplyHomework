@@ -1,4 +1,7 @@
 @ScheduleFunctions.get-inbetween-hours = (user-id = Meteor.user-id!, count-scrapped = no) ->
+	check user-id, String
+	check count-scrapped, Boolean
+
 	res = []
 	hours = CalendarItems.find(
 		user-ids: user-id
@@ -39,6 +42,8 @@
 	res
 
 @ScheduleFunctions.current-day-over = (user-id = Meteor.user-id!) ->
+	check user-id, String
+
 	minuteTracker?depend!
 	CalendarItems.find(
 		user-ids: user-id
@@ -52,6 +57,9 @@
 	, fields: _id: 1).count! is 0
 
 @ScheduleFunctions.lessons-for-date = (user-id = Meteor.user-id!, date = new Date!) ->
+	check user-id, String
+	check date, Date
+
 	dateTracker?depend!
 	date .= date!
 	CalendarItems.find(
@@ -65,6 +73,8 @@
 	).fetch!
 
 @ScheduleFunctions.current-lesson = (user-id = Meteor.user-id!) ->
+	check user-id, String
+
 	CalendarItems.find-one do
 		user-ids: user-id
 		start-date: $lt: new Date
