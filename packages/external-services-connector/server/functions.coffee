@@ -218,7 +218,15 @@ updateCalendarItems = (userId, from, to) ->
 
 		calendarItems = CalendarItems.find(
 			fetchedBy: externalService.name
-			externalId: $in: _.pluck result, 'externalId'
+			$or: [
+				{ externalId: $in: _.pluck result, 'externalId' }
+				{
+					classId: $in: _.pluck result, 'classId'
+					startDate: $in: _.pluck result, 'startDate'
+					endDate: $in: _.pluck result, 'endDate'
+					userIds: userId
+				}
+			]
 		).fetch()
 
 		absences = Absences.find(
@@ -235,6 +243,11 @@ updateCalendarItems = (userId, from, to) ->
 		for calendarItem in result
 			val = _.find calendarItems,
 				externalId: calendarItem.externalId
+
+			val ?= _.find calendarItems, (x) ->
+				x.classId is calendarItem.classId and
+				EJSON.equals(x.startDate, calendarItem.startDate) and
+				EJSON.equals(x.endDate, calendarItem.endDate)
 
 			content = calendarItem.content
 			if content? and (not content.type? or content.type is 'homework')
