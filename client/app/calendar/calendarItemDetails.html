@@ -57,6 +57,22 @@
 				<div style="white-space: pre-wrap">{{{contentDescription}}}</div>
 			</div>
 		{{/if}}
+		{{#if group}}
+			<div class="row">
+				<div>Klas:</div>
+				<div>
+					<a href="#" data-action="chat">{{group}}</a>
+				</div>
+			</div>
+		{{/if}}
+		{{#with teacher}}
+			<div class="row">
+				<div>Docent:</div>
+				<div>
+					<a href="#" data-action="message">{{name}}</a>
+				</div>
+			</div>
+		{{/with}}
 		{{#with getAbsenceInfo}}
 			<div class="row">
 				<div>Absentie:</div>
