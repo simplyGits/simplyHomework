@@ -1,0 +1,48 @@
+<template name="settings_page_logins">
+	<div id="logins">
+		<div id="description">
+			Hieronder staan al je huidige logins op dit account.
+		</div>
+
+		{{#with current}}
+			{{> settings_page_logins_current}}
+		{{/with}}
+		{{#each logins}}
+			{{> settings_page_logins_login}}
+		{{/each}}
+	</div>
+</template>
+
+<template name="settings_page_logins_current">
+	<div class="login current">
+		<h3>Huidige login</h3>
+		Eerst ingelogd op: {{dateFormat 'dddd D MMMM YYYY HH:mm' creation}}<br>
+		{{#with lastLogin}}
+			Ingelogd sinds: {{dateFormat 'dddd D MMMM YYYY HH:mm' date}}<br>
+			IP: {{ip}}<br>
+			{{#if product}}
+				{{name}} ({{version}}) op een {{manufacturer}} {{product}} ({{os.family}} {{os.version}})
+			{{else}}
+				{{name}} ({{version}}) op {{os.family}} ({{os.version}})
+			{{/if}}
+		{{/with}}
+	</div>
+</template>
+
+<template name="settings_page_logins_login">
+	<div class="login">
+		Eerst ingelogd op: {{dateFormat 'dddd D MMMM YYYY HH:mm' creation}}<br>
+		{{#with lastLogin}}
+			Laatst ingelogd op: {{dateFormat 'dddd D MMMM YYYY HH:mm' date}}<br>
+			IP: {{ip}}<br>
+			{{#if product}}
+				{{name}} ({{version}}) op een {{manufacturer}} {{product}} ({{os.family}} {{os.version}})
+			{{else}}
+				{{name}} ({{version}}) op {{os.family}} ({{os.version}})
+			{{/if}}
+		{{/with}}
+		<div class="buttons">
+			<button class="btn btn-danger" data-action="kill">Uitloggen</button>
+		</div>
+	</div>
+</template>

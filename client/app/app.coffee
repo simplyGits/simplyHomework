@@ -247,6 +247,8 @@ Template.app.onCreated ->
 			Check je email!
 		''', 'warning'
 
+	@autorun -> App.logout() unless Meteor.userId()? or Meteor.loggingIn()
+
 	@autorun ->
 		dateTracker.depend()
 		now = new Date
