@@ -50,7 +50,6 @@ npm-container
 simply:katex
 emojione:emojione
 rcy:chromajs
-okgrow:analytics
 audit-argument-checks
 magister-binding
 kadira:flow-router

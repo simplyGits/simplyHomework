@@ -159,7 +159,7 @@ Template.projectView.events
 		showModal 'addParticipantModal'
 
 	"click #changeProjectIcon": ->
-		analytics?.track 'Open ChangeProjectModal'
+		ga 'send', 'event', 'changeProjectModal', 'open'
 
 		showModal 'changeProjectModal', undefined, currentProject()
 
@@ -194,7 +194,7 @@ Template.changeProjectModal.events
 			classId
 		}
 
-		analytics?.track 'Project Details Changed'
+		ga 'send', 'event', 'changeProjectModal', 'save'
 		$('#changeProjectModal').modal 'hide'
 
 	'click #leaveProjectButton': ->

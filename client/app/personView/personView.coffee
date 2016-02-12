@@ -8,7 +8,7 @@ canCompare = (userId) ->
 	Privacy.getOptions(userId).publishCalendarItems
 
 compare = (userId) ->
-	analytics?.track 'Compare Schedule'
+	ga 'send', 'event', 'person', 'compare schedule'
 	FlowRouter.go 'calendar', undefined, userIds: [ userId ]
 
 Template.personView.helpers
@@ -31,11 +31,11 @@ Template.personView.helpers
 Template.personView.events
 	'click .personPicture, click #changePictureButton': ->
 		return unless sameUser()
-		analytics?.track 'Open ChangePictureModal'
+		ga 'send', 'event', 'changePictureModal', 'open'
 		showModal 'changePictureModal'
 
 	'click i#reportButton': ->
-		analytics?.track 'Open ReportUserModal'
+		ga 'send', 'event', 'reportUserModal', 'open'
 		showModal 'reportUserModal', undefined, currentPerson
 	"click button#chatButton": -> ChatManager.openPrivateChat @_id
 
@@ -151,7 +151,7 @@ Template.personStats.onCreated ->
 
 Template.reportUserModal.events
 	'click button#goButton': ->
-		analytics?.track 'User Reported'
+		ga 'send', 'event', 'reportUserModal', 'report'
 
 		checked = $ 'div#checkboxes input:checked'
 		reportGrounds = new Array checked.length
@@ -212,5 +212,5 @@ Template.pictureSelectorItem.events
 				url: @value
 				fetchedBy: @fetchedBy
 
-		analytics?.track 'Profile Picture Changed'
+		ga 'send', 'event', 'changePictureModal', 'save'
 		$('#changePictureModal').modal 'hide'

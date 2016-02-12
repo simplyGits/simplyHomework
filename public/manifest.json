@@ -26,7 +26,7 @@
 			"type": "image/png"
 		}
 	],
-	"start_url": "/?utm_source=web_app_manifest&ajs_event=open&ajs_prop_source=web_app_manifest",
+	"start_url": "/?utm_source=web_app_manifest&utm_medium=web_app_manifest&utm_campaign=web_app_manifest",
 	"display": "standalone",
 	"orientation": "portrait"
 }

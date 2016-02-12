@@ -8,7 +8,7 @@ app:
   environment:
    - MONGO_URL=mongodb://mongo/simplyhomework
    - MONGO_OPLOG_URL=mongodb://mongo/local
-   - 'METEOR_SETTINGS={ "scholieren": { "client_id": "32c8014e0e49363bce563d940859dade", "client_pw": "a56c98c29403f35d7e6152caf12e5c5e" }, "public": { "analyticsSettings": { "Google Analytics" : { "trackingId": "UA-52373748-1" } } } }'
+   - 'METEOR_SETTINGS={ "scholieren": { "client_id": "32c8014e0e49363bce563d940859dade", "client_pw": "a56c98c29403f35d7e6152caf12e5c5e" }}'
    - HTTP_FORWARDED_COUNT=2
    - KADIRA_APP_ID=EkKhbLvn5zD6ksYep
    - KADIRA_APP_SECRET=ba8ab5e5-6562-4af3-9317-710317d3549c

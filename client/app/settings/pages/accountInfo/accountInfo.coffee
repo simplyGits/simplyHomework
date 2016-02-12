@@ -81,5 +81,5 @@ Template.deleteAccountModal.events
 				else
 					notify 'Oops, er is iets fout gegaan.', 'error'
 			else
-				analytics?.track 'Removed Account'
+				ga 'send', 'event', 'remove account'
 				document.location.href = 'https://simplyhomework.nl/'

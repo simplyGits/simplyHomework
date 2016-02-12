@@ -111,12 +111,12 @@ Template.classView.onCreated ->
 			noticeBanner.set
 				content: 'Voeg een methode toe om betere zoekresultaten te krijgen.'
 				onClick: ->
-					analytics?.track 'Click no book banner', className: c.name
+					ga 'send', 'event', 'banner', 'click', 'no books banner'
 					showModal 'changeClassModal', undefined, currentClass
 
 Template.classView.events
 	"click #changeClassIcon": ->
-		analytics?.track 'Open ChangeClassModal', className: @name
+		ga 'send', 'event', 'changeClassModal', 'open'
 		showModal 'changeClassModal', undefined, currentClass
 
 	'click #banner': -> @onClick?()
@@ -198,7 +198,7 @@ Template.changeClassModal.events
 
 				noticeBanner.set undefined
 				notify 'Methode veranderd', 'notice'
-				analytics?.track 'Class Info Changed', className: @name
+				ga 'send', 'event', 'changeClassModal', 'save'
 				$('#changeClassModal').modal 'hide'
 
 	'click #hideClassButton': ->
