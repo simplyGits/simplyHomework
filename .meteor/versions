@@ -80,6 +80,7 @@ meteorhacks:npm@1.5.0
 meteorhacks:picker@1.0.3
 meteorhacks:subs-manager@1.6.3
 meteorhacks:unblock@1.1.0
+meteorhacks:zones@1.6.0
 mikowals:batch-insert@1.1.13
 minifiers@1.1.7
 minimongo@1.0.10
