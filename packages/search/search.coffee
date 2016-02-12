@@ -58,7 +58,9 @@ filterClasses = (query, userId) ->
 
 			if c?
 				res.push c._id
-				query = query.replace word, ''
+
+				regexp = new RegExp "((voor|van) +)?#{_.escapeRegExp word}", 'i'
+				query = query.replace regexp, ''
 
 	[res, query]
 
