@@ -4,6 +4,9 @@ Future = Npm.require 'fibers/future'
 statsCache = LRU
 	max: 75
 	maxAge: 1000 * 60 * 15 # 15 minutes
+gradeMeanCache = LRU
+	max: 100
+	maxAge: 1000 * 60 * 60 # 1 hour
 
 Meteor.methods
 	###*
@@ -283,3 +286,32 @@ Meteor.methods
 		_.filter theirs, (x) ->
 			m = moment x.start
 			_.any mine, (y) -> m.isSame y.start
+
+	gradeSchoolMean: (gradeId) ->
+		check gradeId, String
+		@unblock()
+
+		res = gradeMeanCache.get gradeId
+		unless res?
+			grade = Grades.findOne
+				_id: gradeId
+				ownerId: @userId
+			unless grade?
+				throw new Meteor.Error 'not-found'
+
+			schoolGrades = Grades.find(
+				description: grade.description
+				weight: grade.weight
+				classId: grade.classId
+				'period.id': grade.period.id
+			).fetch()
+
+			res = _(schoolGrades)
+				.pluck 'grade'
+				.compact()
+				.mean()
+				.value()
+
+			gradeMeanCache.set gradeId, res
+
+		res
