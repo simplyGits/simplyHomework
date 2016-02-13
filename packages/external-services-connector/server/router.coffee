@@ -58,4 +58,7 @@ Picker.route '/su/:suid/f/:fid', (params, req, res) ->
 
 		service.getFile(userId, info).pipe(res)
 
+	trackFileDownload
+		studyUtilId: params.suid
+		fileId: params.fid
 	undefined

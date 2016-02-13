@@ -31,3 +31,20 @@
 			c.externalInfo['woordjesleren'] = id: woordjesLerenClass.id
 
 		Classes.insert c
+
+###*
+# @method trackFileDownload
+# @param {Object} obj
+###
+@trackFileDownload = (obj) ->
+	check obj, Object
+
+	counter = FileDownloadCounters.findOne obj
+	if counter?
+		FileDownloadCounters.update counter._id, $inc: times: 1
+	else
+		FileDownloadCounters.insert _.extend obj,
+			when: new Date
+			times: 1
+
+	undefined

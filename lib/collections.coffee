@@ -25,12 +25,13 @@
 					g.weight.toFixed(1).replace '.', ','
 			)
 
-@StudyUtils = new Meteor.Collection 'studyUtils',   transform: (su) ->
+@StudyUtils = new Meteor.Collection 'studyUtils', transform: (su) ->
 	su = _.extend new StudyUtil, su
 	su.files = su.files.map (file) ->
 		_.extend file,
 			_url: "/su/#{su._id}/f/#{file._id}"
 	su
+@FileDownloadCounters  = new Mongo.Collection 'fileDownloadCounters'
 
 @ScholierenClasses     = new Meteor.Collection 'scholieren.com'
 @WoordjesLerenClasses  = new Meteor.Collection 'woordjesleren'
