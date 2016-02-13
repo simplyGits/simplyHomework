@@ -7,7 +7,10 @@
 		user-ids: user-id
 		start-date: $gte: Date.today!
 		end-date: $lte: Date.today!add-days 7
-		scrapped: no if count-scrapped
+		scrapped: (
+			if count-scrapped then no
+			else { $exists: yes }
+		)
 		school-hour:
 			$exists: yes
 			$ne: null
