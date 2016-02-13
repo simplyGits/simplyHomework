@@ -64,7 +64,6 @@ Meteor.startup ->
 	Tracker.autorun ->
 		if Meteor.userId()? # login
 			runSetup()
-			localStorage['appUsedBefore'] = yes
 
 	console.log 'global() deviceType', Session.get 'deviceType'
 
