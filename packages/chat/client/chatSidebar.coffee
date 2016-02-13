@@ -176,6 +176,12 @@ chats = (searchTerm = currentSearchTerm.get(), onlyFirst = no) ->
 	if onlyFirst then chain.first()
 	else chain.value()
 
+getChatNotify = ->
+	getUserField Meteor.userId(), 'settings.chatNotify', yes
+setChatNotify = (val) ->
+	check val, Boolean
+	Meteor.users.update Meteor.userId(), $set: 'settings.chatNotify': val
+
 Template.chatSidebar.events
 	'keyup div.searchBox': (event) ->
 		if event.which is 27
@@ -186,16 +192,14 @@ Template.chatSidebar.events
 		else
 			currentSearchTerm.set event.target.value
 
-	'click #toggleChatNotify': ->
-		# REVIEW: Should we sync this between clients?
-		RLocalStorage.setItem 'chatNotify', not RLocalStorage.getItem('chatNotify')
+	'click #toggleChatNotify': -> setChatNotify not getChatNotify()
 
 	'click .chatSidebarItem': ->
 		closeSidebar?()
 		ChatManager.openChat @_id
 
 Template.chatSidebar.helpers
-	chatNotifyEnabled: -> RLocalStorage.getItem 'chatNotify'
+	chatNotifyEnabled: -> getChatNotify()
 	chats: chats
 
 Template.chatSidebar.onCreated ->
@@ -211,7 +215,7 @@ Template.chatSidebar.onCreated ->
 			readBy: $ne: Meteor.userId()
 		).observe
 			added: (doc) ->
-				return if loadingObserve or not RLocalStorage.getItem 'chatNotify'
+				return if loadingObserve or not getChatNotify()
 
 				id = FlowRouter.getQueryParam 'openChatId'
 				unless id? and
@@ -267,9 +271,6 @@ Template.chatSidebar.onRendered ->
 	$body = $ 'body'
 	$chats = @$ '.chats'
 	$input = @$ 'input'
-
-	unless RLocalStorage.getItem('chatNotify')?
-		RLocalStorage.setItem 'chatNotify', yes
 
 	$input.on 'blur', (event) ->
 		currentSearchTerm.set ''

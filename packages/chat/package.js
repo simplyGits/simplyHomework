@@ -23,7 +23,6 @@ Package.onUse(function(api) {
 		'handlebars',
 		'mquandalle:stylus',
 		'reactive-var',
-		'simply:reactive-local-storage',
 		'notifications-manager',
 	], 'client');
 	api.use([
