@@ -44,7 +44,7 @@ fetch = (query, sync, callback) ->
 		undefined
 
 route = (query, d) ->
-	$('#searchBar input').val ''
+	$('#searchBar input').val('').blur()
 	if d?
 		if d.type is 'route'
 			FlowRouter.go d.path, d.params
