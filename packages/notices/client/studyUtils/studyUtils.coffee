@@ -13,7 +13,7 @@ NoticeManager.provide 'studyUtils', ->
 
 	if recentStudyUtils().length
 		template: 'recentStudyUtils'
-		header: 'Recent gewijzigde vakinformtie'
+		header: 'Recent gewijzigde vakinformatie'
 		priority: 0
 
 Template.recentStudyUtils.helpers
