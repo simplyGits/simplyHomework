@@ -198,22 +198,11 @@ Template.calendar.onRendered ->
 		resize() unless c.firstRun
 	$(window).resize resize
 
-	sub = _.debounce (=>
+	@autorun =>
 		dateTracker.depend()
-		[ start, end ] = dates.get()
 
+		[ start, end ] = dates.get()
 		@subscribe 'externalCalendarItems', start, end
-
-		ids = FlowRouter.getQueryParam 'userIds'
-		if ids? and ids.length > 0
-			@subscribe 'foreignCalendarItems', ids, start, end
-	), 250
-
-	@autorun ->
-		dateTracker.depend()
-		sub()
-
-		[ start, end ] = dates.get()
 		currentItems = CalendarItems.find({
 			userIds: Meteor.userId()
 			startDate: $gte: start
@@ -224,6 +213,7 @@ Template.calendar.onRendered ->
 
 		ids = FlowRouter.getQueryParam 'userIds'
 		if ids? and ids.length > 0
+			@subscribe 'foreignCalendarItems', ids, start, end
 			currentItems = currentItems.concat CalendarItems.find({
 				userIds: $in: ids
 				startDate: $gte: start
