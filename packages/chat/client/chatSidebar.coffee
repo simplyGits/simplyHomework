@@ -87,12 +87,10 @@ currentSearchTerm = new ReactiveVar ''
 				else 'offline'
 
 		sidebarIcon: ->
-			val = switch room.type
+			switch room.type
 				when 'private'
 					u = user()
 					picture u if u?
-
-			val ? ''
 		friendlyName: ->
 			switch room.type
 				when 'project'
