@@ -8,14 +8,22 @@
 			{{/if}}
 		{{/if}}
 
-		{{#each messages}}
-			{{> messageRow}}
+		{{#each items}}
+			{{#if event}}
+				{{> eventRow}}
+			{{else}}
+				{{> messageRow}}
+			{{/if}}
 		{{/each}}
 
 		{{#if newMessages}}
 			<div class="message newMessages">Er zijn {{newMessages}} nieuwe berichte(n). Klik hier om ze te lezen</div>
 		{{/if}}
 	</div>
+</template>
+
+<template name="eventRow">
+	<div class="event">{{{content}}}</div>
 </template>
 
 <template name="messageRow">

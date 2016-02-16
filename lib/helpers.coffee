@@ -352,20 +352,33 @@ class @Helpers
 	#
 	# @method formatDate
 	# @param {Date} date The date to format.
+	# @param {Boolean} [prefixes=false]
 	# @return {String|undefined} The given `date` formatted.
 	###
-	@formatDate: (date) ->
+	@formatDate: (date, prefixes = no) ->
 		return undefined unless date?
 
 		check date, Date
+		check prefixes, Boolean
 		m = moment date
 
-		if m.year() isnt new Date().getFullYear()
-			m.format "DD-MM-YYYY HH:mm"
-		else if m.toDate().date().getTime() isnt Date.today().getTime()
-			m.format "DD-MM HH:mm"
-		else
-			m.format "HH:mm"
+		m.format (
+			if m.year() isnt new Date().getFullYear()
+				if prefixes
+					'[op] DD-MM-YYYY [om] HH:mm'
+				else
+					'DD-MM-YYYY HH:mm'
+			else if m.toDate().date().getTime() isnt Date.today().getTime()
+				if prefixes
+					'[op] DD-MM [om] HH:mm'
+				else
+					'DD-MM HH:mm'
+			else
+				if prefixes
+					'[om] HH:mm'
+				else
+					'HH:mm'
+		)
 
 	###*
 	# @method timeDiff

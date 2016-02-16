@@ -32,12 +32,6 @@ throttledMarkRead = _.throttle ((template) ->
 Template.chatMessages.helpers
 	hasMore: hasMore
 	isLoading: -> sub?.loading()
-	messages: ->
-		ChatMessages.find {
-			chatRoomId: @_id
-		}, {
-			sort: 'time': 1
-		}
 	newMessages: -> # TODO
 
 Template.chatMessages.events
