@@ -71,6 +71,10 @@ Package.onUse(function(api) {
 		'client/birthday/birthday.html',
 		'client/birthday/birthday.styl',
 		'client/birthday/birthday.coffee',
+
+		'client/messages/messages.html',
+		'client/messages/messages.styl',
+		'client/messages/messages.coffee',
 	], 'client');
 	api.addFiles([
 		'server/security.coffee',

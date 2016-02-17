@@ -76,12 +76,12 @@ sidebarItemHeight = 40px
 		background-color: #fff
 		z-index: 10
 
-		overflow: scroll
-
 		+below(800px)
 			left: 0
 
 		.header
+			absolute: top left right
+
 			height: headerHeight
 			padding-left: padding
 
@@ -116,8 +116,8 @@ sidebarItemHeight = 40px
 				line-height: 35px
 				font-size: 20px
 
-		#pageContent
-			absolute: top 50px left right bottom
+		.pageContent
+			absolute: top headerHeight left right bottom
 			overflow-x: hidden
 			overflow-y: scroll
 			padding-top: 10px
@@ -129,12 +129,14 @@ sidebarItemHeight = 40px
 				top: 35px
 
 #messageList
+	padding: 0 !important
+
 	.message
 		padding = 15px
 
 		cursor: pointer
 
-		height: 75px
+		min-height: 75px
 		padding-left: padding
 		padding-right: padding
 		overflow: hidden
@@ -145,20 +147,22 @@ sidebarItemHeight = 40px
 			opacity: .7
 
 		header
+			margin-top: 7px
+			margin-bottom: 8px
+
 			roboto(300)
 			font-size: 30px
-			line-height: 50px
-
-			+mobile()
-			//+below(800px)
-				font-size: 25px
-				white-space: nowrap
+			line-height: 35px
 
 		.sender
 			float: left
 
 		.recipients
 			float: right
+
+		+mobile()
+			.sender, .recipients
+				float: none
 
 	.message:hover
 		background-color: hoverColor

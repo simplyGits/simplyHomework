@@ -17,6 +17,7 @@ Package.onUse(function(api) {
 		'tmeasday:publish-counts',
 		'stevezhu:lodash@3.10.1',
 		'mongo',
+		'shitdown',
 	]);
 	api.use([
 		'templating',

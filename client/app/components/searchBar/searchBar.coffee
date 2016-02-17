@@ -52,6 +52,8 @@ route = (query, d) ->
 			showModal d.id
 		else if d.type in [ 'report', 'wordlist', 'file' ]
 			window.open d.url, '_blank'
+		else if d.type is 'message'
+			FlowRouter.go 'messages', folder: d.folder, message: d._id
 		else
 			FlowRouter.go (
 				switch d.type

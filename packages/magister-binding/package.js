@@ -19,7 +19,8 @@ Package.onUse(function(api) {
 		'simply:external-services-connector',
 		'ejson',
 		'ecmascript',
-		'simply:lru'
+		'simply:lru',
+		'shitdown',
 	], 'server');
 	api.use([
 		'coffeescript',

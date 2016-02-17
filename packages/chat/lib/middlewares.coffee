@@ -46,18 +46,7 @@ ChatMiddlewares.attach 'preserve original content', 'client', (message) ->
 	message
 
 ChatMiddlewares.attach 'shitdown', 'client', (message) ->
-	s = message.content
-
-	s = s.replace /^######(.+)$/g, '<h6>$1</h6>'
-	s = s.replace /^#####(.+)$/g, '<h5>$1</h5>'
-	s = s.replace /^####(.+)$/g, '<h4>$1</h4>'
-	s = s.replace /^###(.+)$/g, '<h3>$1</h3>'
-	s = s.replace /^##(.+)$/g, '<h2>$1</h2>'
-	s = s.replace /^#(.+)$/g, '<h1>$1</h1>'
-	s = s.replace /([_*])\1(.*?)\1\1/g, '<strong>$2</strong>'
-	s = s.replace /([_*])(.*?)\1/g, '<em>$2</em>'
-
-	message.content = s
+	message.content = shitdown message.content, [ 'code' ]
 	message
 
 chatReplacements = [
@@ -102,7 +91,7 @@ ChatMiddlewares.attach 'convert smileys', 'client', (message) ->
 	message
 
 ChatMiddlewares.attach 'shitdown code blocks', 'client', (message) ->
-	message.content = message.content.replace /`([^`]*)`/g, '<code>$1</code>'
+	message.content = shitdown.one message.content, 'code'
 	message
 
 ChatMiddlewares.attach 'links', 'client', (message) ->

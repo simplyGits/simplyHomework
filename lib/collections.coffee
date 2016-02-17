@@ -37,6 +37,7 @@
 @WoordjesLerenClasses  = new Meteor.Collection 'woordjesleren'
 @Analytics             = new Meteor.Collection 'analytics'
 @Tickets               = new Mongo.Collection 'tickets'
+@Messages              = new Mongo.Collection 'messages', transform: (m) -> _.extend new Message, m
 
 Meteor.users._transform = (u) ->
 	u.hasRole = (roles) -> userIsInRole u._id, roles
@@ -277,6 +278,7 @@ Schemas.CalendarItems = new SimpleSchema
 		optional: yes
 	externalId:
 		type: null
+		optional: yes
 	fetchedBy:
 		type: String
 		optional: yes
@@ -297,6 +299,39 @@ Schemas.CalendarItems = new SimpleSchema
 	type:
 		type: String
 		optional: yes
+
+###
+Schemas.Messages = new SimpleSchema
+	subject:
+		type: String
+	body:
+		type: String
+	folder:
+		type: String
+		allowedValues: [ 'inbox', 'alerts', 'outbox' ]
+	sendDate:
+		type: Date
+		index: -1
+	sender:
+		type: MessageRecipient
+	recipients:
+		type: [MessageRecipient]
+	attachments:
+		#type: [Object]
+		type: null
+		blackbox: yes
+		defaultValue: []
+	fetchedFor:
+		type: [String]
+	readBy:
+		type: [String]
+	fetchedBy:
+		type: String
+		optional: yes
+	externalId:
+		type: null
+		optional: yes
+###
 
 @[key].attachSchema Schemas[key] for key of Schemas
 

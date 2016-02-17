@@ -111,3 +111,12 @@ Meteor.methods
 			update $addToSet: usersDone: userId
 		else
 			update $pull: usersDone: userId
+
+	markMessageRead: (id) ->
+		check id, String
+		Messages.update {
+			_id: id
+			fetchedFor: @userId
+		}, {
+			$addToSet: readBy: @userId
+		}

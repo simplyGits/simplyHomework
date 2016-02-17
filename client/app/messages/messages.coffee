@@ -1,88 +1,69 @@
-# HACK
+getCurrentFolder = -> FlowRouter.getParam 'folder'
+getMessages = ->
+	Messages.find (
+		folder: getCurrentFolder()
+	), {
+		sort: sendDate: -1
+	}
 
-currentFolder = -> FlowRouter.getParam 'folder'
-
+getCurrentMessage = -> Messages.findOne FlowRouter.getParam 'message'
 setCurrentMessage = (id) -> FlowRouter.setParams message: id
-currentMessage = -> _.find messages.get(), _id: +FlowRouter.getParam('message')
 
-composing = -> FlowRouter.getRouteName() is 'composeMessage'
+isComposing = -> FlowRouter.getRouteName() is 'composeMessage'
 
-@messages = messages = ReactiveVar []
-isLoading = new ReactiveVar yes
-hasMagister = new ReactiveVar yes
-amount = new ReactiveVar 15
-loadingNext = new ReactiveVar no
+hasService = new ReactiveVar yes
+offset = new ReactiveVar 0
+isLoadingNext = new ReactiveVar no
 
-folders = [
-	{
-		name: 'inbox'
-		friendlyName: 'Postvak in'
-	}
-	# {
-	# 	name: 'drafts'
-	# 	friendlyName: 'Concepten'
-	# }
-	{
-		name: 'outbox'
-		friendlyName: 'Verzonden'
-	}
-]
+hasMore = -> offset.get() < Counts.get 'messagesCount'
+
+folders = [{
+	name: 'inbox'
+	friendlyName: 'Postvak in'
+}, {
+	name: 'drafts'
+	friendlyName: 'Concepten'
+}, {
+	name: 'alerts'
+	friendlyName: 'Meldingen'
+}, {
+	name: 'outbox'
+	friendlyName: 'Verzonden'
+}]
 
 Template.messages.helpers
-	composing: -> composing()
-	isLoading: -> messages.get().length is 0 and isLoading.get()
-	folder: -> _.find folders, name: currentFolder()
-	hasMagister: -> hasMagister.get()
-	currentMessage: -> currentMessage()
-
-Template.messages.events
-	'scroll': ->
-		if loadingNext.get() or
-		composing()
-			return
-
-		$page = document.getElementsByClassName('page')[0]
-		atBottom = $page.scrollTop >= $page.scrollHeight - $page.clientHeight
-		if atBottom
-			loadingNext.set yes
-			amount.set amount.get() + 10
+	isComposing: -> isComposing()
+	folder: -> _.find folders, name: getCurrentFolder()
+	hasService: -> hasService.get()
+	currentMessage: -> getCurrentMessage()
 
 Template.messages.onCreated ->
-	tracker = new Tracker.Dependency()
+	fetchTracker = new Tracker.Dependency()
 	prev = _.now()
-	@autorun ->
+	@autorun -> # refetch every 3 minutes
 		minuteTracker.depend()
 		now = _.now()
-		if now - prev >= 180000 # 3 minutes
-			tracker.changed()
+		if now - prev >= 180000
+			fetchTracker.changed()
 			prev = now
 
-	@autorun ->
-		folder = currentFolder()
+	@autorun -> # reset stuff
+		folder = getCurrentFolder()
+		offset.set 0
+		Meteor.subscribe 'messagesCount', folder
+
+	@autorun -> # subscribe to messages
+		fetchTracker.depend()
+		folder = getCurrentFolder()
+
 		if folder?
-			messages.set []
-			isLoading.set yes
-		else
-			isLoading.set no
-	@autorun ->
-		tracker.depend()
+			Meteor.subscribe 'messages', offset.get(), [ folder ], (e) ->
+				isLoadingNext.set no
+				if e?.error is 'not-supported'
+					hasService.set no
 
-		folder = currentFolder()
-		return unless folder?
-		Meteor.call 'getMessages', folder, amount.get(), (e, r) ->
-			loadingNext.set no
-			isLoading.set no
-
-			if e?.error is 'magister-only'
-				hasMagister.set no
-			else unless e?
-				messages.set r
-
-	@fillMessage = (message) ->
-		Meteor.call 'fillMessage', message
-
-	Meteor.defer ->
-		if not currentFolder()? and Session.equals 'deviceType', 'desktop'
+	Meteor.defer -> # autoselect first folder on desktop
+		if not getCurrentFolder()? and Session.equals 'deviceType', 'desktop'
 			FlowRouter.withReplaceState ->
 				FlowRouter.setParams folder: folders[0].name
 
@@ -96,57 +77,77 @@ Template.messages.onRendered ->
 		$page = document.getElementsByClassName 'page'
 		$page.scrollTop = 0
 
-		if composing()
+		if isComposing()
 			setPageOptions title: 'Berichten | Nieuw bericht'
-		else if currentMessage()?
-			message = currentMessage()
+		else if getCurrentMessage()?
+			message = getCurrentMessage()
 			setPageOptions title: "Berichten | #{message.subject}"
-		else if currentFolder()?
-			folder = _.find folders, name: currentFolder()
+		else if getCurrentFolder()?
+			folder = _.find folders, name: getCurrentFolder()
 			setPageOptions title: "Berichten | #{folder.friendlyName}"
 		else
 			setPageOptions title: 'Berichten'
 
 Template['messages_sidebar'].helpers
 	folders: -> folders
-	hasMagister: -> hasMagister.get()
+	hasService: -> hasService.get()
 
 Template['messages_sidebar'].events
 	'click #compose': ->
 		FlowRouter.go 'composeMessage'
 
 Template['messages_sidebar_folder'].helpers
-	current: -> if currentFolder() is @name then 'current' else ''
+	current: -> if getCurrentFolder() is @name then 'current' else ''
 
 Template['messages_messageList'].helpers
-	messages: -> messages.get()
-	loadingNext: -> loadingNext.get()
+	messages: -> getMessages()
+	isLoadingNext: -> isLoadingNext.get()
+	hasMore: -> hasMore()
 
 Template['messages_messageList'].events
+	'scroll': ->
+		unless isLoadingNext.get()
+			$list = document.getElementById 'messageList'
+			atBottom = $list.scrollTop >= $list.scrollHeight - $list.clientHeight
+			if atBottom
+				isLoadingNext.set yes
+				offset.set offset.get() + 15
 	'click #closeButton': -> history.back()
 
 Template['messages_message_row'].helpers
-	__recipients: ->
-		# TODO: make this based on length of the res string instead of amount of
-		# items since they can vary in length.
-		names = _.take @recipients, 2
-
-		res = names.join ', '
-		diff = @recipients.length - names.length
-		if diff > 0
-			res += " en #{diff} #{if diff is 1 then 'andere' else 'anderen'}."
-		res
+	__recipients: -> @recipientsString 2, no
 
 Template['messages_message_row'].events
 	'click': -> setCurrentMessage @_id
 
 Template['message_current_message'].helpers
-	attachmentInfo: ->
-		count = @attachmentCount
-		"#{count} bijlage#{if count is 1 then '' else 'n'}"
+	senderString: ->
+		user = Meteor.users.findOne @sender.userId
+		if user?
+			fullName = "#{user.profile.firstName} #{user.profile.lastName}"
+			path = FlowRouter.path 'personView', id: user._id
+			"<a href='#{path}'>#{fullName}</a>"
+		else
+			@sender.fullName
+
+	attachmentCount: -> @attachments.length
+	attachments: ->
+		@attachments
+			.map (file) =>
+				a = document.createElement 'a'
+				a.href = "/m/#{@_id}/f/#{file._id}"
+				a.target = '_blank'
+				a.download = file.name
+				a.textContent = file.name
+				a.outerHTML
+			.join ', '
 
 Template['message_current_message'].events
 	'click #closeButton': -> history.back()
+
+Template['message_current_message'].onCreated ->
+	unless Meteor.userId() in @data.readBy
+		Meteor.call 'markMessageRead', @data._id
 
 Template['message_compose'].helpers
 	recipients: -> _.unescape FlowRouter.getQueryParam 'recipients'
@@ -155,13 +156,18 @@ Template['message_compose'].events
 	'click #send': ->
 		subject = document.getElementById('subject').value
 		recipients = document.getElementById('recipients').value
-		body = document.getElementById('message').value
+		body = document.getElementById('message').value.trim()
+
+		if body.length is 0
+			notify 'Inhoud kan niet leeg zijn', 'error'
+			return undefined
 
 		Meteor.call(
-			'composeMessage'
+			'sendMessage'
 			subject
 			body
-			recipients.split(';').map((r) -> r.trim())
+			recipients.split(';').map (r) -> r.trim()
+			'magister'
 			(e, r) ->
 				if e?
 					notify 'Fout tijdens versturen van bericht', 'error'

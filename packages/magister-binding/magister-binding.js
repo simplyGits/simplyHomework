@@ -1,11 +1,12 @@
-/*
+/**
  * simplyHomework binding to Magister.
  * @author simply
  * @module magister-binding
  */
  /* global Magister, ExternalServicesConnector, Schools, Grades,
   Grade, StudyUtil, GradePeriod, ExternalPerson, CalendarItem, Assignment,
-  ExternalFile, getClassInfos, LRU */
+  ExternalFile, getClassInfos, getUserField, LRU, MessageRecipient, Message,
+  shitdown */
 
 // One heck of a binding this is.
 
@@ -21,7 +22,7 @@
 		maxAge: null,
 	});
 
-	/*
+	/**
 	 * A simplyHomework binding to Magister.
 	 * @class MagisterBinding
 	 * @static
@@ -123,6 +124,7 @@
 
 			if (!useSessionId) { // Update login info
 				MagisterBinding.storedInfo(userId, {
+					externalUserId: magister.profileInfo().id(),
 					lastLogin: {
 						time: new Date(),
 						sessionId: magister._sessionId,
@@ -155,7 +157,11 @@
 		}
 	}
 
-	/*
+	function prefixId (magister, id) {
+		return magister.magisterSchool.id + '_' + id;
+	}
+
+	/**
 	 * Gets the current course for the given Magister object.
 	 * @method getCurrentCourse
 	 * @private
@@ -168,7 +174,7 @@
 		return fut.wait();
 	}
 
-	/*
+	/**
 	 * Get the grades for the given userId from Magister.
 	 * @method getGrades
 	 * @param {String} userId The ID of the user to get the grades from.
@@ -207,7 +213,7 @@
 					// HACK: WET (unDRY, ;)) code.
 					const stored = Grades.findOne({
 						fetchedBy: MagisterBinding.name,
-						externalId: magister.magisterSchool.id + '_' + g.id(),
+						externalId: prefixId(magister, g.id()),
 						weight: g.counts() ? g.weight() : 0,
 						gradeStr: g.grade(),
 					});
@@ -242,7 +248,7 @@
 									grade.gradeType = 'percentage';
 								}
 								grade.fetchedBy = MagisterBinding.name;
-								grade.externalId = magister.magisterSchool.id + '_' + g.id();
+								grade.externalId = prefixId(magister, g.id());
 								grade.description = g.description().trim();
 								grade.passed = g.passed() || grade.passed;
 								grade.dateFilledIn = g.dateFilledIn();
@@ -273,11 +279,13 @@
 	 * @method convertMagisterFile
 	 * @param prefix {String}
 	 * @param file {File} The Magister file to convert.
+	 * @param [usePersonPath=false] {Boolean}
 	 * @return {ExternalFile} The given `file` converted to a ExternalFile.
 	 */
-	const convertMagisterFile = function (prefix, file) {
+	const convertMagisterFile = function (prefix, file, usePersonPath = false) {
 		check(prefix, String);
 		check(file, Magister.File);
+		check(usePersonPath, Boolean);
 
 		const res = new ExternalFile(file.name());
 
@@ -291,13 +299,17 @@
 			res.downloadInfo = {
 				redirect: uri,
 			};
+		} else if (usePersonPath) {
+			res.downloadInfo = {
+				personPath: prefix + file.id(),
+			};
 		} else {
 			res.downloadInfo = {
-				personalPath: prefix + file.id(),
+				pupilPath: prefix + file.id(),
 			};
 		}
 		res.fetchedBy = MagisterBinding.name;
-		res.externalId = `${file._magisterObj.magisterSchool.id}_${file.id()}`;
+		res.externalId = prefixId(file._magisterObj, file.id());
 
 		return res;
 	};
@@ -307,9 +319,16 @@
 		check(info, Object);
 
 		const magister = getMagisterObject(userId);
+		let url;
+		if (info.pupilPath) {
+			url = `${magister._pupilUrl}/${info.pupilPath}`;
+		} else if (info.personPath) {
+			url = `${magister._personUrl}/${info.personPath}`;
+		}
+
 		return request({
 			method: 'get',
-			url: `${magister._pupilUrl}/${info.personalPath}`,
+			url: url,
 			headers: {
 				cookie: magister.http._cookie,
 			},
@@ -417,7 +436,7 @@
 					person.teacherCode = p.teacherCode();
 					person.group = p.group();
 
-					person.externalId = magister.magisterSchool.id + '_' + p.id();
+					person.externalId = prefixId(magister, p.id());
 					person.fetchedBy = MagisterBinding.name;
 
 					return person;
@@ -456,7 +475,7 @@
 					);
 
 					calendarItem.usersDone = a.isDone() ? [ userId ] : [];
-					calendarItem.externalId = magister.magisterSchool.id + '_' + a.id();
+					calendarItem.externalId = prefixId(magister, a.id());
 					calendarItem.fetchedBy = MagisterBinding.name;
 					if (!_.isEmpty(a.content())) {
 						calendarItem.content = {
@@ -488,7 +507,7 @@
 					const absenceInfo = a.absenceInfo();
 					if (absenceInfo != null) {
 						calendarItem.absenceInfo = {
-							externalId: magister.magisterSchool.id + '_' + absenceInfo.id(),
+							externalId: prefixId(magister, absenceInfo.id()),
 							type: absenceInfo.typeString(),
 							permitted: absenceInfo.permitted(),
 							description: absenceInfo.description(),
@@ -646,7 +665,7 @@
 					);
 
 					assignment.description = a.description();
-					assignment.externalId = magister.magisterSchool.id + '_' + a.id();
+					assignment.externalId = prefixId(magister, a.id());
 					assignment.fetchedBy = MagisterBinding.name;
 
 					return assignment;
@@ -657,19 +676,25 @@
 		return fut.wait();
 	};
 
-	MagisterBinding.getMessages = function (folder, skip, limit, userId) {
-		check(folder, String);
+	MagisterBinding.getMessages = function (folderName, skip, limit, userId) {
+		check(folderName, String);
 		check(skip, Number);
 		check(limit, Number);
 		check(userId, String);
 
 		const fut = new Future();
-
+		const schoolId = getUserField(userId, 'profile.schoolId');
 		const magister = getMagisterObject(userId);
-		if (folder === 'inbox') {
+
+		let folder;
+		if (folderName === 'inbox') {
 			folder = magister.inbox();
-		} else if (folder === 'outbox') {
+		} else if (folderName === 'alerts') {
+			folder = magister.alerts();
+		} else if (folderName === 'outbox') {
 			folder = magister.sentItems();
+		} else {
+			return []; // folder not supported.
 		}
 
 		folder.messages({
@@ -680,18 +705,42 @@
 				fut.throw(e);
 			} else {
 				fut.return(r.map(function (m) {
-					return {
-						_id: m.id(),
-						sendDate: m.sendDate(),
-						body: m._body,
-						sender: m.sender().description(),
-						subject: m.subject(),
-						recipients: _.pluck(m.recipients(), '_description'),
-						read: m.isRead(),
-						attachmentCount: m.attachments().length,
+					const path = '/berichten/bijlagen/';
+					const convertMagisterPerson = function (person) {
+						const res = new MessageRecipient(person.firstName(), person.lastName());
+						res.fullName = person.description();
+						res.teacherCode = person.teacherCode();
 
-						_fillUrl: m._fillUrl,
+						if (person.id() === magister.profileInfo().id()) {
+							// performance shortcut
+							res.userId = userId;
+						} else {
+							const user = Meteor.users.findOne({
+								'profile.schoolId': schoolId,
+								'externalServices.magister.externalUserId': person.id(),
+							});
+							if (user !== undefined) {
+								res.userId = user._id;
+							}
+						}
+
+						return res;
 					};
+
+					const message = new Message(
+						m.subject(),
+						m._body,
+						folderName,
+						m.sendDate(),
+						convertMagisterPerson(m.sender())
+					);
+					message.recipients = m.recipients().map(convertMagisterPerson);
+					message.fetchedBy = MagisterBinding.name;
+					message.externalId = prefixId(magister, m.id());
+					message.attachments = m.attachments().map((file) => convertMagisterFile(path, file, true));
+					message.readBy = m.isRead() ? [ userId ] : [];
+
+					return message;
 				}));
 			}
 		});
@@ -699,11 +748,13 @@
 		return fut.wait();
 	};
 
-	MagisterBinding.composeMessage = function (subject, body, recipients, userId) {
+	MagisterBinding.sendMessage = function (subject, body, recipients, userId) {
 		check(subject, String);
 		check(body, String);
 		check(recipients, [String]);
 		check(userId, String);
+
+		body = shitdown(body, [ 'code', 'headers' ]);
 
 		const fut = new Future();
 		getMagisterObject(userId).composeAndSendMessage(subject, body, recipients, function (e, r) {
@@ -716,6 +767,48 @@
 
 		return fut.wait();
 	};
+
+	/**
+	 * @method replyMessage
+	 * @param {String} id
+	 * @param {Boolean} all
+	 * @param {String} body
+	 * @param {String} userId
+	 */
+	MagisterBinding.replyMessage = function (id, all, body, userId) {
+		check(id, String);
+		check(all, Boolean);
+		check(body, String);
+		check(userId, String);
+
+		body = shitdown(body, [ 'code', 'headers' ]);
+
+		const fut = new Future();
+		const magister = getMagisterObject(userId);
+		request({
+			method: 'get',
+			url: `${magister._personUrl}/berichten/${id}`,
+			headers: {
+				cookie: magister.http._cookie,
+			},
+		}, function (error, response, content) {
+			if (response && response.statusCode >= 400) {
+				fut.throw(content);
+			} else {
+				const parsed = JSON.parse(content);
+				let message = Magister.Message._convertRaw(magister, parsed);
+
+				if (all) {
+					message = message.createReplyToAllMessage(body);
+				} else {
+					message = message.createReplyMessage(body);
+				}
+				message.send(fut.resolver());
+			}
+		});
+
+		return fut.wait();
+	}
 
 	ExternalServicesConnector.pushExternalService(MagisterBinding);
 })(Magister, Npm.require('fibers/future'), Npm.require('request'));

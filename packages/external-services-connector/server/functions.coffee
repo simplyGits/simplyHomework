@@ -88,6 +88,7 @@ updateGrades = (userId, forceUpdate = no) ->
 			Schemas.Grades.clean grade
 			val = _.find grades,
 				externalId: grade.externalId
+				fetchedBy: grade.fetchedBy
 
 			if val?
 				if hasChanged val, grade, [ 'dateTestMade' ]
@@ -500,31 +501,77 @@ getProfileData = (userId) ->
 	res
 
 AD_STRING = '\n\n---\nVerzonden vanuit <a href="http://www.simplyHomework.nl">simplyHomework</a>.'
-getMessages = (folder, skip, limit, userId) ->
-	check folder, String
-	check skip, Number
-	check limit, Number
+###*
+# @method updateMessages
+# @param {String} userId
+# @param {Number} offset
+# @param {String[]} folders
+# @param {Boolean} [forceUpdate=false]
+# @return {Error[]}
+###
+updateMessages = (userId, offset, folders, forceUpdate = no) ->
 	check userId, String
+	check offset, Number
+	check folders, [String]
+	check forceUpdate, Boolean
 
 	services = _.filter Services, (s) -> s.getMessages? and s.active userId
-	res = []
-	for service in services
-		res = res.concat service.getMessages folder, skip, limit, userId
+	errors = []
+	LIMIT = 20
+	NEW_MESSAGES_LIMIT = 5
 
-	res = res.map (m) ->
-		if m.body? then m.body = m.body.replace AD_STRING, ''
-		m
-	res
+	for folder in folders
+		for service in services
+			handleErr = (e) ->
+				console.log 'error while fetching messages from service.', e
+				ExternalServicesConnector.handleServiceError service.name, userId, e
+				errors.push e
 
-fillMessage = (message, service, userId) ->
-	check message, Object
-	check service, String
-	check userId, String
+			result = []
+			try # fetch the messages asked for
+				result = result.concat(
+					service.getMessages folder, offset, LIMIT, userId
+				)
+			catch e
+				handleErr e
+				continue
 
-	service = _.find Services, (s) -> s.name is service and s.getMessages? and s.active userId
-	serivce.fillMessage message, userId
+			if offset > 0 # fetch new messages at top, unless we are asked for them.
+				try
+					result = result.concat(
+						service.getMessages folder, 0, NEW_MESSAGES_LIMIT, userId
+					)
+				catch e
+					handleErr e
+					continue
 
-composeMessage = (subject, body, recipients, service, userId) ->
+			for message in result ? []
+				continue unless message?
+				if message.body?
+					message.body = message.body.replace AD_STRING, ''
+				message.fetchedFor = [ userId ]
+
+				val = Messages.findOne
+					externalId: message.externalId
+					fetchedBy: message.fetchedBy
+
+				if val?
+					mergeUserIdsField = (fieldName) ->
+						message[fieldName] = _(val[fieldName])
+							.concat message[fieldName]
+							.uniq()
+							.value()
+					mergeUserIdsField 'fetchedFor'
+					mergeUserIdsField 'readBy'
+
+					if hasChanged val, message
+						Messages.update message._id, message, validate: no
+				else
+					Messages.insert message
+
+	errors
+
+sendMessage = (subject, body, recipients, service, userId) ->
 	check subject, String
 	check body, String
 	check recipients, [String]
@@ -533,18 +580,26 @@ composeMessage = (subject, body, recipients, service, userId) ->
 
 	body += AD_STRING
 
-	service = _.find Services, (s) -> s.name is service and s.composeMessage? and s.active userId
-	service.composeMessage subject, body, recipients, userId
+	service = _.find Services, (s) -> s.name is service and s.sendMessage? and s.active userId
+	service.sendMessage subject, body, recipients, userId
 
-replyMessage = (body, id, all, service, userId) ->
-	check body, String
-	check id, Number
+replyMessage = (id, all, body, service, userId) ->
+	check id, String
 	check all, Boolean
+	check body, String
 	check service, String
 	check userId, String
 
+	message = Messages.findOne
+		_id: id
+		fetchedFor: @userId
+	unless message?
+		throw new Meteor.Error 'message-not-found'
+
+	id = _(message.externalId).split('_').last()
+
 	service = _.find Services, (s) -> s.name is service and s.getMessages? and s.active userId
-	serivce.replyMessage body, id, all, userId
+	serivce.replyMessage id, all, body, userId
 
 ###*
 # Returns an array containing info about available services.
@@ -573,8 +628,7 @@ getModuleInfo = (userId) ->
 @getSchools = getSchools
 @getServiceProfileData = getServiceProfileData
 @getProfileData = getProfileData
-@getMessages = getMessages
-@fillMessage = fillMessage
-@composeMessage = composeMessage
+@updateMessages = updateMessages
+@sendMessage = sendMessage
 @replyMessage = replyMessage
 @getModuleInfo = getModuleInfo

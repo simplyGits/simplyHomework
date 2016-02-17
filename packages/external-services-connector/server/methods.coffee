@@ -69,51 +69,32 @@ Meteor.methods
 		@unblock()
 		getProfileData @userId
 
-	'getMessages': (folder, amount) ->
-		@unblock()
-		check folder, String
-		check amount, Number
-
-		userId = @userId
-		service = _.find Services, (s) -> s.name is 'magister' and s.active userId
-		if not service?
-			throw new Meteor.Error 'magister-only'
-
-		getMessages folder, 0, amount, userId
-
-	'fillMessage': (message) ->
-		@unblock()
-		check message, Object
-
-		userId = @userId
-		service = _.find Services, (s) -> s.name is 'magister' and s.active userId
-		if not service?
-			throw new Meteor.Error 'magister-only'
-
-		fillMessage message, 'magister', userId
-
-	'composeMessage': (subject, body, recipients) ->
+	'sendMessage': (subject, body, recipients, service) ->
 		@unblock()
 		check subject, String
 		check body, String
 		check recipients, [String]
+		check service, String
+
+		if body.trim().length is 0
+			throw new Meteor.Error 'no-content'
 
 		userId = @userId
-		service = _.find Services, (s) -> s.name is 'magister' and s.active userId
+		service = _.find Services, (s) -> s.name is service and s.sendMessage? and s.active userId
 		if not service?
-			throw new Meteor.Error 'magister-only'
+			throw new Meteor.Error 'not-supported'
 
-		composeMessage subject, body, recipients, 'magister', userId
+		sendMessage subject, body, recipients, service, userId
 
-	'replyMessage': (body, id, all) ->
+	'replyMessage': (id, all, body) ->
 		@unblock()
-		check body, String
-		check id, Number
+		check id, String
 		check all, Boolean
+		check body, String
 
 		userId = @userId
 		service = _.find Services, (s) -> s.name is 'magister' and s.active userId
 		if not service?
 			throw new Meteor.Error 'magister-only'
 
-		replyMessage body, id, all, 'magister', userId
+		replyMessage id, all, body, 'magister', userId

@@ -1,0 +1,15 @@
+<template name="unreadMessages">
+	<div id="unreadMessages">
+		{{#each messages}}
+			{{> unreadMessages_message}}
+		{{/each}}
+	</div>
+</template>
+
+<template name="unreadMessages_message">
+	<a href="{{pathFor 'messages' folder=folder message=_id}}">
+		<div class="message">
+				<b>{{subject}}</b> van {{sender.fullName}} op {{dateFormat 'dddd D MMMM HH:mm' sendDate}}
+		</div>
+	</a>
+</template>

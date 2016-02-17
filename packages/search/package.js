@@ -24,6 +24,7 @@ Package.onUse(function(api) {
 		'providers/routes.coffee',
 		'providers/users.coffee',
 		'providers/studyUtils.coffee',
+		'providers/messages.coffee',
 	], 'server')
 	api.export('Search', 'server')
 })

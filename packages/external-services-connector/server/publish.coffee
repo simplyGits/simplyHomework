@@ -132,3 +132,29 @@ Meteor.publish 'externalStudyUtils', (options) ->
 	query.classId = classId if classId?
 	query.updatedOn =  { $gte: Date.today().addDays -4 } if onlyRecent
 	StudyUtils.find query
+
+Meteor.publish 'messages', (offset, folders) ->
+	check offset, Number
+	check folders, [String]
+
+	@unblock()
+	unless @userId?
+		@ready()
+		return undefined
+
+	userId = @userId
+	service = _.find Services, (s) -> s.getMessages? and s.active userId
+	if not service?
+		throw new Meteor.Error 'not-supported'
+
+	handle = Helpers.interval (->
+		updateMessages userId, offset, folders, no
+	), 1000 * 60 * 5 # 5 minutes
+
+	Messages.find {
+		fetchedFor: userId
+		folder: $in: folders
+	}, {
+		sort: sendDate: -1
+		limit: offset + 20
+	}

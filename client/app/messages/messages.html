@@ -1,17 +1,15 @@
 <template name="messages">
 	<div id="messages">
 		{{> messages_sidebar}}
-		{{#if composing}}
+		{{#if isComposing}}
 			<div class="page">
 				{{> message_compose}}
 			</div>
 		{{/if}}
 		{{#if folder}}
 			<div class="page">
-				{{#if hasMagister}}
-					{{#if isLoading}}
-						{{> loading}}
-					{{else}}
+				{{#if hasService}}
+					{{#if Template.subscriptionsReady}}
 						{{#with currentMessage}}
 							{{> message_current_message}}
 						{{else}}
@@ -19,9 +17,11 @@
 								{{> messages_messageList}}
 							{{/with}}
 						{{/with}}
+					{{else}}
+						{{> loading}}
 					{{/if}}
 				{{else}}
-					Berichten worden momenteel alleen nog ondersteund met Magister.
+					Je bent niet <a href="{{pathFor 'settings' page='externalServices'}}">verbonden</a> met sites die berichten ondersteunen.
 				{{/if}}
 			</div>
 		{{/if}}
@@ -37,7 +37,7 @@
 				{{> messages_sidebar_folder}}
 			{{/each}}
 
-			{{#if hasMagister}}
+			{{#if hasService}}
 				<div id="compose">
 					Bericht opstellen
 				</div>
@@ -59,20 +59,22 @@
 		<div id="name">{{friendlyName}}</div>
 		<span id="closeButton">&times;</span>
 	</div>
-	<div id="messageList">
+	<div class="pageContent" id="messageList">
 		{{#if messages}}
 			{{#each messages}}
 				{{> messages_message_row}}
 			{{/each}}
 
-			{{#if loadingNext}}
-				<div class="loadMore loading">
-					Berichten aan het laden...
-				</div>
-			{{else}}
-				<div class="loadMore">
-					Scroll naar onder om meer berichten te laden.
-				</div>
+			{{#if hasMore}}
+				{{#if isLoadingNext}}
+					<div class="loadMore loading">
+						Berichten aan het laden...
+					</div>
+				{{else}}
+					<div class="loadMore">
+						Scroll naar onder om meer berichten te laden.
+					</div>
+				{{/if}}
 			{{/if}}
 		{{else}}
 			Geen berichten gevonden
@@ -86,7 +88,7 @@
 			{{subject}}
 		</header>
 		<div class="sender">
-			<span class="dim">Verzender:</span> {{sender}}
+			<span class="dim">Verzender:</span> {{sender.fullName}}
 		</div>
 		<div class="recipients">
 			<span class="dim">Ontvangers:</span> {{__recipients}}
@@ -99,19 +101,19 @@
 		<div id="name">{{subject}}</div>
 		<span id="closeButton" class="desktop-too">&times;</span>
 	</div>
-	<div id="full_message">
+	<div class="pageContent" id="full_message">
 		<div class="sender">
-			<span class="dim">Verzender:</span> {{sender}}
+			<span class="dim">Verzender:</span> {{{senderString}}}
 		</div>
 		<div class="recipients">
-			<span class="dim">Ontvangers:</span> {{recipients}}
+			<span class="dim">Ontvangers:</span> {{{recipientsString}}}
 		</div>
 		<div class="sendDate">
 			Verzonden om: {{dateFormat 'dddd D MMMM YYYY HH:mm' sendDate}}
 		</div>
-		{{#if attachmentCount}}
+		{{#if attachments}}
 			<div class="attachments">
-				{{attachmentInfo}}
+				{{plural attachmentCount 'Bijlage' 'Bijlagen'}}: {{{attachments}}}
 			</div>
 		{{/if}}
 		<div class="body">
@@ -124,7 +126,7 @@
 	<div id="compose_message">
 		<button id="send">Verzenden <i class="fa fa-angle-double-right"></i></button>
 		<input type="text" id="subject" placeholder="Onderwerp" />
-		<input type="text" id="recipients" placeholder="Ontvangers, gescheiden door een ';'" value="{{recipients}}" />
+		<input type="text" id="recipients" placeholder="Ontvangers, gescheiden door een ';'" value="{{recipientsString}}" />
 		<textarea id="message" placeholder="Bericht inhoud"></textarea>
 	</div>
 </template>
