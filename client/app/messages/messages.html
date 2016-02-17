@@ -109,11 +109,11 @@
 			<span class="dim">Ontvangers:</span> {{{recipientsString}}}
 		</div>
 		<div class="sendDate">
-			Verzonden om: {{dateFormat 'dddd D MMMM YYYY HH:mm' sendDate}}
+			<span class="dim">Verzonden om:</span> {{dateFormat 'dddd D MMMM YYYY HH:mm' sendDate}}
 		</div>
 		{{#if attachments}}
 			<div class="attachments">
-				{{plural attachmentCount 'Bijlage' 'Bijlagen'}}: {{{attachments}}}
+				<span class="dim">{{plural attachmentCount 'Bijlage' 'Bijlagen'}}</span>: {{{attachments}}}
 			</div>
 		{{/if}}
 		<div class="body">
