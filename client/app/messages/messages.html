@@ -90,9 +90,11 @@
 		<div class="sender">
 			<span class="dim">Verzender:</span> {{sender.fullName}}
 		</div>
-		<div class="recipients">
-			<span class="dim">Ontvangers:</span> {{__recipients}}
-		</div>
+		{{#if recipients}}
+			<div class="recipients">
+				<span class="dim">Ontvangers:</span> {{__recipients}}
+			</div>
+		{{/if}}
 	</div>
 </template>
 
@@ -105,9 +107,11 @@
 		<div class="sender">
 			<span class="dim">Verzender:</span> {{{senderString}}}
 		</div>
-		<div class="recipients">
-			<span class="dim">Ontvangers:</span> {{{recipientsString}}}
-		</div>
+		{{#if recipientsString}}
+			<div class="recipients">
+				<span class="dim">Ontvangers:</span> {{{recipientsString}}}
+			</div>
+		{{/if}}
 		<div class="sendDate">
 			<span class="dim">Verzonden om:</span> {{dateFormat 'dddd D MMMM YYYY HH:mm' sendDate}}
 		</div>
