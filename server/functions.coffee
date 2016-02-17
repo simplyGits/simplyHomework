@@ -43,8 +43,6 @@
 	if counter?
 		FileDownloadCounters.update counter._id, $inc: times: 1
 	else
-		FileDownloadCounters.insert _.extend obj,
-			when: new Date
-			times: 1
+		FileDownloadCounters.insert _.extend obj, times: 1
 
 	undefined
