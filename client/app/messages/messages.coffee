@@ -50,13 +50,13 @@ Template.messages.onCreated ->
 	@autorun -> # reset stuff
 		folder = getCurrentFolder()
 		offset.set 0
-		Meteor.subscribe 'messagesCount', folder
 
 	@autorun -> # subscribe to messages
 		fetchTracker.depend()
 		folder = getCurrentFolder()
 
 		if folder?
+			Meteor.subscribe 'messagesCount', folder
 			Meteor.subscribe 'messages', offset.get(), [ folder ], (e) ->
 				isLoadingNext.set no
 				if e?.error is 'not-supported'
