@@ -78,6 +78,7 @@
 @ScheduleFunctions.current-lesson = (user-id = Meteor.user-id!) ->
 	check user-id, String
 
+	minuteTracker?.depend!
 	CalendarItems.find-one do
 		user-ids: user-id
 		start-date: $lt: new Date
