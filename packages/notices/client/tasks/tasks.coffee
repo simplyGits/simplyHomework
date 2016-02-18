@@ -3,6 +3,7 @@
 # @return {Date}
 ###
 getDate = ->
+	dateTracker.depend()
 	Date.today().addDays switch new Date().getDay()
 		when 5 then 3
 		when 6 then 2
@@ -37,7 +38,6 @@ getTasks = ->
 	}).fetch()
 
 NoticeManager.provide 'tasks', ->
-	dateTracker.depend()
 	@subscribe 'externalCalendarItems', Date.today(), Date.today().addDays 4
 
 	day = Helpers.formatDateRelative getDate(), no
