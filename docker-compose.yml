@@ -29,6 +29,8 @@ mongo:
   image: mongo:latest
   restart: always
   command: mongod --replSet meteor
+  volumes:
+   - /var/lib/docker/volumes/506e3b37f0f9893f7ef67f82e2676a647e6396781423ad5b82a7db7aad0ddd7c/_data:/data/db
 
 proxy:
   image: jwilder/nginx-proxy
