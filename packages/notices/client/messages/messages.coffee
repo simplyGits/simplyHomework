@@ -1,4 +1,5 @@
 recentMessages = ->
+	dateTracker.depend()
 	date = Date.today().addDays -5
 	Messages.find(
 		sendDate: $gte: date
