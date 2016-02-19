@@ -21,53 +21,6 @@ currentSearchTerm = new ReactiveVar ''
 		if room.type is 'class' and room.classInfo.ids.length is 1
 			Classes.findOne _id: $in: room.classInfo.ids
 
-	items = new Mongo.Collection null
-
-	updateEvents = ->
-		for event in room.events ? []
-			allLoaded = items.find(
-				event: $ne: yes
-			).count() >= Counts.get 'chatMessageCount'
-			inTime = items.find(
-				event: $ne: yes
-				time: $lte: event.time
-			).count() > 0
-
-			query =
-				event: yes
-				time: event.time
-				type: event.type
-
-			if allLoaded or inTime
-				items.upsert query,
-					event: yes
-					content: (
-						time = Helpers.formatDate event.time, yes
-
-						u = Meteor.users.findOne event.userId
-						{ firstName, lastName } = u.profile
-						path = FlowRouter.path 'personView', id: u._id
-						userUrl = "<a href='#{path}'>#{_.escape firstName} #{_.escape lastName}</a>"
-
-						switch event.type
-							when 'created' then "Chat aangemaakt door #{userUrl} #{time}"
-							when 'joined' then "#{userUrl} is de chat binnengekomen #{time}"
-							when 'left' then "#{userUrl} heeft de chat verlaten #{time}"
-					)
-					time: event.time
-					type: event.type
-			else
-				items.remove query
-
-	ChatMessages.find({ chatRoomId: room._id }).observe
-		added: (doc) ->
-			items.insert doc
-			updateEvents()
-		changed: (newDoc, oldDoc) -> items.update oldDoc._id, newDoc
-		removed: (doc) ->
-			items.remove _id: doc._id
-			updateEvents()
-
 	_.extend room,
 		user: user
 		project: project
@@ -104,7 +57,35 @@ currentSearchTerm = new ReactiveVar ''
 				else ''
 		initial: -> Helpers.first(@friendlyName()).toUpperCase()
 
-		items: -> items.find {}, sort: 'time': 1
+		items: ->
+			chatMessages = ChatMessages.find({ chatRoomId: room._id }).fetch()
+			_(room.events)
+				.filter (event) ->
+					allLoaded = chatMessages.length >= Counts.get 'chatMessageCount'
+					inTime = _.any chatMessages, (i) ->
+						i.time.getTime() < event.time.getTime()
+
+					allLoaded or inTime
+				.map (event) ->
+					event: yes
+					content: (
+						time = Helpers.formatDate event.time, yes
+
+						u = Meteor.users.findOne event.userId
+						{ firstName, lastName } = u.profile
+						path = FlowRouter.path 'personView', id: u._id
+						userUrl = "<a href='#{path}'>#{_.escape firstName} #{_.escape lastName}</a>"
+
+						switch event.type
+							when 'created' then "Chat aangemaakt door #{userUrl} #{time}"
+							when 'joined' then "#{userUrl} is de chat binnengekomen #{time}"
+							when 'left' then "#{userUrl} heeft de chat verlaten #{time}"
+					)
+					time: event.time
+					type: event.type
+				.concat chatMessages
+				.sortBy 'time'
+				.value()
 
 		unreadMessagesCount: ->
 			Math.min 99, ChatMessages.find(
