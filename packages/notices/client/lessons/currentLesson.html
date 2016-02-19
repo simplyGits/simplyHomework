@@ -1,4 +1,6 @@
 <template name="infoCurrentAppointment">
 	Nog {{timeLeft}} (tot {{time endDate}})<br>
-	Locatie: {{location}}
+	{{#if location}}
+		Locatie: {{location}}
+	{{/if}}
 </template>
