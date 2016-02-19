@@ -207,7 +207,7 @@
 
 				r
 				.filter(function (g) {
-					return [14].indexOf(g.type().type()) === -1;
+					return [14, 4].indexOf(g.type().type()) === -1;
 				})
 				.forEach(function (g, i) {
 					// HACK: WET (unDRY, ;)) code.
