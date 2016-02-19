@@ -7,7 +7,7 @@ recentMessages = ->
 	).fetch()
 
 NoticeManager.provide 'messges', ->
-	@subscribe 'messages', 0, [ 'inbox' ]
+	@subscribe 'messages', 0, [ 'inbox' ], yes
 
 	if recentMessages().length
 		template: 'unreadMessages'

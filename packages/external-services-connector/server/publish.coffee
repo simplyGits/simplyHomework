@@ -133,9 +133,10 @@ Meteor.publish 'externalStudyUtils', (options) ->
 	query.updatedOn =  { $gte: Date.today().addDays -3 } if onlyRecent
 	StudyUtils.find query
 
-Meteor.publish 'messages', (offset, folders) ->
+Meteor.publish 'messages', (offset, folders, unreadOnly = no) ->
 	check offset, Number
 	check folders, [String]
+	check unreadOnly, Boolean
 
 	@unblock()
 	unless @userId?
@@ -151,10 +152,10 @@ Meteor.publish 'messages', (offset, folders) ->
 		updateMessages userId, offset, folders, no
 	), 1000 * 60 * 5 # 5 minutes
 
-	Messages.find {
+	query =
 		fetchedFor: userId
 		folder: $in: folders
-	}, {
+	query.readBy = { $ne: userId } if unreadOnly
+	Messages.find query,
 		sort: sendDate: -1
 		limit: offset + 20
-	}
