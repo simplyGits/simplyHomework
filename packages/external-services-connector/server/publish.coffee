@@ -130,7 +130,7 @@ Meteor.publish 'externalStudyUtils', (options) ->
 
 	query = userIds: @userId
 	query.classId = classId if classId?
-	query.updatedOn =  { $gte: Date.today().addDays -4 } if onlyRecent
+	query.updatedOn =  { $gte: Date.today().addDays -3 } if onlyRecent
 	StudyUtils.find query
 
 Meteor.publish 'messages', (offset, folders) ->
