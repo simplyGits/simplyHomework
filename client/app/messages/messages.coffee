@@ -6,7 +6,7 @@ getMessages = ->
 		sort: sendDate: -1
 	}
 
-getCurrentMessage = -> Messages.findOne FlowRouter.getParam 'message'
+getCurrentMessageId = -> FlowRouter.getParam 'message'
 setCurrentMessage = (id) -> FlowRouter.setParams message: id
 
 isComposing = -> FlowRouter.getRouteName() is 'composeMessage'
@@ -35,7 +35,7 @@ Template.messages.helpers
 	isComposing: -> isComposing()
 	folder: -> _.find folders, name: getCurrentFolder()
 	hasService: -> hasService.get()
-	currentMessage: -> getCurrentMessage()
+	hasCurrentMessage: -> getCurrentMessageId()?
 
 Template.messages.onCreated ->
 	fetchTracker = new Tracker.Dependency()
@@ -79,9 +79,9 @@ Template.messages.onRendered ->
 
 		if isComposing()
 			setPageOptions title: 'Berichten | Nieuw bericht'
-		else if getCurrentMessage()?
-			message = getCurrentMessage()
-			setPageOptions title: "Berichten | #{message.subject}"
+		else if getCurrentMessageId()?
+			message = Messages.findOne getCurrentMessageId()
+			setPageOptions title: "Berichten | #{message.subject}" if message?
 		else if getCurrentFolder()?
 			folder = _.find folders, name: getCurrentFolder()
 			setPageOptions title: "Berichten | #{folder.friendlyName}"
@@ -121,6 +121,8 @@ Template['messages_message_row'].events
 	'click': -> setCurrentMessage @_id
 
 Template['message_current_message'].helpers
+	message: -> Messages.findOne getCurrentMessageId()
+
 	senderString: ->
 		user = Meteor.users.findOne @sender.userId
 		if user?
@@ -146,8 +148,13 @@ Template['message_current_message'].events
 	'click #closeButton': -> history.back()
 
 Template['message_current_message'].onCreated ->
-	unless Meteor.userId() in @data.readBy
-		Meteor.call 'markMessageRead', @data._id
+	@autorun =>
+		id = getCurrentMessageId()
+		@subscribe 'message', id
+
+		message = Messages.findOne id
+		if message? and Meteor.userId() not in message.readBy
+			Meteor.call 'markMessageRead', id
 
 Template['message_compose'].helpers
 	recipients: -> _.unescape FlowRouter.getQueryParam 'recipients'

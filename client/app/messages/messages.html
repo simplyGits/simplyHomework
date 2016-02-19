@@ -10,13 +10,13 @@
 			<div class="page">
 				{{#if hasService}}
 					{{#if Template.subscriptionsReady}}
-						{{#with currentMessage}}
+						{{#if hasCurrentMessage}}
 							{{> message_current_message}}
 						{{else}}
 							{{#with folder}}
 								{{> messages_messageList}}
 							{{/with}}
-						{{/with}}
+						{{/if}}
 					{{else}}
 						{{> loading}}
 					{{/if}}
@@ -99,31 +99,39 @@
 </template>
 
 <template name="message_current_message">
-	<div class="header">
-		<div id="name">{{subject}}</div>
-		<span id="closeButton" class="desktop-too">&times;</span>
-	</div>
-	<div class="pageContent" id="full_message">
-		<div class="sender">
-			<span class="dim">Verzender:</span> {{{senderString}}}
+	{{#with message}}
+		<div class="header">
+			<div id="name">{{subject}}</div>
+			<span id="closeButton" class="desktop-too">&times;</span>
 		</div>
-		{{#if recipientsString}}
-			<div class="recipients">
-				<span class="dim">Ontvangers:</span> {{{recipientsString}}}
+		<div class="pageContent" id="full_message">
+			<div class="sender">
+				<span class="dim">Verzender:</span> {{{senderString}}}
 			</div>
-		{{/if}}
-		<div class="sendDate">
-			<span class="dim">Verzonden om:</span> {{dateFormat 'dddd D MMMM YYYY HH:mm' sendDate}}
-		</div>
-		{{#if attachments}}
-			<div class="attachments">
-				<span class="dim">{{plural attachmentCount 'Bijlage' 'Bijlagen'}}</span>: {{{attachments}}}
+			{{#if recipientsString}}
+				<div class="recipients">
+					<span class="dim">Ontvangers:</span> {{{recipientsString}}}
+				</div>
+			{{/if}}
+			<div class="sendDate">
+				<span class="dim">Verzonden om:</span> {{dateFormat 'dddd D MMMM YYYY HH:mm' sendDate}}
 			</div>
-		{{/if}}
-		<div class="body">
-			{{{body}}}
+			{{#if attachments}}
+				<div class="attachments">
+					<span class="dim">{{plural attachmentCount 'Bijlage' 'Bijlagen'}}</span>: {{{attachments}}}
+				</div>
+			{{/if}}
+			<div class="body">
+				{{{body}}}
+			</div>
 		</div>
-	</div>
+	{{else}}
+		{{#if Template.subscriptionsReady}}
+			{{> notFound}}
+		{{else}}
+			{{> loading}}
+		{{/if}}
+	{{/with}}
 </template>
 
 <template name="message_compose">

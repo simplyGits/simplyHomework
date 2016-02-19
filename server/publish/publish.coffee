@@ -258,6 +258,22 @@ Meteor.publish 'woordjesleren', (id) ->
 		return undefined
 	WoordjesLerenClasses.find { id }
 
+Meteor.publish 'message', (id) ->
+	@unblock()
+	check id, String
+	unless @userId?
+		@ready()
+		return undefined
+
+	Messages.find {
+		_id: id
+		fetchedFor: @userId
+	}, {
+		limit: 1
+		sort:
+			sendDate: -1
+	}
+
 Meteor.publish 'messagesCount', (folder) ->
 	check folder, String
 	Counts.publish this, 'messagesCount', Messages.find
