@@ -119,7 +119,7 @@ class @ChatManager
 		else
 			Meteor.call 'createPrivateChatRoom', userId, (e, r) ->
 				if e?
-					notfy (
+					notify (
 						switch e.error
 							when 'same-person' then 'Je kan niet een chat met jezelf maken'
 							else 'Onbekende fout'
