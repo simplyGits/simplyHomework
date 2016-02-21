@@ -132,6 +132,8 @@ sidebarItemHeight = 40px
 	padding: 0 !important
 
 	.message
+		font-size: 30px
+
 		padding = 15px
 
 		cursor: pointer
@@ -151,16 +153,23 @@ sidebarItemHeight = 40px
 			margin-bottom: 8px
 
 			roboto(300)
-			font-size: 30px
+			font-size: 100%
 			line-height: 35px
 
+		.sender, .recipients
+			font-size: 47%
 		.sender
 			float: left
-
 		.recipients
 			float: right
 
 		+mobile()
+			header
+				font-size: 80%
+				line-height: initial
+				margin-top: 0
+				margin-bottom: 0
+
 			.sender, .recipients
 				float: none
 
