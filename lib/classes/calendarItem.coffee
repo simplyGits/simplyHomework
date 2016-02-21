@@ -118,12 +118,12 @@ class @CalendarItem
 	class: -> Classes.findOne @classId, transform: classTransform
 	###*
 	# @method getAbsenceInfo
-	# @param {String} userId
+	# @param {String} [userId=Meteor.userId()]
 	# @return {AbsenceInfo}
 	###
-	getAbsenceInfo: (userId) ->
+	getAbsenceInfo: (userId = Meteor.userId()) ->
 		Absences.findOne
-			userId: Meteor.userId()
+			userId: userId
 			calendarItemId: @_id
 
 	# TODO: Better i18n for these methods?
