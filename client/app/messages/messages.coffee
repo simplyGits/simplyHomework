@@ -105,6 +105,10 @@ Template['messages_messageList'].helpers
 	hasMore: -> hasMore()
 
 Template['messages_messageList'].events
+	'click .loadMore': ->
+		unless isLoadingNext.get()
+			isLoadingNext.set yes
+			offset.set offset.get() + 15
 	'scroll': ->
 		unless isLoadingNext.get()
 			$list = document.getElementById 'messageList'
