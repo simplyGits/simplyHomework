@@ -164,7 +164,7 @@ ChatMiddlewares.attach 'clickable names', 'insert', (message) ->
 	users = _(message.content)
 		.split /\W/
 		.map (word) -> Helpers.nameCap word
-		.map (word, i) ->
+		.map (word) ->
 			Meteor.users.findOne {
 				_id: $nin: [ Meteor.userId(), message.creatorId ]
 				$or: [
@@ -190,6 +190,31 @@ ChatMiddlewares.attach 'clickable names', 'insert', (message) ->
 		message.content = message.content.replace regex, (str) ->
 			path = FlowRouter.path 'personView', id: user._id
 			"<a href='#{path}' class='name'>#{str}</a>"
+
+	message
+
+ChatMiddlewares.attach 'cliackable classes', 'insert', (message) ->
+	{ year, schoolVariant } = getCourseInfo Meteor.userId()
+
+	classes = _(message.content)
+		.split ' '
+		.map (word) ->
+			Classes.findOne
+				$or: [
+					{ name: $regex: "\\b#{_.escapeRegExp word}\\b", $options: 'i' }
+					{ abbreviations: word.toLowerCase() }
+				]
+				schoolVariant: schoolVariant
+				year: year
+		.compact()
+		.uniq '_id'
+		.value()
+
+	for c in classes
+		regex = new RegExp "(#{c.name})|(#{c.abbreviations.join '|'})", 'ig'
+		message.content = message.content.replace regex, (str) ->
+			path = FlowRouter.path 'classView', id: c._id
+			"<a href='#{path}' class='class'>#{str}</a>"
 
 	message
 
