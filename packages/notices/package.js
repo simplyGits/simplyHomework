@@ -75,6 +75,8 @@ Package.onUse(function(api) {
 		'client/messages/messages.html',
 		'client/messages/messages.styl',
 		'client/messages/messages.coffee',
+
+		'client/sick/sick.coffee',
 	], 'client');
 	api.addFiles([
 		'server/security.coffee',

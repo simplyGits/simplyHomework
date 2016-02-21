@@ -12,7 +12,9 @@
 					{{/if}}
 				</div>
 			{{/if}}
-			{{> Template.dynamic template=template data=data}}
+			{{#if template}}
+				{{> Template.dynamic template=template data=data}}
+			{{/if}}
 		</div>
 	{{else}}
 		{{#if ready}}
