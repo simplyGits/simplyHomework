@@ -15,7 +15,7 @@ hasService = new ReactiveVar yes
 offset = new ReactiveVar 0
 isLoadingNext = new ReactiveVar no
 
-hasMore = -> offset.get() < Counts.get 'messagesCount'
+hasMore = -> offset.get() + 20 < Counts.get 'messagesCount'
 
 folders = [{
 	name: 'inbox'
