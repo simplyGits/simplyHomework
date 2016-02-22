@@ -8,6 +8,7 @@ Package.describe({
 
 Npm.depends({
 	request: '2.67.0',
+	'marked': '0.3.5',
 });
 
 Package.onUse(function(api) {
@@ -20,7 +21,6 @@ Package.onUse(function(api) {
 		'ejson',
 		'ecmascript',
 		'simply:lru',
-		'shitdown',
 	], 'server');
 	api.use([
 		'coffeescript',

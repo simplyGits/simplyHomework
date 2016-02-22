@@ -1,5 +1,8 @@
 {
   "dependencies": {
+    "marked": {
+      "version": "0.3.5"
+    },
     "request": {
       "version": "2.67.0",
       "dependencies": {

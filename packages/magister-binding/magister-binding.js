@@ -5,12 +5,11 @@
  */
  /* global Magister, ExternalServicesConnector, Schools, Grades,
   Grade, StudyUtil, GradePeriod, ExternalPerson, CalendarItem, Assignment,
-  ExternalFile, getClassInfos, getUserField, LRU, MessageRecipient, Message,
-  shitdown */
+  ExternalFile, getClassInfos, getUserField, LRU, MessageRecipient, Message */
 
 // One heck of a binding this is.
 
-(function (Magister, Future, request) {
+(function (Magister, Future, request, marked) {
 	'use strict';
 
 	const ONLY_RECENT_LIMIT = 1000*60*60*24*6; // 6 days
@@ -20,6 +19,20 @@
 		// we cache magister objects infinitely currently since we also uesr
 		// sessionIds infinitely, so we stay in style ;)
 		maxAge: null,
+	});
+
+	const renderer = new marked.Renderer();
+	renderer.code = (str) => str;
+	renderer.heading = (str) => str;
+	marked.setOptions({
+		renderer,
+		gfm: true,
+		tables: false,
+		breaks: true,
+		pedantic: false,
+		sanitize: false,
+		smartLists: true,
+		smartypants: true,
 	});
 
 	/**
@@ -754,7 +767,7 @@
 		check(recipients, [String]);
 		check(userId, String);
 
-		body = shitdown(body, [ 'code', 'headers' ]);
+		body = marked(body);
 
 		const fut = new Future();
 		getMagisterObject(userId).composeAndSendMessage(subject, body, recipients, function (e, r) {
@@ -781,7 +794,7 @@
 		check(body, String);
 		check(userId, String);
 
-		body = shitdown(body, [ 'code', 'headers' ]);
+		body = marked(body);
 
 		const fut = new Future();
 		const magister = getMagisterObject(userId);
@@ -811,4 +824,4 @@
 	}
 
 	ExternalServicesConnector.pushExternalService(MagisterBinding);
-})(Magister, Npm.require('fibers/future'), Npm.require('request'));
+})(Magister, Npm.require('fibers/future'), Npm.require('request'), Npm.require('marked'));
