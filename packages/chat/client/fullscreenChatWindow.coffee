@@ -77,4 +77,16 @@ Template.fullscreenChatWindow.onCreated ->
 	@subscribe 'status', @data.users
 
 Template.fullscreenChatWindow.onRendered ->
-	document.getElementById('messageInput').focus()
+	$messageInput = document.getElementById 'messageInput'
+	$messageInput.focus()
+
+	@onUnload = (e) =>
+		if $messageInput.value.trim().length > 0
+			str = "Je was een bericht aan het typen naar #{@data.friendlyName()}"
+			e.returnValue = str
+			str
+	window.addEventListener 'beforeunload', @onUnload
+
+Template.fullscreenChatWindow.onDestroyed ->
+	window.removeEventListener 'beforeunload', @onUnload
+	delete @onUnload
