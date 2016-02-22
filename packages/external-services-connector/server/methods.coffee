@@ -79,12 +79,7 @@ Meteor.methods
 		if body.trim().length is 0
 			throw new Meteor.Error 'no-content'
 
-		userId = @userId
-		service = _.find Services, (s) -> s.name is service and s.sendMessage? and s.active userId
-		if not service?
-			throw new Meteor.Error 'not-supported'
-
-		sendMessage subject, body, recipients, service, userId
+		sendMessage subject, body, recipients, service, @userId
 
 	'replyMessage': (id, all, body) ->
 		@unblock()

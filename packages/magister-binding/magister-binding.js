@@ -770,11 +770,11 @@
 		body = marked(body);
 
 		const fut = new Future();
-		getMagisterObject(userId).composeAndSendMessage(subject, body, recipients, function (e, r) {
+		getMagisterObject(userId).composeAndSendMessage(subject, body, recipients, function (e) {
 			if (e) {
 				fut.throw(e);
 			} else {
-				fut.return(r);
+				fut.return();
 			}
 		});
 

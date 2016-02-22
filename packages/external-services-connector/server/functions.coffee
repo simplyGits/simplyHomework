@@ -581,6 +581,9 @@ sendMessage = (subject, body, recipients, service, userId) ->
 	body += AD_STRING
 
 	service = _.find Services, (s) -> s.name is service and s.sendMessage? and s.active userId
+	if not service?
+		throw new Meteor.Error 'not-supported'
+
 	service.sendMessage subject, body, recipients, userId
 
 replyMessage = (id, all, body, service, userId) ->
