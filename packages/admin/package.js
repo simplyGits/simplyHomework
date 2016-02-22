@@ -4,14 +4,22 @@ Package.describe({
 	summary: 'admin api endpoints',
 	git: '',
 	documentation: 'README.md',
-});
+})
+
+Npm.depends({
+	'usage': '0.7.1',
+})
 
 Package.onUse(function(api) {
-	api.versionsFrom('1.2.1');
+	api.versionsFrom('1.2.1')
 	api.use([
 		'ecmascript',
 		'tmeasday:publish-counts',
 		'check',
-	], 'server');
-	api.addFiles('server/publish.js', 'server');
-});
+		'mongo',
+	], 'server')
+	api.addFiles([
+		'server/publish.js',
+		'server/stats.js',
+	], 'server')
+})

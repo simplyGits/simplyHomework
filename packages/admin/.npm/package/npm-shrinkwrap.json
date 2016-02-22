@@ -1,0 +1,15 @@
+{
+  "dependencies": {
+    "usage": {
+      "version": "0.7.1",
+      "dependencies": {
+        "bindings": {
+          "version": "1.2.1"
+        },
+        "nan": {
+          "version": "2.2.0"
+        }
+      }
+    }
+  }
+}

@@ -1,4 +1,4 @@
-/* global userIsInRole, Counts, ReportItems */
+/* global userIsInRole, Counts, ReportItems, Workers */
 
 function pub (name, fn) {
 	Meteor.publish(`admin_${name}`, function () {
@@ -36,4 +36,8 @@ pub('reportItems', function (all = false) {
 		}
 	}
 	return ReportItems.find(query)
+})
+
+pub('workers', function () {
+	return Workers.find({})
 })
