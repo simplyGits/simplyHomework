@@ -205,8 +205,6 @@ updateCalendarItems = (userId, from, to) ->
 	services = _.filter Services, (s) -> s.getCalendarItems? and s.active userId
 	markUserEvent userId, 'calendarItemsUpdate' if services.length > 0
 
-	calendarItemInserts = []
-	absenceInserts = []
 	for externalService in services
 		result = null
 		try
@@ -257,9 +255,10 @@ updateCalendarItems = (userId, from, to) ->
 			calendarItem.content = content
 
 			obj = _.omit calendarItem, 'absenceInfo'
-			Schemas.CalendarItems.clean obj, filter: no
 
 			if val?
+				Schemas.CalendarItems.clean obj
+
 				mergeUserIdsField = (fieldName) ->
 					obj[fieldName] = _(val[fieldName])
 						.concat obj[fieldName]
@@ -271,7 +270,7 @@ updateCalendarItems = (userId, from, to) ->
 				if hasChanged val, obj
 					CalendarItems.update val._id, { $set: obj }, (->)
 			else
-				calendarItemInserts.push obj
+				CalendarItems.insert obj
 
 		for calendarItem in result when calendarItem.absenceInfo?
 			val = _.find absences,
@@ -291,10 +290,8 @@ updateCalendarItems = (userId, from, to) ->
 				if hasChanged val, absenceInfo
 					Absences.update val._id, { $set: absenceInfo }, (->)
 			else
-				absenceInserts.push absenceInfo
+				Absences.insert absenceInfo
 
-	CalendarItems.batchInsert calendarItemInserts if calendarItemInserts.length > 0
-	Absences.batchInsert absenceInserts if absenceInserts.length > 0
 	errors
 
 ###*
