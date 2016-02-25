@@ -206,6 +206,9 @@ ChatMiddlewares.attach 'cliackable classes', 'insert', (message) ->
 				]
 				schoolVariant: schoolVariant
 				year: year
+		.filter (c) ->
+			classInfos = getClassInfos message.creatorId
+			_.any classInfos, id: c._id
 		.compact()
 		.uniq '_id'
 		.value()
