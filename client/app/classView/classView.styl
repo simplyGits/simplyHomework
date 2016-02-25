@@ -209,14 +209,12 @@ div.digitalSchoolUtilities
 		+mobile()
 			background-color: #fff
 
-	#buttonsRow > div:last-child
-		col(2/5)
-
-		strong
-			font-size: 1.6em
-
+	#buttonsRow > div#teacherButton
 		+below(1305px)
-			col(1/2, cycle: 2)
+			width: 100%
+
+		div:last-child
+			transform: translateY(50%)
 
 	#containersRow
 		.itemContainer

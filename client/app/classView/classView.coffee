@@ -5,6 +5,15 @@ searchRes = new ReactiveVar undefined
 
 classId = -> FlowRouter.getParam 'id'
 currentClass = -> Classes.findOne classId()
+getNextTest = ->
+	CalendarItems.findOne
+		'userIds': Meteor.userId()
+		'classId': classId()
+		'content': $exists: yes
+		'content.type': $in: [ 'test', 'exam', 'quiz', 'oral' ]
+		'content.description': $exists: yes
+		'startDate': $gt: new Date
+		'scrapped': no
 getChatRoom = ->
 	id = classId()
 	ChatRooms.findOne
@@ -37,6 +46,12 @@ Template.classView.helpers
 			startDate: $gte: Date.today()
 			endDate: $lte: Date.today().addDays 7
 		).count()
+	nextTestString: ->
+		test = getNextTest()
+		if test?
+			moment(test.startDate).fromNow yes
+		else
+			'geen'
 	projectCount: ->
 		Projects.find(
 			classId: classId()
@@ -156,6 +171,14 @@ Template.classView.events
 
 		if nextHourDate?
 			FlowRouter.go 'calendar', time: nextHourDate.getTime()
+
+	'click #nextTestButton': ->
+		test = getNextTest()
+		FlowRouter.go(
+			'calendar'
+			{ time: +test.startDate }
+			{ openCalendarItemId: test._id }
+		)
 
 	'click #projectsButton': ->
 		showModal 'projectsModal'
