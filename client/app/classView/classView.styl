@@ -13,21 +13,29 @@
 	border-bottom: 1px lightgray solid
 
 .overviewHeader#classHeader
-	width: calc(100% - 120px)
+	width: calc(100% - 400px)
 	white-space: nowrap
-	text-overflow: ellipsis
 	overflow: hidden
 
-span#changeClassIcon
-	vertical-align: middle
-	font-size: 20px
-	cursor: pointer
+	.name
+		display: inline-block
+		text-overflow: ellipsis
+		overflow: hidden
+		max-width: calc(100% - 40px)
 
-	opacity: 0
-	transition: 100ms opacity ease
+	span#changeClassIcon
+		vertical-align: middle
+		margin-top: -50px
 
-.overviewHeader#classHeader:hover span#changeClassIcon
-	opacity: 1
+		font-size: 20px
+		cursor: pointer
+
+		opacity: 0
+		transition: 100ms opacity ease
+
+.overviewHeader#classHeader:hover
+	span#changeClassIcon
+		opacity: 1
 
 +mobile()
 	.overviewHeader
