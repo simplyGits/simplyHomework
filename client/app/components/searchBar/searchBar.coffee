@@ -1,3 +1,5 @@
+CACHE_TIMEOUT = 1000 * 60 * 10 # 10 minutes
+
 placeholders = [
 	'Samenvattingen voor %class%'
 	'Woordenlijsten voor %class%'
@@ -29,16 +31,22 @@ _fetch = _.throttle ((query, callback) ->
 	Meteor.apply 'search', [ query ],
 		wait: no
 		onResultReceived: (e, r) ->
-			cache[query] = r
+			cache[query] =
+				items: r
+				time: _.now()
 			callback? r ? []
 ), 150
 
 fetch = (query, sync, callback) ->
 	query = query.trim().toLowerCase()
-	if (val = cache[query])?
-		_fetch query
-		sync? val
-		val
+
+	info = cache[query]
+	if info?.items?
+		if _.now()-info.time > CACHE_TIMEOUT
+			_fetch query
+
+		sync? info.items
+		info.items
 	else
 		_fetch query, callback
 		undefined
