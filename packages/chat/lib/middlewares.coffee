@@ -193,7 +193,7 @@ ChatMiddlewares.attach 'clickable names', 'insert', (message) ->
 
 	message
 
-ChatMiddlewares.attach 'cliackable classes', 'insert', (message) ->
+ChatMiddlewares.attach 'clickable classes', 'insert', (message) ->
 	{ year, schoolVariant } = getCourseInfo Meteor.userId()
 
 	classes = _(message.content)
