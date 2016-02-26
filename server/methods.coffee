@@ -166,7 +166,7 @@ Meteor.methods
 					ChatRooms.update room._id,
 						$push: events:
 							type: 'joined'
-							userId: userid
+							userId: userId
 							time: new Date
 						$addToSet:
 							users: userId
