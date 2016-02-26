@@ -57,6 +57,12 @@
 				<div>{{{contentDescription}}}</div>
 			</div>
 		{{/if}}
+		{{#if files}}
+			<div class="row">
+				<div>{{plural fileCount 'Bestand' 'Bestanden'}}:</div>
+				<div>{{{files}}}</div>
+			</div>
+		{{/if}}
 		{{#if group}}
 			<div class="row">
 				<div>Klas:</div>

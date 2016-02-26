@@ -299,6 +299,10 @@ Schemas.CalendarItems = new SimpleSchema
 	type:
 		type: String
 		optional: yes
+	files:
+		type: [ExternalFile]
+		blackbox: yes
+		defaultValue: []
 
 ###
 Schemas.Messages = new SimpleSchema

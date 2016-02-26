@@ -111,6 +111,13 @@ class @CalendarItem
 		###
 		@type = undefined
 
+		###*
+		# @property files
+		# @type ExternalFile[]
+		# @default []
+		###
+		@files = []
+
 	###*
 	# @method class
 	# @return {SchoolClass}

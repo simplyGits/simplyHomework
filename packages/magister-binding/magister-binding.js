@@ -465,14 +465,22 @@
 		check(to, Date);
 
 		const fut = new Future();
+		const futs = [];
+
 		const user = Meteor.users.findOne(userId);
 
 		const magister = getMagisterObject(userId);
+		const path = '/afspraken/bijlagen/';
 		magister.appointments(from, to, false, function (e, r) {
 			if (e) {
 				fut.throw(e);
 			} else {
-				fut.return(r.map(function (a) {
+				for (let i = 0; i < r.length; i++) {
+					const a = r[i];
+
+					const fut = new Future();
+					futs.push(fut);
+
 					const classInfo = _.find(user.classInfos, function (i) {
 						const name = i.externalInfo.name;
 						return name != null && name === a.classes()[0];
@@ -527,8 +535,19 @@
 						};
 					}
 
-					return calendarItem;
-				}));
+					a.attachments(function (e, r) {
+						if (e == null) {
+							calendarItem.files = r.map((file) => convertMagisterFile(path, file, true));
+						}
+						fut.return(calendarItem);
+					});
+				}
+
+				const res = _(futs)
+					.map((fut) => fut.wait())
+					.flatten()
+					.value();
+				fut.return(res);
 			}
 		});
 

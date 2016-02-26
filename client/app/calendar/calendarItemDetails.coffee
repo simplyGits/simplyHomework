@@ -13,6 +13,18 @@ Template.calendarItemDetails.helpers
 		if description?
 			Helpers.convertLinksToAnchor _.escape description
 
+	fileCount: -> @files.length
+	files: ->
+		@files
+			.map (file) =>
+				a = document.createElement 'a'
+				a.href = "/ci/#{@_id}/f/#{file._id}"
+				a.target = '_blank'
+				a.download = file.name
+				a.textContent = file.name
+				a.outerHTML
+			.join ', '
+
 Template.calendarItemDetails.events
 	'click [data-action="chat"]': (event) ->
 		event.preventDefault()
