@@ -34,10 +34,11 @@
 
 ###*
 # @method trackFileDownload
-# @param {Object} obj
+# @param {String} fileId
 ###
-@trackFileDownload = (obj) ->
-	check obj, Object
+@trackFileDownload = (fileId) ->
+	check fileId, String
+	obj = { fileId }
 
 	counter = FileDownloadCounters.findOne obj
 	if counter?

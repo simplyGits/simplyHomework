@@ -25,12 +25,7 @@
 					g.weight.toFixed(1).replace '.', ','
 			)
 
-@StudyUtils = new Meteor.Collection 'studyUtils', transform: (su) ->
-	su = _.extend new StudyUtil, su
-	su.files = su.files.map (file) ->
-		_.extend file,
-			_url: "/su/#{su._id}/f/#{file._id}"
-	su
+@StudyUtils = new Meteor.Collection 'studyUtils', transform: (su) -> _.extend new StudyUtil, su
 @FileDownloadCounters  = new Mongo.Collection 'fileDownloadCounters'
 
 @ScholierenClasses     = new Meteor.Collection 'scholieren.com'
@@ -38,6 +33,7 @@
 @Analytics             = new Meteor.Collection 'analytics'
 @Tickets               = new Mongo.Collection 'tickets'
 @Messages              = new Mongo.Collection 'messages', transform: (m) -> _.extend new Message, m
+@Files = new Mongo.Collection 'files', transform: (f) -> _.extend new ExternalFile, f
 
 Meteor.users._transform = (u) ->
 	u.hasRole = (roles) -> userIsInRole u._id, roles
@@ -216,10 +212,8 @@ Schemas.StudyUtils = new SimpleSchema
 	visibleTo:
 		type: Date
 		optional: yes
-	files:
-		#type: [Object]
-		type: null
-		blackbox: yes
+	fileIds:
+		type: [String]
 		defaultValue: []
 	userIds:
 		type: [String]
@@ -299,10 +293,33 @@ Schemas.CalendarItems = new SimpleSchema
 	type:
 		type: String
 		optional: yes
-	files:
-		type: [ExternalFile]
-		blackbox: yes
+	fileIds:
+		type: [String]
 		defaultValue: []
+
+Schemas.Files = new SimpleSchema
+	_id:
+		type: String
+	name:
+		type: String
+	userIds:
+		type: [String]
+	mime:
+		type: String
+	creationDate:
+		type: Date
+		optional: yes
+	size:
+		type: Number
+	fetchedBy:
+		type: String
+		optional: yes
+	externalId:
+		type: null
+		optional: yes
+	downloadInfo:
+		type: Object
+		blackbox: yes
 
 ###
 Schemas.Messages = new SimpleSchema
@@ -320,10 +337,8 @@ Schemas.Messages = new SimpleSchema
 		type: MessageRecipient
 	recipients:
 		type: [MessageRecipient]
-	attachments:
-		#type: [Object]
-		type: null
-		blackbox: yes
+	attachmentIds:
+		type: [String]
 		defaultValue: []
 	fetchedFor:
 		type: [String]

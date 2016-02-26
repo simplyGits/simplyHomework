@@ -112,11 +112,11 @@ class @CalendarItem
 		@type = undefined
 
 		###*
-		# @property files
-		# @type ExternalFile[]
+		# @property fileIds
+		# @type String[]
 		# @default []
 		###
-		@files = []
+		@fileIds = []
 
 	###*
 	# @method class
@@ -177,3 +177,5 @@ class @CalendarItem
 	group: ->
 		if @description?
 			_.find @description.split(' '), (w) -> /\d/.test(w) and /[a-z]/i.test(w)
+
+	files: -> Files.find(_id: $in: @fileIds).fetch()

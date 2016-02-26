@@ -30,11 +30,11 @@ class @StudyUtil
 
 		###*
 		# The files in this studyUtil.
-		# @proeprty files
-		# @type File[]
+		# @proeprty fileIds
+		# @type String[]
 		# @default []
 		###
-		@files = []
+		@fileIds = []
 
 		###*
 		# @property userIds

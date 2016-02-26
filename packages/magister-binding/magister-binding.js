@@ -3,7 +3,7 @@
  * @author simply
  * @module magister-binding
  */
- /* global Magister, ExternalServicesConnector, Schools, Grades,
+ /* global AbsenceInfo, Magister, ExternalServicesConnector, Schools, Grades,
   Grade, StudyUtil, GradePeriod, ExternalPerson, CalendarItem, Assignment,
   ExternalFile, getClassInfos, getUserField, LRU, MessageRecipient, Message */
 
@@ -367,7 +367,8 @@
 			if (e) {
 				fut.throw(e);
 			} else {
-				const result = [];
+				const studyUtils = [];
+				const files = [];
 				const futs = [];
 
 				r.forEach(function (sg) {
@@ -399,9 +400,13 @@
 									partId: sgp.id(),
 									parentId: sg.id(),
 								};
-								studyUtil.files = sgp.files().map((file) => convertMagisterFile(path, file));
+								sgp.files().forEach((file) => {
+									const externalFile = convertMagisterFile(path, file);
+									studyUtil.fileIds.push(externalFile._id);
+									files.push(externalFile);
+								})
 
-								result.push(studyUtil);
+								studyUtils.push(studyUtil);
 							});
 							studyGuideFut.return();
 						}
@@ -409,7 +414,10 @@
 				});
 
 				for(let i = 0; i < futs.length; i++) futs[i].wait();
-				fut.return(result);
+				fut.return({
+					studyUtils,
+					files,
+				});
 			}
 		});
 
@@ -465,16 +473,22 @@
 		check(to, Date);
 
 		const fut = new Future();
-		const futs = [];
 
 		const user = Meteor.users.findOne(userId);
 
 		const magister = getMagisterObject(userId);
 		const path = '/afspraken/bijlagen/';
+
 		magister.appointments(from, to, false, function (e, r) {
 			if (e) {
 				fut.throw(e);
 			} else {
+				const futs = [];
+
+				const calendarItems = [];
+				const absenceInfos = [];
+				const files = [];
+
 				for (let i = 0; i < r.length; i++) {
 					const a = r[i];
 
@@ -525,29 +539,41 @@
 						};
 					}
 
-					const absenceInfo = a.absenceInfo();
-					if (absenceInfo != null) {
-						calendarItem.absenceInfo = {
-							externalId: prefixId(magister, absenceInfo.id()),
-							type: absenceInfo.typeString(),
-							permitted: absenceInfo.permitted(),
-							description: absenceInfo.description(),
-						};
+					const info = a.absenceInfo();
+					if (info != null) {
+						const absenceInfo = new AbsenceInfo(
+							userId,
+							calendarItem._id,
+							info.typeString(),
+							info.permitted()
+						);
+						absenceInfo.description = info.description();
+						absenceInfo.fetchedBy = MagisterBinding.name;
+						absenceInfo.externalId = prefixId(magister, info.id());
+
+						absenceInfos.push(absenceInfo);
 					}
 
 					a.attachments(function (e, r) {
 						if (e == null) {
-							calendarItem.files = r.map((file) => convertMagisterFile(path, file, true));
+							r.forEach((file) => {
+								const externalFile = convertMagisterFile(path, file, true);
+								calendarItem.fileIds.push(externalFile._id);
+								files.push(externalFile);
+							});
 						}
-						fut.return(calendarItem);
+						fut.return();
 					});
+
+					calendarItems.push(calendarItem);
 				}
 
-				const res = _(futs)
-					.map((fut) => fut.wait())
-					.flatten()
-					.value();
-				fut.return(res);
+				for(let i = 0; i < futs.length; i++) futs[i].wait();
+				fut.return({
+					calendarItems,
+					absenceInfos,
+					files,
+				});
 			}
 		});
 
@@ -736,7 +762,10 @@
 			if (e) {
 				fut.throw(e);
 			} else {
-				fut.return(r.map(function (m) {
+				const messages = [];
+				const files = [];
+
+				r.forEach(function (m) {
 					const path = '/berichten/bijlagen/';
 					const convertMagisterPerson = function (person) {
 						const res = new MessageRecipient(person.firstName(), person.lastName());
@@ -769,11 +798,21 @@
 					message.recipients = m.recipients().map(convertMagisterPerson);
 					message.fetchedBy = MagisterBinding.name;
 					message.externalId = prefixId(magister, m.id());
-					message.attachments = m.attachments().map((file) => convertMagisterFile(path, file, true));
 					message.readBy = m.isRead() ? [ userId ] : [];
 
-					return message;
-				}));
+					m.attachments().forEach((file) => {
+						const externalFile = convertMagisterFile(path, file, true);
+						message.attachmentIds.push(externalFile._id);
+						files.push(externalFile);
+					});
+
+					messages.push(message);
+				});
+
+				fut.return({
+					messages,
+					files,
+				});
 			}
 		});
 

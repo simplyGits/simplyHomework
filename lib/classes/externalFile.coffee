@@ -10,6 +10,13 @@ class @ExternalFile
 		@_id = new Mongo.ObjectID().toHexString()
 
 		###*
+		# @property userIds
+		# @type String[]
+		# @default []
+		###
+		@userIds = []
+
+		###*
 		# The MIME type of the file.
 		# @property mime
 		# @type String
@@ -56,10 +63,4 @@ class @ExternalFile
 		###
 		@downloadInfo = null
 
-	###*
-	# Converts the current ExternalFile to a File
-	# @method toMagister
-	# @return {File} The current file converted.
-	###
-	toMagister: ->
-		obj = new File {}
+	url: -> "/f/#{@_id}"

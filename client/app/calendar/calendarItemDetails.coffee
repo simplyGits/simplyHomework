@@ -15,10 +15,10 @@ Template.calendarItemDetails.helpers
 
 	fileCount: -> @files.length
 	files: ->
-		@files
-			.map (file) =>
+		@files()
+			.map (file) ->
 				a = document.createElement 'a'
-				a.href = "/ci/#{@_id}/f/#{file._id}"
+				a.href = file.url()
 				a.target = '_blank'
 				a.download = file.name
 				a.textContent = file.name
@@ -32,6 +32,8 @@ Template.calendarItemDetails.events
 		ChatManager.openClassChat classId if classId?
 
 Template.calendarItemDetails.onCreated ->
+	@subscribe 'files', @data?.fileIds ? []
+
 	unless @data.type is 'schoolwide'
 		userIds = _.take @data?.userIds, 40
 		@subscribe 'usersData', userIds

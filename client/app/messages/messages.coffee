@@ -136,12 +136,12 @@ Template['message_current_message'].helpers
 		else
 			@sender.fullName
 
-	attachmentCount: -> @attachments.length
+	attachmentCount: -> @attachmentIds.length
 	attachments: ->
-		@attachments
-			.map (file) =>
+		@attachments()
+			.map (file) ->
 				a = document.createElement 'a'
-				a.href = "/m/#{@_id}/f/#{file._id}"
+				a.href = file.url()
 				a.target = '_blank'
 				a.download = file.name
 				a.textContent = file.name
@@ -157,8 +157,11 @@ Template['message_current_message'].onCreated ->
 		@subscribe 'message', id
 
 		message = Messages.findOne id
-		if message? and Meteor.userId() not in message.readBy
-			Meteor.call 'markMessageRead', id
+		if message?
+			@subscribe 'files', message.attachmentIds
+
+			if Meteor.userId() not in message.readBy
+				Meteor.call 'markMessageRead', id
 
 Template['message_compose'].helpers
 	recipients: -> _.unescape FlowRouter.getQueryParam 'recipients'

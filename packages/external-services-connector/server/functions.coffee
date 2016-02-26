@@ -34,6 +34,27 @@ markUserEvent = (userId, name) ->
 	check name, String
 	Meteor.users.update userId, $set: "events.#{name}": new Date
 
+diffAndInsertFiles = (userId, files) ->
+	vals = Files.find(
+		externalId: $in: _.pluck files, 'externalId'
+	).fetch()
+
+	for file in files
+		val = _.find vals,
+			externalId: file.externalId
+
+		file.userIds = val?.userIds ? []
+		if userId not in file.userIds
+			file.userIds.push userId
+
+		if val?
+			Schemas.Files.clean file
+
+			if hasChanged val, file
+				Files.update val._id, { $set: file }, (->)
+		else
+			Files.insert file
+
 ###*
 # Updates the grades in the database for the given `userId` or the user
 # in of current connection, unless the grades were updated shortly before.
@@ -150,7 +171,7 @@ updateStudyUtils = (userId, forceUpdate = no) ->
 			transform: null
 		}).fetch()
 
-		for studyUtil in result ? []
+		for studyUtil in result.studyUtils ? []
 			val = _.find studyUtils,
 				externalInfo: studyUtil.externalInfo
 				classId: studyUtil.classId ? null
@@ -168,6 +189,8 @@ updateStudyUtils = (userId, forceUpdate = no) ->
 					StudyUtils.update val._id, { $set: studyUtil }, (->)
 			else
 				inserts.push studyUtil
+
+		diffAndInsertFiles userId, result.files
 
 	StudyUtils.batchInsert inserts if inserts.length > 0
 	errors
@@ -218,11 +241,11 @@ updateCalendarItems = (userId, from, to) ->
 		calendarItems = CalendarItems.find(
 			fetchedBy: externalService.name
 			$or: [
-				{ externalId: $in: _.pluck result, 'externalId' }
+				{ externalId: $in: _.pluck result.calendarItems, 'externalId' }
 				{
-					classId: $in: _.pluck result, 'classId'
-					startDate: $in: _.pluck result, 'startDate'
-					endDate: $in: _.pluck result, 'endDate'
+					classId: $in: _.pluck result.calendarItems, 'classId'
+					startDate: $in: _.pluck result.calendarItems, 'startDate'
+					endDate: $in: _.pluck result.calendarItems, 'endDate'
 					userIds: userId
 				}
 			]
@@ -232,14 +255,13 @@ updateCalendarItems = (userId, from, to) ->
 			userId: userId
 			fetchedBy: externalService.name
 			externalId: $in:
-				_(result)
+				_(result.absenceInfos)
 					.pluck 'absenceInfo.externalId'
 					.compact()
 					.value()
 		).fetch()
 
-		result ?= []
-		for calendarItem in result
+		for calendarItem in result.calendarItems
 			val = _.find calendarItems,
 				externalId: calendarItem.externalId
 
@@ -257,6 +279,7 @@ updateCalendarItems = (userId, from, to) ->
 			obj = _.omit calendarItem, 'absenceInfo'
 
 			if val?
+				obj.fileIds = _.pluck obj.files, '_id'
 				Schemas.CalendarItems.clean obj
 
 				mergeUserIdsField = (fieldName) ->
@@ -272,25 +295,17 @@ updateCalendarItems = (userId, from, to) ->
 			else
 				CalendarItems.insert obj
 
-		for calendarItem in result when calendarItem.absenceInfo?
+		for absenceInfo in result.absenceInfos
 			val = _.find absences,
-				externalId: calendarItem.absenceInfo.externalId
-
-			absenceInfo = new AbsenceInfo(
-				userId
-				calendarItem._id
-				calendarItem.absenceInfo.type
-				calendarItem.absenceInfo.permitted
-			)
-			absenceInfo.description = calendarItem.absenceInfo.description
-			absenceInfo.fetchedBy = calendarItem.fetchedBy
-			absenceInfo.externalId = calendarItem.absenceInfo.externalId
+				externalId: absenceInfo.externalId
 
 			if val?
 				if hasChanged val, absenceInfo
 					Absences.update val._id, { $set: absenceInfo }, (->)
 			else
 				Absences.insert absenceInfo
+
+		diffAndInsertFiles userId, result.files
 
 	errors
 
@@ -524,9 +539,9 @@ updateMessages = (userId, offset, folders, forceUpdate = no) ->
 				ExternalServicesConnector.handleServiceError service.name, userId, e
 				errors.push e
 
-			result = []
+			results = []
 			try # fetch the messages asked for
-				result = result.concat(
+				results.push(
 					service.getMessages folder, offset, LIMIT, userId
 				)
 			catch e
@@ -535,14 +550,23 @@ updateMessages = (userId, offset, folders, forceUpdate = no) ->
 
 			if offset > 0 # fetch new messages at top, unless we are asked for them.
 				try
-					result = result.concat(
+					results.push(
 						service.getMessages folder, 0, NEW_MESSAGES_LIMIT, userId
 					)
 				catch e
 					handleErr e
 					continue
 
-			for message in result ? []
+			messages = _(results)
+				.pluck 'messages'
+				.flatten()
+				.value()
+			files = _(results)
+				.pluck 'files'
+				.flatten()
+				.value()
+
+			for message in messages
 				continue unless message?
 				if message.body?
 					message.body = message.body.replace AD_STRING, ''
@@ -565,6 +589,8 @@ updateMessages = (userId, offset, folders, forceUpdate = no) ->
 						Messages.update message._id, message, validate: no
 				else
 					Messages.insert message
+
+			diffAndInsertFiles userId, files
 
 	errors
 

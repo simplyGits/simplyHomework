@@ -280,3 +280,14 @@ Meteor.publish 'messagesCount', (folder) ->
 		fetchedFor: @userId
 		folder: folder
 	undefined
+
+Meteor.publish 'files', (fileIds) ->
+	@unblock()
+	check fileIds, [String]
+	unless @userId?
+		@ready()
+		return undefined
+
+	Files.find
+		_id: $in: fileIds
+		userIds: @userId

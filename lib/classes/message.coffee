@@ -17,11 +17,11 @@ class @Message
 		@recipients = []
 
 		###*
-		# @property attachments
-		# @type ExternalFile[]
+		# @property attachmentIds
+		# @type String[]
 		# @default []
 		###
-		@attachments = []
+		@attachmentIds = []
 
 		###*
 		# @property fetchedFor
@@ -50,6 +50,8 @@ class @Message
 		# @default undefined
 		###
 		@externalId = undefined
+
+	attachments: -> Files.find(_id: $in: @attachmentIds).fetch()
 
 	# TODO: make this based on length of the res string instead of amount of
 	# items since they can vary in length.

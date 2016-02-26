@@ -414,3 +414,15 @@ Template.infoContainer.helpers
 				updatedOn: -1
 				name: 1
 		}
+
+Template.studyUtil.helpers
+	files: ->
+		Files.find {
+			_id: $in: @fileIds ? []
+		}, {
+			sort:
+				name: 1
+		}
+
+Template.studyUtil.onCreated ->
+	@subscribe 'files', @data?.fileIds ? []
