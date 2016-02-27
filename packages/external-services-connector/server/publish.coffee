@@ -152,6 +152,9 @@ Meteor.publish 'messages', (offset, folders, unreadOnly = no) ->
 		updateMessages userId, offset, folders, no
 	), 1000 * 60 * 5 # 5 minutes
 
+	@onStop ->
+		Meteor.clearInterval handle
+
 	query =
 		fetchedFor: userId
 		folder: $in: folders
