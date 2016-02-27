@@ -227,7 +227,6 @@ Schemas.StudyUtils = new SimpleSchema
 	updatedOn:
 		type: Date
 		optional: yes
-		autoValue: -> if @isInsert then undefined else new Date
 
 Schemas.Absences = new SimpleSchema
 	userId:
