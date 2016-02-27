@@ -3,31 +3,47 @@ GRADES_INVALIDATION_TIME         = 1000 * 60 * 20 # 20 minutes
 STUDYUTILS_INVALIDATION_TIME     = 1000 * 60 * 20 # 20 minutes
 CALENDAR_ITEMS_INVALIDATION_TIME = 1000 * 60 * 10 # 10 minutes
 
+clone = (obj) -> EJSON.parse EJSON.stringify obj
+omit = (obj, keys) ->
+	if _.isArray obj
+		_.map obj, (x) -> omit x, keys
+	else if _.isPlainObject obj
+		for key in keys
+			obj = _.omit obj, key
+
+		for key of obj
+			if obj[key] is null
+				delete obj[key]
+			else
+				obj[key] = omit obj[key], keys
+
+		obj
+	else
+		obj
+
 hasChanged = (a, b, omitExtra = []) ->
-	clone = (obj) -> EJSON.parse EJSON.stringify obj
-
 	omitKeys = [ '_id' ].concat omitExtra
-	omit = (obj) ->
-		if _.isArray obj
-			_.map obj, omit
-		else if _.isPlainObject obj
-			for key in omitKeys
-				obj = _.omit obj, key
-
-			for key of obj
-				if obj[key] is null
-					delete obj[key]
-				else
-					obj[key] = omit obj[key]
-
-			obj
-		else
-			obj
 
 	not EJSON.equals(
-		omit clone a
-		omit clone b
+		omit clone(a), omitKeys
+		omit clone(b), omitKeys
 	)
+
+diffObjects = (a, b, exclude = []) ->
+	a = clone(a)
+	b = clone(b)
+	omitKeys = [ '_id' ].concat exclude
+
+	_(_.keys a)
+		.concat _.keys b
+		.uniq()
+		.reject (x) -> x in omitKeys
+		.map (key) ->
+			key: key
+			prev: a[key]
+			next: b[key]
+		.reject (obj) -> EJSON.equals obj.prev, obj.next
+		.value()
 
 markUserEvent = (userId, name) ->
 	check userId, String
@@ -211,6 +227,14 @@ updateCalendarItems = (userId, from, to) ->
 	check userId, String
 	check from, Date
 	check to, Date
+	UPDATE_CHECK_OMITTED = [
+		'updatedOn'
+		'userIds'
+		'usersDone'
+		'content'
+		'fileIds'
+		'teacher'
+	]
 
 	# TODO: fix using `events.calendarItemsUpdate` here.
 
@@ -291,6 +315,12 @@ updateCalendarItems = (userId, from, to) ->
 				mergeUserIdsField 'usersDone'
 
 				if hasChanged val, obj
+					if not val.updateInfo? and
+					hasChanged val, obj, UPDATE_CHECK_OMITTED
+						obj.updateInfo =
+							when: new Date()
+							diff: diffObjects val, obj, UPDATE_CHECK_OMITTED
+
 					CalendarItems.update val._id, { $set: obj }, (->)
 			else
 				CalendarItems.insert obj

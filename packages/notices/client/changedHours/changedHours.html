@@ -1,0 +1,32 @@
+<template name="changedHours">
+	<div class="changedHours">
+		{{#each hourGroups}}
+			<div class="hourGroup {{today}}">
+				<strong>{{day}}</strong>
+				{{#each hours}}
+					{{> changedHour}}
+				{{/each}}
+			</div>
+		{{/each}}
+	</div>
+</template>
+
+<template name="changedHour">
+	<div class="changedHour">
+		<div class="back" style="background-color: {{class.__color}}"></div>
+		<div class="info">
+			{{name}} ({{schoolHour}}<sup>e</sup> uur)
+		</div>
+		<ul class="diff">
+			{{#each updateInfo.diff}}
+				{{> changedHour_diffItem}}
+			{{/each}}
+		</ul>
+	</div>
+</template>
+
+<template name="changedHour_diffItem">
+	<li>
+		<span class="key">{{friendlyKey}}</span>: <span class="prev">{{prev}}</span> -&gt; <span class="next">{{next}}</span>
+	</li>
+</template>

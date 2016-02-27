@@ -60,6 +60,10 @@ Package.onUse(function(api) {
 		'client/scrappedHours/scrappedHours.styl',
 		'client/scrappedHours/scrappedHours.coffee',
 
+		'client/changedHours/changedHours.html',
+		'client/changedHours/changedHours.styl',
+		'client/changedHours/changedHours.coffee',
+
 		'client/tests/tests.html',
 		'client/tests/tests.styl',
 		'client/tests/tests.coffee',

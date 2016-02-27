@@ -296,6 +296,10 @@ Schemas.CalendarItems = new SimpleSchema
 	fileIds:
 		type: [String]
 		defaultValue: []
+	updateInfo:
+		type: Object
+		blackbox: yes
+		optional: yes
 
 Schemas.Files = new SimpleSchema
 	_id:
