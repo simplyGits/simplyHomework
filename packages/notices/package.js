@@ -56,9 +56,9 @@ Package.onUse(function(api) {
 		'client/lessons/lessonsOverview.styl',
 		'client/lessons/lessonsOverview.coffee',
 
-		'client/scrappedHours/srappedHours.html',
-		'client/scrappedHours/srappedHours.styl',
-		'client/scrappedHours/srappedHours.coffee',
+		'client/scrappedHours/scrappedHours.html',
+		'client/scrappedHours/scrappedHours.styl',
+		'client/scrappedHours/scrappedHours.coffee',
 
 		'client/tests/tests.html',
 		'client/tests/tests.styl',
