@@ -9,10 +9,10 @@ class @Assignment
 	constructor: (@name, @classId, @deadline) ->
 		###*
 		# @property description
-		# @type String|null
-		# @default null
+		# @type String|undefined
+		# @default undefined
 		###
-		@description = null
+		@description = undefined
 
 		###*
 		# Contains info about the people who handed this assignment in and when they
@@ -28,13 +28,13 @@ class @Assignment
 		###*
 		# @property externalId
 		# @type mixed
-		# @default null
+		# @default undefined
 		###
-		@externalId = null
+		@externalId = undefined
 
 		###*
 		# @property fetchedBy
-		# @type String|null
-		# @default null
+		# @type String|undefined
+		# @default undefined
 		###
-		@fetchedBy = null
+		@fetchedBy = undefined

@@ -58,16 +58,16 @@ class @CalendarItem
 		#
 		# @property externalId
 		# @type mixed
-		# @default null
+		# @default undefined
 		###
-		@externalId = null
+		@externalId = undefined
 
 		###*
 		# @property fetchedBy
-		# @type String|null
-		# @default null
+		# @type String|undefined
+		# @default undefined
 		###
-		@fetchedBy = null
+		@fetchedBy = undefined
 
 		###*
 		# @property scrapped

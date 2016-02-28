@@ -2,10 +2,10 @@ class @ExternalPerson
 	constructor: (@firstName, @lastName) ->
 		###*
 		# @property type
-		# @type String|null
-		# @default null
+		# @type String|undefined
+		# @default undefined
 		###
-		@type = null
+		@type = undefined
 
 		###*
 		# @property fullName
@@ -26,24 +26,24 @@ class @ExternalPerson
 
 		###*
 		# @property emailAddress
-		# @type String|null
-		# @default null
+		# @type String|undefined
+		# @default undefined
 		###
-		@emailAddress = null
+		@emailAddress = undefined
 
 		###*
 		# @property teacherCode
-		# @type String|null
-		# @default null
+		# @type String|undefined
+		# @default undefined
 		###
-		@teacherCode = null
+		@teacherCode = undefined
 
 		###*
 		# @property group
-		# @type String|null
-		# @default null
+		# @type String|undefined
+		# @default undefined
 		###
-		@group = null
+		@group = undefined
 
 		###*
 		# The ID of this Person on the external service (eg Magister)
@@ -51,16 +51,16 @@ class @ExternalPerson
 		#
 		# @property externalId
 		# @type mixed
-		# @default null
+		# @default undefined
 		###
-		@externalId = null
+		@externalId = undefined
 
 		###*
 		# The name of the externalService that fetched this Person.
 		# @property fetchedBy
-		# @type String|null
-		# @default null
+		# @type String|undefined
+		# @default undefined
 		###
-		@fetchedBy = null
+		@fetchedBy = undefined
 
 	toString: -> @fullName
