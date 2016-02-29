@@ -55,6 +55,8 @@ diffAndInsertFiles = (userId, files) ->
 		externalId: $in: _.pluck files, 'externalId'
 	).fetch()
 
+	res = {}
+
 	for file in files
 		val = _.find vals,
 			externalId: file.externalId
@@ -63,13 +65,19 @@ diffAndInsertFiles = (userId, files) ->
 		if userId not in file.userIds
 			file.userIds.push userId
 
+		id = file._id
 		if val?
 			Schemas.Files.clean file
 
 			if hasChanged val, file
 				Files.update val._id, { $set: file }, (->)
+				id = val._id
 		else
-			Files.insert file
+			id = Files.insert file
+
+		res[file._id] = id if file._id?
+
+	res
 
 ###*
 # Updates the grades in the database for the given `userId` or the user
@@ -187,10 +195,14 @@ updateStudyUtils = (userId, forceUpdate = no) ->
 			transform: null
 		}).fetch()
 
+		fileKeyChanges = diffAndInsertFiles userId, result.files
+
 		for studyUtil in result.studyUtils ? []
 			val = _.find studyUtils,
 				externalInfo: studyUtil.externalInfo
 				classId: studyUtil.classId ? null
+
+			studyUtil.fileIds = studyUtil.fileIds.map (id) -> fileKeyChanges[id] ? id
 
 			if val?
 				studyUtil.userIds = _(val.userIds)
@@ -205,8 +217,6 @@ updateStudyUtils = (userId, forceUpdate = no) ->
 					StudyUtils.update val._id, { $set: studyUtil }, (->)
 			else
 				inserts.push studyUtil
-
-		diffAndInsertFiles userId, result.files
 
 	StudyUtils.batchInsert inserts if inserts.length > 0
 	errors
@@ -285,6 +295,8 @@ updateCalendarItems = (userId, from, to) ->
 					.value()
 		).fetch()
 
+		fileKeyChanges = diffAndInsertFiles userId, result.files
+
 		for calendarItem in result.calendarItems
 			val = _.find calendarItems,
 				externalId: calendarItem.externalId
@@ -300,30 +312,30 @@ updateCalendarItems = (userId, from, to) ->
 				content.type = 'test' if /^(proefwerk|pw|examen|tentamen)\b/i.test content.description
 			calendarItem.content = content
 
-			obj = _.omit calendarItem, 'absenceInfo'
+			calendarItem.fileIds = calendarItem.fileIds.map (id) ->
+				fileKeyChanges[id] ? id
 
 			if val?
-				obj.fileIds = _.pluck obj.files, '_id'
-				Schemas.CalendarItems.clean obj
+				Schemas.CalendarItems.clean calendarItem
 
 				mergeUserIdsField = (fieldName) ->
-					obj[fieldName] = _(val[fieldName])
-						.concat obj[fieldName]
+					calendarItem[fieldName] = _(val[fieldName])
+						.concat calendarItem[fieldName]
 						.uniq()
 						.value()
 				mergeUserIdsField 'userIds'
 				mergeUserIdsField 'usersDone'
 
-				if hasChanged val, obj
+				if hasChanged val, calendarItem
 					if not val.updateInfo? and
-					hasChanged val, obj, UPDATE_CHECK_OMITTED
-						obj.updateInfo =
+					hasChanged val, calendarItem, UPDATE_CHECK_OMITTED
+						calendarItem.updateInfo =
 							when: new Date()
-							diff: diffObjects val, obj, UPDATE_CHECK_OMITTED
+							diff: diffObjects val, calendarItem, UPDATE_CHECK_OMITTED
 
-					CalendarItems.update val._id, { $set: obj }, (->)
+					CalendarItems.update val._id, { $set: calendarItem }, (->)
 			else
-				CalendarItems.insert obj
+				CalendarItems.insert calendarItem
 
 		for absenceInfo in result.absenceInfos
 			val = _.find absences,
@@ -334,8 +346,6 @@ updateCalendarItems = (userId, from, to) ->
 					Absences.update val._id, { $set: absenceInfo }, (->)
 			else
 				Absences.insert absenceInfo
-
-		diffAndInsertFiles userId, result.files
 
 	errors
 
@@ -596,11 +606,15 @@ updateMessages = (userId, offset, folders, forceUpdate = no) ->
 				.flatten()
 				.value()
 
+			fileKeyChanges = diffAndInsertFiles userId, files
+
 			for message in messages
 				continue unless message?
 				if message.body?
 					message.body = message.body.replace AD_STRING, ''
 				message.fetchedFor = [ userId ]
+				message.attachmentIds = message.attachmentIds.map (id) ->
+					fileKeyChanges[id] ? id
 
 				val = Messages.findOne
 					externalId: message.externalId
@@ -619,8 +633,6 @@ updateMessages = (userId, offset, folders, forceUpdate = no) ->
 						Messages.update message._id, message, validate: no
 				else
 					Messages.insert message
-
-			diffAndInsertFiles userId, files
 
 	errors
 
