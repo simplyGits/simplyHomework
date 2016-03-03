@@ -398,7 +398,16 @@ getExternalClasses = (userId) ->
 	services = _.filter Services, (s) -> s.getClasses? and s.active userId
 	for service in services
 		try
-			classes = service.getClasses userId
+			classes = service.getClasses(userId).filter (c) ->
+				c.name.toLowerCase() not in [
+					'gemiddelde'
+					'tekortpunten'
+					'toetsweek'
+					'combinatiecijfer'
+				] and c.abbreviation.toLowerCase() not in [
+					'maestro'
+					'scr'
+				]
 		catch e
 			console.log 'error while fetching classes from service.', e
 			continue
