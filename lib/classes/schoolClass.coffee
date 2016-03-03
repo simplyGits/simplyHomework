@@ -1,20 +1,38 @@
+variantMap =
+	vwo: [
+		'a'
+		'v'
+		'gm'
+		'gym'
+		'cygnus'
+		'atheneum'
+		'gymnasium'
+	]
+	havo: [
+		'h'
+	]
+
 ###*
 # Normalizes the given `variant`.
 # @method normalizeSchoolVariant
-# @param {String} variant
+# @param {String} [variant='']
 # @return {String}
 ###
-@normalizeSchoolVariant = (variant) ->
-	# TODO: extend this method.
+@normalizeSchoolVariant = (variant = '') ->
 	check variant, String
 	variant = variant.toLowerCase().trim()
-	switch variant
-		when 'gymnasium', 'atheneum' then 'vwo'
-		else variant
+
+	for [ type, items ] in _.pairs variantMap
+		if variant is type or variant in items
+			return type
+
+	variant
 
 @normalizeClassName = (name) ->
 	name = name.toLowerCase()
 	contains = (s) -> _.contains name, s
+	equals = (s) -> name is s
+	startsWith = (s) -> name.indexOf(s) is 0
 
 	if contains 'nederlands'
 		'Nederlands'
@@ -24,6 +42,24 @@
 		'Duits'
 	else if contains 'engels'
 		'Engels'
+	else if contains('rekentoets') or contains('rekenen')
+		'Rekenen'
+	else if equals('gym') or equals('sport en beweging')
+		'Lichamelijke opvoeding'
+	else if equals('anw') or equals('alg.nat.wet') or equals('alg. natuurwetenschappen')
+		'Algemene natuurwetenschappen'
+	else if equals 'ckv'
+		'Culturele en kunstzinnige vorming'
+	else if equals('kcv') or startsWith('klassieke cult')
+		'Klassieke culturele vorming'
+	else if startsWith 'levensbesch'
+		'Levensbeschouwing'
+	else if contains 'mentoruur'
+		'Mentoruur'
+	else if contains 'spaans'
+		'Spaans'
+	else if startsWith 'management en org'
+		'Management en organisatie'
 	else
 		name
 
@@ -37,7 +73,7 @@
 ###
 class @SchoolClass
 	constructor: (name, abbreviation, @year, schoolVariant) ->
-		@name = Helpers.cap name if name?
+		@name = Helpers.cap normalizeClassName name
 		@schoolVariant = normalizeSchoolVariant schoolVariant
 		abbreviation = abbreviation.toLowerCase().trim()
 

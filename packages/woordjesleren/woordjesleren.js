@@ -133,7 +133,7 @@ if (Package.search != null) {
 
 		if (_.contains(keywords, 'vocab')) {
 			classes.forEach(function (c) {
-				const { year, schoolVariant } = user.profile.courseInfo;
+				const { year, schoolVariant } = user.getNormalizedCourseInfo();
 				const classInfo = _.find(user.classInfos, { id: c._id });
 				const book = Books.findOne(classInfo.bookId);
 

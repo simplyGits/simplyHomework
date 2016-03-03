@@ -610,6 +610,16 @@
 							return person;
 						})(c.teacher()),
 					};
+				}).filter(function (c) {
+					return [
+						'gemiddelde',
+						'tekortpunten',
+						'toetsweek',
+						'combinatiecijfer',
+					].indexOf(c.name.toLowerCase()) === -1 && [
+						'maestro',
+						'scr',
+					].indexOf(c.abbreviation.toLowerCase()) === -1
 				}));
 			}
 		});
