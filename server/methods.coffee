@@ -164,13 +164,13 @@ Meteor.methods
 
 				if room?
 					ChatRooms.update room._id,
-						$push: events:
-							type: 'joined'
-							userId: userId
-							time: new Date
 						$addToSet:
 							users: userId
 							'classInfo.ids': info.id
+							events:
+								type: 'joined'
+								userId: userId
+								time: new Date
 				else
 					room = new ChatRoom userId, 'class'
 					room.subject = calendarItem.group()

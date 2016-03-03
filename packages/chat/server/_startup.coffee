@@ -42,7 +42,7 @@ Meteor.startup ->
 
 				ChatRooms.update chatRoom._id,
 					$set: users: newDoc.participants
-					$push: events: $each: newPersonEvents.concat leftPersonEvents
+					$addToSet: events: $each: newPersonEvents.concat leftPersonEvents
 
 		removed: (doc) ->
 			# Remove the ChatRoom when the linked Project is removed.
