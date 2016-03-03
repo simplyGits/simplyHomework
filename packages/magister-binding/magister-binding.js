@@ -580,7 +580,7 @@
 		return fut.wait();
 	};
 
-	MagisterBinding.getClasses = function (userId) {
+	MagisterBinding.getPersonClasses = function (userId) {
 		check(userId, String);
 
 		const fut = new Future();

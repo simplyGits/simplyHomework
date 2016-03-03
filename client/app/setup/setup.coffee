@@ -176,7 +176,7 @@ setupItems = [
 			]
 
 			userId = Meteor.userId()
-			Meteor.call 'getExternalClasses', (e, r) ->
+			Meteor.call 'getExternalPersonClasses', (e, r) ->
 				Meteor.users.update userId, $addToSet: setupProgress: 'getExternalClasses'
 
 				if e? or _.isEmpty r

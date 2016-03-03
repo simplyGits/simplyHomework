@@ -50,9 +50,9 @@ Meteor.methods
 		check serviceName, String
 		getServiceProfileData serviceName, @userId
 
-	'getExternalClasses': ->
+	'getExternalPersonClasses': ->
 		@unblock()
-		getExternalClasses @userId
+		getExternalPersonClasses @userId
 
 	'getServiceSchools': (serviceName, query) ->
 		@unblock()

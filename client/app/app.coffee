@@ -76,7 +76,7 @@ Template.addClassModal.onCreated ->
 
 Template.addClassModal.onRendered ->
 	Meteor.typeahead.inject '#classNameInput, #bookInput'
-	Meteor.call 'getExternalClasses', (e, r) -> externalClasses.set r unless e?
+	Meteor.call 'getExternalPersonClasses', (e, r) -> externalClasses.set r unless e?
 
 Template.newSchoolYearModal.helpers classes: -> classes()
 

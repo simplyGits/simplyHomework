@@ -379,12 +379,12 @@ getPersons = (query, type = undefined, userId) ->
 	result
 
 ###*
-# Returns the classes from externalServices for the given `userId`
-# @method getExternalClasses
+# Returns the personal classes from externalServices for the given `userId`
+# @method getExternalPersonClasses
 # @param userId {String} The ID of the user to get the classes from.
 # @return {SchoolClass[]} The external classes as SchoolClasses
 ###
-getExternalClasses = (userId) ->
+getExternalPersonClasses = (userId) ->
 	check userId, String
 
 	courseInfo = getCourseInfo userId
@@ -395,10 +395,10 @@ getExternalClasses = (userId) ->
 
 	{ year, schoolVariant } = courseInfo
 
-	services = _.filter Services, (s) -> s.getClasses? and s.active userId
+	services = _.filter Services, (s) -> s.getPersonClasses? and s.active userId
 	for service in services
 		try
-			classes = service.getClasses(userId).filter (c) ->
+			classes = service.getPersonClasses(userId).filter (c) ->
 				c.name.toLowerCase() not in [
 					'gemiddelde'
 					'tekortpunten'
@@ -699,7 +699,7 @@ getModuleInfo = (userId) ->
 @updateStudyUtils = updateStudyUtils
 @updateCalendarItems = updateCalendarItems
 @getPersons = getPersons
-@getExternalClasses = getExternalClasses
+@getExternalPersonClasses = getExternalPersonClasses
 @getExternalAssignments = getExternalAssignments
 @getServiceSchools = getServiceSchools
 @getSchools = getSchools
