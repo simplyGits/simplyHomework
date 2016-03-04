@@ -30,8 +30,8 @@ getTasks = ->
 			startDate: 1
 		transform: (item) ->
 			description: (
-				escaped = _.escape item.content.description
-				Helpers.convertLinksToAnchor(escaped).replace /\n/g, '; '
+				description = item.content.description
+				Helpers.convertLinksToAnchor(description, yes).replace /\n/g, '; '
 			)
 			class: -> Classes.findOne item.classId
 			date: item.startDate
