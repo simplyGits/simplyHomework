@@ -6,7 +6,7 @@
 # @param description {String} The description / content of this item.
 # @param startDate {Date} The start date of this item.
 # @param [endDate] {Date} The end date of this item. Defaults to 1 hour after `startDate`.
-# @param [classId] If this item is linked with a class: the ID of the class; otherwise: null
+# @param [classId] If this item is linked with a class: the ID of the class; otherwise: undefined
 # @constructor
 ###
 class @CalendarItem

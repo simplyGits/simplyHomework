@@ -506,7 +506,7 @@
 						a.description(),
 						a.begin(),
 						a.end(),
-						classId
+						classId || undefined
 					);
 
 					calendarItem.usersDone = a.isDone() ? [ userId ] : [];
