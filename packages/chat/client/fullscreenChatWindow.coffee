@@ -1,4 +1,5 @@
 editMessageId = new ReactiveVar
+lastInputs = new Map
 
 send = (content, updateId) ->
 	content = content.trim()
@@ -80,6 +81,11 @@ Template.fullscreenChatWindow.onRendered ->
 	$messageInput = document.getElementById 'messageInput'
 	$messageInput.focus()
 
+	val = lastInputs.get @data._id
+	if val
+		$messageInput.value = val
+		lastInputs.delete @data._id
+
 	@onUnload = (e) =>
 		if $messageInput.value.trim().length > 0
 			str = "Je was een bericht aan het typen naar #{@data.friendlyName()}"
@@ -88,5 +94,9 @@ Template.fullscreenChatWindow.onRendered ->
 	window.addEventListener 'beforeunload', @onUnload
 
 Template.fullscreenChatWindow.onDestroyed ->
+	val = document.getElementById('messageInput').value
+	unless _.isEmpty val
+		lastInputs.set @data._id, val
+
 	window.removeEventListener 'beforeunload', @onUnload
 	delete @onUnload
