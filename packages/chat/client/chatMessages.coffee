@@ -57,7 +57,7 @@ Template.chatMessages.onCreated ->
 	)
 
 Template.chatMessages.onRendered ->
-	$messages = $('#chatMessages').get 0
+	$messages = document.getElementById 'chatMessages'
 
 	@atBottom = -> $messages.scrollTop >= $messages.scrollHeight - $messages.clientHeight
 
