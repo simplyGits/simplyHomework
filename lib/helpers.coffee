@@ -208,18 +208,16 @@ class @Helpers
 	# those into anchor tags.
 	#
 	# @method convertLinksToAnchor
-	# @param string {String} The string to convert.
+	# @param {String} string The string to convert.
 	# @return {String} An HTML string containing the converted `string`.
 	###
-	@convertLinksToAnchor: (string, escape = false) ->
+	@convertLinksToAnchor: (string) ->
 		return undefined unless string?
 		string.replace /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}(:\d+)?\b((\/|\?)[-a-zA-Z0-9@:%_\+.~#?&//=]+)?\b/ig, (match) ->
-			content = if escape then _.escape(match) else match
-
 			if /^https?:\/\/.+/i.test match
-				"<a target='_blank' href='#{match}'>#{content}</a>"
+				"<a target='_blank' href='#{match}'>#{match}</a>"
 			else
-				"<a target='_blank' href='http://#{match}'>#{content}</a>"
+				"<a target='_blank' href='http://#{match}'>#{match}</a>"
 
 	###*
 	# Sets an interval for the given `func`. While immediately executing it.
