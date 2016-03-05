@@ -10,7 +10,7 @@ Meteor.publish 'externalCalendarItems', (from, to) ->
 
 	handle = Helpers.interval (->
 		updateCalendarItems userId, from, to
-	), 1000 * 60 * 20 # 20 minutes
+	), ms.minutes 20
 
 	cursor =
 		CalendarItems.find {
@@ -70,7 +70,7 @@ Meteor.publish 'foreignCalendarItems', (userIds, from, to) ->
 	handle = Helpers.interval (->
 		for id in userIds
 			updateCalendarItems id, from, to
-	), 1000 * 60 * 20 # 20 minutes
+	), ms.minutes 20
 
 	@onStop ->
 		Meteor.clearInterval handle
@@ -100,7 +100,7 @@ Meteor.publish 'externalGrades', (options) ->
 
 	handle = Helpers.interval (=>
 		updateGrades @userId, no
-	), 1000 * 60 * 20 # 20 minutes
+	), ms.minutes 20
 
 	@onStop ->
 		Meteor.clearInterval handle
@@ -123,7 +123,7 @@ Meteor.publish 'externalStudyUtils', (options) ->
 
 	handle = Helpers.interval (=>
 		updateStudyUtils @userId, no
-	), 1000 * 60 * 20 # 20 minutes
+	), ms.minutes 20
 
 	@onStop ->
 		Meteor.clearInterval handle
@@ -150,7 +150,7 @@ Meteor.publish 'messages', (offset, folders, unreadOnly = no) ->
 
 	handle = Helpers.interval (->
 		updateMessages userId, offset, folders, no
-	), 1000 * 60 * 5 # 5 minutes
+	), ms.minutes 5
 
 	@onStop ->
 		Meteor.clearInterval handle

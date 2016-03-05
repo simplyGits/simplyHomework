@@ -3,10 +3,10 @@ Future = Npm.require 'fibers/future'
 
 statsCache = LRU
 	max: 75
-	maxAge: 1000 * 60 * 15 # 15 minutes
+	maxAge: ms.minutes 15
 gradeMeanCache = LRU
 	max: 100
-	maxAge: 1000 * 60 * 60 # 1 hour
+	maxAge: ms.hours 1
 
 Meteor.methods
 	###*

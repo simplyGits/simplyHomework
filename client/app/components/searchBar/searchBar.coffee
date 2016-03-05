@@ -1,4 +1,4 @@
-CACHE_TIMEOUT = 1000 * 60 * 10 # 10 minutes
+CACHE_TIMEOUT = ms.minutes 10
 
 placeholders = [
 	'Samenvattingen voor %class%'

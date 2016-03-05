@@ -21,6 +21,7 @@ Package.onUse(function(api) {
 		'ejson',
 		'ecmascript',
 		'simply:lru',
+		'ms',
 	], 'server');
 	api.use([
 		'coffeescript',

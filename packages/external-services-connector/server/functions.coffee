@@ -1,7 +1,7 @@
 # REVIEW: Better way to do this?
-GRADES_INVALIDATION_TIME         = 1000 * 60 * 20 # 20 minutes
-STUDYUTILS_INVALIDATION_TIME     = 1000 * 60 * 20 # 20 minutes
-CALENDAR_ITEMS_INVALIDATION_TIME = 1000 * 60 * 10 # 10 minutes
+GRADES_INVALIDATION_TIME         = ms.minutes 20
+STUDYUTILS_INVALIDATION_TIME     = ms.minutes 20
+CALENDAR_ITEMS_INVALIDATION_TIME = ms.minutes 10
 
 clone = (obj) -> EJSON.parse EJSON.stringify obj
 omit = (obj, keys) ->

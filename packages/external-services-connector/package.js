@@ -22,6 +22,7 @@ Package.onUse(function(api) {
 		'check',
 		'ejson',
 		'meteorhacks:picker',
+		'ms',
 	], 'server');
 	api.addFiles([
 		'server/connector.coffee',

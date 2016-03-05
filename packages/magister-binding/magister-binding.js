@@ -5,14 +5,14 @@
  */
  /* global AbsenceInfo, Magister, ExternalServicesConnector, Schools, Grades,
   Grade, StudyUtil, GradePeriod, ExternalPerson, CalendarItem, Assignment,
-  ExternalFile, getClassInfos, getUserField, LRU, MessageRecipient, Message */
+  ExternalFile, getClassInfos, getUserField, LRU, MessageRecipient, Message, ms */
 
 // One heck of a binding this is.
 
 (function (Magister, Future, request, marked) {
 	'use strict';
 
-	const ONLY_RECENT_LIMIT = 1000*60*60*24*6; // 6 days
+	const ONLY_RECENT_LIMIT = ms.days(6);
 
 	const cache = LRU({
 		max: 50,
