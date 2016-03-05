@@ -68,10 +68,10 @@ diffAndInsertFiles = (userId, files) ->
 		id = file._id
 		if val?
 			Schemas.Files.clean file
+			id = val._id
 
 			if hasChanged val, file
 				Files.update val._id, { $set: file }, (->)
-				id = val._id
 		else
 			id = Files.insert file
 
