@@ -190,7 +190,7 @@ updateStudyUtils = (userId, forceUpdate = no) ->
 
 		studyUtils = StudyUtils.find({
 			fetchedBy: externalService.name
-			externalInfo: $in: _.pluck result, 'externalInfo'
+			externalInfo: $in: _.pluck result.studyUtils, 'externalInfo'
 		}, {
 			transform: null
 		}).fetch()
