@@ -294,18 +294,6 @@ class @Helpers
 	@datesEqual: (a, b) -> a.getMonth() is b.getMonth() and a.getDate() is b.getDate()
 
 	###*
-	# Emboxes the given `fn`, making the current computation only invalidate when
-	# the return value of the given `fn` changes, also makes the `fn` stop
-	# executing if it isn't used in any reactive computation.
-	#
-	# @method emboxValue
-	# @param fn {Function}
-	# @param [equals] {Function} An comparison value used instead of `EJSON.equals`.
-	# @return {any} The return value of `fn`.
-	###
-	@emboxValue: (fn, equals) -> emboxValue(fn, { equals, lazy: yes })()
-
-	###*
 	# Changes `original` using the given `sedcommand`.
 	# If no `original` is given: return whether or not the given `sedcomand` is a
 	# valid sed command.
