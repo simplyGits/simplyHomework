@@ -168,10 +168,9 @@ ChatMiddlewares.attach 'clickable names', 'insert', (message) ->
 			Meteor.users.findOne {
 				_id: $nin: [ Meteor.userId(), message.creatorId ]
 				$or: [
-					{ 'profile.firstName': word }
-					{ 'profile.lastName': word }
+					{ 'profile.firstName': $ne: '', $eq: word }
+					{ 'profile.lastName': $ne: '', $eq: word }
 				]
-				'profile.firstName': $ne: ''
 				'profile.schoolId': schoolId
 			}, {
 				fields:
