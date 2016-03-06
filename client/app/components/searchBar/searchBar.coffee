@@ -14,7 +14,7 @@ fallbackClass = _.sample [
 ]
 
 getClassName = ->
-	currentLesson = ScheduleFunctions.currentLesson()
+	currentLesson = Helpers.embox ScheduleFunctions.currentLesson
 	c = (
 		if currentLesson?
 			currentLesson.class()

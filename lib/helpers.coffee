@@ -428,6 +428,26 @@ class @Helpers
 		if showTime then "#{date} #{time}"
 		else date
 
+	###*
+	# Emboxes the given function to only invalidate the current computation when
+	# the return value is different from the previous one. (compared using
+	# `EJSON.equals`)
+	#
+	# @method embox
+	# @param {Funtion} fn
+	# @param {Object} [thisArg=window]
+	# @param {any[]} [args=[]]
+	# @return {mixed}
+	###
+	@embox: (fn, thisArg = window, args = []) ->
+		val = new ReactiveVar
+
+		Tracker.autorun ->
+			newVal = fn.apply thisArg, args
+			val.set newVal unless EJSON.equals val.curValue, newVal
+
+		val.get()
+
 	@isPhone: -> Session.equals 'deviceType', 'phone'
 	@isTablet: -> Session.equals 'deviceType', 'tablet'
 	@isDesktop: -> Session.equals 'deviceType', 'desktop'
