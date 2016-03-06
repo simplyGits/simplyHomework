@@ -272,6 +272,7 @@ updateCalendarItems = (userId, from, to) ->
 			errors.push e
 			continue
 
+		###
 		calendarItems = CalendarItems.find(
 			fetchedBy: externalService.name
 			$or: [
@@ -284,6 +285,7 @@ updateCalendarItems = (userId, from, to) ->
 				}
 			]
 		).fetch()
+		###
 
 		absences = Absences.find(
 			userId: userId
@@ -298,13 +300,16 @@ updateCalendarItems = (userId, from, to) ->
 		fileKeyChanges = diffAndInsertFiles userId, result.files
 
 		for calendarItem in result.calendarItems
-			val = _.find calendarItems,
+			val = CalendarItems.findOne
+				fetchedBy: externalService.name
 				externalId: calendarItem.externalId
 
-			val ?= _.find calendarItems, (x) ->
-				x.classId is calendarItem.classId and
-				EJSON.equals(x.startDate, calendarItem.startDate) and
-				EJSON.equals(x.endDate, calendarItem.endDate)
+			val ?= CalendarItems.findOne
+				fetchedBy: externalService.name
+				userIds: userId
+				classId: calendarItem.classId
+				startDate: calendarItem.startDate
+				endDate: calendarItem.endDate
 
 			content = calendarItem.content
 			if content? and (not content.type? or content.type is 'homework')
