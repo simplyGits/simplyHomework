@@ -63,4 +63,4 @@ class @ExternalFile
 		###
 		@downloadInfo = null
 
-	url: -> "/f/#{@_id}"
+	url: -> Meteor.absoluteUrl "f/#{@_id}"
