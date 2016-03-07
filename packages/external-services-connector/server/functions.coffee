@@ -244,6 +244,8 @@ updateCalendarItems = (userId, from, to) ->
 		'content'
 		'fileIds'
 		'teacher'
+		'classId'
+		'externalId'
 	]
 
 	# TODO: fix using `events.calendarItemsUpdate` here.
