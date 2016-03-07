@@ -428,6 +428,9 @@ class @Helpers
 	# @return {mixed}
 	###
 	@embox: (fn, thisArg = window, args = []) ->
+		unless Tracker.currentComputation?
+			return fn.apply thisArg, args
+
 		val = new ReactiveVar
 
 		Tracker.autorun ->
