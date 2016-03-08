@@ -40,18 +40,21 @@ Picker.route '/f/:fid', (params, req, res) ->
 	if info.redirect?
 		res.writeHead 301, 'Location': info.redirect
 		res.end()
-	else if info.path? and info.requireauth is false
-		request(
-			method: 'get'
-			url: info.path
-		).pipe res
 	else
-		service = _.find Services, name: file.fetchedBy
-		unless service?
-			err 500, 'service not found'
-			return undefined
+		res.setHeader 'Content-disposition', [ 'attachment', "filename=#{file.name}" ]
 
-		service.getFile(userId, info).pipe(res)
+		if info.path? and info.requireauth is false
+			request(
+				method: 'get'
+				url: info.path
+			).pipe res
+		else
+			service = _.find Services, name: file.fetchedBy
+			unless service?
+				err 500, 'service not found'
+				return undefined
+
+			service.getFile(userId, info).pipe(res)
 
 	trackFileDownload params.fid
 	undefined
