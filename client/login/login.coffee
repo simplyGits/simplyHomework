@@ -32,7 +32,7 @@ Template.login.onRendered ->
 		color: null
 
 Template.signup.events
-	'submit': ->
+	'submit': (event) ->
 		event.preventDefault()
 		$emailInput = $ '#emailInput'
 		$passwordInput = $ '#passwordInput'
