@@ -19,11 +19,16 @@ Template.calendarItemDetails.helpers
 			.map (file) -> file.buildAnchorTag().outerHTML
 			.join ', '
 
+	hasChat: ->
+		ChatRooms.find(
+			type: 'class'
+			'classInfo.ids': @classId
+		).count() > 0
+
 Template.calendarItemDetails.events
 	'click [data-action="chat"]': (event) ->
 		event.preventDefault()
-		classId = @class()?._id
-		ChatManager.openClassChat classId if classId?
+		ChatManager.openClassChat @classId if @classId?
 
 Template.calendarItemDetails.onCreated ->
 	@subscribe 'files', @data?.fileIds ? []

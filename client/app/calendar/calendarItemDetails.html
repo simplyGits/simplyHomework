@@ -67,7 +67,11 @@
 			<div class="row">
 				<div>Klas:</div>
 				<div>
-					<a href="#" data-action="chat">{{group}}</a>
+					{{#if hasChat}}
+						<a href="#" data-action="chat">{{group}}</a>
+					{{else}}
+						{{group}}
+					{{/if}}
 				</div>
 			</div>
 		{{/if}}
