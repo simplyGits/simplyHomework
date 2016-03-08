@@ -144,7 +144,10 @@ class @ChatManager
 	# @param {String} classId
 	###
 	@openClassChat: (classId) ->
-		@openChat ChatRooms.findOne({ 'classInfo.ids': classId })?._id
+		@openChat ChatRooms.findOne(
+			type: 'class'
+			'classInfo.ids': classId
+		)?._id
 
 	###*
 	# Opens the chat for the given ChatRoom id
