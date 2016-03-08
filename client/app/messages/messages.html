@@ -92,7 +92,7 @@
 		</div>
 		{{#if recipients}}
 			<div class="recipients">
-				<span class="dim">Ontvangers:</span> {{__recipients}}
+				<span class="dim">{{plural recipientCount 'Ontvanger' 'Ontvangers'}}:</span> {{__recipients}}
 			</div>
 		{{/if}}
 	</div>
@@ -110,7 +110,7 @@
 			</div>
 			{{#if recipientsString}}
 				<div class="recipients">
-					<span class="dim">Ontvangers:</span> {{{recipientsString}}}
+					<span class="dim">{{plural recipientCount 'Ontvanger' 'Ontvangers'}}:</span> {{{recipientsString}}}
 				</div>
 			{{/if}}
 			<div class="sendDate">

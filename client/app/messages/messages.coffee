@@ -120,6 +120,7 @@ Template['messages_messageList'].events
 
 Template['messages_message_row'].helpers
 	__recipients: -> @recipientsString 2, no
+	recipientCount: -> @recipients.length
 
 Template['messages_message_row'].events
 	'click': -> setCurrentMessage @_id
@@ -135,6 +136,8 @@ Template['message_current_message'].helpers
 			"<a href='#{path}'>#{fullName}</a>"
 		else
 			@sender.fullName
+
+	recipientCount: -> @recipients.length
 
 	attachmentCount: -> @attachmentIds.length
 	attachments: ->
