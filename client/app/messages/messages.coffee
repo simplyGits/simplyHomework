@@ -142,13 +142,7 @@ Template['message_current_message'].helpers
 	attachmentCount: -> @attachmentIds.length
 	attachments: ->
 		@attachments()
-			.map (file) ->
-				a = document.createElement 'a'
-				a.href = file.url()
-				a.target = '_blank'
-				a.download = file.name
-				a.textContent = file.name
-				a.outerHTML
+			.map (file) -> file.buildAnchorTag().outerHTML
 			.join ', '
 
 Template['message_current_message'].events

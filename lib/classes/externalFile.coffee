@@ -64,3 +64,16 @@ class @ExternalFile
 		@downloadInfo = null
 
 	url: -> Meteor.absoluteUrl "f/#{@_id}"
+
+	buildAnchorTag: ->
+		if Meteor.isClient
+			a = document.createElement 'a'
+			a.href = @url()
+			a.textContent = @name
+
+			if 'download' of a
+				a.download = @name
+			else
+				a.target = '_blank'
+
+			a
