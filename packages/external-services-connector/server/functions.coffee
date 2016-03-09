@@ -246,6 +246,7 @@ updateCalendarItems = (userId, from, to) ->
 		'teacher'
 		'classId'
 		'externalId'
+		'scrapped'
 	]
 
 	# TODO: fix using `events.calendarItemsUpdate` here.
