@@ -139,8 +139,8 @@ class @CalendarItem
 			when 'homework' then 'Huiswerk'
 			when 'test' then 'Proefwerk'
 			when 'exam' then 'Examen'
-			when 'quiz' then 'Schrijftelijke Overhoring'
-			when 'oral' then 'Mondlinge Overhoring'
+			when 'quiz' then 'Schriftelijke Overhoring'
+			when 'oral' then 'Mondelinge Overhoring'
 			when 'information' then 'Informatie'
 
 			else 'Inhoud'
