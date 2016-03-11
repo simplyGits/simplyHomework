@@ -120,6 +120,14 @@ ChatMiddlewares.attach 'emojione', 'client', (message) ->
 		message.content = emojione.toImage message.content
 	message
 
+ChatMiddlewares.attach 'kappa', 'client', (message) ->
+	unless getUserField Meteor.userId(), 'settings.devSettings.noChatEmojis'
+		message.content = message.content.replace(
+			/:kappa:/g
+			'<img class="emojione" style="height: 4ex" src="/packages/chat/images/kappa.png"></img>'
+		)
+	message
+
 ChatMiddlewares.attach 'katex', 'client', (message) ->
 	message.content = message.content.replace /\$\$(.+)\$\$/, (match, formula) ->
 		try katex.renderToString formula

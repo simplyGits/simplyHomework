@@ -34,6 +34,8 @@ Package.onUse(function(api) {
 	api.addAssets([
 		'audio/chatNotification.ogg',
 		'audio/chatNotification.mp3',
+
+		'images/kappa.png',
 	], 'client')
 
 	api.addFiles([
