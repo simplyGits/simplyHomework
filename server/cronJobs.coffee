@@ -1,7 +1,7 @@
 Future = Npm.require 'fibers/future'
 
 SyncedCron.add
-	# REVIEW: exclude premium users? ;)
+	# TODO: exclude premium users
 	name: 'Clear inactive users'
 	schedule: (parser) -> parser.recur().on(3).hour()
 	job: ->
