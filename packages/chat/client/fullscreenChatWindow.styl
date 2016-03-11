@@ -227,10 +227,23 @@ div#fullscreenChatWindow
 		button:hover ~ input
 			padding-right: 130px
 
+		#statusMessage
+			absolute: bottom -22px
+
 	div#footer.editing
 		border-color: #848484
 		button
 			border-color: #848484
+
+	div#footer.error
+		border-color: red
+
+		button
+			border-color: red
+
+		#statusMessage
+			font-weight: bold
+			color: red
 
 div.fullscreenChatWindow.fadeOut
 	opacity: 0

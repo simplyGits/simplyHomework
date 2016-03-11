@@ -1,8 +1,10 @@
+@CHATMESSAGE_MAX_LENGTH = 3500
+
 if Package['aldeed:collection2']?
 	ChatMessages.attachSchema
 		content:
 			type: String
-			max: 3500
+			max: CHATMESSAGE_MAX_LENGTH
 		creatorId:
 			type: String
 			autoValue: -> if not @isFromTrustedCode and @isInsert then @userId

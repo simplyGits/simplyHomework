@@ -1,6 +1,8 @@
 editMessageId = new ReactiveVar
 lastInputs = new Map
 
+error = new ReactiveVar ''
+
 send = (content, updateId) ->
 	content = content.trim()
 	return if content.length is 0
@@ -14,6 +16,14 @@ send = (content, updateId) ->
 
 Template.fullscreenChatWindow.helpers
 	__editing: -> if editMessageId.get()? then 'editing' else ''
+	__error: ->
+		if error.get() isnt '' then 'error'
+		else ''
+
+	statusMessage: ->
+		switch error.get()
+			when 'too-long'
+				"maximaal #{CHATMESSAGE_MAX_LENGTH} karakters toegestaan"
 
 Template.fullscreenChatWindow.events
 	"click #header": (e) ->
@@ -70,6 +80,15 @@ Template.fullscreenChatWindow.events
 				editMessageId.set undefined
 
 			window.sendToBottom()
+
+		Meteor.defer ->
+			str = event.target.value
+			error.set (
+				if str.length > CHATMESSAGE_MAX_LENGTH
+					'too-long'
+				else
+					''
+			)
 
 	'blur input#messageInput': (event) ->
 		event.target.focus()

@@ -31,12 +31,15 @@
 
 		{{> chatMessages}}
 
-		<div id="footer" class="{{__editing}}">
+		<div id="footer" class="{{__editing}} {{__error}}">
 			<button class="sendButton">
 				<span id="sendText">verzenden</span>
 				<i id="sendIcon" class="fa fa-angle-double-right"></i>
 			</button>
 			<input type="text" id="messageInput" placeholder="Typ bericht, enter om te versturen." autofocus/>
+			{{#with statusMessage}}
+				<div id="statusMessage">{{{this}}}</div>
+			{{/with}}
 		</div>
 	</div>
 </template>
