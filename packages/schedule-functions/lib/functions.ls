@@ -44,8 +44,9 @@
 
 	res
 
-@ScheduleFunctions.current-day-over = (user-id = Meteor.user-id!) ->
+@ScheduleFunctions.current-day-over = (user-id = Meteor.user-id!, count-scrapped-as-lesson = no) ->
 	check user-id, String
+	check count-scrapped-as-lesson, Boolean
 
 	minuteTracker?depend!
 	CalendarItems.find(
@@ -53,7 +54,10 @@
 		end-date:
 			$gte: new Date
 			$lte: Date.today!add-days 1
-		scrapped: false
+		scrapped: (
+			if count-scrapped-as-lesson then { $exists: yes }
+			else no
+		)
 		school-hour:
 			$exists: yes
 			$ne: null

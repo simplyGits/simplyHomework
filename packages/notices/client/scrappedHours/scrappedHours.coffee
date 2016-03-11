@@ -1,5 +1,5 @@
 getScrappedHours = ->
-	dayOver = ScheduleFunctions.currentDayOver()
+	dayOver = ScheduleFunctions.currentDayOver Meteor.userId(), yes
 	CalendarItems.find({
 		userIds: Meteor.userId()
 		startDate: $gte: Date.today().addDays if dayOver then 1 else 0
