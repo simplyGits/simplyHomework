@@ -2,7 +2,7 @@ if Package['aldeed:collection2']?
 	ChatMessages.attachSchema
 		content:
 			type: String
-			max: 1000
+			max: 3500
 		creatorId:
 			type: String
 			autoValue: -> if not @isFromTrustedCode and @isInsert then @userId
