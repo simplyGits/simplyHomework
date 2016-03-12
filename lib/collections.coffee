@@ -342,9 +342,9 @@ Schemas.Messages = new SimpleSchema
 		type: Date
 		index: -1
 	sender:
-		type: MessageRecipient
+		type: ExternalPerson
 	recipients:
-		type: [MessageRecipient]
+		type: [ExternalPerson]
 	attachmentIds:
 		type: [String]
 		defaultValue: []

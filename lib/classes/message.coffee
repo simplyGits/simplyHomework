@@ -76,10 +76,4 @@ class @Message
 
 		res
 
-class @MessageRecipient
-	constructor: (@firstName = '', @lastName = '') ->
-		@userId = undefined
 
-		@fullName = ''
-
-		@teacherCode = undefined

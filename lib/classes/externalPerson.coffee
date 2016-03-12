@@ -63,4 +63,15 @@ class @ExternalPerson
 		###
 		@fetchedBy = undefined
 
+		###*
+		# If this person has a simplyHomework account this property will contain
+		# theuserId of the person on simplyHomework as it appears in the
+		# `Meteor.users` collection.
+		#
+		# @property userId
+		# @type String
+		# @default undefined
+		###
+		@userId = undefined
+
 	toString: -> @fullName

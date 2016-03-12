@@ -5,7 +5,7 @@
  */
  /* global AbsenceInfo, Magister, ExternalServicesConnector, Schools, Grades,
   Grade, StudyUtil, GradePeriod, ExternalPerson, CalendarItem, Assignment,
-  ExternalFile, getClassInfos, getUserField, LRU, MessageRecipient, Message, ms */
+  ExternalFile, getClassInfos, getUserField, LRU, Message, ms */
 
 // One heck of a binding this is.
 
@@ -424,6 +424,38 @@
 		return fut.wait();
 	};
 
+	function convertMagisterPerson (person, user) {
+		const magister = getMagisterObject(user._id);
+		const res = new ExternalPerson(
+			person.firstName(),
+			person.lastName()
+		);
+
+		res.type = person.type();
+		res.fullName = person.fullName();
+		res.namePrefix = person.namePrefix();
+		res.teacherCode = person.teacherCode();
+		res.group = person.group();
+
+		res.externalId = prefixId(magister, person.id());
+		res.fetchedBy = MagisterBinding.name;
+
+		if (person.id() === magister.profileInfo().id()) {
+			// performance shortcut
+			res.userId = user._id;
+		} else {
+			const u = Meteor.users.findOne({
+				'profile.schoolId': user.profile.schoolId,
+				'externalServices.magister.externalUserId': person.id(),
+			});
+			if (u !== undefined) {
+				res.userId = u._id;
+			}
+		}
+
+		return res;
+	}
+
 	/**
 	 * Gets persons for the user with the given `userId` confirming to the
 	 * given `query` and `type`, if given.
@@ -440,28 +472,13 @@
 		check(type, Match.Optional(String));
 
 		const fut = new Future();
-		const magister = getMagisterObject(userId);
-		magister.getPersons(query, type, function (e, r) {
+		const user = Meteor.users.findOne(userId);
+
+		getMagisterObject(userId).getPersons(query, type, function (e, r) {
 			if (e) {
 				fut.error(e);
 			} else {
-				fut.return(r.map(function (p) {
-					const person = new ExternalPerson(
-						p.firstName(),
-						p.lastName()
-					);
-
-					person.type = p.type();
-					person.fullName = p.fullName();
-					person.namePrefix = p.namePrefix();
-					person.teacherCode = p.teacherCode();
-					person.group = p.group();
-
-					person.externalId = prefixId(magister, p.id());
-					person.fetchedBy = MagisterBinding.name;
-
-					return person;
-				}));
+				fut.return(r.map((p) => convertMagisterPerson(p, user)));
 			}
 		});
 		return fut.wait();
@@ -741,7 +758,7 @@
 		check(userId, String);
 
 		const fut = new Future();
-		const schoolId = getUserField(userId, 'profile.schoolId');
+		const user = Meteor.users.findOne(userId);
 		const magister = getMagisterObject(userId);
 
 		let folder;
@@ -767,35 +784,15 @@
 
 				r.forEach(function (m) {
 					const path = '/berichten/bijlagen/';
-					const convertMagisterPerson = function (person) {
-						const res = new MessageRecipient(person.firstName(), person.lastName());
-						res.fullName = person.description();
-						res.teacherCode = person.teacherCode();
-
-						if (person.id() === magister.profileInfo().id()) {
-							// performance shortcut
-							res.userId = userId;
-						} else {
-							const user = Meteor.users.findOne({
-								'profile.schoolId': schoolId,
-								'externalServices.magister.externalUserId': person.id(),
-							});
-							if (user !== undefined) {
-								res.userId = user._id;
-							}
-						}
-
-						return res;
-					};
 
 					const message = new Message(
 						m.subject(),
 						m._body,
 						folderName,
 						m.sendDate(),
-						convertMagisterPerson(m.sender())
+						convertMagisterPerson(m.sender(), user)
 					);
-					message.recipients = m.recipients().map(convertMagisterPerson);
+					message.recipients = m.recipients().map((p) => convertMagisterPerson(p, user));
 					message.fetchedBy = MagisterBinding.name;
 					message.externalId = prefixId(magister, m.id());
 					message.readBy = m.isRead() ? [ userId ] : [];
