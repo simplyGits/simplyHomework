@@ -68,25 +68,28 @@ Template.messages.onCreated ->
 				FlowRouter.setParams folder: folders[0].name
 
 Template.messages.onRendered ->
-	slide 'messages'
-	setPageOptions
-		title: 'Berichten'
-		color: null
-
 	@autorun ->
 		$page = document.getElementsByClassName 'page'
 		$page.scrollTop = 0
 
-		if isComposing()
-			setPageOptions title: 'Berichten | Nieuw bericht'
-		else if getCurrentMessageId()?
-			message = Messages.findOne getCurrentMessageId()
-			setPageOptions title: "Berichten | #{message.subject}" if message?
-		else if getCurrentFolder()?
-			folder = _.find folders, name: getCurrentFolder()
-			setPageOptions title: "Berichten | #{folder.friendlyName}"
-		else
-			setPageOptions title: 'Berichten'
+		slide 'messages'
+		setPageOptions
+			color: null
+			title: (
+				suffix = (
+					if isComposing()
+						'Nieuw bericht'
+					else if getCurrentMessageId()?
+						Messages.findOne(getCurrentMessageId())?.subject
+					else if getCurrentFolder()?
+						folder = _.find(folders, name: getCurrentFolder())?.friendlyName
+				)
+
+				if suffix?
+					"Berichten | #{suffix}"
+				else
+					'Berichten'
+			)
 
 Template['messages_sidebar'].helpers
 	folders: -> folders
