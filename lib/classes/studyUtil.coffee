@@ -57,3 +57,44 @@ class @StudyUtil
 		# @default undefined
 		###
 		@externalInfo = undefined
+
+	@schema: new SimpleSchema
+		name:
+			type: String
+			trim: yes
+		description:
+			type: String
+			trim: yes
+			optional: yes
+			defaultValue: ""
+		classId:
+			type: String
+			# REVIEW: optional?
+			optional: yes
+		visibleFrom:
+			type: Date
+			optional: yes
+			autoValue: ->
+				if @isInsert and not @value? then new Date()
+				else @value
+		visibleTo:
+			type: Date
+			optional: yes
+		fileIds:
+			type: [String]
+			defaultValue: []
+		userIds:
+			type: [String]
+		fetchedBy:
+			type: String
+			optional: yes
+		externalInfo:
+			type: Object
+			optional: yes
+			blackbox: yes
+		updatedOn:
+			type: Date
+			optional: yes
+
+@StudyUtils = new Meteor.Collection 'studyUtils', transform: (su) -> _.extend new StudyUtil, su
+@StudyUtils.attachSchema StudyUtil.schema

@@ -1,3 +1,29 @@
+projectTransform = (p) ->
+	_.extend p,
+		__class: -> Classes.findOne p.classId
+		__borderColor: (
+			now = new Date
+			if p.deadline?
+				switch
+					when p.deadline < now then '#FF4136'
+					when Helpers.daysRange(now, p.deadline, no) < 2 then '#FF8D00'
+					else '#2ECC40'
+			else
+				'#000'
+		)
+		__friendlyDeadline: (
+			if p.deadline?
+				Helpers.cap Helpers.formatDateRelative p.deadline, yes
+		)
+		__chatRoom: -> ChatRooms.findOne projectId: p._id
+		__lastChatMessage: ->
+			chatRoom = @__chatRoom()
+			if chatRoom?
+				ChatMessages.findOne {
+					chatRoomId: chatRoom._id
+				}, sort:
+					'time': -1
+
 ###*
 # A project that can be worked on with multiple persons.
 # @class Project
@@ -43,3 +69,41 @@ class @Project
 		# @default false
 		###
 		@finished = no
+
+	@schema: new SimpleSchema
+		name:
+			type: String
+			autoValue: ->
+				# Remove emojis.
+				@value.replace /[\uD83C-\uDBFF\uDC00-\uDFFF]+/g, '' if @value?
+		description:
+			type: String
+			optional: yes
+		deadline:
+			type: Date
+		magisterId:
+			type: Number
+			optional: yes
+		classId:
+			type: String
+			optional: yes
+		creatorId:
+			type: String
+			denyUpdate: yes
+			autoValue: -> if not @isFromTrustedCode and @isInsert then @userId else @value
+		participants:
+			type: [String]
+			autoValue: ->
+				if not @isFromTrustedCode and @isInsert
+					[@userId]
+				else @value
+		driveFileIds:
+			type: [String]
+		finished:
+			type: Boolean
+			autoValue: ->
+				if not @isFromTrustedCode and @isInsert then no
+				else @value
+
+@Projects = new Meteor.Collection 'projects', transform: (p) -> projectTransform p
+@Projects.attachSchema Project.schema

@@ -26,3 +26,26 @@ class @AbsenceInfo
 		# @default undefined
 		###
 		@fetchedBy = undefined
+
+	@schema: new SimpleSchema
+		userId:
+			type: String
+		calendarItemId:
+			type: String
+		type:
+			type: String
+			# TODO: fill in allowedValues
+			#allowedValues: ['']
+		permitted:
+			type: Boolean
+		description:
+			type: String
+		externalId:
+			type: null # any type
+			optional: yes
+		fetchedBy:
+			type: String
+			optional: yes
+
+@Absences = new Meteor.Collection 'absences'
+@Absences.attachSchema AbsenceInfo.schema

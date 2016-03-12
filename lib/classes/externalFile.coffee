@@ -77,3 +77,32 @@ class @ExternalFile
 				a.target = '_blank'
 
 			a
+
+	@schema: new SimpleSchema
+		_id:
+			type: String
+		name:
+			type: String
+		userIds:
+			type: [String]
+		mime:
+			type: String
+		creationDate:
+			type: Date
+			optional: yes
+		size:
+			type: Number
+		fetchedBy:
+			type: String
+			optional: yes
+		externalId:
+			type: null
+			optional: yes
+		downloadInfo:
+			type: Object
+			blackbox: yes
+
+@Files = new Mongo.Collection 'files', transform: (f) -> _.extend new ExternalFile, f
+@Files.attachSchema ExternalFile.schema
+
+@FileDownloadCounters = new Mongo.Collection 'fileDownloadCounters'

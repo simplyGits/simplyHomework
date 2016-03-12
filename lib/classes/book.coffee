@@ -35,3 +35,24 @@ class @Book
 		# @default {}
 		###
 		@externalInfo = {}
+
+	@schema: new SimpleSchema
+		title:
+			type: String
+		classId:
+			type: String
+		publisher:
+			type: String
+			optional: yes
+		release:
+			type: Number
+			optional: yes
+		utils:
+			type: [Object]
+			blackbox: yes
+		externalInfo:
+			type: Object
+			blackbox: yes
+
+@Books = new Meteor.Collection 'books'
+@Books.attachSchema Book.schema

@@ -63,6 +63,22 @@ variantMap =
 	else
 		name
 
+classTransform = (c) ->
+	return c if Meteor.isServer
+	classInfo = _.find getClassInfos(), (info) -> EJSON.equals info.id, c._id
+
+	_.extend c,
+		#__taskAmount: _.filter(homeworkItems.get(), (a) -> groupInfo?.group is a.description() and not a.isDone()).length
+		__book: -> Books.findOne classInfo?.bookId
+		__sidebarName: (
+			val = c.name
+			if val.length > 14 then c.abbreviations[0]
+			else val
+		)
+
+		__color: classInfo?.color
+		__classInfo: classInfo
+
 ###*
 # @class SchoolClass
 # @constructor
@@ -90,3 +106,24 @@ class @SchoolClass
 		# @default {}
 		###
 		@externalInfo = {}
+
+	@schema: new SimpleSchema
+		name:
+			type: String
+			label: 'Vaknaam'
+			trim: yes
+			regEx: /^[A-Z][^A-Z]+$/
+		abbreviations:
+			type: [String]
+			label: 'Vakafkortingen'
+		year:
+			type: Number
+		schoolVariant:
+			type: String
+			regEx: /^[a-z]+$/
+		externalInfo:
+			type: Object
+			blackbox: yes
+
+@Classes = new Meteor.Collection 'classes', transform: (c) -> classTransform c
+@Classes.attachSchema SchoolClass.schema

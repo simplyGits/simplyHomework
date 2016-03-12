@@ -179,3 +179,58 @@ class @CalendarItem
 			_.find @description.split(' '), (w) -> /\d/.test(w) and /[a-z]/i.test(w)
 
 	files: -> Files.find(_id: $in: @fileIds).fetch()
+
+	@schema: new SimpleSchema
+		userIds:
+			type: [String]
+		description:
+			type: String
+		startDate:
+			type: Date
+		endDate:
+			type: Date
+		classId:
+			type: String
+			optional: yes
+		usersDone:
+			type: [String]
+		content:
+			type: Object
+			optional: yes
+			blackbox: yes
+		repeatInterval:
+			type: Number
+			optional: yes
+		externalId:
+			type: null
+			optional: yes
+		fetchedBy:
+			type: String
+			optional: yes
+		scrapped:
+			type: Boolean
+		fullDay:
+			type: Boolean
+		schoolHour:
+			type: Number
+			optional: yes
+		location:
+			type: String
+			optional: yes
+		teacher:
+			type: Object
+			optional: yes
+			blackbox: yes
+		type:
+			type: String
+			optional: yes
+		fileIds:
+			type: [String]
+			defaultValue: []
+		updateInfo:
+			type: Object
+			blackbox: yes
+			optional: yes
+
+@CalendarItems = new Meteor.Collection 'calendarItems', transform: (c) -> _.extend new CalendarItem, c
+@CalendarItems.attachSchema CalendarItem.schema

@@ -76,4 +76,34 @@ class @Message
 
 		res
 
+	@schema: new SimpleSchema
+		subject:
+			type: String
+		body:
+			type: String
+		folder:
+			type: String
+			allowedValues: [ 'inbox', 'alerts', 'outbox' ]
+		sendDate:
+			type: Date
+			index: -1
+		sender:
+			type: ExternalPerson
+		recipients:
+			type: [ExternalPerson]
+		attachmentIds:
+			type: [String]
+			defaultValue: []
+		fetchedFor:
+			type: [String]
+		readBy:
+			type: [String]
+		fetchedBy:
+			type: String
+			optional: yes
+		externalId:
+			type: null
+			optional: yes
 
+@Messages = new Mongo.Collection 'messages', transform: (m) -> _.extend new Message, m
+# @Messages.attachSchema Message.schema

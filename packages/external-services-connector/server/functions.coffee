@@ -67,7 +67,7 @@ diffAndInsertFiles = (userId, files) ->
 
 		id = file._id
 		if val?
-			Schemas.Files.clean file
+			ExternalFile.schema.clean file
 			id = val._id
 
 			if hasChanged val, file
@@ -130,7 +130,7 @@ updateGrades = (userId, forceUpdate = no) ->
 
 		for grade in result ? []
 			continue unless grade?
-			Schemas.Grades.clean grade
+			Grade.schema.clean grade
 			val = _.find grades,
 				externalId: grade.externalId
 				fetchedBy: grade.fetchedBy
@@ -324,7 +324,7 @@ updateCalendarItems = (userId, from, to) ->
 				fileKeyChanges[id] ? id
 
 			if val?
-				Schemas.CalendarItems.clean calendarItem
+				CalendarItem.schema.clean calendarItem
 
 				mergeUserIdsField = (fieldName) ->
 					calendarItem[fieldName] = _(val[fieldName])

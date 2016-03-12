@@ -167,6 +167,54 @@ class @Grade
 	toString: (precision = 2) -> @gradeStr ? @grade.toPrecision precision
 	valueOf: -> @grade
 
+	@schema: new SimpleSchema
+		grade:
+			type: null
+			custom: -> _.isNumber @value
+		gradeStr:
+			type: String
+		gradeType:
+			type: String
+			allowedValues: [ 'number', 'percentage' ]
+		weight:
+			type: Number
+			decimal: yes
+			min: 0
+		classId:
+			type: String
+			optional: yes # REVIEW
+		ownerId:
+			type: String
+		description:
+			type: String
+			trim: yes
+			optional: yes
+		passed:
+			type: Boolean
+		isEnd:
+			type: Boolean
+		dateFilledIn:
+			type: Date
+		dateTestMade:
+			type: Date
+			optional: yes
+		externalId:
+			type: null
+			optional: yes
+		fetchedBy:
+			type: String
+			optional: yes
+		period:
+			type: null
+			blackbox: yes
+		###
+		# TODO: This had problems because in magister-binding we're returning a stored
+		# grade when it hasn't changed, this grade from the database doesn't have a
+		# GradePeriod type but an object type thanks to how EJSON stringification.
+		period:
+			type: GradePeriod
+		###
+
 ###*
 # @class GradePeriod
 # @constructor
@@ -200,3 +248,21 @@ class @GradePeriod
 		@to = null
 
 	toString: -> @name
+
+@Grades = new Meteor.Collection 'grades', transform: (g) ->
+	if Meteor.isServer
+		g
+	else
+		g = _.extend new Grade(g.gradeStr), g
+		_.extend g,
+			__insufficient: if g.passed then '' else 'insufficient'
+
+			# TODO: do this on a i18n friendly way.
+			__grade: g.toString().replace '.', ','
+			__weight: (
+				if Math.floor(g.weight) is g.weight
+					g.weight
+				else
+					g.weight.toFixed(1).replace '.', ','
+			)
+@Grades.attachSchema Grade.schema

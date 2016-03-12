@@ -32,3 +32,27 @@ class @ReportItem
 		# @default undefined
 		###
 		@resolvedInfo = undefined
+
+	@schema: new SimpleSchema
+		reporterId:
+			type: String
+		userId:
+			type: String
+		reportGrounds:
+			type: [String]
+			minCount: 1
+		time:
+			type: Date
+			autoValue: -> if @isInsert then new Date()
+			denyUpdate: yes
+
+		resolvedInfo:
+			type: Object
+			optional: yes
+		'resolvedInfo.by'
+			type: String
+		'resolvedInfo.at'
+			type: Date
+
+@ReportItems = new Meteor.Collection 'reportItems'
+@ReportItems.attachSchema ReportItem.schema

@@ -19,3 +19,5 @@ class @Ticket
 		# @default new Date()
 		###
 		@creationDate = new Date
+
+@Tickets = new Mongo.Collection 'tickets'
