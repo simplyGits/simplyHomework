@@ -105,7 +105,7 @@
 	 * @method getMagisterObject
 	 * @private
 	 * @param {String} userId The ID of the user to get a Magister object for.
-	 * @param {Boolean} [forceNew=false] Get a new sessionId, even when there is a previous one.
+	 * @param {Boolean} [forceNew=false] Get a new sessionId and Magister object, even when there is a previous one.
 	 * @return {Magister} A Magister object for the given `userId`.
 	 */
 	function getMagisterObject (userId, forceNew = false) {
@@ -119,7 +119,7 @@
 			throw new Error('No credentials found.');
 		} else {
 			let m = cache.get(userId);
-			if (m !== undefined) {
+			if (m !== undefined && !forceNew) {
 				return m;
 			}
 
