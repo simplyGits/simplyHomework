@@ -65,6 +65,9 @@ Meteor.startup ->
 		if Meteor.userId()? # login
 			runSetup()
 
+		expireDate = new Date localStorage.getItem 'Meteor.loginTokenExpires'
+		document.cookie = "loggedIn=#{if Meteor.userId()? then '1' else '0'};path=/;domain=.simplyHomework.nl;expires=#{expireDate.toGMTString()}"
+
 	console.log 'global() deviceType', Session.get 'deviceType'
 
 	unless Session.equals 'deviceType', 'desktop'
