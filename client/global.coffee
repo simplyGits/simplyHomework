@@ -61,9 +61,18 @@ Meteor.startup ->
 		if 'ActiveXObject' of window
 			$body.addClass 'ie'
 
+	nonLoginRoutes = [
+		'login'
+		'signup'
+		'verifyMail'
+		'forgotPass'
+		'resetPass'
+	]
 	Tracker.autorun ->
 		if Meteor.userId()? # login
 			runSetup()
+		else if FlowRouter.getRouteName() not in nonLoginRoutes
+			Meteor.defer -> document.location.href = 'https://simplyhomework.nl/'
 
 		expireDate = new Date localStorage.getItem 'Meteor.loginTokenExpires'
 		document.cookie = "loggedIn=#{if Meteor.userId()? then '1' else '0'};path=/;domain=.simplyHomework.nl;expires=#{expireDate.toGMTString()}"
