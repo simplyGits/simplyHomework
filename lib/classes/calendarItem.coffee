@@ -122,7 +122,7 @@ class @CalendarItem
 	# @method class
 	# @return {SchoolClass}
 	###
-	class: -> Classes.findOne @classId, transform: classTransform
+	class: -> Classes.findOne @classId
 	###*
 	# @method getAbsenceInfo
 	# @param {String} [userId=Meteor.userId()]
