@@ -15,65 +15,6 @@ class @App
 		NotificationsManager.hideAll()
 
 # == Modals ==
-addClassModalBooks = new ReactiveVar []
-
-Template.addClassModal.helpers
-	externalClasses: ->
-		# TODO: remove next line.
-		return externalClasses.get()
-
-		knownIds = (info.id for info in getClassInfos())
-		_.reject externalClasses.get(), (c) ->
-			_.any knownIds, (id) -> EJSON.equals c._id, id
-
-	scholierenClasses: -> ScholierenClasses.find().fetch()
-	books: -> BooksHandler.engine.ttAdapter()
-
-Template.addClassModal.events
-	'click #goButton': (event) ->
-		name = Helpers.cap $('#classNameInput').val()
-		course = $('#courseInput').val().toLowerCase()
-		bookName = $('#bookInput').val()
-
-		Meteor.call 'insertClass', name, course, (e, classId) ->
-			if e?
-				notify 'Fout tijdens vak aanmaken', 'error'
-			else
-				Meteor.call 'insertBook', bookName, classId, (e, bookId) ->
-					if e?
-						notify 'Fout tijdens boek aanmaken', 'error'
-					else
-						Meteor.users.update Meteor.userId(), $push: classInfos:
-							id: classId
-							bookId: bookId
-
-						$('#addClassModal').modal 'hide'
-
-	'focus #bookInput': (event, template) ->
-		name = Helpers.cap $('#classNameInput').val()
-		template.className.set name
-
-Template.addClassModal.onCreated ->
-	@subscribe 'classes', all: yes
-
-	@className = new ReactiveVar
-	@books = new ReactiveVar []
-
-	@autorun =>
-		{ year, schoolVariant } = getCourseInfo @userId
-		c = Classes.findOne
-			name: @className.get()
-			year: year
-			schoolVariant: schoolVariant
-
-		if c?
-			books = BooksHandler.run c
-			@books.set books
-
-Template.addClassModal.onRendered ->
-	Meteor.typeahead.inject '#classNameInput, #bookInput'
-	Meteor.call 'getExternalPersonClasses', (e, r) -> externalClasses.set r unless e?
-
 Template.newSchoolYearModal.helpers classes: -> classes()
 
 Template.newSchoolYearModal.events

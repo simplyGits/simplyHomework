@@ -92,62 +92,6 @@
 	</div>
 </template>
 
-<template name="addClassModal">
-	<div class="modal fade" aria-hidden="true" id="addClassModal">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-					<h4 class="modal-title">Vak toevoegen</h4>
-				</div>
-				<div class="modal-body">
-					{{#with externalClasses}}
-						<h3>Kies een extern vak</h3>
-						{{#each this}}
-							<div class="classRow">
-								<div class="classname">{{name}}</div>
-								<input type="text" placeholder="Methode" class="methodInput form-control" />
-								<button type="button" class="btn btn-primary">toevoegen</button>
-							</div>
-						{{/each}}
-						<h3>Of maak zelf een vak</h3>
-					{{/with}}
-					<form class="vertical full-width">
-						<div id="nameGroup" class="group">
-							<label for="classNameInput">Vaknaam</label>
-							<input
-								type="text" id="classNameInput" placeholder="Engels"
-								spellcheck="off" autocomplete="off"
-								data-source="scholierenClasses" data-value-key="name"
-							/>
-						</div>
-						<div id="courseGroup" class="group">
-							<label for="courseInput">Vakafkorting</label>
-							<input type="text" id="courseInput" placeholder="entl">
-						</div>
-						<div id="bookGroup" class="group">
-							<label for="bookInput">Methode</label>
-							<input
-								type="text" id="bookInput" placeholder="Solutions"
-								spellcheck="off" autocomplete="off"
-								data-source="books" data-value-key="title"
-							/>
-						</div>
-						<div id="colorGroup" class="group">
-							<label for="colorInput" id="colorLabel">Kleur</label>
-							<input type="text" id="colorInput" placeholder="#32A8CE">
-						</div>
-					</form>
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-default" data-dismiss="modal">Annuleren</button>
-					<button type="button" class="btn btn-primary" id="goButton">Toevoegen</button>
-				</div>
-			</div>
-		</div>
-	</div>
-</template>
-
 <template name="newSchoolYearModal">
 	<div class="modal fade" aria-hidden="true" id="newSchoolYearModal">
 		<div class="modal-dialog">
