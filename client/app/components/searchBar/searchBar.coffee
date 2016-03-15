@@ -3,9 +3,11 @@ CACHE_TIMEOUT = ms.minutes 10
 placeholders = [
 	'Samenvattingen voor %class%'
 	'Woordenlijsten voor %class%'
-	'%class% Powerpoint H1'
 	'%class% Projecten'
-	'Hendrik-Jan'
+	'%class% Powerpoint H%num%'
+	'samenvatting %class% H%num%'
+	'%class% project H%num%'
+	'%name%'
 ]
 # fallback string for when the user's classes can't be loaded.
 fallbackClass = _.sample [
@@ -25,6 +27,22 @@ getClassName = ->
 		if _.random(1) then c.name else c.abbreviations[0]
 	else
 		fallbackClass
+
+getName = ->
+	user = _.sample Meteor.users.find({
+		_id: $ne: Meteor.userId()
+	}, {
+		reactive: no
+		fields:
+			_id: 1
+			'profile.firstName': 1
+			'profile.lastName': 1
+		transform: null
+	}).fetch()
+
+	s = user.profile.firstName
+	s += " #{user.profile.lastName}" if _.random 1
+	s
 
 cache = {}
 _fetch = _.throttle ((query, callback) ->
@@ -73,7 +91,11 @@ route = (query, d) ->
 		Meteor.call 'search.analytics.store', query, d._id
 
 Template.searchBar.helpers
-	placeholder: -> _.sample(placeholders).replace '%class%', getClassName
+	placeholder: ->
+		_.sample(placeholders)
+			.replace '%class%', getClassName
+			.replace '%num%', _.random 1, 15
+			.replace '%name%', getName
 
 Template.searchBar.events
 	'keyup input': (event) ->
