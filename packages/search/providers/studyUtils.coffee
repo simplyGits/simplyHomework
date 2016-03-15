@@ -5,18 +5,21 @@ Search.provide 'studyUtil files', ({ user, classIds }) ->
 			if classIds.length > 0 then { $in: classIds }
 			else { $nin: classIds } # match all classes
 		)
+		fileIds: $ne: []
 	}, {
 		fields:
 			classId: 1
 			userIds: 1
-			files: 1
+			fileIds: 1
 	}).fetch()
 
-	_(studyUtils)
-		.pluck 'files'
-		.flatten()
-		.map (f) ->
-			type: 'file'
-			title: f.name
-			url: f._url
-		.value()
+	Files.find(
+		_id: $in:
+			_(studyUtils)
+				.pluck 'fileIds'
+				.flatten()
+				.value()
+	).map (f) ->
+		type: 'file'
+		title: f.name
+		url: f.url()
