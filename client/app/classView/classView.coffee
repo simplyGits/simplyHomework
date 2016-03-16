@@ -157,7 +157,7 @@ Template.classView.events
 			event.target.blur()
 
 	'click #gradesButton': ->
-		showModal 'gradesModal'
+		showModal 'gradesModal', undefined, currentClass
 	'click #hoursButton': ->
 		nextHourDate = CalendarItems.findOne({
 			userIds: Meteor.userId()
@@ -377,28 +377,6 @@ Template.addProjectModal.onRendered ->
 	Meteor.call 'getExternalAssignments', (e, r) ->
 		externalAssignments.set r unless e?
 	###
-
-Template.grades.helpers
-	endGrade: -> GradeFunctions.getEndGrade classId(), Meteor.userId()
-	gradeGroups: ->
-		arr = GradeFunctions.getClassGrades classId(), Meteor.userId()
-		_(arr)
-			.reject 'isEnd'
-			.map 'period'
-			.uniq 'id'
-			.map (period) ->
-				name: period.name
-				grades: (
-					_(arr)
-						.filter (g) -> g.period.id is period.id
-						.sortBy 'dateFilledIn'
-						.value()
-				)
-			.reject (group) -> group.grades.length is 0
-			.sortBy (group) -> group.grades[0].dateFilledIn
-			.value()
-
-	isLoading: -> not gradesSub.ready()
 
 Template.infoContainer.onCreated ->
 	@autorun =>

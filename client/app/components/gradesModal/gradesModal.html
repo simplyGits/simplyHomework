@@ -1,0 +1,62 @@
+<template name="grades">
+	<div id="grades">
+		{{#with endGrade}}
+			<div id="end" class="{{__insufficient}}">
+				<div id="label">Gemiddelde</div>
+				<div id="grade">{{__grade}}</div>
+			</div>
+		{{/with}}
+		<div id="gradeGroupList">
+			{{#each gradeGroups}}
+				<div class="gradeGroup">
+					<div class="name"><span>{{name}}</span></div>
+					{{#each grades}}
+						{{> gradeRow}}
+					{{/each}}
+				</div>
+			{{else}}
+				<div id="notice">
+					{{#if isLoading}}
+						Cijfers laden...
+					{{else}}
+						Geen cijfers
+					{{/if}}
+				</div>
+			{{/each}}
+		</div>
+	</div>
+</template>
+
+<template name="gradeRow">
+	<div class="gradeRow {{__insufficient}}">
+		<div class="description">
+			{{#with description}}
+				{{this}}
+			{{else}}
+				<span class="none">
+					geen beschrijving.
+				</span>
+			{{/with}}
+		</div>
+		<div class="grade">{{__grade}}</div>
+
+		<div class="dateFilledIn"><time datetime="{{dateFormat 'YYYY-MM-DDTHH:mm' dateFilledIn}}">{{dateFormat 'D MMMM YYYY' dateFilledIn}}</time></div>
+		<div class="weight">weging: {{__weight}}</div>
+	</div>
+</template>
+
+<template name="gradesModal">
+	<div class="modal fade" aria-hidden="true" id="gradesModal">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+					<h4 class="modal-title">Cijfers</h4>
+				</div>
+				<div class="modal-body" style="padding: 0">
+					{{> grades}}
+				</div>
+			</div>
+		</div>
+	</div>
+</template>
