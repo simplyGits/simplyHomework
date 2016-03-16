@@ -9,10 +9,11 @@ placeholders = [
 	'%class% project H%num%'
 	'%name%'
 ]
-# fallback string for when the user's classes can't be loaded.
-fallbackClass = _.sample [
+fallbackClasses = [
 	'Nederlands'
 	'Engels'
+	'Wiskunde'
+	'Lichamelijke opvoeding'
 ]
 
 getClassName = ->
@@ -26,7 +27,7 @@ getClassName = ->
 	if c?
 		if _.random(1) then c.name else c.abbreviations[0]
 	else
-		fallbackClass
+		_.sample fallbackClasses
 
 getName = ->
 	user = _.sample Meteor.users.find({
