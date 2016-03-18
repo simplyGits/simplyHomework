@@ -23,6 +23,7 @@ getTasks = ->
 		'content': $exists: yes
 		'content.type': $ne: 'information'
 		'content.description': $exists: yes
+		'type': $ne: 'schoolwide'
 		'startDate': $gte: date
 		'endDate': $lte: date.addDays 1
 	}, {
