@@ -39,7 +39,8 @@ buildHtmlNotfication = ({ id, body, html, image, onClick, onDismissed, onHide })
 class NotificationsManager
 	@_notifications: []
 
-	# TODO: Make it possible to update the handlers using the notification handle?
+	# TODO: Make it possible to update the event handlers using the notification
+	# handle?
 	###*
 	# @method notify
 	# @param {Object} options
@@ -250,7 +251,7 @@ class NotificationsManager
 			.reverse()
 			.value()
 
-		for notification, i in notifications
+		for notification in notifications
 			notification.element().css top: height + 15
 			height += notification.height() + 10
 
