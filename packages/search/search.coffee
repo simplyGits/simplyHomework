@@ -1,3 +1,46 @@
+fileTypes = [{
+	mimes: [
+		'application/vnd.ms-powerpoint'
+		'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+	]
+	names: [
+		'powerpoint'
+		'pp'
+		'ppt'
+		'.ppt'
+	]
+}, {
+	mimes: [
+		'application/msword'
+		'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+	]
+	names: [
+		'word'
+	]
+}, {
+	mimes: [
+		'application/pdf'
+	]
+	names: [
+		'pdf'
+	]
+}, {
+	mimes: [
+		'audio/mpeg'
+		'audio/wav'
+		'audio/vorbis'
+		'audio/ogg'
+	]
+	names: [
+		'geluid'
+		'muziek'
+		'mp3'
+		'wav'
+	]
+}].map (ft) ->
+	ft.names = ft.names.map (name) -> new RegExp "\\b#{_.escapeRegExp name}\\b"
+	ft
+
 types = [{
 	type: 'vocab'
 	keywords: [
@@ -64,6 +107,18 @@ filterClasses = (query, userId) ->
 
 	[res, query]
 
+filterMimes = (query) ->
+	mimes = []
+
+	for ft in fileTypes
+		for nameRegexp in ft.names
+			res = nameRegexp.exec query
+			if res?
+				query = query.replace res[0], ''
+				mimes = mimes.concat ft.mimes
+
+	[_.uniq(mimes), query]
+
 ###*
 # @class Search
 # @static
@@ -128,6 +183,8 @@ class Search
 		if _.isEmpty(keywords) and _.isArray(options.defaultKeywords)
 			keywords = options.defaultKeywords
 
+		[mimes, query] = filterMimes query
+
 		query = query.trim()
 		providers = _.filter @_providers, (p) ->
 			options.onlyFrom.length is 0 or p.name in options.onlyFrom
@@ -145,6 +202,7 @@ class Search
 					classIds: classIds
 					classes: classes
 					keywords: keywords
+					mimes: mimes
 				res = res.concat out
 			catch e
 				console.warn "Search provider '#{provider.name}' errored.", e

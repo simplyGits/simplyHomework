@@ -1,4 +1,4 @@
-Search.provide 'studyUtil files', ({ user, classIds }) ->
+Search.provide 'studyUtil files', ({ user, classIds, mimes }) ->
 	studyUtils = StudyUtils.find({
 		userIds: user._id
 		classId: (
@@ -19,6 +19,10 @@ Search.provide 'studyUtil files', ({ user, classIds }) ->
 				.pluck 'fileIds'
 				.flatten()
 				.value()
+		mime: (
+			if mimes.length > 0 then { $in: mimes }
+			else { $nin: mimes } # match all mimes
+		)
 	).map (f) ->
 		type: 'file'
 		title: f.name
