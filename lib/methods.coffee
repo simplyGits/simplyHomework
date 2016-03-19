@@ -42,7 +42,7 @@ Meteor.methods
 		check title, String
 		check classId, String
 
-		if title.trim().length is 0
+		if Helpers.isEmptyString title
 			throw new Meteor.Error 'empty-title'
 
 		c = Classes.findOne classId

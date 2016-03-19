@@ -21,6 +21,7 @@ Date::addDays = (days) ->
 
 Date::date = -> new Date @getFullYear(), @getMonth(), @getDate()
 
+whitespaceReg = /^\s*$/
 ###
 # Static class containing helper methods.
 #
@@ -438,6 +439,18 @@ class @Helpers
 			val.set newVal unless EJSON.equals val.curValue, newVal
 
 		val.get()
+
+	# REVIEW: better name for this function?
+	###*
+	# Checks if the string is null, empty or only contains whitespace.
+	# Faster than `str.trim().length === 0`
+	#
+	# @method isEmptyString
+	# @param {String} str
+	# @return {Boolean}
+	###
+	@isEmptyString: (str) ->
+		whitespaceReg.test str
 
 	@isPhone: -> Session.equals 'deviceType', 'phone'
 	@isTablet: -> Session.equals 'deviceType', 'tablet'
