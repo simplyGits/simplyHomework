@@ -399,6 +399,7 @@ Template.studyUtil.helpers
 			_id: $in: @fileIds ? []
 		}, {
 			sort:
+				creationDate: -1
 				name: 1
 		}
 
