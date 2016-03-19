@@ -1,10 +1,13 @@
 recentMessages = ->
 	dateTracker.depend()
 	date = Date.today().addDays -5
-	Messages.find(
+	Messages.find({
 		sendDate: $gte: date
 		readBy: $ne: Meteor.userId()
-	).fetch()
+	}, {
+		sort:
+			sendDate: -1
+	}).fetch()
 
 NoticeManager.provide 'messges', ->
 	@subscribe 'messages', 0, [ 'inbox' ], yes
