@@ -9,7 +9,7 @@ recentMessages = ->
 			sendDate: -1
 	}).fetch()
 
-NoticeManager.provide 'messges', ->
+NoticeManager.provide 'messages', ->
 	@subscribe 'messages', 0, [ 'inbox' ], yes
 
 	if recentMessages().length
