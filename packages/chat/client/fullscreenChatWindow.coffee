@@ -2,15 +2,26 @@ editMessageId = new ReactiveVar
 lastInputs = new Map
 
 error = new ReactiveVar ''
+ratelimitErrorTimeout = undefined
 
 send = (content, updateId) ->
 	content = content.trim()
-	return if content.length is 0
+	return if content.length is 0 or ratelimitErrorTimeout?
+
+	cb = (e) ->
+		if e?.error is 'too-many-requests'
+			error.set 'rate-limited'
+
+		Meteor.clearTimeout ratelimitErrorTimeout
+		ratelimitErrorTimeout = Meteor.setTimeout (->
+			error.set ''
+			ratelimitErrorTimeout = undefined
+		), e.details.timeToReset + 10 # extra timing just to be sure.
 
 	if updateId?
-		Meteor.call 'updateChatMessage', content, updateId
+		Meteor.call 'updateChatMessage', content, updateId, cb
 	else
-		Meteor.call 'addChatMessage', content, @_id
+		Meteor.call 'addChatMessage', content, @_id, cb
 
 	document.getElementById('messageInput').value = ''
 
@@ -24,6 +35,8 @@ Template.fullscreenChatWindow.helpers
 		switch error.get()
 			when 'too-long'
 				"maximaal #{CHATMESSAGE_MAX_LENGTH} karakters toegestaan"
+			when 'rate-limited'
+				'je hebt teveel berichten in een korte tijd gestuurd'
 
 Template.fullscreenChatWindow.events
 	"click #header": (e) ->
@@ -83,6 +96,7 @@ Template.fullscreenChatWindow.events
 
 		Meteor.defer ->
 			str = event.target.value
+			return if error.get() is 'rate-limited'
 			error.set (
 				if str.length > CHATMESSAGE_MAX_LENGTH
 					'too-long'
