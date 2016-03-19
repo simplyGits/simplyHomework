@@ -208,7 +208,7 @@ class Search
 				console.warn "Search provider '#{provider.name}' errored.", e
 				Kadira.trackError 'search-provider-failure', e.toString(), stacks: JSON.stringify e
 
-		query = if query.length > 0 then query else originalQuery
+		query = if query.trim().length > 0 then query else originalQuery
 		_(res)
 			.filter (obj) ->
 				obj.filtered or
