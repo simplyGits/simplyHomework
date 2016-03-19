@@ -2,7 +2,7 @@ Meteor.startup ->
 	DDPRateLimiter.addRule {
 		type: 'method'
 		name: 'addChatMessage'
-	}, 15, 10000
+	}, 10, 7500
 
 	DDPRateLimiter.addRule {
 		type: 'method'
