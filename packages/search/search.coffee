@@ -235,7 +235,7 @@ class Search
 					if index isnt -1
 						amount += query.length + (splitted.length - index) * 5
 
-					distance - amount
+					distance - amount - (obj.weight ? 0)
 				'title'
 			]
 

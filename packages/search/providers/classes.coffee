@@ -14,4 +14,5 @@ Search.provide 'classes', ({ user, classIds }) ->
 		transform: (c) -> _.extend c,
 			type: 'class'
 			title: c.name
+			weight: 2
 	}).fetch()
