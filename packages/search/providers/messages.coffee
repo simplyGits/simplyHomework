@@ -1,7 +1,7 @@
-Search.provide 'messages', ({ user, classIds }) ->
-	if classIds.length > 0 then []
+Search.provide 'messages', ({ user, classIds, mimes, query }) ->
+	if classIds.length > 0 then [] # REVIEW: filter on messages from/to the teacher of the class?
 	else
-		Messages.find({
+		messages = Messages.find({
 			fetchedFor: user._id
 		}, {
 			fields:
@@ -9,10 +9,23 @@ Search.provide 'messages', ({ user, classIds }) ->
 				fetchedFor: 1
 				subject: 1
 				folder: 1
+				attachmentIds: 1
 
-			transform: (m) ->
-				type: 'message'
-				_id: m._id
-				title: m.subject
-				folder: m.folder
+			sort:
+				sendDate: -1
+			limit: 20
 		}).fetch()
+
+		files = getFiles(
+			_(messages)
+				.pluck 'attachmentIds'
+				.flatten()
+				.value()
+			mimes
+		)
+
+		files.concat messages.map (m) ->
+			type: 'message'
+			_id: m._id
+			title: m.subject
+			folder: m.folder
