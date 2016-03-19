@@ -18,6 +18,8 @@ Package.onUse(function(api) {
 		'search.coffee',
 		'methods.coffee',
 
+		'utils/files.coffee',
+
 		'providers/classes.coffee',
 		'providers/modals.coffee',
 		'providers/projects.coffee',

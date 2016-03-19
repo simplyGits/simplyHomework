@@ -13,17 +13,10 @@ Search.provide 'studyUtil files', ({ user, classIds, mimes }) ->
 			fileIds: 1
 	}).fetch()
 
-	Files.find(
-		_id: $in:
-			_(studyUtils)
-				.pluck 'fileIds'
-				.flatten()
-				.value()
-		mime: (
-			if mimes.length > 0 then { $in: mimes }
-			else { $nin: mimes } # match all mimes
-		)
-	).map (f) ->
-		type: 'file'
-		title: f.name
-		url: f.url()
+	getFiles(
+		_(studyUtils)
+			.pluck 'fileIds'
+			.flatten()
+			.value()
+		mimes
+	)
