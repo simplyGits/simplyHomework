@@ -2,16 +2,16 @@
 	<div class="sidebar unselectable" onselectstart="return false;" ondragstart="return false;">
 		{{#with currentUser}}
 			<a href="{{pathFor 'personView' id=_id}}">
-				<div class="sidebarProfile">
-					<div class="sidebarProfileBack" style="background-image: url({{picture this 250}})"></div>
-					<img class="sidebarProfilePicture" src="{{picture this 100}}" width="50" height="50"/>
-					<div class="sidebarProfileName">
+				<div class="profile">
+					<div class="back" style="background-image: url({{picture this 250}})"></div>
+					<img class="picture" src="{{picture this 100}}" width="50" height="50"/>
+					<div class="name">
 						{{profile.firstName}}
 					</div>
 				</div>
 			</a>
 		{{else}}
-			<div class="sidebarProfile"></div>
+			<div class="profile"></div>
 		{{/with}}
 		<a href="{{pathFor 'overview'}}">
 			<div class="sidebarButton" id="overview">
@@ -29,18 +29,20 @@
 			</div>
 		</a>
 
-		<div class="sidebarSubheading" id="classes">
+		<div class="subheader" id="classes">
 			Vakken
 		</div>
 
-		<div class="sidebarClasses smoothScroll">
+		<div class="classList smoothScroll">
 			{{#each classes}}
 				{{> sidebarClass}}
 			{{/each}}
 		</div>
-		<div class="sidebarFooter">
-			<div class="sidebarFooterSettingsIcon"></div>
-			<div class="appNameHeader sidebarFooterAppNameHeader"></div>
+		<div class="footer">
+			<a href="{{pathFor 'settings'}}">
+				<div class="settings"></div>
+			</a>
+			<div class="appNameHeader"></div>
 		</div>
 	</div>
 </template>

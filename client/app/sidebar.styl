@@ -10,14 +10,14 @@
 		text-decoration: none !important
 		outline: none !important
 
-	div.sidebarProfile
+	div.profile
 		width: 100%
 		height: 75px
 		overflow: hidden
 		position: relative
 		border-bottom: 1px gray solid
 
-		div.sidebarProfileBack
+		div.back
 			absolute: top -20px left -20px right -20px bottom -20px
 			background-size: cover
 			background-position: center center
@@ -40,12 +40,12 @@
 				-ms-filter: none
 				opacity: .1
 
-		img.sidebarProfilePicture
+		img.picture
 			border-radius: 50%
 			border: 1px lightgray solid
 			absolute: top 13px left 5px
 
-		div.sidebarProfileName
+		div.name
 			absolute: top 17px left 65px
 			overflow: hidden
 
@@ -55,7 +55,7 @@
 			white-space: nowrap
 			text-rendering: optimizeLegibility
 
-	.sidebarSubheading
+	.subheader
 		roboto(300)
 		width: 100%
 		padding-left: 10px
@@ -93,7 +93,7 @@
 	div.sidebarButton.selected
 		color: white
 
-	.sidebarClasses
+	.classList
 		overflow-y: auto
 		overflow-x: hidden
 		width: 200px
@@ -111,36 +111,30 @@
 			span
 				white-space: nowrap
 
-	.sidebarFooter
+	.footer
 		margin-bottom: 2px
 		width: 200px
-		position: absolute
-		bottom: 0
+		absolute: bottom
 
-		.sidebarFooterAppNameHeader
-			bottom: 0
-			position: absolute
+		.appNameHeader
+			absolute: bottom right
 			margin-bottom: 3px
 			margin-right: 6px
-			right: 0
 
-		.sidebarFooterAppNameHeader:before
+		.appNameHeader:before
 			margin-right: -2px
 
-		.sidebarFooterSettingsIcon
+		.settings
 			background-image: url("images/ic_action_settings.png")
 			width: 25px
 			height: 25px
 			background-repeat: no-repeat
 			background-size: contain
-			position: fixed
-			left: 0
-			bottom: 0
-			cursor: pointer
+			absolute: left bottom -2px
 			opacity: .6
 
 		+mobile()
-			.sidebarFooterSettingsIcon
+			.settings
 				width: 30px
 				height: 30px
 
