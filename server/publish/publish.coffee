@@ -282,6 +282,10 @@ Meteor.publish 'messagesCount', (folder) ->
 		folder: folder
 	undefined
 
+Meteor.publish 'draftsCount', ->
+	Counts.publish this, 'draftsCount', Drafts.find senderId: @userId
+	undefined
+
 Meteor.publish 'files', (fileIds) ->
 	@unblock()
 	check fileIds, [String]

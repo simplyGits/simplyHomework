@@ -5,10 +5,12 @@
 # @param {String} body
 # @param {String} folder
 # @param {Date} sendDate
-# @apram {Object} sender
+# @param {Object} sender
 ###
 class @Message
 	constructor: (@subject, @body, @folder, @sendDate, @sender) ->
+		@_id = new Mongo.ObjectID().toHexString()
+
 		###*
 		# @property recipients
 		# @type Object[]
@@ -77,6 +79,8 @@ class @Message
 		res
 
 	@schema: new SimpleSchema
+		_id:
+			type: String
 		subject:
 			type: String
 		body:
@@ -108,3 +112,76 @@ class @Message
 
 @Messages = new Mongo.Collection 'messages', transform: (m) -> _.extend new Message, m
 # @Messages.attachSchema Message.schema
+
+###*
+# @class Draft
+# @constructor
+# @param {String} subject
+# @param {String} body
+# @param {String} senderId
+###
+class @Draft
+	constructor: (@subject, @body, @senderId) ->
+		@_id = new Mongo.ObjectID().toHexString()
+
+		###*
+		# @property lastEditTime
+		# @type Date
+		# @default new Date
+		###
+		@lastEditTime = new Date
+
+		###*
+		# @property recipients
+		# @type String[]
+		# @default []
+		###
+		@recipients = []
+
+		###*
+		# @property attachmentIds
+		# @type String[]
+		# @default []
+		###
+		@attachmentIds = []
+
+		###*
+		# @property senderService
+		# @type String|undefined
+		# @default undefined
+		###
+		@senderService = undefined
+
+	attachments: -> Files.find(_id: $in: @attachmentIds).fetch()
+
+	# TODO: make this based on length of the res string instead of amount of
+	# items since they can vary in length.
+	recipientsString: (max = Infinity) ->
+		names = _.take(@recipients, max).join ', '
+		diff = @recipients.length - max
+		if diff > 0
+			names += " en #{diff} #{if diff is 1 then 'andere' else 'anderen'}."
+		names
+
+	@schema: new SimpleSchema
+		_id:
+			type: String
+		subject:
+			type: String
+		body:
+			type: String
+		senderId:
+			type: String
+		lastEditTime:
+			type: Date
+		recipients:
+			type: [String]
+		attachmentIds:
+			type: [String]
+			defaultValue: []
+		senderService:
+			type: String
+			optional: yes
+
+@Drafts = new Mongo.Collection 'drafts', transform: (d) -> _.extend new Draft, d
+# @Drafts.attachSchema Draft.schema

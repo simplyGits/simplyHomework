@@ -1,13 +1,17 @@
 getCurrentFolder = -> FlowRouter.getParam 'folder'
 getMessages = ->
-	Messages.find (
-		folder: getCurrentFolder()
-	), {
-		sort: sendDate: -1
-	}
+	folder = getCurrentFolder()
+	sort = sendDate: -1
+
+	if folder is 'drafts'
+		Drafts.find {}, { sort }
+	else
+		Messages.find { folder }, { sort }
 
 getCurrentMessageId = -> FlowRouter.getParam 'message'
 setCurrentMessage = (id) -> FlowRouter.setParams message: id
+
+getCurrentDraft = -> Drafts.findOne FlowRouter.getQueryParam 'draftId'
 
 isComposing = -> FlowRouter.getRouteName() is 'composeMessage'
 
@@ -45,7 +49,12 @@ Template.messages.onCreated ->
 	@autorun -> # subscribe to messages
 		folder = getCurrentFolder()
 
-		if folder?
+		if folder is 'drafts' or FlowRouter.getQueryParam('draftId')?
+			Meteor.subscribe 'draftsCount'
+			Meteor.subscribe 'drafts', offset.get(), ->
+				isLoadingNext.set no
+
+		else if folder?
 			Meteor.subscribe 'messagesCount', folder
 			Meteor.subscribe 'messages', offset.get(), [ folder ], (e) ->
 				isLoadingNext.set no
@@ -114,9 +123,14 @@ Template['messages_messageList'].events
 Template['messages_message_row'].helpers
 	__recipients: -> @recipientsString 2, no
 	recipientCount: -> @recipients.length
+	isDraft: -> this instanceof Draft
 
 Template['messages_message_row'].events
-	'click': -> setCurrentMessage @_id
+	'click': ->
+		if this instanceof Draft
+			FlowRouter.go 'composeMessage', undefined, draftId: @_id
+		else
+			setCurrentMessage @_id
 
 Template['message_current_message'].helpers
 	message: -> Messages.findOne getCurrentMessageId()
@@ -153,10 +167,39 @@ Template['message_current_message'].onCreated ->
 			if Meteor.userId() not in message.readBy
 				Meteor.call 'markMessageRead', id
 
+saveDraft = _.throttle ((args...) ->
+	Meteor.call 'saveMessageDraft', args...
+), 850,
+	leading: yes
+	trailing: no
+
 Template['message_compose'].helpers
-	recipients: -> _.unescape FlowRouter.getQueryParam 'recipients'
+	subject: ->
+		getCurrentDraft()?.subject ?
+		_.unescape FlowRouter.getQueryParam 'subject'
+
+	recipients: ->
+		getCurrentDraft()?.recipients.join('; ') ?
+		_.unescape FlowRouter.getQueryParam 'recipients'
+
+	body: ->
+		getCurrentDraft()?.body ?
+		_.unescape FlowRouter.getQueryParam 'body'
 
 Template['message_compose'].events
+	'keyup': ->
+		subject = document.getElementById('subject').value
+		recipients = document.getElementById('recipients').value
+		body = document.getElementById('message').value.trim()
+
+		saveDraft(
+			subject
+			body
+			recipients.split(';').map (r) -> r.trim()
+			'magister'
+			FlowRouter.getQueryParam 'draftId'
+		)
+
 	'click #send': ->
 		subject = document.getElementById('subject').value
 		recipients = document.getElementById('recipients').value
@@ -172,6 +215,7 @@ Template['message_compose'].events
 			body
 			recipients.split(';').map (r) -> r.trim()
 			'magister'
+			FlowRouter.getQueryParam 'draftId'
 			(e, r) ->
 				if e?
 					notify 'Fout tijdens versturen van bericht', 'error'

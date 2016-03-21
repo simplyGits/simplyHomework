@@ -140,3 +140,33 @@ Meteor.methods
 			$set:
 				'profile.firstName': firstName
 				'profile.lastName': firstName
+
+	saveMessageDraft: (subject, body, recipients, service, draftId) ->
+		check subject, String
+		check body, String
+		check recipients, [String]
+		check service, String
+
+		check draftId, Match.OneOf String, null
+		draftId ?= undefined
+
+		draft = new Draft(
+			subject
+			body
+			@userId
+		)
+		draft.recipients = recipients
+		draft.senderService = service
+
+		if draftId?
+			prevDraft = Drafts.findOne
+				_id: draftId
+				senderId: @userId
+
+			if prevDraft?
+				draft._id = prevDraft._id
+				Drafts.update draft._id, draft
+				return undefined
+
+		Drafts.insert draft
+		undefined

@@ -166,5 +166,22 @@ Meteor.publish 'messages', (offset, folders, unreadOnly = no) ->
 		folder: $in: folders
 	query.readBy = { $ne: userId } if unreadOnly
 	Messages.find query,
-		sort: sendDate: -1
+		sort:
+			sendDate: -1
 		limit: offset + 20
+
+Meteor.publish 'drafts', (offset) ->
+	check offset, Number
+
+	@unblock()
+	unless @userId?
+		@ready()
+		return undefined
+
+	Drafts.find {
+		senderId: @userId
+	}, {
+		sort:
+			sendDate: -1
+		limit: offset + 20
+	}

@@ -87,9 +87,15 @@
 		<header>
 			{{subject}}
 		</header>
-		<div class="sender">
-			<span class="dim">Verzender:</span> {{sender.fullName}}
-		</div>
+		{{#if isDraft}}
+			<div class="lastEditTime">
+				<span class="dim">Laatst bewerkt op:</span> {{dateFormat 'dddd D MMMM YYYY HH:mm' lastEditTime}}
+			</div>
+		{{else}}
+			<div class="sender">
+				<span class="dim">Verzender:</span> {{sender.fullName}}
+			</div>
+		{{/if}}
 		{{#if recipients}}
 			<div class="recipients">
 				<span class="dim">{{plural recipientCount 'Ontvanger' 'Ontvangers'}}:</span> {{__recipients}}
@@ -137,8 +143,8 @@
 <template name="message_compose">
 	<div id="compose_message">
 		<button id="send">Verzenden <i class="fa fa-angle-double-right"></i></button>
-		<input type="text" id="subject" placeholder="Onderwerp" />
+		<input type="text" id="subject" placeholder="Onderwerp" value="{{subject}}" />
 		<input type="text" id="recipients" placeholder="Ontvangers, gescheiden door een ';'" value="{{recipients}}" />
-		<textarea id="message" placeholder="Bericht inhoud"></textarea>
+		<textarea id="message" placeholder="Bericht inhoud">{{body}}</textarea>
 	</div>
 </template>

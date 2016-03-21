@@ -74,17 +74,25 @@ Meteor.methods
 		@unblock()
 		getProfileData @userId
 
-	'sendMessage': (subject, body, recipients, service) ->
+	'sendMessage': (subject, body, recipients, service, draftId = undefined) ->
 		@unblock()
 		check subject, String
 		check body, String
 		check recipients, [String]
 		check service, String
+		check draftId, Match.Optional String
 
 		if body.trim().length is 0
 			throw new Meteor.Error 'no-content'
 
 		sendMessage subject, body, recipients, service, @userId
+
+		if draftId?
+			Drafts.remove
+				_id: draftId
+				senderId: @userId
+
+		undefined
 
 	'replyMessage': (id, all, body) ->
 		@unblock()
