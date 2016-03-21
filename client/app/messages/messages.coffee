@@ -38,21 +38,11 @@ Template.messages.helpers
 	hasCurrentMessage: -> getCurrentMessageId()?
 
 Template.messages.onCreated ->
-	fetchTracker = new Tracker.Dependency()
-	prev = _.now()
-	@autorun -> # refetch every 3 minutes
-		minuteTracker.depend()
-		now = _.now()
-		if now - prev >= 180000
-			fetchTracker.changed()
-			prev = now
-
 	@autorun -> # reset stuff
 		folder = getCurrentFolder()
 		offset.set 0
 
 	@autorun -> # subscribe to messages
-		fetchTracker.depend()
 		folder = getCurrentFolder()
 
 		if folder?
