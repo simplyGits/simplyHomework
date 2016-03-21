@@ -92,6 +92,10 @@ Template.mobileCalendar.onRendered ->
 		title: 'Agenda'
 		color: null
 
+	Meteor.defer ->
+		time = +FlowRouter.getParam 'time'
+		setDate new Date unless isFinite time
+
 	loading = @loading
 	@calendar = calendar = new SwipeView '.mobileCalendar', hastyPageFlip: yes
 	getDelta = (index) ->
