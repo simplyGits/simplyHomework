@@ -60,24 +60,24 @@
 		<span id="closeButton">&times;</span>
 	</div>
 	<div class="pageContent" id="messageList">
-		{{#if messages}}
-			{{#each messages}}
-				{{> messages_message_row}}
-			{{/each}}
-
-			{{#if hasMore}}
-				{{#if isLoadingNext}}
-					<div class="loadMore loading">
-						Berichten aan het laden...
-					</div>
-				{{else}}
-					<div class="loadMore">
-						Scroll naar onder of klik hier om meer berichten op te halen.
-					</div>
-				{{/if}}
-			{{/if}}
+		{{#each messages}}
+			{{> messages_message_row}}
 		{{else}}
-			Geen berichten gevonden
+			<div class="notice">
+				Geen berichten gevonden
+			</div>
+		{{/each}}
+
+		{{#if hasMore}}
+			{{#if isLoadingNext}}
+				<div class="loadMore loading">
+					Berichten aan het laden...
+				</div>
+			{{else}}
+				<div class="loadMore">
+					Scroll naar onder of klik hier om meer berichten op te halen.
+				</div>
+			{{/if}}
 		{{/if}}
 	</div>
 </template>
