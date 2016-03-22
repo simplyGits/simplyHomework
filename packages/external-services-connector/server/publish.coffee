@@ -21,7 +21,6 @@ Meteor.publish 'externalCalendarItems', (from, to) ->
 			sort: startDate: 1
 		}
 
-	findAbsence = (calendarItemId) -> Absences.findOne { calendarItemId, userId }
 	transform = (doc) ->
 		if doc.usersDone?
 			doc.usersDone = (
@@ -30,13 +29,20 @@ Meteor.publish 'externalCalendarItems', (from, to) ->
 			)
 		doc
 
+	absencesObservers = {}
+
 	observer = cursor.observeChanges
 		added: (id, doc) =>
 			@added 'calendarItems', id, transform doc
 
-			absence = findAbsence id
-			if absence?
-				@added 'absences', absence._id, absence
+			absencesObservers[id] ?= Absences.find({
+				calendarItemId: id
+				userId: userId
+			}, {
+				limit: 1
+			}).observeChanges
+				added: (id, doc) => @added 'absences', id, doc
+				removed: (id) => @removed 'absences', id
 
 		changed: (id, doc) =>
 			@changed 'calendarItems', id, transform doc
@@ -44,13 +50,15 @@ Meteor.publish 'externalCalendarItems', (from, to) ->
 		removed: (id) =>
 			@removed 'calendarItems', id
 
-			absence = findAbsence id
-			if absence?
-				@removed 'absences', absence._id
+			absencesObservers[id].stop()
+			delete absencesObservers[id]
 
 	@onStop ->
 		Meteor.clearInterval handle
 		observer.stop()
+
+		for observer in _.values absencesObservers
+			observer.stop()
 
 	@ready()
 
