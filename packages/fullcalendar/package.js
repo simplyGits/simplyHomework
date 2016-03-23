@@ -10,8 +10,9 @@ Package.onUse(function(api) {
 	api.versionsFrom('1.1.0.3');
 
 	api.use([
-		'meteorhacks:inject-initial',
+		'meteorhacks:inject-initial@1.0.4-rc.0',
 		'webapp',
+		'ecmascript',
 	], 'server');
 	api.use('appcache', 'server', { weak: true });
 	api.use('momentjs:moment', 'client');
