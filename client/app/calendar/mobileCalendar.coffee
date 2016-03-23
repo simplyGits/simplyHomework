@@ -13,6 +13,8 @@ setDate = (date) ->
 setDateDelta = (delta) ->
 	setDate currentDate().addDays(delta)
 
+getUserIds = -> FlowRouter.getQueryParam 'userIds'
+
 calendarItemToMobileCalendar = (calendarItem) ->
 	calendarItem = _.extend new CalendarItem, calendarItem
 	_.extend calendarItem,
@@ -57,6 +59,7 @@ Template.mobileCalendar.helpers
 			'today'
 		else
 			''
+	comparing: -> if getUserIds()?.length > 0 then 'comparing' else ''
 
 Template.mobileCalendar.events
 	'click .currentDate': -> setDate Date.today()
@@ -79,11 +82,23 @@ Template.mobileCalendar.onCreated ->
 	@subscribe 'classes', hidden: yes
 	@autorun =>
 		date = currentDate()
-		handle = calendarSubs.subscribe(
-			'externalCalendarItems',
-			date.addDays -1
-			date.addDays 2
-		)
+		handle = undefined
+		ids = getUserIds()
+
+		if _.isEmpty ids
+			handle = calendarSubs.subscribe(
+				'externalCalendarItems'
+				date.addDays -1
+				date.addDays 2
+			)
+		else
+			handle = calendarSubs.subscribe(
+				'foreignCalendarItems'
+				ids
+				date.addDays -1
+				date.addDays 2
+			)
+
 		@loading = _.negate handle.ready
 
 Template.mobileCalendar.onRendered ->
@@ -109,11 +124,16 @@ Template.mobileCalendar.onRendered ->
 		Blaze.renderWithData Template.mobileCalendarPage, (->
 			delta = getDelta i
 			date = currentDate().addDays delta
+			ids = getUserIds()
 
 			cursor =
 				CalendarItems.find {
 					startDate: $gte: date
 					endDate: $lte: date.addDays 1
+					userIds: $in: (
+						if _.isEmpty(ids) then [ Meteor.userId() ]
+						else ids
+					)
 				},
 					transform: calendarItemToMobileCalendar
 					sort:

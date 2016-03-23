@@ -84,9 +84,7 @@ Meteor.publish 'foreignCalendarItems', (userIds, from, to) ->
 		Meteor.clearInterval handle
 
 	CalendarItems.find {
-		userIds:
-			$in: userIds
-			$ne: @userId
+		userIds: $in: userIds
 		startDate: $gte: from
 		endDate: $lte: to
 		type: $ne: 'personal' # REVIEW: `CalendarItem::private` field?

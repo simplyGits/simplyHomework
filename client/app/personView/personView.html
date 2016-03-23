@@ -84,7 +84,11 @@
 			{{else}}
 				<div class="notice">
 					{{#if canCompare}}
-						Je deelt geen lessen met {{profile.firstName}} volgende week; je kan wel jullie <a href="#" data-action="compare">roosters vergelijken</a>.
+						{{#if isPhone}}
+							Je deelt geen lessen met {{profile.firstName}} volgende week; je kan wel zijn/haar <a href="#" data-action="compare">rooster bekijken</a>.
+						{{else}}
+							Je deelt geen lessen met {{profile.firstName}} volgende week; je kan wel jullie <a href="#" data-action="compare">roosters vergelijken</a>.
+						{{/if}}
 					{{else}}
 						Je deelt geen lessen met {{profile.firstName}} volgende week.
 					{{/if}}

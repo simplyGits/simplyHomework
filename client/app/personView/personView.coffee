@@ -4,7 +4,6 @@ pictures = new ReactiveVar []
 personStats = new ReactiveVar
 
 canCompare = (userId) ->
-	not Session.equals('deviceType', 'phone') and
 	Privacy.getOptions(userId).publishCalendarItems
 
 compare = (userId) ->
