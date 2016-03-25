@@ -163,6 +163,20 @@ class @Grade
 		###
 		@period = null
 
+	###*
+	# Returns whether or not the current grade is the highest possible on the
+	# grade scale it uses.
+	#
+	# @method isPerfect
+	# @return {Boolean}
+	###
+	isPerfect: ->
+		@passed and @grade is (
+			switch @gradeType
+				when 'number' then 10
+				when 'percentage' then 100
+		)
+
 	class: -> Classes.findOne @classId
 	toString: (precision = 2) -> @gradeStr ? @grade.toPrecision precision
 	valueOf: -> @grade
