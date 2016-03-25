@@ -24,6 +24,10 @@ Package.onUse(function(api) {
 		'meteorhacks:subs-manager',
 		'ms',
 	], 'client');
+	api.use([
+		'ecmascript',
+		'percolate:synced-cron',
+	], 'server');
 	/*
 	api.use([
 		'reywood:publish-composite',
@@ -84,8 +88,7 @@ Package.onUse(function(api) {
 		'client/sick/sick.coffee',
 	], 'client');
 	api.addFiles([
-		'server/security.coffee',
-		'server/publish.coffee',
+		'server/emails.js',
 	], 'server');
 
 	api.export([

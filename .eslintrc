@@ -72,7 +72,8 @@
 	"extends": "eslint:recommended",
 	"ecmaFeatures": {
 		"experimentalObjectRestSpread": true,
-		"blockBindings": true
+		"blockBindings": true,
+		"modules": true
 	},
 	"plugins": []
 }
