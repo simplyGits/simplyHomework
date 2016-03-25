@@ -292,31 +292,21 @@ Meteor.methods
 			m = moment x.start
 			_.any mine, (y) -> m.isSame y.start
 
-	gradeSchoolMean: (gradeId) ->
+	###*
+	# @method gradeMeans
+	# @param {String} gradeId
+	# @return {Object} { class: Number, school: Number }
+	###
+	gradeMeans: (gradeId) ->
 		check gradeId, String
 		@unblock()
+		gradeFunc = (s) => GradeFunctions[s] @userId, gradeId
 
 		res = gradeMeanCache.get gradeId
 		unless res?
-			grade = Grades.findOne
-				_id: gradeId
-				ownerId: @userId
-			unless grade?
-				throw new Meteor.Error 'not-found'
-
-			schoolGrades = Grades.find(
-				description: grade.description
-				weight: grade.weight
-				classId: grade.classId
-				'period.id': grade.period.id
-			).fetch()
-
-			res = _(schoolGrades)
-				.pluck 'grade'
-				.compact()
-				.mean()
-				.value()
+			res =
+				class: gradeFunc 'gradeClassMean'
+				school: gradeFunc 'gradeSchoolMean'
 
 			gradeMeanCache.set gradeId, res
-
 		res
