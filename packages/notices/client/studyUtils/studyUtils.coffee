@@ -3,6 +3,7 @@ recentStudyUtils = ->
 	date = Date.today().addDays -3
 	StudyUtils.find({
 		updatedOn: $gte: date
+		classId: $exists: yes
 	}, {
 		sort:
 			updatedOn: -1
@@ -20,8 +21,6 @@ Template.recentStudyUtils.helpers
 	groups: ->
 		utils = recentStudyUtils()
 		_(utils)
-			.sortByOrder 'updatedOn', 'desc'
-			.filter (x) -> x.classId?
 			.uniq 'classId'
 			.map (util) ->
 				class: Classes.findOne util.classId
