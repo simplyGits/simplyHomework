@@ -22,6 +22,7 @@ Package.onUse(function(api) {
 		'handlebars',
 		'schedule-functions',
 		'meteorhacks:subs-manager',
+		'ms',
 	], 'client');
 	/*
 	api.use([

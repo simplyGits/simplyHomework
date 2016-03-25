@@ -22,7 +22,7 @@ NoticeManager.provide 'nextLesson', ->
 			c?.name ? nextAppointmentToday.description
 		)
 		priority: (
-			if 0 < nextAppointmentToday.startDate - _.now() < 300000
+			if 0 < nextAppointmentToday.startDate - _.now() < ms.minutes 5
 				4
 			else
 				2
