@@ -43,11 +43,7 @@ Template['settings_page_accountInfo'].events
 			Meteor.call 'changeMail', mail, (e) -> callback not e?
 
 		if profile.firstName isnt firstName or profile.lastName isnt lastName
-			Meteor.users.update Meteor.userId(), {
-				$set:
-					'profile.firstName': firstName
-					'profile.lastName': lastName
-			}, (e) -> callback not e?
+			Meteor.call 'changeName', firstName, lastName, (e) -> callback not e?
 
 		if oldPass isnt '' and newPass isnt ''
 			unless newPass is newPassRepeat
