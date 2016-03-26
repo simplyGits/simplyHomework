@@ -107,20 +107,6 @@ class @SchoolClass
 		###
 		@externalInfo = {}
 
-	###*
-	# @method getGroup
-	# @param {String} [userId=Meteor.userId()]
-	# @return {String}
-	###
-	getGroup: (userId = Meteor.userId()) ->
-		CalendarItems.findOne({
-			classId: @_id
-			userIds: userId
-		}, {
-			sort:
-				startDate: -1
-		})?.group()
-
 	@schema: new SimpleSchema
 		name:
 			type: String

@@ -507,3 +507,21 @@ class @Helpers
 # @return {Object[]}
 ###
 @getClassInfos = (userId) -> getUserField userId, 'classInfos', []
+
+###*
+# @method getCLass
+# @param {string} classId
+# @param {String} [userId=Meteor.userId()]
+# @return {String}
+###
+@getClassGroup = (classId, userId = Meteor.userId()) ->
+	check classId, String
+	check userId, String
+
+	CalendarItems.findOne({
+		classId: classId
+		userIds: userId
+	}, {
+		sort:
+			startDate: -1
+	})?.group()

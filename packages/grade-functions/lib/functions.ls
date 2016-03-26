@@ -57,7 +57,7 @@ get-school-grades = (user-id, grade-id) ->
 	_(school-grades)
 		.filter (g) ->
 			c = Classes.find-one g.class-id
-			c.getGroup(user-id) is c.getGroup(g.owner-id)
+			get-class-group(c._id, user-id) is get-class-group(c._id, g.owner-id)
 		.pluck \grade
 		.compact!
 		.mean!
