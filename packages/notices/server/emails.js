@@ -1,5 +1,7 @@
 import * as emails from 'simplyemail'
 
+// TODO: user settings for email notifications
+
 const settingsUrl = Meteor.absoluteUrl('settings')
 
 function sendEmail (user, subject, html) {
@@ -13,48 +15,57 @@ function sendEmail (user, subject, html) {
 
 SyncedCron.add({
 	name: 'Notify new grades',
-	schedule: (parser) => parser.recur().on(2).hour(),
+	schedule: (parser) => parser.recur().on(3).hour(),
 	job: function () {
-		const grades = Grades.find({
-			classId: { $exists: true },
-			dateFilledIn: { $gte: Date.today().addDays(-1) },
-		}, {
-			fields: {
-				_id: 1,
-				classId: 1,
-				dateFilledIn: 1,
-				gradeStr: 1,
-				passed: 1,
-			},
-		})
+		const users = Meteor.users.find({
+			'profile.firstName': { $ne: '' },
+		}).fetch()
 
-		grades.forEach((grade) => {
-			const userId = grade.ownerId
-			const user = Meteor.users.findOne(userId)
+		users.forEach((user) => {
+			const userId = user._id
 
-			if (user.status.lastLogin.date > grade.dateFilledIn) {
-				// user probably has already seen the grade when he logged in on
-				// simplyHomework, no need to send a mail.
-				return
-			}
+			updateGrades(userId, false)
 
-			const c = Classes.findOne(grade.classId)
+			const grades = Grades.find({
+				ownerId: userId,
+				classId: { $exists: true },
+				dateFilledIn: { $gte: Date.today().addDays(-1) },
+			}, {
+				fields: {
+					_id: 1,
+					classId: 1,
+					dateFilledIn: 1,
+					gradeStr: 1,
+					passed: 1,
+					ownerId: 1,
+				},
+			})
 
-			emails.cijfer({
-				className: c.name,
-				classUrl: Meteor.absoluteUrl(`class/${c._id}`),
-				grade: grade.gradeStr,
-				passed: grade.passed,
-				average: GradeFunctions.getEndGrade(c._id, userId),
-				settingsUrl,
-			}).then((html) => {
-				sendEmail(user, `Nieuw cijfer voor ${c.name}`, html)
-			}, (err) => {
-				Kadira.trackError(
-					'notices-emails',
-					err.message,
-					{ stacks: err.stack }
-				)
+			grades.forEach((grade) => {
+				if (user.status.lastLogin.date > grade.dateFilledIn) {
+					// user probably has already seen the grade when he logged in on
+					// simplyHomework, no need to send a mail.
+					return
+				}
+
+				const c = Classes.findOne(grade.classId)
+
+				emails.cijfer({
+					className: c.name,
+					classUrl: Meteor.absoluteUrl(`class/${c._id}`),
+					grade: grade.gradeStr,
+					passed: grade.passed,
+					average: GradeFunctions.getEndGrade(c._id, userId),
+					settingsUrl,
+				}).then((html) => {
+					sendEmail(user, `Nieuw cijfer voor ${c.name}`, html)
+				}, (err) => {
+					Kadira.trackError(
+						'notices-emails',
+						err.message,
+						{ stacks: err.stack }
+					)
+				})
 			})
 		})
 	},

@@ -27,6 +27,7 @@ Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
 		'percolate:synced-cron',
+		'simply:external-services-connector',
 	], 'server');
 	/*
 	api.use([
