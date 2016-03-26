@@ -19,3 +19,22 @@ Template.grades.helpers
 			.value()
 
 	isLoading: -> not gradesSub.ready()
+
+Template.gradeRow.onCreated ->
+	@data._expanded = new ReactiveVar false
+	@data._means = new ReactiveVar undefined
+
+Template.gradeRow.helpers
+	means: -> @_means.get()
+	expanded: -> if @_expanded.get() then 'expanded' else ''
+
+Template.gradeRow.events
+	'click': (event, template) ->
+		template.data._expanded.set not template.data._expanded.get()
+
+		unless template.data._means.get()?
+			Meteor.call 'gradeMeans', @_id, (e, r) ->
+				unless e?
+					template.data._means.set
+						class: r.class.toPrecision 2
+						school: r.school.toPrecision 2

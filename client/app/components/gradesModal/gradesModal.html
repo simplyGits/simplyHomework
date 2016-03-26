@@ -28,7 +28,7 @@
 </template>
 
 <template name="gradeRow">
-	<div class="gradeRow {{__insufficient}}">
+	<div class="gradeRow {{__insufficient}} {{expanded}}">
 		<div class="description">
 			{{#with description}}
 				{{this}}
@@ -38,7 +38,17 @@
 				</span>
 			{{/with}}
 		</div>
-		<div class="grade">{{__grade}}</div>
+		<div class="grade">
+			{{__grade}}
+			<div class="means">
+				{{#with means}}
+					Klas: {{class}}<br>
+					School: {{school}}
+				{{else}}
+					School en klas gemiddelden laden...
+				{{/with}}
+			</div>
+		</div>
 
 		<div class="dateFilledIn"><time datetime="{{dateFormat 'YYYY-MM-DDTHH:mm' dateFilledIn}}">{{dateFormat 'D MMMM YYYY' dateFilledIn}}</time></div>
 		<div class="weight">weging: {{__weight}}</div>

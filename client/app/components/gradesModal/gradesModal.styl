@@ -69,6 +69,10 @@
 				.grade
 					col(1/4, cycle: 2)
 					text-align: right
+					.means
+						font-size: 80%
+						color: gray !important
+						display: none
 				.dateFilledIn
 					col(1/2, cycle: 2)
 					opacity: .7
@@ -80,6 +84,12 @@
 			.gradeRow.insufficient
 				.grade
 					color: red
+
+			.gradeRow.expanded
+				height: 100px
+
+				.grade .means
+					display: block
 
 		#notice
 			padding-top: 30px
