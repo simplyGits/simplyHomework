@@ -13,7 +13,7 @@ app:
    - KADIRA_APP_ID=EkKhbLvn5zD6ksYep
    - KADIRA_APP_SECRET=ba8ab5e5-6562-4af3-9317-710317d3549c
    - ROOT_URL=http://app.simplyhomework.nl
-   - MAIL_URL=smtp://lieuwerooijakkers@gmail.com:D_4mwX_LhMU4lkufwlEeLw@smtp.mandrillapp.com:587
+   - MAIL_URL=smtp://SMTP_Injection:40b09aab52450d61c8426239b190d6bd8e97675c@smtp.sparkpostmail.com:587
    - DISABLE_WEBSOCKETS=true
    - VIRTUAL_HOST=app.simplyhomework.nl
 
