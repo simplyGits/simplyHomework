@@ -1,23 +1,4 @@
-###*
-# @method getDate
-# @return {Date}
-###
-getDate = ->
-	dateTracker.depend()
-	Date.today().addDays switch new Date().getDay()
-		when 5 then 3
-		when 6 then 2
-		else 1
-
-###*
-# @method getTasks
-# @return {Object[]}
-###
-getTasks = ->
-	# TODO: Also mix homework for tommorow and homework for days where the day
-	# before has no time. Unless today has no time.
-
-	date = getDate()
+getTasksForDate = (date) ->
 	CalendarItems.find({
 		'userIds': Meteor.userId()
 		'content': $exists: yes
@@ -41,18 +22,37 @@ getTasks = ->
 				Meteor.userId() in item.usersDone
 	}).fetch()
 
+###*
+# @method getTasks
+# @return {Object[]}
+###
+getTasks = ->
+	# TODO: Also mix homework for tommorow and homework for days where the day
+	# before has no time. Unless today has no time.
+
+	dateTracker.depend()
+	startDate = Date.today().addDays switch new Date().getDay()
+		when 5 then 3
+		when 6 then 2
+		else 1
+
+	for i in [0...5]
+		date = startDate.addDays i
+		tasks = getTasksForDate date
+		return [ date, tasks ] if tasks.length > 0
+
+	[ undefined, [] ]
+
 NoticeManager.provide 'tasks', ->
 	@subscribe 'externalCalendarItems', Date.today(), Date.today().addDays 4
 
-	day = Helpers.formatDateRelative getDate(), no
+	[ date, tasks ] = getTasks()
 
-	if getTasks().length > 0
+	if tasks.length > 0
 		template: 'tasks'
-		header: "Huiswerk voor #{day}"
+		header: "Huiswerk voor #{Helpers.formatDateRelative date, no}"
+		data: tasks
 		priority: 1
-
-Template.tasks.helpers
-	tasks: -> getTasks()
 
 Template.taskRow.helpers
 	__done: -> if @done() then 'done' else ''
