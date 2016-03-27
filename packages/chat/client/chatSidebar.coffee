@@ -214,10 +214,10 @@ chats = (searchTerm = currentSearchTerm.get(), onlyFirst = no) ->
 	else chain.value()
 
 getChatNotify = ->
-	getUserField Meteor.userId(), 'settings.chatNotify', yes
+	getUserField Meteor.userId(), 'settings.notifications.notif.chat', yes
 setChatNotify = (val) ->
 	check val, Boolean
-	Meteor.users.update Meteor.userId(), $set: 'settings.chatNotify': val
+	Meteor.users.update Meteor.userId(), $set: 'settings.notifications.notif.chat': val
 
 Template.chatSidebar.events
 	'keyup div.searchBox': (event) ->
