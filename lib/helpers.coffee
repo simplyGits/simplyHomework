@@ -277,7 +277,7 @@ class @Helpers
 
 	###*
 	# Checks if the given `mail` is a valid address.
-  #
+	#
 	# @method correctMail
 	# @param mail {String} The address to check.
 	# @return {Boolean} True if the given mail is valid, otherwise false.
@@ -286,7 +286,7 @@ class @Helpers
 
 	###*
 	# Tests if the months and dates of the given two date objects are the same.
-  #
+	#
 	# @method datesEqual
 	# @param a {Date}
 	# @param b {Date}
@@ -509,7 +509,7 @@ class @Helpers
 @getClassInfos = (userId) -> getUserField userId, 'classInfos', []
 
 ###*
-# @method getCLass
+# @method getClassGroup
 # @param {string} classId
 # @param {String} [userId=Meteor.userId()]
 # @return {String}
