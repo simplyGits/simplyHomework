@@ -29,6 +29,7 @@ Package.onUse(function(api) {
 		'ms',
 	], 'client');
 	api.use([
+		'email',
 		'ecmascript',
 		'percolate:synced-cron',
 		'simply:external-services-connector',
