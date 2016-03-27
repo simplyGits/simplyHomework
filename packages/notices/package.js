@@ -6,6 +6,10 @@ Package.describe({
 	documentation: 'README.md',
 });
 
+Npm.depends({
+	'simplyemail': '1.0.1',
+});
+
 Package.onUse(function(api) {
 	api.versionsFrom('1.2.1');
 	api.use([
@@ -28,12 +32,8 @@ Package.onUse(function(api) {
 		'ecmascript',
 		'percolate:synced-cron',
 		'simply:external-services-connector',
+		// 'reywood:publish-composite',
 	], 'server');
-	/*
-	api.use([
-		'reywood:publish-composite',
-	], 'server');
-	*/
 
 	api.addFiles([
 		'lib/collections.coffee',

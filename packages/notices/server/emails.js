@@ -1,4 +1,4 @@
-import * as emails from 'simplyemail'
+const emails = Npm.require('simplyemail');
 
 // TODO: user settings for email notifications
 
