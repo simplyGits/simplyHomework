@@ -6,7 +6,7 @@ statsCache = LRU
 	maxAge: ms.minutes 15
 gradeMeanCache = LRU
 	max: 100
-	maxAge: ms.hours 1
+	maxAge: ms.minutes 5
 
 Meteor.methods
 	###*
