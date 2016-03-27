@@ -85,7 +85,7 @@ diffAndInsertFiles = (userId, files) ->
 # in of current connection, unless the grades were updated shortly before.
 #
 # @method updateGrades
-# @param userId {String} `userId` overwrites the `this.userId` which is used by default which is used by default.
+# @param userId {String}
 # @param [forceUpdate=false] {Boolean} If true the grades will be forced to update, otherwise the grades will only be updated if they weren't updated in the last 20 minutes.
 # @return {Error[]} An array containing errors from ExternalServices.
 ###
@@ -150,7 +150,7 @@ updateGrades = (userId, forceUpdate = no) ->
 # in of current connection, unless the utils were updated shortly before.
 #
 # @method updateStudyUtils
-# @param userId {String} `userId` overwrites the `this.userId` which is used by default.
+# @param userId {String}
 # @param [forceUpdate=false] {Boolean} If true the utils will be forced to update, otherwise the utils will only be updated if they weren't updated in the last 20 minutes.
 # @return {Error[]} An array containing errors from ExternalServices.
 ###
@@ -229,7 +229,7 @@ updateStudyUtils = (userId, forceUpdate = no) ->
 # in of current connection, unless the utils were updated shortly before.
 #
 # @method updateCalendarItems
-# @param userId {String} `userId` overwrites the `this.userId` which is used by default which is used by default.
+# @param userId {String}
 # @param [from] {Date} The date from which to get the calendarItems from.
 # @param [to] {Date} The date till which to get the calendarItems of.
 # @return {Error[]} An array containing errors from ExternalServices.
