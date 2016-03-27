@@ -1,9 +1,13 @@
 /* global Kadira, Grades, Projects, updateGrades, SyncedCron, Classes,
    GradeFunctions */
 
-// TODO: user settings for email notifications
 const Future = Npm.require('fibers/future')
 const emails = Npm.require('simplyemail')
+
+// TODO: have a central place for the default options of notifications, just
+// like the 'privacy' package has. Currently if we want to change the default of
+// notifications options we have to do that on various places. Would be nice if
+// it would just be one.
 
 const settingsUrl = Meteor.absoluteUrl('settings')
 
@@ -43,6 +47,7 @@ SyncedCron.add({
 	job: function () {
 		const users = Meteor.users.find({
 			'profile.firstName': { $ne: '' },
+			'settings.notifications.email_newGrade': { $ne: false },
 		}).fetch()
 
 		users.forEach((user) => {
@@ -119,6 +124,10 @@ Meteor.startup(function () {
 
 			addedParticipants.forEach((userId) => {
 				const user = Meteor.users.findOne(userId)
+				const setting = user.settings.notifications.email_joinedProject
+				if (setting === false) {
+					return;
+				}
 
 				try {
 					const html = wrapPromise(emails.project({

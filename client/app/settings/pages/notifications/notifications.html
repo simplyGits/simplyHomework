@@ -1,0 +1,17 @@
+<template name="settings_page_notifications_item">
+	<div>
+		<label>
+			<input type="checkbox" checked="{{enabled}}" />
+			<span style="font-weight: normal">{{description}}</span>
+		</label>
+	</div>
+</template>
+
+<template name="settings_page_notifications">
+	<div>
+		{{! TODO: add some text here? }}
+	</div>
+	{{#each items}}
+		{{> settings_page_notifications_item}}
+	{{/each}}
+</template>
