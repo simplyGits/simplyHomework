@@ -463,17 +463,18 @@
 	 * @method getPersons
 	 * @param {String} userId The ID of the user to fetch the persons for.
 	 * @param {String} query
-	 * @param {String} [type]
+	 * @param {String[]} [types]
 	 * @return {ExternalPerson[]}
 	 */
-	MagisterBinding.getPersons = function (userId, query, type) {
+	MagisterBinding.getPersons = function (userId, query, types) {
 		check(userId, String);
 		check(query, String);
-		check(type, Match.Optional(String));
+		check(types, [String]);
+
+		const user = Meteor.users.findOne(userId);
+		const type = types.length === 1 ? types[0] : undefined;
 
 		const fut = new Future();
-		const user = Meteor.users.findOne(userId);
-
 		getMagisterObject(userId).getPersons(query, type, function (e, r) {
 			if (e) {
 				fut.error(e);

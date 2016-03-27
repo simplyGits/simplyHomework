@@ -50,6 +50,11 @@ Meteor.methods
 		check serviceName, String
 		getServiceProfileData serviceName, @userId
 
+	'getPersons': (query, type) ->
+		check query, String
+		check type, Match.OneOf String, null
+		getPersons query, type, @userId
+
 	'getExternalPersonClasses': ->
 		@unblock()
 		getExternalPersonClasses @userId

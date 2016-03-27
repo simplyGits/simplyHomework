@@ -1,30 +1,22 @@
 ###*
 # Gets persons from the external services matching the given `query` and `type`.
-# @method getPersons
+# @method getExternalPersons
 # @param {String} query
 # @param {String} type
-# @param {String} [userId=Meteor.userId()]
-# @param {Function} [callback] Required on client.
+# @param {Function} callback
 ###
-@getPersons = (query, type, userId = Meteor.userId()) ->
-	callback = _.last arguments
-	if Meteor.isClient
-		unless _.isFunction(callback)
-			throw new Error 'Callback required on client.'
-
-		if userId isnt Meteor.userId()
-			throw new Error 'Client code can only fetch persons using their own account.'
-
+@getExternalPersons = (query, type, callback) ->
 	transform = (arr) -> (_.extend(new ExternalPerson, p) for p in arr)
-
-	res = Meteor.call(
+	Meteor.call(
 		'getPersons',
 		query,
 		type,
-		userId,
-		if callback? then (e, r) -> callback e, (transform r if r?)
+		(e, r) ->
+			if e?
+				callback e, null
+			else
+				callback null, transform r
 	)
-	transform res if res?
 
 ###*
 # Gets profileData per service
