@@ -458,12 +458,12 @@ class @Helpers
 
 ###*
 # @method getUserField
-# @param {String} [userId=Meteor.userId()]
+# @param {String} userId
 # @param {String} field
 # @param {mixed} [def] Optional default value to set the result to if it's undefined or null.
 # @return {mixed}
 ###
-@getUserField = (userId = Meteor.userId(), field, def) ->
+@getUserField = (userId, field, def) ->
 	check userId, String
 	check field, String
 	check def, Match.Optional Match.Any
@@ -478,12 +478,12 @@ class @Helpers
 # @param {String} [userId=Meteor.userId()]
 # @return {Date}
 ###
-@getEvent = (event, userId) -> getUserField userId, "events.#{event}"
+@getEvent = (event, userId = Meteor.userId()) -> getUserField userId, "events.#{event}"
 
 ###*
 # Checks if the given `user` is in the given `roles`.
 # @method userIsInRole
-# @param [userId=Meteor.userId()] {String} The ID of the user to check.
+# @param userId {String} The ID of the user to check.
 # @param [roles=["admin"]] {String|String[]} The role(s) to check.
 # @return {Boolean} True if the given `user` is in the given `roles`.
 ###
@@ -495,7 +495,7 @@ class @Helpers
 ###*
 # Gets the course info for the user with the given id.
 # @method getCourseInfo
-# @param {String} [userId=Meteor.userId()]
+# @param {String} userId
 # @return {Object}
 ###
 @getCourseInfo = (userId) -> getUserField userId, 'profile.courseInfo', {}
@@ -506,7 +506,7 @@ class @Helpers
 # @param {String} [userId=Meteor.userId()]
 # @return {Object[]}
 ###
-@getClassInfos = (userId) -> getUserField userId, 'classInfos', []
+@getClassInfos = (userId = Meteor.userId()) -> getUserField userId, 'classInfos', []
 
 ###*
 # @method getClassGroup
