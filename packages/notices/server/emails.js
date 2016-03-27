@@ -1,9 +1,18 @@
-const emails = Npm.require('simplyemail');
+/* global Kadira, Grades, Projects, updateGrades, SyncedCron, Classes,
+   GradeFunctions */
 
 // TODO: user settings for email notifications
+const Future = Npm.require('fibers/future')
+const emails = Npm.require('simplyemail')
 
 const settingsUrl = Meteor.absoluteUrl('settings')
 
+/**
+ * @method sendEmail
+ * @param {User} user
+ * @param {String} subject
+ * @param {String} html
+ */
 function sendEmail (user, subject, html) {
 	Email.send({
 		from: 'simplyHomework <hello@simplyApps.nl>',
@@ -11,6 +20,21 @@ function sendEmail (user, subject, html) {
 		subject: `simplyHomework | ${subject}`,
 		html,
 	})
+}
+
+/**
+ * @function wrapPromise
+ * @param {Promise} promise
+ * @return {any}
+ */
+function wrapPromise (promise) {
+	const fut = new Future()
+	promise.then((r) => {
+		fut.return(r)
+	}).catch((e) => {
+		fut.throw(e)
+	})
+	return fut.wait()
 }
 
 SyncedCron.add({
@@ -50,22 +74,23 @@ SyncedCron.add({
 
 				const c = Classes.findOne(grade.classId)
 
-				emails.cijfer({
-					className: c.name,
-					classUrl: Meteor.absoluteUrl(`class/${c._id}`),
-					grade: grade.gradeStr,
-					passed: grade.passed,
-					average: GradeFunctions.getEndGrade(c._id, userId),
-					settingsUrl,
-				}).then((html) => {
+				try {
+					const html = wrapPromise(emails.cijfer({
+						className: c.name,
+						classUrl: Meteor.absoluteUrl(`class/${c._id}`),
+						grade: grade.gradeStr,
+						passed: grade.passed,
+						average: GradeFunctions.getEndGrade(c._id, userId),
+						settingsUrl,
+					}))
 					sendEmail(user, `Nieuw cijfer voor ${c.name}`, html)
-				}, (err) => {
+				} catch (err) {
 					Kadira.trackError(
 						'notices-emails',
 						err.message,
 						{ stacks: err.stack }
 					)
-				})
+				}
 			})
 		})
 	},
@@ -92,23 +117,24 @@ Meteor.startup(function () {
 			const newParticipants = newDoc.participants
 			const addedParticipants = _.difference(newParticipants, oldParticipants)
 
-			addedPersons.forEach((userId) => {
+			addedParticipants.forEach((userId) => {
 				const user = Meteor.users.findOne(userId)
 
-				emails.project({
-					projectName: newDoc.name,
-					projectUrl: Meteor.absoluteUrl(`project/${newDoc._id}`),
-					personName: `${user.profile.firstName} ${user.profile.lastName}`,
-					settingsUrl,
-				}).then((html) => {
+				try {
+					const html = wrapPromise(emails.project({
+						projectName: newDoc.name,
+						projectUrl: Meteor.absoluteUrl(`project/${newDoc._id}`),
+						personName: `${user.profile.firstName} ${user.profile.lastName}`,
+						settingsUrl,
+					}))
 					sendEmail(user, 'Toegevoegd aan project', html)
-				}, (err) => {
+				} catch (err) {
 					Kadira.trackError(
 						'notices-emails',
 						err.message,
 						{ stacks: err.stack }
 					)
-				})
+				}
 			})
 		},
 	})
