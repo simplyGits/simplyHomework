@@ -8,7 +8,7 @@ ExternalServiceErrors = new Meteor.Collection 'externalServiceErrors'
 # @static
 ###
 class ExternalServicesConnector
-	@externalServices: []
+	@services: []
 	@handleServiceError: (serviceName, userId, error) ->
 		ExternalServiceErrors.insert
 			service: serviceName
@@ -81,10 +81,10 @@ class ExternalServicesConnector
 			changed: module.calendarItemChanged
 		###
 
-		@externalServices.push module
+		@services.push module
 
 # Just a shortcut.
-Services = ExternalServicesConnector.externalServices
+Services = ExternalServicesConnector.services
 
 @Services = Services
 @ExternalServicesConnector = ExternalServicesConnector

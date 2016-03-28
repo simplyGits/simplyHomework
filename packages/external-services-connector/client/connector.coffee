@@ -6,9 +6,9 @@
 # @static
 ###
 class ExternalServicesConnector
-	@externalServices: []
+	@services: []
 
 	@pushExternalService: (module) =>
-		@externalServices.push module
+		@services.push module
 
 @ExternalServicesConnector = ExternalServicesConnector
