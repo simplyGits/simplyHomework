@@ -95,12 +95,12 @@
 				</div>
 			</div>
 		{{/with}}
-		{{#if fetchedBy}}
+		{{#with service}}
 			<div class="row">
 				<div>Gehaald van:</div>
-				<div>{{cap fetchedBy}}</div>
+				<div>{{friendlyName}}</div>
 			</div>
-		{{/if}}
+		{{/with}}
 	</div>
 </template>
 

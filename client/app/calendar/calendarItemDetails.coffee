@@ -25,6 +25,8 @@ Template.calendarItemDetails.helpers
 			'classInfo.ids': @classId
 		).count() > 0
 
+	service: -> _.find ExternalServicesConnector.services, name: @fetchedBy
+
 Template.calendarItemDetails.events
 	'click [data-action="chat"]': (event) ->
 		event.preventDefault()
