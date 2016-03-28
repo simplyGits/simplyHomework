@@ -1,7 +1,7 @@
 Meteor.startup ->
 	DDPRateLimiter.addRule {
 		type: 'method'
-		name: 'checkPasswordHash'
+		name: (s) -> s in [ 'changeMail', 'removeAccount' ]
 	}, 2, 1000
 
 	for sub in [ 'externalCalendarItems', 'foreignCalendarItems' ]

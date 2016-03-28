@@ -8,6 +8,27 @@ gradeMeanCache = LRU
 	max: 100
 	maxAge: ms.minutes 5
 
+###*
+# Checks if the given `passHash` is correct for the given user.
+# @method checkPasswordHash
+# @param passHash {String} The password hashed with SHA256.
+# @param userId {String}
+# @return {Boolean} Whether or not the given `passHash` is correct.
+###
+checkPasswordHash = (passHash, userId) ->
+	check passHash, String
+	check userId, String
+
+	unless userId?
+		throw new Meteor.Error 'notLoggedIn', 'Client not logged in.'
+
+	user = Meteor.users.findOne userId
+	res = Accounts._checkPassword user,
+		digest: passHash
+		algorithm: 'sha-256'
+
+	not res.error?
+
 Meteor.methods
 	###*
 	# Streams the file from the given `fromUrl` to the given `destUrl`.
@@ -94,26 +115,6 @@ Meteor.methods
 		undefined
 
 	###*
-	# Checks if the given `passHash` is correct for the given user.
-	# @method checkPasswordHash
-	# @param passHash {String} The password hashed with SHA256.
-	# @return {Boolean} Whether or not the given `passHash` is correct.
-	###
-	checkPasswordHash: (passHash) ->
-		@unblock()
-		check passHash, String
-
-		unless @userId?
-			throw new Meteor.Error 'notLoggedIn', 'Client not logged in.'
-
-		user = Meteor.users.findOne @userId
-		res = Accounts._checkPassword user,
-			digest: passHash
-			algorithm: 'sha-256'
-
-		not res.error?
-
-	###*
 	# Removes the account of the current caller.
 	# @method removeAccount
 	# @param passHash {String} The password of the user SHA256 encrypted.
@@ -130,7 +131,7 @@ Meteor.methods
 		unless captchaStatus.data.success
 			throw new Meteor.Error "wrongCaptcha", "Captcha was not correct."
 
-		unless Meteor.call 'checkPasswordHash', passHash
+		unless checkPasswordHash passHash, @userId
 			throw new Meteor.Error "wrongPassword", "Given password incorrect."
 
 		Meteor.users.remove @userId
