@@ -36,7 +36,6 @@ Meteor.users.allow
 		allowed = [
 			'events'
 			'classInfos'
-			'mailSignup'
 			'settings'
 			'profile'
 			'setupProgress'
