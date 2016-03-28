@@ -58,9 +58,25 @@ Meteor.methods
 
 		fut.wait()
 
-	changeMail: (mail) ->
+	###*
+	# @method changeMail
+	# @param {String} mail
+	# @param {String} passHash
+	###
+	changeMail: (mail, passHash) ->
 		check mail, String
-		Meteor.users.update @userId, $set: emails: [ { address: mail, verified: no } ]
+		check passHash, String
+
+		unless @userId?
+			throw new Meteor.Error 'not-logged-in'
+
+		unless checkPasswordHash passHash, @userId
+			throw new Meteor.Error 'wrong-password', 'Given password incorrect'
+
+		unless Helpers.correctMail mail
+			throw new Meteor.Error 'invalid-mail'
+
+		Meteor.users.update @userId, $set: emails: [{ address: mail, verified: no }]
 		Accounts.sendVerificationEmail @userId
 
 	###*

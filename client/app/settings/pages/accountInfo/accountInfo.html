@@ -1,10 +1,6 @@
 <template name="settings_page_accountInfo">
 	<div id="accountInfoSettings">
 		<form class="vertical full-width">
-			<div id="mailGroup" class="group">
-				<label for="mailInput">Email</label>
-				<input type="text" id="mailInput" placeholder="hello@simplyApps.nl" value="{{currentMail}}">
-			</div>
 			<div id="firstNameGroup" class="group">
 				<label for="firstNameInput">Voornaam</label>
 				<input type="text" id="firstNameInput" placeholder="Henk" value="{{currentUser.profile.firstName}}">
@@ -13,9 +9,13 @@
 				<label for="lastNameInput">Achternaam</label>
 				<input type="text" id="lastNameInput" placeholder="Jansen" value="{{currentUser.profile.lastName}}">
 			</div>
-			<div id="oldPassGroup" class="group">
-				<label for="oldPassInput">Oud wachtwoord</label>
-				<input type="password" id="oldPassInput" placeholder="●●●●●●●●●●">
+			<div id="currentPassGroup" class="group">
+				<label for="currentPassInput">Huidig wachtwoord</label>
+				<input type="password" id="currentPassInput" placeholder="●●●●●●●●●●">
+			</div>
+			<div id="mailGroup" class="group">
+				<label for="mailInput">Email</label>
+				<input type="text" id="mailInput" placeholder="hello@simplyApps.nl" value="{{currentMail}}">
 			</div>
 			<div id="newPassGroup" class="group">
 				<label for="newPassInput">Nieuw wachtwoord</label>

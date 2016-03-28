@@ -8,12 +8,13 @@ Template['settings_page_accountInfo'].events
 	'submit form': (event) ->
 		event.preventDefault()
 
-		mail = $('#mailInput').val().toLowerCase()
-
 		firstName = Helpers.nameCap $('#firstNameInput').val()
 		lastName = Helpers.nameCap $('#lastNameInput').val()
 
-		oldPass = $('#oldPassInput').val()
+		oldPass = $('#currentPassInput').val()
+
+		mail = $('#mailInput').val().toLowerCase()
+
 		newPass = $('#newPassInput').val()
 		newPassRepeat = $('#newPassRepeatInput').val()
 
@@ -31,6 +32,8 @@ Template['settings_page_accountInfo'].events
 					text: 'Je aanpassingen zijn successvol opgeslagen'
 					type: 'success'
 
+				$('#accountInfoSettings input[type="password"]').val ''
+
 			else if success is no # sounds like sombody who sucks at English.
 				swalert
 					title: 'D:'
@@ -40,7 +43,15 @@ Template['settings_page_accountInfo'].events
 			undefined
 
 		if mail isnt Meteor.user().emails[0].address
-			Meteor.call 'changeMail', mail, (e) -> callback not e?
+			if oldPass.length is 0
+					setFieldError '#currentPassGroup', 'Geen wachtwoord ingevuld'
+			else
+				hash = Package.sha.SHA256 oldPass
+				Meteor.call 'changeMail', mail, hash, (e) ->
+					if e?.error is 'wrong-password'
+						setFieldError '#currentPassGroup', 'Wachtwoord is fout'
+					else
+						callback not e?
 
 		if profile.firstName isnt firstName or profile.lastName isnt lastName
 			Meteor.call 'changeName', firstName, lastName, (e) -> callback not e?
