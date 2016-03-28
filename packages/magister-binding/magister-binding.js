@@ -1,11 +1,6 @@
-/**
- * simplyHomework binding to Magister.
- * @author simply
- * @module magister-binding
- */
- /* global AbsenceInfo, Magister, ExternalServicesConnector, Schools, Grades,
+ /* global AbsenceInfo, Magister, Schools, Grades,
   Grade, StudyUtil, GradePeriod, ExternalPerson, CalendarItem, Assignment,
-  ExternalFile, getClassInfos, getUserField, LRU, Message, ms */
+  ExternalFile, getClassInfos, LRU, Message, ms, MagisterBinding */
 
 // One heck of a binding this is.
 
@@ -36,69 +31,59 @@
 	});
 
 	/**
-	 * A simplyHomework binding to Magister.
-	 * @class MagisterBinding
-	 * @static
+	 * Creates data for the user with given `userId` with the given
+	 * parameters.
+	 *
+	 * @method createData
+	 * @param {String} schoolurl
+	 * @param {String} username
+	 * @param {String} password
+	 * @param {String} userId The ID of the user to save the info to.
+	 * @return {undefined|Boolean|Error} undefined if the data was stored, false if the login credentials are incorrect. Returns an error containg more info when an error occured.
 	 */
-	const MagisterBinding = {
-		name: 'magister',
-		friendlyName: 'Magister',
-		loginNeeded: true,
-		/**
-		 * Creates data for the user with given `userId` with the given
-		 * parameters.
-		 *
-		 * @method createData
-		 * @param {String} schoolurl
-		 * @param {String} username
-		 * @param {String} password
-		 * @param {String} userId The ID of the user to save the info to.
-		 * @return {undefined|Boolean|Error} undefined if the data was stored, false if the login credentials are incorrect. Returns an error containg more info when an error occured.
-		 */
-		createData: function (schoolurl, username, password, userId) {
-			check(schoolurl, String);
-			check(username, String);
-			check(password, String);
-			check(userId, String);
+	MagisterBinding.createData = function (schoolurl, username, password, userId) {
+		check(schoolurl, String);
+		check(username, String);
+		check(password, String);
+		check(userId, String);
 
-			if (
-				schoolurl.length === 0 ||
-				username.length === 0 ||
-				password.length === 0
-			) {
-				return false;
-			}
+		if (
+			schoolurl.length === 0 ||
+			username.length === 0 ||
+			password.length === 0
+		) {
+			return false;
+		}
 
-			MagisterBinding.storedInfo(userId, {
-				credentials: {
-					schoolurl: schoolurl,
-					username: username,
-					password: password,
-				},
-			});
+		MagisterBinding.storedInfo(userId, {
+			credentials: {
+				schoolurl: schoolurl,
+				username: username,
+				password: password,
+			},
+		});
 
-			// Remove the cache entry (if there's one) for the current user to
-			// make sure we relogin.
+		// Remove the cache entry (if there's one) for the current user to
+		// make sure we relogin.
+		cache.del(userId);
+
+		try {
+			getMagisterObject(userId);
+		} catch (e) {
+			// Remove the stored info.
 			cache.del(userId);
+			MagisterBinding.storedInfo(userId, null);
 
-			try {
-				getMagisterObject(userId);
-			} catch (e) {
-				// Remove the stored info.
-				cache.del(userId);
-				MagisterBinding.storedInfo(userId, null);
-
-				if (_.contains([
-					'Ongeldig account of verkeerde combinatie van gebruikersnaam en wachtwoord. Probeer het nog eens of neem contact op met de applicatiebeheerder van de school.',
-					'Je gebruikersnaam en/of wachtwoord is niet correct.',
-				], e.message)) {
-					return false;
-				} else {
-					return e;
-				}
+			if (_.contains([
+				'Ongeldig account of verkeerde combinatie van gebruikersnaam en wachtwoord. Probeer het nog eens of neem contact op met de applicatiebeheerder van de school.',
+				'Je gebruikersnaam en/of wachtwoord is niet correct.',
+			], e.message)) {
+				return false;
+			} else {
+				return e;
 			}
-		},
-	};
+		}
+	}
 
 	/**
 	 * Gets a magister object for the given `userId`.
@@ -878,6 +863,4 @@
 
 		return fut.wait();
 	}
-
-	ExternalServicesConnector.pushExternalService(MagisterBinding);
 })(Magister, Npm.require('fibers/future'), Npm.require('request'), Npm.require('marked'));

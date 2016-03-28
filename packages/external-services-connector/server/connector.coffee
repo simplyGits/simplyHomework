@@ -88,20 +88,3 @@ Services = ExternalServicesConnector.externalServices
 
 @Services = Services
 @ExternalServicesConnector = ExternalServicesConnector
-
-#Meteor.publish "externalPersons", (query) ->
-#	#var words = query.toLowerCase().split(" ");
-#	#var persons = _.filter(allPersons, function (p) {
-#	#	return _.any(words, function (word) {
-#	#		return p.firstName.toLowerCase().indexOf(word) > -1 || p.lastName.toLowerCase().indexOf(word) > -1;
-#	#	});
-#	#});
-#
-#	words = query.toLowerCase().split " "
-#	persons = Meteor.users.find(
-#		"profile.firstName": 
-#	).fetch()
-#
-#	services = _.filter @externalServices, (s) -> s.hasData user
-#	
-#	for service.getPersons

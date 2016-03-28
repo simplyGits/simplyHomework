@@ -20,10 +20,16 @@ Package.onUse(function(api) {
 		'stevezhu:lodash@3.10.1',
 		'coffeescript',
 		'check',
+	]);
+	api.use([
 		'ejson',
 		'meteorhacks:picker',
 		'ms',
 	], 'server');
+
+	api.addFiles([
+		'client/connector.coffee',
+	], 'client');
 	api.addFiles([
 		'server/connector.coffee',
 		'server/functions.coffee',
@@ -31,8 +37,11 @@ Package.onUse(function(api) {
 		'server/publish.coffee',
 		'server/router.coffee',
 	], 'server');
+
 	api.export([
 		'ExternalServicesConnector',
+	]);
+	api.export([
 		'Services',
 		'updateCalendarItems',
 		'updateGrades',

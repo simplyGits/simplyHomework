@@ -1,8 +1,4 @@
-/*
- * simplyHomework binding to Gravatar.
- * @author simply
- * @module gravatar-binding
- */
+/* global GravatarBinding, ExternalServicesConnector */
 
 (function (Future, request) {
 	'use strict';
@@ -18,31 +14,23 @@
 		}).statusCode !== 404;
 	}
 
-	var GravatarBinding = {
-		name: 'gravatar',
-		friendlyName: 'Gravatar',
-		loginNeeded: false,
-
-		createData: function () {
-			// An user can always create a gravatar and checking is pretty
-			// cheap, so we wan't to check every time for a gravatar when we
-			// need it.
-			return true;
-		},
-
-		getProfileData: function (userId) {
-			check(userId, String);
-			var user = Meteor.users.findOne(userId);
-			var md5 = CryptoJS.MD5(user.emails[0].address).toString();
-
-			var has = checkGravatarAvailable(md5);
-			var pictureUrl = 'https://www.gravatar.com/avatar/' + md5 + '?d=identicon&r=PG';
-
-			return {
-				picture: has ? pictureUrl : undefined,
-			};
-		},
+	GravatarBinding.createData = function () {
+		// An user can always create a gravatar and checking is pretty
+		// cheap, so we wan't to check every time for a gravatar when we
+		// need it.
+		return true;
 	};
 
-	ExternalServicesConnector.pushExternalService(GravatarBinding);
+	GravatarBinding.getProfileData = function (userId) {
+		check(userId, String);
+		var user = Meteor.users.findOne(userId);
+		var md5 = CryptoJS.MD5(user.emails[0].address).toString();
+
+		var has = checkGravatarAvailable(md5);
+		var pictureUrl = 'https://www.gravatar.com/avatar/' + md5 + '?d=identicon&r=PG';
+
+		return {
+			picture: has ? pictureUrl : undefined,
+		};
+	};
 })(Npm.require('fibers/future'), Npm.require('request'));

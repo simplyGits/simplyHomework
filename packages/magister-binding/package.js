@@ -15,9 +15,11 @@ Package.onUse(function(api) {
 	api.versionsFrom('1.1.0.1');
 
 	api.use([
+		'simply:external-services-connector',
+	]);
+	api.use([
 		'stevezhu:lodash@3.10.1',
 		'simply:magisterjs@1.17.0',
-		'simply:external-services-connector',
 		'ejson',
 		'ecmascript',
 		'simply:lru',
@@ -29,6 +31,7 @@ Package.onUse(function(api) {
 		'handlebars',
 	], 'client');
 
+	api.addFiles('info.js');
 	api.addFiles('magister-binding.js', 'server');
 	api.addFiles([
 		'modal.html',
