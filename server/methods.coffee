@@ -73,7 +73,7 @@ Meteor.methods
 		unless checkPasswordHash passHash, @userId
 			throw new Meteor.Error 'wrong-password', 'Given password incorrect'
 
-		unless Helpers.correctMail mail
+		unless Helpers.validMail mail
 			throw new Meteor.Error 'invalid-mail'
 
 		Meteor.users.update @userId, $set: emails: [{ address: mail, verified: no }]

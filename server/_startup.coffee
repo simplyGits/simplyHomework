@@ -13,7 +13,7 @@ Meteor.startup ->
 	###
 
 	Accounts.onCreateUser (options, doc) ->
-		unless Helpers.correctMail doc.emails[0].address
+		unless Helpers.validMail doc.emails[0].address
 			throw new Error 'Given mail address is invalid.'
 
 		doc.classInfos = []

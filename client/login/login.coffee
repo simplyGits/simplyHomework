@@ -40,7 +40,7 @@ Template.signup.events
 
 		error = no
 		if empty $emailInput, '#emailGroup', 'Email is leeg' then error = yes
-		else if not Helpers.correctMail $emailInput.val()
+		else if not Helpers.validMail $emailInput.val()
 			setFieldError '#emailGroup', 'Ongeldig email adres'
 			error = yes
 
