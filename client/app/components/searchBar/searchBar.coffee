@@ -32,6 +32,7 @@ getClassName = ->
 getName = ->
 	user = _.sample Meteor.users.find({
 		_id: $ne: Meteor.userId()
+		'profile.firstName': $ne: ''
 	}, {
 		reactive: no
 		fields:
