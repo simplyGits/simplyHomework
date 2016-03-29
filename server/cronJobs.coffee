@@ -13,7 +13,7 @@ SyncedCron.add
 		).fetch()
 
 		for user in usersWarned
-			sendMail user, 'simplyHomework | Inactief account', """
+			sendMail user, 'Inactief account', """
 				Hey #{user.profile.firstName}!
 
 				Je hebt al voor #{moment().diff user.status.lastActivity, 'days'} dagen niet ingelogd.
@@ -147,7 +147,7 @@ SyncedCron.add
 			birthDate? and Helpers.datesEqual new Date, birthDate
 
 		for user in users
-			sendMail user, 'simplyHomework | Gefeliciteerd!', """
+			sendMail user, 'Gefeliciteerd!', """
 				Hey #{user.profile.firstName}!
 
 				Wij wensen je een fijne verjaardag! :D

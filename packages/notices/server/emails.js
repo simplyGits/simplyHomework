@@ -1,8 +1,7 @@
 /* global Kadira, Grades, Projects, updateGrades, SyncedCron, Classes,
    GradeFunctions */
 
-const Future = Npm.require('fibers/future')
-const emails = Npm.require('simplyemail')
+import emails from 'meteor/emails'
 
 // TODO: have a central place for the default options of notifications, just
 // like the 'privacy' package has. Currently if we want to change the default of
@@ -24,21 +23,6 @@ function sendEmail (user, subject, html) {
 		subject: `simplyHomework | ${subject}`,
 		html,
 	})
-}
-
-/**
- * @function wrapPromise
- * @param {Promise} promise
- * @return {any}
- */
-function wrapPromise (promise) {
-	const fut = new Future()
-	promise.then((r) => {
-		fut.return(r)
-	}).catch((e) => {
-		fut.throw(e)
-	})
-	return fut.wait()
 }
 
 SyncedCron.add({

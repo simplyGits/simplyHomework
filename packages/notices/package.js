@@ -30,6 +30,8 @@ Package.onUse(function(api) {
 	], 'client');
 	api.use([
 		'email',
+		'emails',
+		'modules',
 		'ecmascript',
 		'percolate:synced-cron',
 		'simply:external-services-connector',
