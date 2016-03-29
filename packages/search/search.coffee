@@ -80,7 +80,7 @@ filterKeywords = (query) ->
 # @method filterClasses
 # @param {String} query
 # @param {String} userId
-# @return [mixed[]} [ classes, newQuery ]
+# @return [mixed[]} [ classIds, newQuery ]
 ###
 filterClasses = (query, userId) ->
 	querySplitted = query.split ' '
