@@ -101,6 +101,7 @@ class @Message
 		fetchedBy:
 			type: String
 			optional: yes
+			index: 1
 		externalId:
 			type: null
 			optional: yes
