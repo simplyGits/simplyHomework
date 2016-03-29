@@ -12,6 +12,7 @@ Package.onUse(function(api) {
 	api.use([
 		'meteorhacks:inject-initial',
 		'webapp',
+		'ecmascript',
 	], 'server');
 	api.use('appcache', 'server', { weak: true });
 	api.use('momentjs:moment', 'client');
