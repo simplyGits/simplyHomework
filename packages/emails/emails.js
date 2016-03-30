@@ -1,33 +1,44 @@
-/* global getMail */
-
-import Future from 'fibers/future'
 import * as emails from 'simplyemail'
 
 const settingsUrl = Meteor.absoluteUrl('settings')
 
-/**
- * @function wrapPromise
- * @param {Promise} promise
- * @return {any}
- */
-function wrapPromise (promise) {
-	const fut = new Future()
-	promise
-		.then((r) => fut.return(r))
-		.catch((e) => fut.throw(e))
-	return fut.wait()
+function wrap (fn) {
+	return function (obj) {
+		return Promise.await(fn({
+			...obj,
+			settingsUrl,
+		}))
+	}
 }
 
+const exported = {
+	cijfer: wrap(emails.cijfer),
+	html: wrap(emails.html),
+	project: wrap(emails.project),
+}
 
+/**
+ * @method getMail
+ * @param {String} title
+ * @param {String} body
+ * @param {Object} [schema]
+ * @return {String}
+ */
 getMail = function (title, body, schema) {
 	check(title, String)
 	check(body, String)
 	check(schema, Match.Optional(Object))
 
 	body = body.replace(/\n/ig, '<br>')
-	return wrapPromise(emails.html({ title, body, settingsUrl }))
+	return exported.html({ title, body })
 }
 
+/**
+ * @method sendMail
+ * @param {User|String} user User object or email address
+ * @param {String} subject
+ * @param {String} body
+ */
 sendMail = function (user, subject, body) {
 	check(user, Match.OneOf(Object, String))
 	check(subject, String)
@@ -41,17 +52,4 @@ sendMail = function (user, subject, body) {
 	})
 }
 
-function wrap (fn) {
-	return function (obj) {
-		return wrapPromise(fn({
-			...obj,
-			settingsUrl,
-		}))
-	}
-}
-
-export default {
-	cijfer: wrap(emails.cijfer),
-	html: wrap(emails.html),
-	project: wrap(emails.project),
-}
+export default exported

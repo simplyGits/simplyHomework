@@ -15,6 +15,8 @@ Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
 		'modules',
+		'promise',
+		'check',
 		'coffeescript',
 		'email',
 	], 'server');
