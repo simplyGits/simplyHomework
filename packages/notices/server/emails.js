@@ -29,7 +29,7 @@ SyncedCron.add({
 	job: function () {
 		const users = Meteor.users.find({
 			'profile.firstName': { $ne: '' },
-			'settings.devSettings.emailNotifications': true,
+			'settings.notifications.email_newGrade': { $ne: false },
 		}).fetch()
 
 		users.forEach((user) => {
@@ -105,8 +105,8 @@ Meteor.startup(function () {
 
 			addedParticipants.forEach((userId) => {
 				const user = Meteor.users.findOne(userId)
-				const setting = user.settings.devSettings.emailNotifications
-				if (setting !== false) {
+				const setting = user.settings.notifications.email_joinedProject
+				if (setting === false) {
 					return;
 				}
 

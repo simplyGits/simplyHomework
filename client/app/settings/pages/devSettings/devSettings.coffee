@@ -4,9 +4,6 @@ items = [{
 }, {
 	name: 'noticeAlwaysHoverColor'
 	description: 'Maak altijd het randje van een kaart op het overzicht zwart als je er met je muis over gaat.'
-}, {
-	name: 'emailNotifications'
-	description: 'Experimentele email-notificaties versturen.'
 }]
 
 Template['settings_page_devSettings'].helpers
