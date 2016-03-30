@@ -45,6 +45,11 @@ Template.changedHours.helpers
 				hours: (
 					_(arr)
 						.filter (x) -> x.startDate.date().getTime() is h.startDate.date().getTime()
+						.map (x) ->
+							x.updateInfo.diff = x.updateInfo.diff.map (info) ->
+								info.now = x[info.key] ? info.next
+								info
+							x
 						.value()
 				)
 			.reject (day) -> day.hours.length is 0
