@@ -1,0 +1,24 @@
+{
+  "name": "simplyhomework",
+  "version": "1.0.0",
+  "description": "",
+  "main": "mobile-config.js",
+  "dependencies": {
+    "fibers": "^1.0.10",
+    "request": "^2.69.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lieuwex/simplyhomework.git"
+  },
+  "author": "Lieuwe Rooijakkers <lieuwerooijakkers@gmail.com> (http://www.lieuwe.xyz/)",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/lieuwex/simplyhomework/issues"
+  },
+  "homepage": "https://github.com/lieuwex/simplyhomework#readme"
+}

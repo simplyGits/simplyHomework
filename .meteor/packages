@@ -43,8 +43,6 @@ meteorhacks:kadira
 simply:woordjesleren
 simply:fullcalendar
 simply:lazy-code-push
-meteorhacks:npm
-npm-container
 simply:katex
 emojione:emojione
 rcy:chromajs
@@ -84,3 +82,4 @@ ms
 standard-minifier-css
 standard-minifier-js
 emails
+modules

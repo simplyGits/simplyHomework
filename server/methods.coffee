@@ -1,5 +1,5 @@
-request = Meteor.npmRequire 'request'
-Future = Npm.require 'fibers/future'
+request = require 'request'
+Future = require 'fibers/future'
 
 statsCache = LRU
 	max: 75
