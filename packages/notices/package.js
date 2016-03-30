@@ -6,6 +6,10 @@ Package.describe({
 	documentation: 'README.md',
 });
 
+Npm.depends({
+	'simplyemail': '1.0.2',
+});
+
 Package.onUse(function(api) {
 	api.versionsFrom('1.2.1');
 	api.use([
@@ -24,11 +28,15 @@ Package.onUse(function(api) {
 		'meteorhacks:subs-manager',
 		'ms',
 	], 'client');
-	/*
 	api.use([
-		'reywood:publish-composite',
+		'email',
+		'emails',
+		'modules',
+		'ecmascript',
+		'percolate:synced-cron',
+		'simply:external-services-connector',
+		// 'reywood:publish-composite',
 	], 'server');
-	*/
 
 	api.addFiles([
 		'lib/collections.coffee',
@@ -84,8 +92,7 @@ Package.onUse(function(api) {
 		'client/sick/sick.coffee',
 	], 'client');
 	api.addFiles([
-		'server/security.coffee',
-		'server/publish.coffee',
+		'server/emails.js',
 	], 'server');
 
 	api.export([

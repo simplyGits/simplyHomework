@@ -58,7 +58,7 @@ Meteor.startup ->
 					else if not passChanged and mailChanged then 'Mail Adres Veranderd'
 				)
 
-				sendMail user, "simplyHomework | #{subject}", message
+				sendMail user, subject, message
 
 	users = {}
 	olderThan = (val, min) -> val? and _.now() - val > min
@@ -79,7 +79,7 @@ Meteor.startup ->
 				mailSentAt: null
 
 		if ++val.times >= 5 and not val.mailSentAt?
-			sendMail user, 'simplyHomework | Account mogelijk in gevaar', """
+			sendMail user, 'Account mogelijk in gevaar', """
 				Hey #{user.profile.firstName},
 
 				Pas heeft iemand in een korte tijd meerdere keren een fout wachtwoord ingevuld.
