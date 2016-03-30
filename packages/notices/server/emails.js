@@ -8,8 +8,6 @@ import emails from 'meteor/emails'
 // notifications options we have to do that on various places. Would be nice if
 // it would just be one.
 
-const settingsUrl = Meteor.absoluteUrl('settings')
-
 /**
  * @method sendEmail
  * @param {User} user
@@ -70,7 +68,6 @@ SyncedCron.add({
 						grade: grade.gradeStr,
 						passed: grade.passed,
 						average: GradeFunctions.getEndGrade(c._id, userId),
-						settingsUrl,
 					}))
 					sendEmail(user, `Nieuw cijfer voor ${c.name}`, html)
 				} catch (err) {
@@ -118,7 +115,6 @@ Meteor.startup(function () {
 						projectName: newDoc.name,
 						projectUrl: Meteor.absoluteUrl(`project/${newDoc._id}`),
 						personName: `${user.profile.firstName} ${user.profile.lastName}`,
-						settingsUrl,
 					}))
 					sendEmail(user, 'Toegevoegd aan project', html)
 				} catch (err) {

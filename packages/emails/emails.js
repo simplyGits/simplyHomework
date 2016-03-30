@@ -41,8 +41,17 @@ sendMail = function (user, subject, body) {
 	})
 }
 
+function wrap (fn) {
+	return function (obj) {
+		return wrapPromise(fn({
+			...obj,
+			settingsUrl,
+		}))
+	}
+}
+
 export default {
-	cijfer:  (obj) => wrapPromise(emails.cijfer(obj)),
-	html:    (obj) => wrapPromise(emails.html(obj)),
-	project: (obj) => wrapPromise(emails.project(obj)),
+	cijfer: wrap(emails.cijfer),
+	html: wrap(emails.html),
+	project: wrap(emails.project),
 }
