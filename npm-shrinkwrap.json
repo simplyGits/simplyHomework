@@ -294,6 +294,11 @@
       "from": "sntp@>=1.0.0 <2.0.0",
       "resolved": "https://registry.npmjs.org/sntp/-/sntp-1.0.9.tgz"
     },
+    "spin.js": {
+      "version": "2.3.2",
+      "from": "spin.js@latest",
+      "resolved": "https://registry.npmjs.org/spin.js/-/spin.js-2.3.2.tgz"
+    },
     "sshpk": {
       "version": "1.7.4",
       "from": "sshpk@>=1.7.0 <2.0.0",
@@ -318,6 +323,11 @@
       "version": "2.0.0",
       "from": "supports-color@>=2.0.0 <3.0.0",
       "resolved": "https://registry.npmjs.org/supports-color/-/supports-color-2.0.0.tgz"
+    },
+    "tether": {
+      "version": "1.2.0",
+      "from": "tether@latest",
+      "resolved": "https://registry.npmjs.org/tether/-/tether-1.2.0.tgz"
     },
     "tough-cookie": {
       "version": "2.2.2",

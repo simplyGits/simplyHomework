@@ -1,3 +1,5 @@
+Tether = require 'tether'
+
 height = -> $('.content').height()
 
 currentSub = undefined

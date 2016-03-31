@@ -67,7 +67,6 @@ chat
 reywood:publish-composite
 simply:notices
 simply:performance-logging
-simply:tether
 force-ssl
 service-configuration
 schedule-functions

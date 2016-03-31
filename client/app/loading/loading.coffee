@@ -1,3 +1,5 @@
+Spinner = require 'spin.js'
+
 Template.loading.onRendered ->
 	@spinner = new Spinner(
 		lines: 17

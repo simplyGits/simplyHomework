@@ -5,7 +5,9 @@
   "main": "mobile-config.js",
   "dependencies": {
     "fibers": "^1.0.10",
-    "request": "^2.69.0"
+    "request": "^2.69.0",
+    "spin.js": "^2.3.2",
+    "tether": "^1.2.0"
   },
   "devDependencies": {},
   "scripts": {
