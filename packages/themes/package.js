@@ -25,6 +25,7 @@ Package.onUse(function(api) {
 	api.addFiles([
 		'themes/paarse-vrijdag.styl',
 		'themes/christmas.styl',
+		'themes/aprilfools2016.styl',
 	]);
 	api.addFiles('themes.js', 'server');
 });
