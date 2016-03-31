@@ -1,3 +1,5 @@
+swal = require 'sweetalert'
+
 ###
       \|\/
      _/;;\__

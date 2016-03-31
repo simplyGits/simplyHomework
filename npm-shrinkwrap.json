@@ -324,6 +324,11 @@
       "from": "supports-color@>=2.0.0 <3.0.0",
       "resolved": "https://registry.npmjs.org/supports-color/-/supports-color-2.0.0.tgz"
     },
+    "sweetalert": {
+      "version": "1.1.3",
+      "from": "sweetalert@*",
+      "resolved": "https://registry.npmjs.org/sweetalert/-/sweetalert-1.1.3.tgz"
+    },
     "tether": {
       "version": "1.2.0",
       "from": "tether@latest",
