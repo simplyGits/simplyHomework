@@ -168,13 +168,17 @@ ChatMiddlewares.attach 'escape', 'insert', (message) ->
 	message
 
 ChatMiddlewares.attach 'clickable names', 'insert', (message) ->
+	# REVIEW: maybe add a custom parser, which walks over every word. This way we
+	# have more control over the matching and can we maybe support surnames
+	# contains non-word characters.
+
+	choosen = []
 	schoolId = Meteor.user().profile.schoolId
 	users = _(message.content)
 		.split /\W/
 		.map (word) -> Helpers.nameCap word
 		.map (word) ->
-			Meteor.users.findOne {
-				_id: $nin: [ Meteor.userId(), message.creatorId ]
+			users = Meteor.users.find({
 				$or: [
 					{ 'profile.firstName': $ne: '', $eq: word }
 					{ 'profile.lastName': $ne: '', $eq: word }
@@ -186,7 +190,31 @@ ChatMiddlewares.attach 'clickable names', 'insert', (message) ->
 					'profile.firstName': 1
 					'profile.lastName': 1
 					'profile.schoolId': 1
-			}
+			}).fetch()
+
+			user = (
+				# Try to find a user we already found earlier, prioritizing last. This
+				# is used so that people with the same surname doesn't get wierdly
+				# mangled or something. for example:
+				# {Thomas [Konings]}
+				# {} = 'Thomas Konings'
+				# [] = 'Wouter Konings'
+				(
+					_(choosen)
+						.map (userId) -> _.find users, _id: userId
+						.compact()
+						.last()
+				) ?
+
+				# If nobody has been found, try to find somebody else than the creator
+				# of the message
+				_.find(users, (u) -> u._id isnt message.creatorId) ?
+
+				# If nobody has been found, just take the first user
+				users[0]
+			)
+			choosen.push user._id if user?
+			user
 		.compact()
 		.uniq '_id'
 		.value()
