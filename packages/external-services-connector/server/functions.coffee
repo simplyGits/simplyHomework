@@ -304,11 +304,11 @@ updateCalendarItems = (userId, from, to) ->
 		fileKeyChanges = diffAndInsertFiles userId, result.files
 
 		for calendarItem in result.calendarItems
-			val = CalendarItems.findOne
+			old = CalendarItems.findOne
 				fetchedBy: externalService.name
 				externalId: calendarItem.externalId
 
-			val ?= CalendarItems.findOne
+			old ?= CalendarItems.findOne
 				fetchedBy: externalService.name
 				userIds: userId
 				classId: calendarItem.classId
@@ -324,25 +324,25 @@ updateCalendarItems = (userId, from, to) ->
 			calendarItem.fileIds = calendarItem.fileIds.map (id) ->
 				fileKeyChanges[id] ? id
 
-			if val?
+			if old?
 				CalendarItem.schema.clean calendarItem
 
 				mergeUserIdsField = (fieldName) ->
-					calendarItem[fieldName] = _(val[fieldName])
+					calendarItem[fieldName] = _(old[fieldName])
 						.concat calendarItem[fieldName]
 						.uniq()
 						.value()
 				mergeUserIdsField 'userIds'
 				mergeUserIdsField 'usersDone'
 
-				if hasChanged val, calendarItem
-					if not val.updateInfo? and
-					hasChanged val, calendarItem, UPDATE_CHECK_OMITTED
+				if hasChanged old, calendarItem
+					if not old.updateInfo? and
+					hasChanged old, calendarItem, UPDATE_CHECK_OMITTED
 						calendarItem.updateInfo =
 							when: new Date()
-							diff: diffObjects val, calendarItem, UPDATE_CHECK_OMITTED
+							diff: diffObjects old, calendarItem, UPDATE_CHECK_OMITTED
 
-					CalendarItems.update val._id, { $set: calendarItem }, (->)
+					CalendarItems.update old._id, { $set: calendarItem }, (->)
 			else
 				CalendarItems.insert calendarItem
 
