@@ -326,7 +326,12 @@ updateCalendarItems = (userId, from, to) ->
 				fileKeyChanges[id] ? id
 
 			if old?
-				CalendarItem.schema.clean calendarItem
+				# clean `calendarItem`, this is way faster than using the `clean` method
+				# of the schema.
+				delete calendarItem.updateInfo
+				for [ key, val ] in _.pairs calendarItem
+					switch val
+						when '' then calendarItem[key] = null
 
 				mergeUserIdsField = (fieldName) ->
 					calendarItem[fieldName] = _(old[fieldName])
@@ -336,7 +341,7 @@ updateCalendarItems = (userId, from, to) ->
 				mergeUserIdsField 'userIds'
 				mergeUserIdsField 'usersDone'
 
-				if hasChanged old, calendarItem
+				if hasChanged old, calendarItem, [ 'updateInfo' ]
 					if not old.updateInfo? and
 					hasChanged old, calendarItem, UPDATE_CHECK_OMITTED
 						calendarItem.updateInfo =
