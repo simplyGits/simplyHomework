@@ -308,12 +308,13 @@ updateCalendarItems = (userId, from, to) ->
 				fetchedBy: externalService.name
 				externalId: calendarItem.externalId
 
-			old ?= CalendarItems.findOne
-				fetchedBy: externalService.name
-				userIds: userId
-				classId: calendarItem.classId
-				startDate: calendarItem.startDate
-				endDate: calendarItem.endDate
+			unless calendarItem.fullDay
+				old ?= CalendarItems.findOne
+					fetchedBy: externalService.name
+					userIds: userId
+					classId: calendarItem.classId
+					startDate: calendarItem.startDate
+					endDate: calendarItem.endDate
 
 			content = calendarItem.content
 			if content? and (not content.type? or content.type is 'homework')
