@@ -12,11 +12,11 @@ send = (content, updateId) ->
 		if e?.error is 'too-many-requests'
 			error.set 'rate-limited'
 
-		Meteor.clearTimeout ratelimitErrorTimeout
-		ratelimitErrorTimeout = Meteor.setTimeout (->
-			error.set ''
-			ratelimitErrorTimeout = undefined
-		), e.details.timeToReset + 10 # extra timing just to be sure.
+			Meteor.clearTimeout ratelimitErrorTimeout
+			ratelimitErrorTimeout = Meteor.setTimeout (->
+				error.set ''
+				ratelimitErrorTimeout = undefined
+			), e.details.timeToReset + 10 # extra timing just to be sure.
 
 	if updateId?
 		Meteor.call 'updateChatMessage', content, updateId, cb
