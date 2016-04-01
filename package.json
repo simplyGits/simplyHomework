@@ -1,8 +1,7 @@
 {
   "name": "simplyhomework",
   "version": "1.0.0",
-  "description": "",
-  "main": "mobile-config.js",
+  "description": "Education with a little more swag.",
   "dependencies": {
     "fibers": "^1.0.10",
     "request": "^2.69.0",
@@ -18,7 +17,7 @@
     "type": "git",
     "url": "git+https://github.com/lieuwex/simplyhomework.git"
   },
-  "author": "Lieuwe Rooijakkers <lieuwerooijakkers@gmail.com> (http://www.lieuwe.xyz/)",
+  "author": "simply <hello@simplyapps.nl> (http://www.simplyapps.nl/)",
   "license": "UNLICENSED",
   "bugs": {
     "url": "https://github.com/lieuwex/simplyhomework/issues"
