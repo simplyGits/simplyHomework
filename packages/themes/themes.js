@@ -35,12 +35,6 @@ if (!Package.appcache) {
 				);
 			},
 		},
-		{
-			name: 'aprilfools2016',
-			func: function () {
-				return Date.today().getTime() === 1459461600000;
-			},
-		},
 	];
 
 	WebApp.connectHandlers.use(function (req, res, next) {
