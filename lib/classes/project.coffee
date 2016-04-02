@@ -1,6 +1,6 @@
 projectTransform = (p) ->
+	p = _.extend new Project, p
 	_.extend p,
-		__class: -> Classes.findOne p.classId
 		__borderColor: (
 			now = new Date
 			if p.deadline?
@@ -15,9 +15,8 @@ projectTransform = (p) ->
 			if p.deadline?
 				Helpers.cap Helpers.formatDateRelative p.deadline, yes
 		)
-		__chatRoom: -> ChatRooms.findOne projectId: p._id
 		__lastChatMessage: ->
-			chatRoom = @__chatRoom()
+			chatRoom = @getChatRoom()
 			if chatRoom?
 				ChatMessages.findOne {
 					chatRoomId: chatRoom._id
@@ -69,6 +68,18 @@ class @Project
 		# @default false
 		###
 		@finished = no
+
+	###*
+	# @method getClass
+	# @return {SchoolClass}
+	###
+	getClass: -> Classes.findOne @classId
+
+	###*
+	# @method getChatRoom
+	# @return {ChatRoom}
+	###
+	getChatRoom: -> ChatRooms.findOne projectId: @_id
 
 	@schema: new SimpleSchema
 		name:

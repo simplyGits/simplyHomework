@@ -75,6 +75,7 @@ Meteor.publish null, ->
 		Schools.find { _id: user.profile.schoolId }, fields:
 			externalInfo: 0
 
+		# REVIEW: should we move this projects cursor to a seperate publishment?
 		Projects.find {
 			participants: userId
 			finished: no

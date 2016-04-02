@@ -59,7 +59,7 @@ Template.projectView.onCreated ->
 				@subscribe 'usersData', p.participants
 				@subscribe 'status', _.reject p.participants, Meteor.userId()
 
-				c = p.__class()
+				c = p.getClass()
 				slide c._id if c?
 				setPageOptions
 					title: p.name
@@ -185,7 +185,7 @@ Template.changeProjectModal.events
 		description = $('#changeDescriptionInput').val().trim()
 		deadline = $('#changeDeadlineInput').data('DateTimePicker').date().toDate()
 		className = $('#changeClassInput').val()
-		classId = Classes.findOne(name: className)?._id ? @__class()?._id
+		classId = Classes.findOne(name: className)?._id ? @getClass()?._id
 
 		Projects.update @_id, $set: {
 			name

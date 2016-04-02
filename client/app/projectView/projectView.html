@@ -13,7 +13,7 @@
 			<div class="projectInfoSubContainer">
 				<b>Deadline</b>: <span style="color: {{overDue}}">{{__friendlyDeadline}}</span>
 				<br>
-				{{#with __class.name}}
+				{{#with getClass.name}}
 					<b>Vak</b>: {{this}}
 					<br>
 				{{/with}}
@@ -169,7 +169,7 @@
 						<div id="changeClassGroup" class="group">
 							<label for="changeClassInput">Vak</label>
 							<input
-								type="text" id="changeClassInput" value="{{__class.name}}"
+								type="text" id="changeClassInput" value="{{getClass.name}}"
 								spellcheck="off" autocomplete="off" data-source="classes" data-value-key="name"
 							/>
 						</div>
