@@ -7,7 +7,7 @@ Meteor.startup ->
 
 	Accounts.emailTemplates.resetPassword.subject = (user) -> 'simplyHomework | Wachtwoord'
 	Accounts.emailTemplates.resetPassword.html = (user, url) ->
-		getMail """
+		getMail 'Wachtwoord Vergeten', """
 			Hey #{user.profile.firstName}!
 
 			Je was je wachtwoord vergeten, hier krijg je een nieuwe:
@@ -23,7 +23,7 @@ Meteor.startup ->
 
 	Accounts.emailTemplates.verifyEmail.subject = (user) -> 'simplyHomework | Nieuw Account'
 	Accounts.emailTemplates.verifyEmail.html = (user, url) ->
-		getMail """
+		getMail 'Nieuw Account', """
 			Hey!
 
 			Welkom bij simplyHomework! Klik, om je account te verifiëren, op deze link:
