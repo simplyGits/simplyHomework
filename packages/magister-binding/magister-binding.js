@@ -802,13 +802,42 @@
 		return fut.wait();
 	};
 
+	/**
+	 * Compiles the given body: render TeX equations and convert markdown to html
+	 * @method compileMessageBody
+	 * @param {String} body
+	 * @return {String}
+	 */
+	function compileMessageBody (body) {
+		check(body, String);
+
+		const base = 'https://latex.codecogs.com/png.latex?';
+		const genimg = (url) => `<img src="${url}"></img>`;
+
+		// inline
+		body = body.replace(/\$\$ *(.+?) *\$\$/g, function (match, expr) {
+			const url = base + encodeURIComponent(`\\inline ${expr}`);
+			return genimg(url);
+		});
+
+		// multiline
+		body = body.replace(/^\$\$$\n((\n|.)+?)\n^\$\$$/gm, function (match, expr) {
+			const url = base + encodeURIComponent(`\\dpi{130} \\large ${expr}`);
+			return `\n\n${genimg(url)}\n\n`;
+		});
+
+		body = marked(body);
+
+		return body;
+	}
+
 	MagisterBinding.sendMessage = function (subject, body, recipients, userId) {
 		check(subject, String);
 		check(body, String);
 		check(recipients, [String]);
 		check(userId, String);
 
-		body = marked(body);
+		body = compileMessageBody(body);
 
 		const fut = new Future();
 		getMagisterObject(userId).composeAndSendMessage(subject, body, recipients, function (e) {
@@ -835,7 +864,7 @@
 		check(body, String);
 		check(userId, String);
 
-		body = marked(body);
+		body = compileMessageBody(body);
 
 		const fut = new Future();
 		const magister = getMagisterObject(userId);
