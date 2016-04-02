@@ -1,0 +1,23 @@
+@require "../vars"
+
+.projectsNotice
+	.project
+		position: relative
+		z-index: 0
+
+		padding = 5px
+		fullNoticeWidth()
+		padding-top: padding
+		padding-bottom: padding
+		margin-bottom: 5px
+
+		cursor: pointer
+
+		.back
+			absolute: top left right bottom
+			z-index: -1
+			opacity: .2
+
+		.name
+			font-weight: bold
+			font-size: 115%

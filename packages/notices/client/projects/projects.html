@@ -1,0 +1,19 @@
+<template name="projectsNotice">
+	<div class="projectsNotice">
+		{{#each this}}
+			{{> projectsNotice_project}}
+		{{/each}}
+	</div>
+</template>
+
+<template name="projectsNotice_project">
+	<div class="project">
+		<div class="back" style="background-color: {{backgroundColor}}"></div>
+		<div class="deadline">{{__friendlyDeadline}}</div>
+		<div class="name">{{name}}</div>
+		{{#if class}}
+			<div class="class">{{class.name}}</div>
+		{{/if}}
+	</div>
+</template>
+

@@ -90,6 +90,10 @@ Package.onUse(function(api) {
 		'client/messages/messages.coffee',
 
 		'client/sick/sick.coffee',
+
+		'client/projects/projects.html',
+		'client/projects/projects.styl',
+		'client/projects/projects.coffee',
 	], 'client');
 	api.addFiles([
 		'server/emails.js',
