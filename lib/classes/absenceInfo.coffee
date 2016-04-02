@@ -47,5 +47,5 @@ class @AbsenceInfo
 			type: String
 			optional: yes
 
-@Absences = new Meteor.Collection 'absences'
+@Absences = new Mongo.Collection 'absences'
 @Absences.attachSchema AbsenceInfo.schema

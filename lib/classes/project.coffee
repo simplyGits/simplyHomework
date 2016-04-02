@@ -116,5 +116,5 @@ class @Project
 				if not @isFromTrustedCode and @isInsert then no
 				else @value
 
-@Projects = new Meteor.Collection 'projects', transform: (p) -> projectTransform p
+@Projects = new Mongo.Collection 'projects', transform: (p) -> projectTransform p
 @Projects.attachSchema Project.schema

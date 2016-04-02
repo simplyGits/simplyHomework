@@ -54,5 +54,5 @@ class @ReportItem
 		'resolvedInfo.at'
 			type: Date
 
-@ReportItems = new Meteor.Collection 'reportItems'
+@ReportItems = new Mongo.Collection 'reportItems'
 @ReportItems.attachSchema ReportItem.schema

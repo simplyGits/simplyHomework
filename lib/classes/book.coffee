@@ -54,5 +54,5 @@ class @Book
 			type: Object
 			blackbox: yes
 
-@Books = new Meteor.Collection 'books'
+@Books = new Mongo.Collection 'books'
 @Books.attachSchema Book.schema

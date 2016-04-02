@@ -22,6 +22,7 @@ Package.onUse(function(api) {
 		'check',
 	]);
 	api.use([
+		'mongo',
 		'ejson',
 		'meteorhacks:picker',
 		'ms',

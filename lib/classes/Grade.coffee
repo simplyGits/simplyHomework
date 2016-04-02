@@ -263,7 +263,7 @@ class @GradePeriod
 
 	toString: -> @name
 
-@Grades = new Meteor.Collection 'grades', transform: (g) ->
+@Grades = new Mongo.Collection 'grades', transform: (g) ->
 	if Meteor.isServer
 		g
 	else

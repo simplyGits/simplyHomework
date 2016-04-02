@@ -232,5 +232,5 @@ class @CalendarItem
 			blackbox: yes
 			optional: yes
 
-@CalendarItems = new Meteor.Collection 'calendarItems', transform: (c) -> _.extend new CalendarItem, c
+@CalendarItems = new Mongo.Collection 'calendarItems', transform: (c) -> _.extend new CalendarItem, c
 @CalendarItems.attachSchema CalendarItem.schema

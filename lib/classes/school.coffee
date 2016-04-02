@@ -38,5 +38,5 @@ class @School
 			type: Object
 			blackbox: yes
 
-@Schools = new Meteor.Collection 'schools', transform: (s) -> _.extend new School, s
+@Schools = new Mongo.Collection 'schools', transform: (s) -> _.extend new School, s
 @Schools.attachSchema School.schema

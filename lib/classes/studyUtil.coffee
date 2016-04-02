@@ -96,5 +96,5 @@ class @StudyUtil
 			type: Date
 			optional: yes
 
-@StudyUtils = new Meteor.Collection 'studyUtils', transform: (su) -> _.extend new StudyUtil, su
+@StudyUtils = new Mongo.Collection 'studyUtils', transform: (su) -> _.extend new StudyUtil, su
 @StudyUtils.attachSchema StudyUtil.schema

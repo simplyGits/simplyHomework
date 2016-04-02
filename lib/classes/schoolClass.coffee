@@ -125,5 +125,5 @@ class @SchoolClass
 			type: Object
 			blackbox: yes
 
-@Classes = new Meteor.Collection 'classes', transform: (c) -> classTransform c
+@Classes = new Mongo.Collection 'classes', transform: (c) -> classTransform c
 @Classes.attachSchema SchoolClass.schema

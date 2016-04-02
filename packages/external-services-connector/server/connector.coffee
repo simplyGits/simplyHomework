@@ -1,4 +1,4 @@
-ExternalServiceErrors = new Meteor.Collection 'externalServiceErrors'
+ExternalServiceErrors = new Mongo.Collection 'externalServiceErrors'
 
 ###*
 # A static class that connects to and retrieves data from
