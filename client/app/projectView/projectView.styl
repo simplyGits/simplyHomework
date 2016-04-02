@@ -23,8 +23,13 @@ div.projectInfoSubContainer
 	width: 65%
 	display: inline-block
 
-span.projectInfoDescription
-	width: 75%
+	.deadline.overdue
+		color: darkred
+
+	.description
+		width: 75%
+		+mobile()
+			width: 100%
 
 div#chatButton
 	margin-top: 15px
@@ -204,9 +209,6 @@ div.projectHeader:hover span#changeProjectIcon
 		text-align: center !important
 
 	div.projectInfoSubContainer
-		width: 100%
-
-	span.projectInfoDescription
 		width: 100%
 
 	div.chatButton

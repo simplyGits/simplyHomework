@@ -106,7 +106,11 @@ Template.projectView.helpers
 	persons: -> getParticipants()
 	#isOwner: -> Router.current().data().ownerId is Meteor.userId()
 
-	overDue: -> if not @deadline? or @deadline > new Date() then "initial" else "darkred"
+	overdue: ->
+		if @deadline? and @deadline < new Date
+			'overdue'
+		else
+			''
 
 Template.projectView.events
 	"click #addFileIcon": ->

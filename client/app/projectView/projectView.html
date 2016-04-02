@@ -11,13 +11,13 @@
 
 		<div class="projectInfoContainer">
 			<div class="projectInfoSubContainer">
-				<b>Deadline</b>: <span style="color: {{overDue}}">{{__friendlyDeadline}}</span>
+				<b>Deadline</b>: <span class="deadline {{overdue}}">{{__friendlyDeadline}}</span>
 				<br>
 				{{#with getClass.name}}
 					<b>Vak</b>: {{this}}
 					<br>
 				{{/with}}
-				<b>Beschrijving</b>: <span class="projectInfoDescription">{{description}}</span>
+				<b>Beschrijving</b>: <span class="description">{{description}}</span>
 			</div>
 
 			<div id="chatButton">
