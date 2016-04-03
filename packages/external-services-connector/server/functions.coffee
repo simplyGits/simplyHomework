@@ -429,6 +429,7 @@ getPersons = (query, type = undefined, userId) ->
 
 		# cache newely fetched items by type.
 		for type in types
+			items = _.filter fetched, { type }
 			personCache.push
 				query: query
 				userId: userId
