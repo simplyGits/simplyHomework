@@ -420,12 +420,12 @@ getPersons = (query, type = undefined, userId) ->
 			fetched = fetched.concat service.getPersons(userId, query, types)
 
 		# cache newely fetched items by type.
-		for [ type, items ] in _.pairs(_.groupBy fetched, 'type')
+		for type in types
 			personCache.push
 				query: query
 				userId: userId
 				type: type
-				items: items
+				items: _.filter fetched, { type }
 				time: _.now()
 
 		result = result.concat fetched
