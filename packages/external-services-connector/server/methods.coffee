@@ -94,11 +94,12 @@ Meteor.methods
 
 		undefined
 
-	'replyMessage': (id, all, body) ->
+	'replyMessage': (id, all, body, draftId = undefined) ->
 		@unblock()
 		check id, String
 		check all, Boolean
 		check body, String
+		check draftId, Match.Optional String
 
 		userId = @userId
 		service = _.find Services, (s) -> s.name is 'magister' and s.active userId
@@ -106,3 +107,10 @@ Meteor.methods
 			throw new Meteor.Error 'magister-only'
 
 		replyMessage id, all, body, 'magister', userId
+
+		if draftId?
+			Drafts.remove
+				_id: draftId
+				senderId: @userId
+
+		undefined
