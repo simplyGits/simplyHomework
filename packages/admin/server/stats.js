@@ -5,7 +5,7 @@ const lookup = Meteor.wrapAsync(usage.lookup, usage)
 
 // when we actually have multiple workers this should be determined in a way.
 const WORKER_ID = 1
-const POLL_INTERVAL = 1000 * 5 // 5 seconds
+const POLL_INTERVAL = ms.seconds(5)
 
 Workers = new Mongo.Collection('admin_workers')
 

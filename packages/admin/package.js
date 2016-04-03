@@ -18,6 +18,7 @@ Package.onUse(function(api) {
 		'tmeasday:publish-counts',
 		'check',
 		'mongo',
+		'ms',
 	], 'server')
 	api.addFiles([
 		'server/publish.js',
