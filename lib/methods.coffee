@@ -141,22 +141,11 @@ Meteor.methods
 				'profile.firstName': firstName
 				'profile.lastName': firstName
 
-	saveMessageDraft: (subject, body, recipients, service, draftId) ->
-		check subject, String
-		check body, String
-		check recipients, [String]
-		check service, String
+	saveMessageDraft: (draft, draftId) ->
+		check draft, Object
 
 		check draftId, Match.OneOf String, null
 		draftId ?= undefined
-
-		draft = new Draft(
-			subject
-			body
-			@userId
-		)
-		draft.recipients = recipients
-		draft.senderService = service
 
 		if draftId?
 			prevDraft = Drafts.findOne

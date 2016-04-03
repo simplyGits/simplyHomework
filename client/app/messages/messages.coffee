@@ -192,12 +192,23 @@ Template['message_compose'].events
 		recipients = document.getElementById('recipients').value
 		body = document.getElementById('message').value.trim()
 
-		saveDraft(
+		draft = new Draft(
 			subject
 			body
-			recipients.split(';').map (r) -> r.trim()
-			'magister'
-			FlowRouter.getQueryParam 'draftId'
+			Meteor.userId()
+		)
+		draft.recipients = recipients.split(';').map (r) -> r.trim()
+		draft.senderService = 'magister'
+
+		draftId = FlowRouter.getQueryParam 'draftId'
+		unless draftId?
+			FlowRouter.withReplaceState ->
+				FlowRouter.setQueryParams draftId: draft._id
+			draftId = draft._id
+
+		saveDraft(
+			draft
+			draftId
 		)
 
 	'click #send': ->
