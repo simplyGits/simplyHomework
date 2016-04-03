@@ -206,8 +206,8 @@ ChatMiddlewares.attach 'clickable names', 'insert', (message) ->
 						.last()
 				) ?
 
-				# If nobody has been found, try to find somebody else than the creator
-				# of the message
+				# If nobody has been found, try to find somebody else other than the
+				# creator of the message
 				_.find(users, (u) -> u._id isnt message.creatorId) ?
 
 				# If nobody has been found, just take the first user
