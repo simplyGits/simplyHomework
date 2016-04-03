@@ -13,8 +13,8 @@
 			<div class="projectInfoSubContainer">
 				<b>Deadline</b>: <span class="deadline {{overdue}}">{{__friendlyDeadline}}</span>
 				<br>
-				{{#with getClass.name}}
-					<b>Vak</b>: {{this}}
+				{{#with getClass}}
+					<b>Vak</b>: <a href="{{pathFor 'classView' id=_id}}">{{name}}</a>
 					<br>
 				{{/with}}
 				<b>Beschrijving</b>: <span class="description">{{description}}</span>
