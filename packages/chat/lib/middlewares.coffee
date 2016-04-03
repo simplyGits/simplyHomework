@@ -152,6 +152,7 @@ ChatMiddlewares.attach 'add hidden fields', 'client', (cm) ->
 			}, {
 				limit: 3
 			}
+		__rawString: cm._originalContent.replace /<[^>]+>/g, ''
 
 escapeMap = [
 	[ /</g, '&lt;' ]
