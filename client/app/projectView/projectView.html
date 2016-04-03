@@ -17,7 +17,9 @@
 					<b>Vak</b>: <a href="{{pathFor 'classView' id=_id}}">{{name}}</a>
 					<br>
 				{{/with}}
-				<b>Beschrijving</b>: <span class="description">{{description}}</span>
+				{{#with description}}
+					<b>Beschrijving</b>: <span class="description">{{this}}</span>
+				{{/with}}
 			</div>
 
 			<div id="chatButton">
