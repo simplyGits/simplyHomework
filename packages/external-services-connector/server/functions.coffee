@@ -4,6 +4,14 @@ STUDYUTILS_INVALIDATION_TIME     = ms.minutes 20
 CALENDAR_ITEMS_INVALIDATION_TIME = ms.minutes 10
 PERSON_CACHE_INVALIDATION_TIME   = ms.minutes 15
 
+handleCollErr = (e) ->
+	if e?
+		Kadira.trackError(
+			'external-services-connector'
+			e.message
+			{ stacks: e.stack }
+		)
+
 clone = (obj) -> EJSON.parse EJSON.stringify obj
 omit = (obj, keys) ->
 	if _.isArray obj
@@ -72,7 +80,7 @@ diffAndInsertFiles = (userId, files) ->
 			id = val._id
 
 			if hasChanged val, file
-				Files.update val._id, { $set: file }, (->)
+				Files.update val._id, { $set: file }, handleCollErr
 		else
 			id = Files.insert file
 
@@ -138,7 +146,7 @@ updateGrades = (userId, forceUpdate = no) ->
 
 			if val?
 				if hasChanged val, grade, [ 'dateTestMade' ]
-					Grades.update val._id, { $set: grade }, (->)
+					Grades.update val._id, { $set: grade }, handleCollErr
 			else
 				inserts.push grade
 
@@ -213,9 +221,9 @@ updateStudyUtils = (userId, forceUpdate = no) ->
 
 				if hasChanged val, studyUtil, UPDATE_CHECK_OMITTED
 					studyUtil.updatedOn = new Date()
-					StudyUtils.update val._id, { $set: studyUtil }, (->)
+					StudyUtils.update val._id, { $set: studyUtil }, handleCollErr
 				else if studyUtil.userIds.length isnt val.userIds.length
-					StudyUtils.update val._id, { $set: studyUtil }, (->)
+					StudyUtils.update val._id, { $set: studyUtil }, handleCollErr
 			else
 				inserts.push studyUtil
 
@@ -349,9 +357,9 @@ updateCalendarItems = (userId, from, to) ->
 							when: new Date()
 							diff: diffObjects old, calendarItem, UPDATE_CHECK_OMITTED
 
-					CalendarItems.update old._id, { $set: calendarItem }, (->)
+					CalendarItems.update old._id, { $set: calendarItem }, handleCollErr
 			else
-				CalendarItems.insert calendarItem, (->)
+				CalendarItems.insert calendarItem, handleCollErr
 
 		for absenceInfo in result.absenceInfos
 			val = _.find absences,
@@ -359,7 +367,7 @@ updateCalendarItems = (userId, from, to) ->
 
 			if val?
 				if hasChanged val, absenceInfo
-					Absences.update val._id, { $set: absenceInfo }, (->)
+					Absences.update val._id, { $set: absenceInfo }, handleCollErr
 			else
 				Absences.insert absenceInfo
 
