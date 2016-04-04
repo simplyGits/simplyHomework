@@ -25,6 +25,10 @@
 
 		if items.length > 0
 			# REVIEW: Use mean?
+			# REVIEW: Instead of using a time threshold we can also check if the
+			# previous lesson has a schoolHour at least 2 less than the next lesson.
+			# [4] (here we have a inbetween hour)  [6]
+			# [4] (here we have 2 inbetween hours) [7]
 			time-threshold = items.0.end-date.get-time! - items.0.start-date.get-time!
 
 			end-prev = school-hour-prev = undefined
