@@ -123,7 +123,7 @@ ChatMiddlewares.attach 'emojione', 'client', (message) ->
 ChatMiddlewares.attach 'kappa', 'client', (message) ->
 	unless getUserField Meteor.userId(), 'settings.devSettings.noChatEmojis'
 		message.content = message.content.replace(
-			/:kappa:/g
+			/:kappa:/ig
 			'<img class="emojione" style="height: 4ex" src="/packages/chat/images/kappa.png"></img>'
 		)
 	message
