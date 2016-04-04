@@ -328,6 +328,7 @@ updateCalendarItems = (userId, from, to) ->
 			if old?
 				# clean `calendarItem`, this is way faster than using the `clean` method
 				# of the schema.
+				delete calendarItem._id
 				delete calendarItem.updateInfo
 				for [ key, val ] in _.pairs calendarItem
 					switch val
