@@ -1,0 +1,14 @@
+<template name="updates_notice">
+	<div id="updates">
+		{{#each this}}
+			{{> updates_notice_update}}
+		{{/each}}
+	</div>
+</template>
+
+<template name="updates_notice_update">
+	<div>
+		<header>{{header}}</header>
+		<article>{{body}}</article>
+	</div>
+</template>
