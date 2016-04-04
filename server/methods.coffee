@@ -266,14 +266,16 @@ Meteor.methods
 
 					res.push "Je deelt de meeste lessen met #{link}"
 
-			grades = GradeFunctions.getAllGrades yes, userId
-			if grades.length > 0
-				mean = _(grades)
-					.pluck 'grade'
-					.compact()
-					.mean()
-					.value()
-
+			mean = Grades.aggregate([{
+				$match:
+					ownerId: userId
+					isEnd: yes
+			}, {
+				$group:
+					_id: null
+					mean: { $avg: "$grade" }
+			}])[0].mean
+			if mean?
 				res.push "Het gemiddelde van je eindcijfers is #{mean.toFixed(1).replace '.', ','}"
 
 			statsCache.set userId, res
