@@ -351,7 +351,7 @@ updateCalendarItems = (userId, from, to) ->
 
 					CalendarItems.update old._id, { $set: calendarItem }, (->)
 			else
-				CalendarItems.insert calendarItem
+				CalendarItems.insert calendarItem, (->)
 
 		for absenceInfo in result.absenceInfos
 			val = _.find absences,
