@@ -2,6 +2,7 @@ Template.resetPass.events
 	'submit': (event) ->
 		event.preventDefault()
 		val = document.getElementById('passwordInput').value
+		return if val.length is 0
 
 		Accounts.resetPassword FlowRouter.getParam('token'), val, (err) ->
 			if err?
