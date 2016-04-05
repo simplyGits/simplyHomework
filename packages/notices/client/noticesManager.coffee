@@ -61,15 +61,19 @@ class NoticeManager
 							handle = subs.subscribe arguments...
 							handles.push handle
 							handle
+					unless _.isArray res
+						res = if res then [ res ] else []
 
-					if res
-						NoticeManager.notices.upsert {
-							name: provider.name
-						}, _.extend res,
-							name: provider.name
-							ready: undefined
-					else
+					if res.length is 0
 						NoticeManager.notices.remove name: provider.name
+					else for item in res
+						id = item.id ? provider.name
+						NoticeManager.notices.upsert id,
+							_.extend item,
+								_id: id
+								name: provider.name
+								ready: undefined
+
 				catch e
 					console.warn "Notice provider '#{provider.name}' errored.", e
 					Kadira.trackError 'notice-provider-failure', e.toString(), stacks: JSON.stringify e
