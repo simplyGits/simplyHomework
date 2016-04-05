@@ -12,7 +12,7 @@ items = [{
 	dbField: 'settings.notifications.email.newGrade'
 	default: yes
 }, {
-	description: 'Notificatie tonen bij nieuw bericht'
+	description: 'Notificatie tonen bij nieuw chatbericht'
 	short: 'notif_chatMessage'
 	dbField: 'settings.notifications.notif.chat'
 	default: yes
