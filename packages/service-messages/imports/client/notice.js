@@ -6,9 +6,12 @@ export default function () {
 		hidden: false,
 	}).fetch()
 
-	return updates.length > 0 && {
-		template: 'updates_notice',
-		header: 'simplyHomework service berichten',
-		data: updates,
-	}
+	return updates.map((update) => {
+		return {
+			id: update._id,
+			template: 'updates_notice',
+			header: update.header,
+			data: update,
+		}
+	})
 }

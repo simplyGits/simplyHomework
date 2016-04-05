@@ -15,7 +15,6 @@ Package.onUse(function(api) {
 	api.use([
 		'simply:notices',
 		'templating',
-		'mquandalle:stylus',
 		'handlebars',
 	], 'client')
 	api.use([
@@ -24,7 +23,6 @@ Package.onUse(function(api) {
 
 	api.addFiles([
 		'client/notice.html',
-		'client/notice.styl',
 	], 'client')
 
 	api.mainModule('server.js', 'server')
