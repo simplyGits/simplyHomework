@@ -51,7 +51,6 @@ class NoticeManager
 		# REVIEW: Should we register if there already is an running computation and
 		# let only one be runnable at the same time?
 
-		ready = new ReactiveVar no
 		handles = []
 		for provider in @_providers
 			Tracker.autorun do (provider) -> ->
@@ -78,10 +77,6 @@ class NoticeManager
 					console.warn "Notice provider '#{provider.name}' errored.", e
 					Kadira.trackError 'notice-provider-failure', e.toString(), stacks: JSON.stringify e
 
-		Tracker.autorun ->
-			if _.every(handles, (handle) -> handle.ready())
-				ready.set yes
-
-		ready: -> ready.get()
+		ready: -> _.every handles, (handle) -> handle.ready()
 
 @NoticeManager = NoticeManager
