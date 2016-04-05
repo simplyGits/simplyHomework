@@ -79,11 +79,12 @@ Meteor.startup ->
 				mailSentAt: null
 
 		if ++val.times >= 5 and not val.mailSentAt?
-			sendMail user, 'Account mogelijk in gevaar', """
-				Hey #{user.profile.firstName},
-
-				Pas heeft iemand in een korte tijd meerdere keren een fout wachtwoord ingevuld.
-				Als jij je wachtwoord vergeten bent kan je het <a href='#{Meteor.absoluteUrl()}forgot'>hier</a> veranderen.
-			"""
+			Meteor.defer ->
+				sendMail user, 'Account mogelijk in gevaar', """
+					Hey #{user.profile.firstName},
+	
+					Pas heeft iemand in een korte tijd meerdere keren een fout wachtwoord ingevuld.
+					Als jij je wachtwoord vergeten bent kan je het <a href='#{Meteor.absoluteUrl()}forgot'>hier</a> veranderen.
+				"""
 
 			val.mailSentAt = _.now()
