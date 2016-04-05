@@ -167,11 +167,9 @@ Template['message_current_message'].onCreated ->
 			if Meteor.userId() not in message.readBy
 				Meteor.call 'markMessageRead', id
 
-saveDraft = _.throttle ((args...) ->
+saveDraft = _.debounce ((args...) ->
 	Meteor.call 'saveMessageDraft', args...
-), 850,
-	leading: yes
-	trailing: no
+), 500
 
 Template['message_compose'].helpers
 	subject: ->
