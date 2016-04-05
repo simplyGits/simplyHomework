@@ -84,9 +84,11 @@
 
 <template name="messages_message_row">
 	<div class="message">
-		<header>
-			{{subject}}
-		</header>
+		{{#if subject}}
+			<header>{{subject}}</header>
+		{{else}}
+			<header class="none">geen onderwerp.</header>
+		{{/if}}
 		{{#if isDraft}}
 			<div class="lastEditTime">
 				<span class="dim">Laatst bewerkt op:</span> {{dateFormat 'dddd D MMMM YYYY HH:mm' lastEditTime}}
