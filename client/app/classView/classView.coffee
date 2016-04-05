@@ -174,11 +174,12 @@ Template.classView.events
 
 	'click #nextTestButton': ->
 		test = getNextTest()
-		FlowRouter.go(
-			'calendar'
-			{ time: +test.startDate }
-			{ openCalendarItemId: test._id }
-		)
+		if test?
+			FlowRouter.go(
+				'calendar'
+				{ time: +test.startDate }
+				{ openCalendarItemId: test._id }
+			)
 
 	'click #projectsButton': ->
 		showModal 'projectsModal'
