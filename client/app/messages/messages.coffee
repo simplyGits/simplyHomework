@@ -1,3 +1,15 @@
+Meteor.startup ->
+	Tracker.autorun ->
+		return unless Meteor.userId()?
+
+		raw = localStorage.getItem('pending_drafts') ? '[]'
+		drafts = EJSON.parse raw
+
+		for draft in drafts
+			Meteor.call 'saveMessageDraft', draft
+
+		localStorage.removeItem 'pending_drafts'
+
 getCurrentFolder = -> FlowRouter.getParam 'folder'
 getMessages = ->
 	folder = getCurrentFolder()
@@ -167,8 +179,16 @@ Template['message_current_message'].onCreated ->
 			if Meteor.userId() not in message.readBy
 				Meteor.call 'markMessageRead', id
 
-saveDraft = _.debounce ((args...) ->
-	Meteor.call 'saveMessageDraft', args...
+saveDraft = _.debounce ((draft) ->
+	localStorage.setItem 'pending_drafts',
+		EJSON.stringify (
+			raw = localStorage.getItem('pending_drafts') ? '[]'
+			x = _.reject EJSON.parse(raw), _id: draft._id
+			x.push draft
+			x
+		)
+
+	Meteor.call 'saveMessageDraft', draft
 ), 500
 
 Template['message_compose'].helpers
@@ -199,15 +219,13 @@ Template['message_compose'].events
 		draft.senderService = 'magister'
 
 		draftId = FlowRouter.getQueryParam 'draftId'
-		unless draftId?
+		if draftId?
+			draft._id = draftId
+		else
 			FlowRouter.withReplaceState ->
 				FlowRouter.setQueryParams draftId: draft._id
-			draftId = draft._id
 
-		saveDraft(
-			draft
-			draftId
-		)
+		saveDraft draft
 
 	'click #send': ->
 		subject = document.getElementById('subject').value

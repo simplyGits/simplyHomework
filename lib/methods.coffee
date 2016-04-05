@@ -141,21 +141,16 @@ Meteor.methods
 				'profile.firstName': firstName
 				'profile.lastName': firstName
 
-	saveMessageDraft: (draft, draftId) ->
+	saveMessageDraft: (draft) ->
 		check draft, Object
 
-		check draftId, Match.OneOf String, null
-		draftId ?= undefined
+		prevDraft = Drafts.findOne
+			_id: draft._id
+			senderId: @userId
 
-		if draftId?
-			prevDraft = Drafts.findOne
-				_id: draftId
-				senderId: @userId
+		if prevDraft?
+			Drafts.update draft._id, draft
+		else
+			Drafts.insert draft
 
-			if prevDraft?
-				draft._id = prevDraft._id
-				Drafts.update draft._id, draft
-				return undefined
-
-		Drafts.insert draft
 		undefined
