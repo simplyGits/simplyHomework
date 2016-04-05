@@ -1,5 +1,7 @@
 Future = Npm.require 'fibers/future'
 
+# REVIEW: is this actually useful?
+###
 SyncedCron.add
 	# TODO: exclude premium users
 	name: 'Clear inactive users'
@@ -24,6 +26,7 @@ SyncedCron.add
 		result = "Warned #{usersWarned.length} inactive users and removed #{amountUsersRemoved} users."
 		console.log result
 		result
+###
 
 SyncedCron.add
 	# OPTIMIZE
