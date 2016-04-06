@@ -8,5 +8,4 @@ NoticeManager.provide 'sick', ->
 			/\bziek(te)?\b/i.test info.description
 		)
 	if sick
-		template: 'sick'
 		header: "Beterschap #{Meteor.user().profile.firstName}!"
