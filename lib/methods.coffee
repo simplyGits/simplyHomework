@@ -141,16 +141,29 @@ Meteor.methods
 				'profile.firstName': firstName
 				'profile.lastName': firstName
 
+	###*
+	# @method saveMessageDraft
+	# @param {Draft} draft
+	###
 	saveMessageDraft: (draft) ->
 		check draft, Object
+		fieldEmpty = (key) ->
+			val = draft[key]
+			val = val.trim() if _.isString val
+			val.length is 0
 
-		prevDraft = Drafts.findOne
-			_id: draft._id
-			senderId: @userId
-
-		if prevDraft?
-			Drafts.update draft._id, draft
+		if _.all [ 'subject', 'body', 'recipients' ], fieldEmpty
+			Drafts.remove
+				_id: draft._id
+				senderId: @userId
 		else
-			Drafts.insert draft
+			prevDraft = Drafts.findOne draft._id
+			if prevDraft?
+				if prevDraft.senderId isnt @userId
+					throw new Meteor.Error 'not-owner'
+				else
+					Drafts.update draft._id, draft
+			else
+				Drafts.insert draft
 
 		undefined
