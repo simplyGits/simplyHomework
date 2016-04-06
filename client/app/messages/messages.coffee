@@ -215,7 +215,11 @@ Template['message_compose'].events
 			body
 			Meteor.userId()
 		)
-		draft.recipients = recipients.split(';').map (r) -> r.trim()
+		draft.recipients = _(recipients)
+			.split ';'
+			.map (r) -> r.trim()
+			.reject (r) -> r.length is 0
+			.value()
 		draft.senderService = 'magister'
 
 		draftId = FlowRouter.getQueryParam 'draftId'
