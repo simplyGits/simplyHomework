@@ -57,6 +57,6 @@ Template.lessonsOverview.helpers
 		items = getItems()[0]
 		_.reject items, '__classInfo.hidden'
 
-	hidden: ->
+	amountHidden: ->
 		items = getItems()[0]
 		_.filter(items, '__classInfo.hidden').length
