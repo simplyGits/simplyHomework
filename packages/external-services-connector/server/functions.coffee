@@ -247,7 +247,6 @@ updateCalendarItems = (userId, from, to) ->
 	check from, Date
 	check to, Date
 	UPDATE_CHECK_OMITTED = [
-		'updatedOn'
 		'userIds'
 		'usersDone'
 		'content'
