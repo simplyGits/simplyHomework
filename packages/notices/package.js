@@ -17,6 +17,7 @@ Package.onUse(function(api) {
 		'check',
 		'stevezhu:lodash@3.10.1',
 		'mongo',
+		'modules',
 	]);
 	api.use([
 		'tracker',
@@ -31,7 +32,6 @@ Package.onUse(function(api) {
 	api.use([
 		'email',
 		'emails',
-		'modules',
 		'ecmascript',
 		'percolate:synced-cron',
 		'simply:external-services-connector',

@@ -16,6 +16,7 @@ Package.onUse(function(api) {
 
 	api.use([
 		'simply:external-services-connector',
+		'modules',
 	]);
 	api.use([
 		'stevezhu:lodash@3.10.1',
