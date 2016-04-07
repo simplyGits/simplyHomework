@@ -8,16 +8,21 @@ Meteor.methods({
 	 * @method updates_add
 	 * @param {String} header
 	 * @param {String} body
+	 * @param {Object} [query]
 	 */
-	updates_add(header, body) {
+	updates_add(header, body, query = undefined) {
 		check(header, String)
 		check(body, String)
+		check(query, Match.Optional(query))
 
 		if (this.userId == null || !userIsInRole(this.userId, 'admin')) {
 			throw new Meteor.Error('not-privileged')
 		}
 
 		const update = new Update(header, body, this.userId)
+		if (query != null) {
+			update.setMatchQuery(query)
+		}
 		Updates.insert(update)
 	},
 

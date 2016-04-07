@@ -525,3 +525,15 @@ class @Helpers
 		sort:
 			startDate: -1
 	})?.group()
+
+###*
+# @method createMatcher
+# @param {Object} query
+# @param {Object} [options]
+# @return {Function} Checks if the given object matches `query`
+###
+@createMatcher = (query, options) ->
+	check query, Object
+	check options, Match.Optional Object
+	matcher = new Mongo.Cursor(undefined, query, options).matcher
+	(obj) -> matcher._docMatcher(obj).result

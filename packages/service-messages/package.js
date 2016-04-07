@@ -11,6 +11,7 @@ Package.onUse(function(api) {
 	api.use([
 		'mongo',
 		'ecmascript',
+		'ejson',
 	])
 	api.use([
 		'simply:notices',

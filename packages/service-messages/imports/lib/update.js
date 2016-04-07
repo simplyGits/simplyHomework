@@ -38,5 +38,18 @@ export default class Update {
 		 * @default false
 		 */
 		this.hidden = false
+
+		/**
+		 * Query to match the person which this update is sent to.
+		 * Stored as an EJSON stringified object.
+		 * @property matchQuery
+		 * @type String
+		 * @default '{}'
+		 */
+		this.matchQuery = '{}'
+	}
+
+	setMatchQuery(val) {
+		this.matchQuery = EJSON.stringify(val)
 	}
 }
