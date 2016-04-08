@@ -100,12 +100,12 @@ class @Message
 			defaultValue: []
 		fetchedFor:
 			type: [String]
+			index: 1
 		readBy:
 			type: [String]
 		fetchedBy:
 			type: String
 			optional: yes
-			index: 1
 		externalId:
 			type: null
 			optional: yes
@@ -172,6 +172,7 @@ class @Draft
 			type: String
 		senderId:
 			type: String
+			index: 1
 		lastEditTime:
 			type: Date
 		recipients:
