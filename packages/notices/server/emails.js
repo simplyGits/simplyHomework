@@ -62,13 +62,13 @@ SyncedCron.add({
 				const c = Classes.findOne(grade.classId)
 
 				try {
-					const html = wrapPromise(emails.cijfer({
+					const html = emails.cijfer({
 						className: c.name,
 						classUrl: Meteor.absoluteUrl(`class/${c._id}`),
 						grade: grade.gradeStr,
 						passed: grade.passed,
 						average: GradeFunctions.getEndGrade(c._id, userId),
-					}))
+					})
 					sendEmail(user, `Nieuw cijfer voor ${c.name}`, html)
 				} catch (err) {
 					Kadira.trackError(
@@ -111,11 +111,11 @@ Meteor.startup(function () {
 				}
 
 				try {
-					const html = wrapPromise(emails.project({
+					const html = emails.project({
 						projectName: newDoc.name,
 						projectUrl: Meteor.absoluteUrl(`project/${newDoc._id}`),
 						personName: `${user.profile.firstName} ${user.profile.lastName}`,
-					}))
+					})
 					sendEmail(user, 'Toegevoegd aan project', html)
 				} catch (err) {
 					Kadira.trackError(
