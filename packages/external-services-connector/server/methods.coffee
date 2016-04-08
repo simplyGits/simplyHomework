@@ -82,7 +82,7 @@ Meteor.methods
 		check service, String
 		check draftId, Match.Optional String
 
-		if body.trim().length is 0
+		if Helpers.isEmptyString body
 			throw new Meteor.Error 'no-content'
 
 		sendMessage subject, body, recipients, service, @userId
