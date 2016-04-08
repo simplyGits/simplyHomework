@@ -450,7 +450,7 @@ class @Helpers
 	# @return {Boolean}
 	###
 	@isEmptyString: (str) ->
-		whitespaceReg.test str
+		not str? or whitespaceReg.test str
 
 	@isPhone: -> Session.equals 'deviceType', 'phone'
 	@isTablet: -> Session.equals 'deviceType', 'tablet'
