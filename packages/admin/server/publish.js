@@ -10,15 +10,15 @@ function pub (name, fn) {
 	})
 }
 
-pub('usercount', function () {
+pub('userCount', function () {
 	Counts.publish(
 		this,
-		'usercount',
+		'userCount',
 		Meteor.users.find({})
 	)
 })
 
-pub('loggedin', function () {
+pub('loggedIn', function () {
 	Counts.publish(
 		this,
 		'loggedInUsersCount',
@@ -30,9 +30,7 @@ pub('reportItems', function (all = false) {
 	let query = {}
 	if (!all) {
 		query = {
-			resolvedInfo: {
-				$exists: false,
-			},
+			resolvedInfo: { $exists: false },
 		}
 	}
 	return ReportItems.find(query)
