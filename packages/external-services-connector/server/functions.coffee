@@ -333,6 +333,11 @@ updateCalendarItems = (userId, from, to) ->
 				fileKeyChanges[id] ? id
 
 			if old?
+				# set the old calendarItem id for every absenceinfo fetched for this new
+				# calendarItem.
+				absenceInfo = _.find result.absenceInfos, calendarItemId: calendarItem._id
+				absenceInfo?.calendarItemId = old._id
+
 				# clean `calendarItem`, this is way faster than using the `clean` method
 				# of the schema.
 				delete calendarItem._id
