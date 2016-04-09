@@ -2,9 +2,7 @@ import { Updates } from '../lib/collections.js'
 
 export default function () {
 	Meteor.subscribe('updates')
-	const updates = Updates.find({
-		hidden: false,
-	}).fetch()
+	const updates = Updates.find({}).fetch()
 
 	return updates.map((update) => {
 		return {

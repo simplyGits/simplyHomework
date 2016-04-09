@@ -1,5 +1,6 @@
 /* global createMatcher */
 
+import Update from '../lib/update.js'
 import { Updates } from '../lib/collections.js'
 
 const getMachQuery = (update) => EJSON.parse(update.matchQuery)
@@ -34,6 +35,14 @@ Meteor.publish('updates', function () {
 		}
 	}
 
+	const transform = (update) => {
+		const obj = {}
+		for (const key of Update.publishedFields) {
+			obj[key] = update[key]
+		}
+		return obj
+	}
+
 	const current = []
 	const cursor = Updates.find({
 		hidden: false,
@@ -41,7 +50,7 @@ Meteor.publish('updates', function () {
 	const observer = cursor.observeChanges({
 		added(id, doc) {
 			if (userMatches(doc)) {
-				self.added('updates', id, doc)
+				self.added('updates', id, transform(doc))
 				current.push(id)
 			}
 		},
@@ -51,9 +60,9 @@ Meteor.publish('updates', function () {
 
 			if (matches) {
 				if (contains) {
-					self.changed('updates', id, doc)
+					self.changed('updates', id, transform(doc))
 				} else {
-					self.added('updates', id, Updates.findOne(id))
+					self.added('updates', id, transform(Updates.findOne(id)))
 					current.push(id)
 				}
 			} else if (contains) {

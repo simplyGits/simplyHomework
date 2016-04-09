@@ -5,7 +5,7 @@
  * @param {String} body
  * @param {String} userId
  */
-export default class Update {
+class Update {
 	constructor(header, body, userId) {
 		/**
 		 * @property header
@@ -53,3 +53,11 @@ export default class Update {
 		this.matchQuery = EJSON.stringify(val)
 	}
 }
+
+Update.publishedFields = [
+	'header',
+	'body',
+	'creationDate',
+]
+
+export default Update
