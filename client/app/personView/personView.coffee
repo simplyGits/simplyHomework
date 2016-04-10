@@ -161,9 +161,11 @@ Template.reportUserModal.events
 			shake '#reportUserModal'
 			return
 
+		extraInfo = $('#extraInfo').val()
+
 		name = @profile.firstName
 		$('#reportUserModal').modal 'hide'
-		Meteor.call 'reportUser', @_id, reportGrounds, (e, r) ->
+		Meteor.call 'reportUser', @_id, reportGrounds, extraInfo, (e, r) ->
 			if e?
 				message = switch e.error
 					when 'rate-limit'

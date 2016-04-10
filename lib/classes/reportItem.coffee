@@ -17,6 +17,13 @@ class @ReportItem
 		@reportGrounds = []
 
 		###*
+		# @property extraInfo
+		# @type String
+		# @default ''
+		###
+		@extraInfo = ''
+
+		###*
 		# The time this report has been inserted.
 		# @property time
 		# @type Date
@@ -41,6 +48,10 @@ class @ReportItem
 		reportGrounds:
 			type: [String]
 			minCount: 1
+		extraInfo:
+			type: String
+			trim: yes
+			optional: yes
 		time:
 			type: Date
 			autoValue: -> if @isInsert then new Date()

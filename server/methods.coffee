@@ -98,10 +98,13 @@ Meteor.methods
 	# @method reportUser
 	# @param userId {String} The ID of the user the current user (reporter) wants to report.
 	# @param reportGrounds {String[]} For what the user has reported this time.
+	# @param extraInfo {String}
 	###
-	reportUser: (userId, reportGrounds) ->
+	reportUser: (userId, reportGrounds, extraInfo) ->
 		check userId, String
 		check reportGrounds, [String]
+		check extraInfo, String
+
 		old = ReportItems.findOne
 			reporterId: @userId
 			resolved: no
@@ -126,6 +129,7 @@ Meteor.methods
 
 		reportItem = new ReportItem @userId, userId
 		reportItem.reportGrounds = reportGrounds
+		reportItem.extraInfo = extraInfo
 		ReportItems.insert reportItem
 
 		undefined
