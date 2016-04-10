@@ -10,7 +10,7 @@ const things = [
 	[ 'code', /`([^`]*)`/g, '<code>$1</code>' ],
 ]
 
-shitdown = function (s, disabled = []) {
+const shitdown = function (s, disabled = []) {
 	check(s, String)
 	check(disabled, [String])
 
@@ -35,3 +35,5 @@ shitdown.one = function (s, thing) {
 
 	return s
 }
+
+export default shitdown

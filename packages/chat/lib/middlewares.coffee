@@ -1,3 +1,5 @@
+shitdown = require('meteor/shitdown').default
+
 ###*
 # @class ChatMiddlewares
 # @static

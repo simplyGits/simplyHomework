@@ -18,6 +18,7 @@ Package.onUse(function(api) {
 		'stevezhu:lodash@3.10.1',
 		'mongo',
 		'shitdown',
+		'modules',
 	]);
 	api.use([
 		'templating',
