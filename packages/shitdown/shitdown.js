@@ -26,6 +26,12 @@ shitdown = function (s, disabled = []) {
 shitdown.one = function (s, thing) {
 	check(s, String)
 	check(thing, String)
-	const pair = things.find((pair) => pair[0] === thing)
-	return s.replace(pair[1], pair[2])
+
+	things.filter((pair) => {
+		return pair[0] === thing
+	}).forEach((pair) => {
+		s = s.replace(pair[1], pair[2])
+	})
+
+	return s
 }
