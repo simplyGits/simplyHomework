@@ -2,8 +2,11 @@ recentStudyUtils = ->
 	dateTracker.depend()
 	date = Date.today().addDays -3
 	StudyUtils.find({
-		updatedOn: $gte: date
 		classId: $exists: yes
+		$or: [
+			{ updatedOn: $gte: date }
+			{ visibleFrom: $gte: date }
+		]
 	}, {
 		sort:
 			updatedOn: -1
