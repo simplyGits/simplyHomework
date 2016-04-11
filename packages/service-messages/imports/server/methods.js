@@ -6,14 +6,19 @@ import Update from '../lib/update.js'
 Meteor.methods({
 	/**
 	 * @method updates_add
-	 * @param {String} header
-	 * @param {String} body
-	 * @param {Object} [query]
+	 * @param {Object} options
+	 * 	@param {String} options.header
+	 * 	@param {String} options.body
+	 * 	@param {Object} [options.query]
+	 * 	@param {Number} [options.priority=0]
 	 */
-	updates_add(header, body, query = undefined) {
+	updates_add(options) {
+		check(options, Object)
+		const { header, body, query, priority = 0 } = options
 		check(header, String)
 		check(body, String)
-		check(query, Match.Optional(query))
+		check(query, Match.Optional(Object))
+		check(priority, Match.Optional(Number))
 
 		if (this.userId == null || !userIsInRole(this.userId, 'admin')) {
 			throw new Meteor.Error('not-privileged')
@@ -23,6 +28,7 @@ Meteor.methods({
 		if (query != null) {
 			update.setMatchQuery(query)
 		}
+		update.priority = priority
 		Updates.insert(update)
 	},
 

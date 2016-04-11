@@ -7,8 +7,9 @@ export default function () {
 	return updates.map((update) => {
 		return {
 			id: update._id,
-			template: 'updates_notice',
 			header: update.header,
+			template: 'updates_notice',
+			priority: update.priority,
 			data: update,
 		}
 	})

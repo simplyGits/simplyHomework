@@ -20,6 +20,13 @@ class Update {
 		this.body = body
 
 		/**
+		 * @property priority
+		 * @type Number
+		 * @default 0
+		 */
+		this.priority = 0
+
+		/**
 		 * @property userId
 		 * @type String
 		 */
@@ -57,6 +64,7 @@ class Update {
 Update.publishedFields = [
 	'header',
 	'body',
+	'priority',
 	'creationDate',
 ]
 
