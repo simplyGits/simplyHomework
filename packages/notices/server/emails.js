@@ -106,7 +106,7 @@ Meteor.startup(function () {
 			addedParticipants.forEach((userId) => {
 				const user = Meteor.users.findOne(userId)
 				const setting = user.settings.devSettings.emailNotifications
-				if (setting !== false) {
+				if (setting !== true) {
 					return;
 				}
 
