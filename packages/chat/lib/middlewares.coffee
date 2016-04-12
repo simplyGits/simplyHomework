@@ -238,10 +238,12 @@ ChatMiddlewares.attach 'clickable classes', 'insert', (message) ->
 		.split ' '
 		.map (word) ->
 			Classes.findOne
-				$or: [
-					{ name: $regex: "\\b#{_.escapeRegExp word}\\b", $options: 'i' }
-					{ abbreviations: word.toLowerCase() }
-				]
+				$or: (
+					x = [name: $regex: "\\b#{_.escapeRegExp word}\\b", $options: 'i']
+					if word is word.toUpperCase()
+						x.push abbreviations: word.toLowerCase()
+					x
+				)
 				schoolVariant: schoolVariant
 				year: year
 		.compact()
