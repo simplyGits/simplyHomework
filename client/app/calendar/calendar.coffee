@@ -10,6 +10,7 @@ dblDateResetHandle = undefined
 currentOpenEvent = new ReactiveVar
 popoverTimeout = undefined
 popoverView = undefined
+lastHoverStop = -1
 
 setQueryParam = (id) ->
 	FlowRouter.withReplaceState ->
@@ -127,7 +128,7 @@ Template.calendar.onRendered ->
 
 		eventMouseover: (calendarEvent, event) ->
 			Meteor.clearTimeout popoverTimeout
-			popoverTimeout = Meteor.setTimeout (->
+			fn = ->
 				currentOpenEvent.set calendarEvent
 				Meteor.defer ->
 					new Tether
@@ -142,11 +143,16 @@ Template.calendar.onRendered ->
 								pin: yes
 							}
 						]
-			), 500
+			popoverTimeout = Meteor.setTimeout fn, (
+				if _.now() - lastHoverStop < 150 then 0
+				else 500
+			)
 
 		eventMouseout: (calendarEvent, event) ->
 			Meteor.clearInterval popoverTimeout
-			currentOpenEvent.set undefined
+			if currentOpenEvent.get()?
+				currentOpenEvent.set undefined
+				lastHoverStop = _.now()
 
 		eventClick: (calendarEvent, event) ->
 			Meteor.clearInterval popoverTimeout
