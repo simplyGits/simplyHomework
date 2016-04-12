@@ -103,4 +103,7 @@ Package.onUse(function(api) {
 		'NoticeManager',
 		'Notifications',
 	]);
+	api.export([
+		'NoticeMails',
+	], 'server');
 });

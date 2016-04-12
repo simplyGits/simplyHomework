@@ -82,51 +82,29 @@ SyncedCron.add({
 	},
 })
 
-Meteor.startup(function () {
-	let startingObservers = true
+NoticeMails = {
+	projects(projectId, addedUserId, adderUserId) {
+		const added = Meteor.users.findOne(addedUserId)
+		const setting = added.settings.devSettings.emailNotifications
+		if (setting !== true) {
+			return;
+		}
 
-	Projects.find({
-		participants: { $ne: [] },
-	}, {
-		fields: {
-			_id: 1,
-			participants: 1,
-			name: 1,
-		},
-	}).observe({
-		changed(newDoc, oldDoc) {
-			if (startingObservers) {
-				return
-			}
-
-			const oldParticipants = oldDoc.participants
-			const newParticipants = newDoc.participants
-			const addedParticipants = _.difference(newParticipants, oldParticipants)
-
-			addedParticipants.forEach((userId) => {
-				const user = Meteor.users.findOne(userId)
-				const setting = user.settings.devSettings.emailNotifications
-				if (setting !== true) {
-					return;
-				}
-
-				try {
-					const html = Promise.await(emails.project({
-						projectName: newDoc.name,
-						projectUrl: Meteor.absoluteUrl(`project/${newDoc._id}`),
-						personName: `${user.profile.firstName} ${user.profile.lastName}`,
-					}))
-					sendEmail(user, 'Toegevoegd aan project', html)
-				} catch (err) {
-					Kadira.trackError(
-						'notices-emails',
-						err.message,
-						{ stacks: err.stack }
-					)
-				}
-			})
-		},
-	})
-
-	startingObservers = false
-})
+		const project = Projects.findOne(projectId)
+		const adder = Meteor.users.findOne(adderUserId)
+		try {
+			const html = Promise.await(emails.project({
+				projectName: project.name,
+				projectUrl: Meteor.absoluteUrl(`project/${projectId}`),
+				personName: `${adder.profile.firstName} ${adder.profile.lastName}`,
+			}))
+			sendEmail(added, 'Toegevoegd aan project', html)
+		} catch (err) {
+			Kadira.trackError(
+				'notices-emails',
+				err.message,
+				{ stacks: err.stack }
+			)
+		}
+	}
+}

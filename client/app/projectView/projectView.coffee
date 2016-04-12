@@ -223,18 +223,23 @@ addUser = ->
 	selected = Session.get 'currentSelectedPersonDatum'
 	$personNameInput = $ '#personNameInput'
 
-	val = null
-	if Helpers.contains selected?.fullName, $personNameInput.val(), yes
-		val = selected
-	else
-		val = _.find getOthers().fetch(), (p) -> Helpers.contains p.fullName, $personNameInput.val(), yes
-		unless val?
-			shake '#addParticipantModal'
-			return
+	val = (
+		if Helpers.contains selected?.fullName, $personNameInput.val(), yes
+			selected
+		else
+			_.find getOthers().fetch(), (p) ->
+				Helpers.contains p.fullName, $personNameInput.val(), yes
+	)
+	unless val?
+		shake '#addParticipantModal'
+		return
 
-	Projects.update currentProject()._id, $addToSet: participants: val._id
-	$('#addParticipantModal').modal 'hide'
-	notify Locals['nl-NL'].ProjectPersonAddedNotice(val.profile.firstName), 'notice'
+	Meteor.call 'addProjectParticipant', currentProject()._id, val._id, (e) ->
+		$('#addParticipantModal').modal 'hide'
+		if e?
+			notify 'Onbekende fout, we zijn op de hoogte gesteld', 'error'
+		else
+			notify Locals['nl-NL'].ProjectPersonAddedNotice(val.profile.firstName), 'notice'
 
 Template.addParticipantModal.events
 	"click #goButton": addUser

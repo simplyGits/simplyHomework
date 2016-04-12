@@ -100,6 +100,27 @@ Meteor.methods
 		)
 		Projects.insert project
 
+	###*
+	# @method addProjectParticipant
+	# @param {String} projectId
+	# @param {String} userId
+	###
+	addProjectParticipant: (projectId, userId) ->
+		check projectId, String
+		check userId, String
+
+		p = Projects.findOne projectId
+
+		unless p?
+			throw new Meteor.Error 'not-found'
+		if @userId not in p.participants
+			throw new Meteor.Error 'unauthorized'
+		if userId in p.participants
+			return
+
+		Projects.update projectId, $push: participants: userId
+		NoticeMails.projects projectId, userId, @userId
+
 	markCalendarItemDone: (id, done) ->
 		check id, String
 		check done, Boolean
