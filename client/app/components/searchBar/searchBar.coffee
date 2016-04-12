@@ -34,7 +34,6 @@ getName = ->
 		_id: $ne: Meteor.userId()
 		'profile.firstName': $ne: ''
 	}, {
-		reactive: no
 		fields:
 			_id: 1
 			'profile.firstName': 1
