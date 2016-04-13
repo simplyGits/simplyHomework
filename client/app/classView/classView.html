@@ -62,7 +62,7 @@
 					{{#with lastChatMessage}}
 						<div id="lastChatMessage">
 							<span id="name">{{__sender.profile.firstName}} {{__sender.profile.lastName}}</span>
-							<span id="message">{{_originalContent}}</span>
+							<span id="message">{{__rawString}}</span>
 							<img src="{{picture __sender 100}}" alt="profielfoto" width="50" height="50" />
 						</div>
 					{{/with}}
