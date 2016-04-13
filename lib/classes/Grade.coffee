@@ -264,10 +264,10 @@ class @GradePeriod
 	toString: -> @name
 
 @Grades = new Mongo.Collection 'grades', transform: (g) ->
+	g = _.extend new Grade(g.gradeStr), g
 	if Meteor.isServer
 		g
 	else
-		g = _.extend new Grade(g.gradeStr), g
 		_.extend g,
 			__insufficient: if g.passed then '' else 'insufficient'
 

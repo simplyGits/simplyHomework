@@ -27,6 +27,8 @@ SyncedCron.add({
 	name: 'Notify new grades',
 	schedule: (parser) => parser.recur().on(3).hour(),
 	job: function () {
+		const toString = (g) => g.toString().replace('.', ',')
+
 		const users = Meteor.users.find({
 			'profile.firstName': { $ne: '' },
 			'settings.devSettings.emailNotifications': true,
@@ -65,9 +67,9 @@ SyncedCron.add({
 					const html = Promise.await(emails.cijfer({
 						className: c.name,
 						classUrl: Meteor.absoluteUrl(`class/${c._id}`),
-						grade: grade.gradeStr,
+						grade: toString(grade),
 						passed: grade.passed,
-						average: GradeFunctions.getEndGrade(c._id, userId),
+						average: toString(GradeFunctions.getEndGrade(c._id, userId)),
 					}))
 					sendEmail(user, `Nieuw cijfer voor ${c.name}`, html)
 				} catch (err) {
