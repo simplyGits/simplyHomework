@@ -1,9 +1,9 @@
 {
   "dependencies": {
     "simplyemail": {
-      "version": "1.0.3",
-      "resolved": "https://registry.npmjs.org/simplyemail/-/simplyemail-1.0.3.tgz",
-      "from": "simplyemail@1.0.3",
+      "version": "1.0.4",
+      "resolved": "https://registry.npmjs.org/simplyemail/-/simplyemail-1.0.4.tgz",
+      "from": "simplyemail@1.0.4",
       "dependencies": {
         "inline-css": {
           "version": "2.2.2",
@@ -97,8 +97,8 @@
                       "from": "entities@>=1.0.0 <1.1.0"
                     },
                     "readable-stream": {
-                      "version": "1.1.13",
-                      "resolved": "https://registry.npmjs.org/readable-stream/-/readable-stream-1.1.13.tgz",
+                      "version": "1.1.14",
+                      "resolved": "https://registry.npmjs.org/readable-stream/-/readable-stream-1.1.14.tgz",
                       "from": "readable-stream@>=1.1.0 <1.2.0",
                       "dependencies": {
                         "core-util-is": {
@@ -370,8 +370,8 @@
               "from": "character-parser@1.2.1"
             },
             "clean-css": {
-              "version": "3.4.11",
-              "resolved": "https://registry.npmjs.org/clean-css/-/clean-css-3.4.11.tgz",
+              "version": "3.4.12",
+              "resolved": "https://registry.npmjs.org/clean-css/-/clean-css-3.4.12.tgz",
               "from": "clean-css@>=3.1.9 <4.0.0",
               "dependencies": {
                 "commander": {
