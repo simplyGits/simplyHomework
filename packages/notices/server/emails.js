@@ -31,7 +31,7 @@ SyncedCron.add({
 
 		const users = Meteor.users.find({
 			'profile.firstName': { $ne: '' },
-			'settings.devSettings.emailNotifications': true,
+			'settings.notifications.email.newGrade': { $ne: false },
 		}).fetch()
 
 		users.forEach((user) => {
@@ -87,9 +87,9 @@ SyncedCron.add({
 NoticeMails = {
 	projects(projectId, addedUserId, adderUserId) {
 		const added = Meteor.users.findOne(addedUserId)
-		const setting = added.settings.devSettings.emailNotifications
-		if (setting !== true) {
-			return;
+		const setting = added.settings.notifications.email.joinedProject
+		if (setting === false) {
+			return
 		}
 
 		const project = Projects.findOne(projectId)

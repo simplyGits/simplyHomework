@@ -6,7 +6,7 @@ items = new ReactiveVar [
 	[ 'externalServices', 'Verbonden sites' ]
 	[ 'classes', 'Vakken' ]
 	[ 'logins', 'Logins' ]
-	#[ 'notifications', 'Notificaties' ]
+	[ 'notifications', 'Notificaties' ]
 	[ 'about', 'Over simplyHomework' ]
 ].map ([ name, friendlyName ]) ->
 	name: name
