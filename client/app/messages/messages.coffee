@@ -208,7 +208,7 @@ Template['message_compose'].events
 	'keyup': ->
 		subject = document.getElementById('subject').value
 		recipients = document.getElementById('recipients').value
-		body = document.getElementById('message').value.trim()
+		body = document.getElementById('message').value
 
 		draft = new Draft(
 			subject
