@@ -119,7 +119,7 @@ Meteor.methods
 			return
 
 		Projects.update projectId, $push: participants: userId
-		NoticeMails.projects projectId, userId, @userId
+		Meteor.defer => NoticeMails?.projects projectId, userId, @userId
 
 	markCalendarItemDone: (id, done) ->
 		check id, String
