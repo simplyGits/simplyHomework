@@ -41,6 +41,7 @@ SyncedCron.add({
 
 			const grades = Grades.find({
 				ownerId: userId,
+				isEnd: false,
 				classId: { $exists: true },
 				dateFilledIn: { $gte: Date.today().addDays(-1) },
 			}, {
