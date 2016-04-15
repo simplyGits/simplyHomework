@@ -63,15 +63,17 @@ class NoticeManager
 					unless _.isArray res
 						res = if res then [ res ] else []
 
-					if res.length is 0
-						NoticeManager.notices.remove name: provider.name
-					else for item in res
-						id = item.id ? provider.name
-						NoticeManager.notices.upsert id,
+					# remove all current items from this provider from the collection
+					NoticeManager.notices.remove name: provider.name
+
+					# insert every item the provider returned
+					for item in res
+						NoticeManager.notices.insert (
 							_.extend item,
-								_id: id
+								_id: item.id ? provider.name
 								name: provider.name
 								ready: undefined
+						)
 
 				catch e
 					console.warn "Notice provider '#{provider.name}' errored.", e
