@@ -1,5 +1,5 @@
 /* global Kadira, Grades, Projects, updateGrades, SyncedCron, Classes,
-   GradeFunctions */
+   GradeFunctions, Analytics */
 
 import emails from 'meteor/emails'
 
@@ -73,6 +73,11 @@ SyncedCron.add({
 						average: toString(GradeFunctions.getEndGrade(c._id, userId)),
 					}))
 					sendEmail(userId, `Nieuw cijfer voor ${c.name}`, html)
+					Analytics.insert({
+						type: 'send-mail',
+						date: new Date,
+						emailType: 'grade',
+					})
 				} catch (err) {
 					Kadira.trackError(
 						'notices-emails',
@@ -105,6 +110,11 @@ NoticeMails = {
 				personName: `${adder.profile.firstName} ${adder.profile.lastName}`,
 			}))
 			sendEmail(addedUserId, 'Toegevoegd aan project', html)
+			Analytics.insert({
+				type: 'send-mail',
+				date: new Date,
+				emailType: 'project',
+			})
 		} catch (err) {
 			Kadira.trackError(
 				'notices-emails',
