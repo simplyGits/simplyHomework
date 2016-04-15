@@ -10,14 +10,14 @@ import emails from 'meteor/emails'
 
 /**
  * @method sendEmail
- * @param {User} user
+ * @param {String} userId
  * @param {String} subject
  * @param {String} html
  */
-function sendEmail (user, subject, html) {
+function sendEmail (userId, subject, html) {
 	Email.send({
 		from: 'simplyHomework <hello@simplyApps.nl>',
-		to: user.emails[0].address,
+		to: getUserField(userId, 'emails[0].address'),
 		subject: `simplyHomework | ${subject}`,
 		html,
 	})
@@ -72,7 +72,7 @@ SyncedCron.add({
 						passed: grade.passed,
 						average: toString(GradeFunctions.getEndGrade(c._id, userId)),
 					}))
-					sendEmail(user, `Nieuw cijfer voor ${c.name}`, html)
+					sendEmail(userId, `Nieuw cijfer voor ${c.name}`, html)
 				} catch (err) {
 					Kadira.trackError(
 						'notices-emails',
@@ -87,9 +87,12 @@ SyncedCron.add({
 
 NoticeMails = {
 	projects(projectId, addedUserId, adderUserId) {
-		const added = Meteor.users.findOne(addedUserId)
-		const setting = added.settings.notifications.email.joinedProject
-		if (setting === false) {
+		const setting = getUserField(
+			addedUserId,
+			'settings.notifications.email.joinedProject',
+			true
+		)
+		if (!setting) {
 			return
 		}
 
@@ -101,7 +104,7 @@ NoticeMails = {
 				projectUrl: Meteor.absoluteUrl(`project/${projectId}`),
 				personName: `${adder.profile.firstName} ${adder.profile.lastName}`,
 			}))
-			sendEmail(added, 'Toegevoegd aan project', html)
+			sendEmail(addedUserId, 'Toegevoegd aan project', html)
 		} catch (err) {
 			Kadira.trackError(
 				'notices-emails',
