@@ -32,6 +32,10 @@ Meteor.startup ->
 		fetchedFor: 1
 		sendDate: -1
 
+	Files._ensureIndex
+		name: 1
+		mime: 1
+
 	Meteor.users._ensureIndex
 		'profile.schoolId': 1
 		'profile.firstName': 1
