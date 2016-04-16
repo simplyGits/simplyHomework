@@ -1,4 +1,8 @@
 Search.provide 'studyUtil files', ({ user, classIds, mimes }) ->
+	# disabled temporary because of performance issues
+	# TODO: fix the perfomance and enable this back
+	return []
+
 	studyUtils = StudyUtils.find({
 		userIds: user._id
 		classId: (
