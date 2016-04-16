@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+branch=$(git rev-parse --abbrev-ref HEAD)
+if [[ "$branch" == "master" ]]; then
+	>&2 echo "on 'master' branch"
+	exit 1
+fi
 
 git submodule init
 git submodule update --recursive --remote --merge ./
