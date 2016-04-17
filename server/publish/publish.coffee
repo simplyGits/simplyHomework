@@ -44,8 +44,7 @@ Meteor.publish 'status', (ids) ->
 		_id: $in: ids
 		'profile.schoolId': schoolId
 		$or: [
-			{ 'settings.privacy.publishStatus': $exists: no }
-			{ 'settings.privacy.publishStatus': yes }
+			{ 'settings.privacy.publishStatus': $ne: no }
 		]
 	}, {
 		fields:
