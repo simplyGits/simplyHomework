@@ -239,6 +239,10 @@ Template.app.onRendered ->
 		# the time is done syncing the current computation will invalidate, so to
 		# effectively enable the monitor ASAP we put it inside of an `autorun` and a
 		# `try`.
-		@autorun -> try UserStatus.startMonitor idleOnBlur: yes
+		@autorun ->
+			if Privacy.getOptions(Meteor.userId()).publishStatus
+				try UserStatus.startMonitor idleOnBlur: yes
+			else if UserStatus.isMonitoring()
+				UserStatus.stopMonitor()
 	else
 		setMobileSettings()
