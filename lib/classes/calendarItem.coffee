@@ -10,6 +10,18 @@
 # @constructor
 ###
 class @CalendarItem
+	# TODO: Better i18n for these methods?
+	@contentTypeLong: (contentType) ->
+		switch contentType
+			when 'homework' then 'Huiswerk'
+			when 'test' then 'Proefwerk'
+			when 'exam' then 'Examen'
+			when 'quiz' then 'Schriftelijke Overhoring'
+			when 'oral' then 'Mondelinge Overhoring'
+			when 'information' then 'Informatie'
+
+			else 'Inhoud'
+
 	constructor: (ownerId, @description, @startDate, @endDate, @classId) ->
 		@_id = new Mongo.ObjectID().toHexString()
 		@endDate ?= moment(@startDate).add(1, "hour").toDate()
@@ -133,17 +145,7 @@ class @CalendarItem
 			userId: userId
 			calendarItemId: @_id
 
-	# TODO: Better i18n for these methods?
-	contentTypeLong: ->
-		switch @content?.type
-			when 'homework' then 'Huiswerk'
-			when 'test' then 'Proefwerk'
-			when 'exam' then 'Examen'
-			when 'quiz' then 'Schriftelijke Overhoring'
-			when 'oral' then 'Mondelinge Overhoring'
-			when 'information' then 'Informatie'
-
-			else 'Inhoud'
+	contentTypeLong: -> CalendarItem.contentTypeLong @content?.type
 
 	contentTypeShort: ->
 		switch @content?.type

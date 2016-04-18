@@ -20,6 +20,13 @@ getTasksForDate = (date) ->
 			done: (d) ->
 				Meteor.call 'markCalendarItemDone', item._id, d if d?
 				Meteor.userId() in item.usersDone
+			__type: Helpers.cap (
+					type = item.content?.type
+					if type in [ 'test', 'exam', 'quiz', 'oral' ]
+						"#{CalendarItem.contentTypeLong type} "
+					else
+						''
+			)
 	}).fetch()
 
 ###*
