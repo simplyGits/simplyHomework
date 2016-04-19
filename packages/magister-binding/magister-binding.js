@@ -90,6 +90,17 @@ MagisterBinding.createData = function (schoolurl, username, password, userId) {
 }
 
 /**
+ * @method getVersionInfo
+ * @param {Magister} magister
+ * @return {Object}
+ */
+function getVersionInfo (magister) {
+	const fut = new Future();
+	magister.versionInfo(fut.resolver());
+	return fut.wait();
+}
+
+/**
  * Gets a magister object for the given `userId`.
  * @method getMagisterObject
  * @private
@@ -124,16 +135,6 @@ function getMagisterObject (userId, forceNew = false) {
 			sessionId: useSessionId ? data.lastLogin.sessionId : undefined,
 		});
 
-		if (!useSessionId) { // Update login info
-			MagisterBinding.storedInfo(userId, {
-				externalUserId: magister.profileInfo().id(),
-				lastLogin: {
-					time: new Date(),
-					sessionId: magister._sessionId,
-				},
-			});
-		}
-
 		magister.ready(function (err) {
 			if (err) {
 				fut.throw(new Error(err.message));
@@ -154,6 +155,18 @@ function getMagisterObject (userId, forceNew = false) {
 			}
 			throw e;
 		}
+
+		if (!useSessionId) { // Update login info
+			MagisterBinding.storedInfo(userId, {
+				externalUserId: magister.profileInfo().id(),
+				lastLogin: {
+					time: new Date(),
+					sessionId: magister._sessionId,
+					apiVersion: getVersionInfo(magister).api,
+				},
+			});
+		}
+
 		cache.set(userId, m);
 		return m;
 	}
