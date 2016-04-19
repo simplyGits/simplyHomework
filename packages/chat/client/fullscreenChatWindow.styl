@@ -57,9 +57,13 @@ div#fullscreenChatWindow
 
 		div.name
 			absolute: top 15px left 90px
-			display: inline-block
+			width: 100%
+			overflow: hidden
+
 			font-weight: 300
 			font-size: 30px
+			white-space: nowrap
+			text-overflow: ellipsis
 
 	div#chatMessages
 		height: calc(100% - 155px)
