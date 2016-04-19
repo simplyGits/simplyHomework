@@ -90,17 +90,6 @@ MagisterBinding.createData = function (schoolurl, username, password, userId) {
 }
 
 /**
- * @method getVersionInfo
- * @param {Magister} magister
- * @return {Object}
- */
-function getVersionInfo (magister) {
-	const fut = new Future();
-	magister.versionInfo(fut.resolver());
-	return fut.wait();
-}
-
-/**
  * Gets a magister object for the given `userId`.
  * @method getMagisterObject
  * @private
@@ -157,12 +146,14 @@ function getMagisterObject (userId, forceNew = false) {
 		}
 
 		if (!useSessionId) { // Update login info
+			const getVersionInfo = Meteor.wrapAsync(magister.versionInfo, magister);
+
 			MagisterBinding.storedInfo(userId, {
 				externalUserId: magister.profileInfo().id(),
 				lastLogin: {
 					time: new Date(),
 					sessionId: magister._sessionId,
-					apiVersion: getVersionInfo(magister).api,
+					apiVersion: getVersionInfo().api,
 				},
 			});
 		}
