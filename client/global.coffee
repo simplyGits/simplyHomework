@@ -52,8 +52,9 @@ Meteor.startup ->
 	emojione.ascii = yes # Convert ascii smileys (eg. :D) to emojis.
 
 	reCAPTCHA.config
-		theme: "light"
-		publickey: "6LejzwQTAAAAAJ0blWyasr-UPxQjbm4SWOni22SH"
+		theme: 'light'
+		sitekey: '6LejzwQTAAAAAJ0blWyasr-UPxQjbm4SWOni22SH'
+		size: 'normal'
 
 	if navigator.platform is 'Win32' or navigator.userAgent.indexOf('win') > -1
 		$body.addClass 'win'
