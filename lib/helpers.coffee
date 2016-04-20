@@ -459,7 +459,7 @@ class @Helpers
 	###
 	@oneLine: (str) ->
 		str.replace /(.)?\n/g, (match, char) ->
-			s = char
+			s = char ? ''
 			if char not in [ '.', ',', '!', '?', ';', ':' ]
 				s += ';'
 			"#{s} "
