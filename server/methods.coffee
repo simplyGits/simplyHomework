@@ -160,55 +160,58 @@ Meteor.methods
 	# @method bootstrapUser
 	###
 	'bootstrapUser': ->
-		@unblock()
 		userId = @userId
-
 		unless userId?
 			throw new Meteor.Error 'notLoggedIn', 'User not logged in.'
 
-		updateCalendarItems userId, Date.today(), Date.today().addDays 14
-		user = Meteor.users.findOne userId,
-			fields:
-				classInfos: 1
-				'profile.schoolId': 1
+		group = new WaitGroup()
 
-		for info in user.classInfos
-			calendarItem = CalendarItems.findOne
-				classId: info.id
-				userIds: userId
+		group.defer -> updateGrades userId
+		group.defer -> updateStudyUtils userId
 
-			if calendarItem?
-				room = ChatRooms.findOne
-					classInfo: $exists: yes
-					'classInfo.schoolId': user.profile.schoolId
-					'classInfo.group': calendarItem.group()
+		group.defer ->
+			updateCalendarItems userId, Date.today(), Date.today().addDays 14
+			user = Meteor.users.findOne userId,
+				fields:
+					classInfos: 1
+					'profile.schoolId': 1
 
-				if room?
-					ChatRooms.update room._id,
-						$addToSet:
-							users: userId
-							'classInfo.ids': info.id
-							events:
-								type: 'joined'
-								userId: userId
-								time: new Date
-				else
-					room = new ChatRoom userId, 'class'
-					room.subject = calendarItem.group()
-					room.classInfo =
-						schoolId: user.profile.schoolId
-						group: calendarItem.group()
-						ids: [ info.id ]
-					ChatRooms.insert room
+			for info in user.classInfos
+				calendarItem = CalendarItems.findOne
+					classId: info.id
+					userIds: userId
 
-				if calendarItem.teacher? and info.externalInfo?
-					info.externalInfo.teacherName = calendarItem.teacher.name
+				if calendarItem?
+					room = ChatRooms.findOne
+						classInfo: $exists: yes
+						'classInfo.schoolId': user.profile.schoolId
+						'classInfo.group': calendarItem.group()
 
-				Meteor.users.update Meteor.userId(), $pull: classInfos: id: info.id
-				Meteor.users.update Meteor.userId(), $push: classInfos: info
+					if room?
+						ChatRooms.update room._id,
+							$addToSet:
+								users: userId
+								'classInfo.ids': info.id
+								events:
+									type: 'joined'
+									userId: userId
+									time: new Date
+					else
+						room = new ChatRoom userId, 'class'
+						room.subject = calendarItem.group()
+						room.classInfo =
+							schoolId: user.profile.schoolId
+							group: calendarItem.group()
+							ids: [ info.id ]
+						ChatRooms.insert room
 
-		updateGrades userId
-		updateStudyUtils userId
+					if calendarItem.teacher? and info.externalInfo?
+						info.externalInfo.teacherName = calendarItem.teacher.name
+
+					Meteor.users.update userId, $pull: classInfos: id: info.id
+					Meteor.users.update userId, $push: classInfos: info
+
+		group.wait()
 
 	'getPersonStats': ->
 		@unblock()
