@@ -73,11 +73,16 @@ currentSearchTerm = new ReactiveVar ''
 					event: yes
 					content: (
 						time = Helpers.formatDate event.time, yes
+						userUrl = ''
 
 						u = Meteor.users.findOne event.userId
-						{ firstName, lastName } = u.profile
-						path = FlowRouter.path 'personView', id: u._id
-						userUrl = "<a href='#{path}'>#{_.escape firstName} #{_.escape lastName}</a>"
+						if u?
+							{ firstName, lastName } = u.profile
+							name = "#{_.escape firstName} #{_.escape lastName}"
+							path = FlowRouter.path 'personView', id: u._id
+							userUrl = "<a href='#{path}'>#{name}</a>"
+						else
+							userUrl = 'Iemand'
 
 						switch event.type
 							when 'created' then "Chat aangemaakt door #{userUrl} #{time}"
