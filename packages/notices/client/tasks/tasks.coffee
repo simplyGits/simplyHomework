@@ -13,7 +13,7 @@ getTasksForDate = (date) ->
 		transform: (item) ->
 			description: (
 				description = item.content.description
-				Helpers.convertLinksToAnchor(description).replace /\n/g, '; '
+				Helpers.oneLine Helpers.convertLinksToAnchor(description)
 			)
 			class: -> Classes.findOne item.classId
 			date: item.startDate

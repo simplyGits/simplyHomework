@@ -452,6 +452,18 @@ class @Helpers
 	@isEmptyString: (str) ->
 		not str? or whitespaceReg.test str
 
+	###*
+	# @method oneLine
+	# @param {String} str
+	# @return {String}
+	###
+	@oneLine: (str) ->
+		str.replace /(.)?\n/g, (match, char) ->
+			s = char
+			if char not in [ '.', ',', '!', '?', ';', ':' ]
+				s += ';'
+			"#{s} "
+
 	@isPhone: -> Session.equals 'deviceType', 'phone'
 	@isTablet: -> Session.equals 'deviceType', 'tablet'
 	@isDesktop: -> Session.equals 'deviceType', 'desktop'
