@@ -125,7 +125,6 @@ updateGrades = (userId, forceUpdate = no) ->
 				onlyEnds: no
 
 		catch e
-			# TODO: Error pushing seems broken, if it's fixed remove the log line.
 			console.log 'error while fetching grades from service.', e
 			ExternalServicesConnector.handleServiceError externalService.name, userId, e
 			errors.push e
