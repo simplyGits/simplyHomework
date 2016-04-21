@@ -87,7 +87,7 @@ class @Message
 			type: String
 		folder:
 			type: String
-			allowedValues: [ 'inbox', 'alerts', 'outbox' ]
+			allowedValues: [ 'inbox', 'outbox' ]
 		sendDate:
 			type: Date
 			index: -1

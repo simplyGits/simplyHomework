@@ -1,6 +1,6 @@
  /* global AbsenceInfo, Magister, Schools, Grades,
   Grade, StudyUtil, GradePeriod, ExternalPerson, CalendarItem, Assignment,
-  ExternalFile, getClassInfos, LRU, Message, ms, MagisterBinding */
+  ExternalFile, getClassInfos, LRU, Message, ms, MagisterBinding, ServiceUpdate */
 
 // One heck of a binding this is.
 
@@ -766,8 +766,6 @@ MagisterBinding.getMessages = function (folderName, skip, limit, userId) {
 	let folder;
 	if (folderName === 'inbox') {
 		folder = magister.inbox();
-	} else if (folderName === 'alerts') {
-		folder = magister.alerts();
 	} else if (folderName === 'outbox') {
 		folder = magister.sentItems();
 	} else {
@@ -818,6 +816,43 @@ MagisterBinding.getMessages = function (folderName, skip, limit, userId) {
 
 	return fut.wait();
 };
+
+MagisterBinding.getUpdates = function (userId) {
+	check(userId, String);
+	const fut = new Future();
+
+	const magister = getMagisterObject(userId);
+	const folder = magister.alerts();
+
+	folder.messages({
+		skip: 0,
+		limit: 100, // we want get all the alerts
+	}, function (e, r) {
+		if (e) {
+			fut.throw(e);
+		} else {
+			const res = [];
+
+			r.forEach(function (m) {
+				const update = new ServiceUpdate(
+					m.subject(),
+					m.body(),
+					userId,
+					MagisterBinding.name,
+					prefixId(magister, m.id())
+				);
+
+				update.date = m.sendDate();
+
+				res.push(update);
+			});
+
+			fut.return(res);
+		}
+	});
+
+	return fut.wait();
+}
 
 /**
  * Compiles the given body: render TeX equations and convert markdown to html

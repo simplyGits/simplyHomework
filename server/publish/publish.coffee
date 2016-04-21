@@ -274,6 +274,22 @@ Meteor.publish 'message', (id) ->
 			sendDate: -1
 	}
 
+Meteor.publish 'drafts', (offset) ->
+	check offset, Number
+
+	@unblock()
+	unless @userId?
+		@ready()
+		return undefined
+
+	Drafts.find {
+		senderId: @userId
+	}, {
+		sort:
+			sendDate: -1
+		limit: offset + 20
+	}
+
 Meteor.publish 'messagesCount', (folder) ->
 	check folder, String
 	Counts.publish this, 'messagesCount', Messages.find

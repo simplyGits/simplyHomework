@@ -170,18 +170,18 @@ Meteor.publish 'messages', (offset, folders, unreadOnly = no) ->
 			sendDate: -1
 		limit: offset + 20
 
-Meteor.publish 'drafts', (offset) ->
-	check offset, Number
-
+Meteor.publish 'serviceUpdates', ->
 	@unblock()
-	unless @userId?
+	userId = @userId
+	unless userId?
 		@ready()
 		return undefined
 
-	Drafts.find {
-		senderId: @userId
-	}, {
-		sort:
-			sendDate: -1
-		limit: offset + 20
-	}
+	handle = Helpers.interval (->
+		fetchServiceUpdates userId
+	), ms.minutes 45
+
+	@onStop ->
+		Meteor.clearInterval handle
+
+	ServiceUpdates.find { userId }

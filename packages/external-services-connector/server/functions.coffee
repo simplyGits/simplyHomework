@@ -748,6 +748,33 @@ replyMessage = (id, all, body, service, userId) ->
 	serivce.replyMessage id, all, body, userId
 
 ###*
+# @fetchServiceUpdates
+# @param {String} userId
+# @return {Error[]}
+###
+fetchServiceUpdates = (userId) ->
+	check userId, String
+
+	errors = []
+	updates = []
+	services = _.filter Services, (s) -> s.getUpdates? and s.active userId
+
+	for service in services
+		try
+			updates = updates.concat service.getUpdates userId
+		catch e
+			console.log 'error while fetching updates from service.', e
+			ExternalServicesConnector.handleServiceError service.name, userId, e
+			errors.push e
+			continue
+
+	ServiceUpdates.remove { userId }
+	for update in updates
+		ServiceUpdates.insert update, handleCollErr
+
+	errors
+
+###*
 # Returns an array containing info about available services.
 # @method getModuleInfo
 # @param userId {String} The ID of the user to use for the service info.
@@ -777,4 +804,5 @@ getModuleInfo = (userId) ->
 @updateMessages = updateMessages
 @sendMessage = sendMessage
 @replyMessage = replyMessage
+@fetchServiceUpdates = fetchServiceUpdates
 @getModuleInfo = getModuleInfo
