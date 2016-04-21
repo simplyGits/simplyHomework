@@ -20,7 +20,7 @@ Package.onUse(function(api) {
 	]);
 	api.use([
 		'stevezhu:lodash@3.10.1',
-		'simply:magisterjs@1.18.0',
+		'simply:magisterjs@1.19.0',
 		'ejson',
 		'ecmascript',
 		'simply:lru',

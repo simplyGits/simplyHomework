@@ -146,7 +146,10 @@ function getMagisterObject (userId, forceNew = false) {
 		}
 
 		if (!useSessionId) { // Update login info
-			const getVersionInfo = Meteor.wrapAsync(magister.versionInfo, magister);
+			const getVersionInfo = Meteor.wrapAsync(
+				magister.magisterSchool.versionInfo,
+				magister.magisterSchool
+			);
 
 			MagisterBinding.storedInfo(userId, {
 				externalUserId: magister.profileInfo().id(),
