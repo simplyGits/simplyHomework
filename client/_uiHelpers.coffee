@@ -337,7 +337,7 @@ Meteor.startup ->
 		hashBang = view.hash.hash ? ''
 		FlowRouter.path(path, view.hash, query) + hashBang
 
-	Template.registerHelper 'newlines', (s) -> s.replace /\n/g, '<br>'
+	Template.registerHelper 'newlines', (s) -> s.replace /\r?\n/g, '<br>'
 
 	disconnectedNotice = null
 	Tracker.autorun ->
