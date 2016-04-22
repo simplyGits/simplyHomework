@@ -402,6 +402,8 @@ updateCalendarItems = (userId, from, to) ->
 			else
 				Absences.insert absenceInfo
 
+		# mark lesson calendarItems that were in the db but are not returned by the
+		# service as scrapped.
 		CalendarItems.update {
 			userIds: userId
 			fetchedBy: externalService.name
@@ -416,6 +418,8 @@ updateCalendarItems = (userId, from, to) ->
 			multi: yes
 		}, handleCollErr
 
+		# remove non-lesson calendarItems that were in the db but are not retunred
+		# by the service.
 		CalendarItems.remove {
 			userIds: userId
 			fetchedBy: externalService.name
