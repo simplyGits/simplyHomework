@@ -148,5 +148,8 @@
 		<input type="text" id="subject" placeholder="Onderwerp" value="{{subject}}" />
 		<input type="text" id="recipients" placeholder="Ontvangers, gescheiden door een ';'" value="{{recipients}}" />
 		<textarea id="message" placeholder="Bericht inhoud">{{body}}</textarea>
+		{{#with draftSaveStatus}}
+			<div id="draftSaveStatus">{{this}}</div>
+		{{/with}}
 	</div>
 </template>

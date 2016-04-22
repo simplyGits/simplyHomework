@@ -176,7 +176,14 @@ Template['message_current_message'].onCreated ->
 			if Meteor.userId() not in message.readBy
 				Meteor.call 'markMessageRead', id
 
+savingDraft = new ReactiveVar no
+setSavingStatus = _.debounce ((state) ->
+	savingDraft.set state
+), 350
+
 saveDraft = _.debounce ((draft) ->
+	setSavingStatus yes
+
 	localStorage.setItem 'pending_drafts',
 		EJSON.stringify (
 			raw = localStorage.getItem('pending_drafts') ? '[]'
@@ -185,7 +192,8 @@ saveDraft = _.debounce ((draft) ->
 			x
 		)
 
-	Meteor.call 'saveMessageDraft', draft
+	Meteor.call 'saveMessageDraft', draft, (e, r) ->
+		setSavingStatus no unless e?
 ), 500
 
 Template['message_compose'].helpers
@@ -200,6 +208,12 @@ Template['message_compose'].helpers
 	body: ->
 		getCurrentDraft()?.body ?
 		_.unescape FlowRouter.getQueryParam 'body'
+
+	draftSaveStatus: ->
+		if savingDraft.get()
+			'Concept aan het opslaan...'
+		else
+			'Concept opgeslagen.'
 
 Template['message_compose'].events
 	'keyup': ->
