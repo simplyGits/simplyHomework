@@ -402,6 +402,29 @@ updateCalendarItems = (userId, from, to) ->
 			else
 				Absences.insert absenceInfo
 
+		CalendarItems.update {
+			userIds: userId
+			fetchedBy: externalService.name
+			externalId: $nin: _.pluck result.calendarItems, 'externalId'
+			startDate: $gte: from
+			endDate: $lte: to
+			type: 'lesson'
+		}, {
+			$set:
+				scrapped: yes
+		}, {
+			multi: yes
+		}, handleCollErr
+
+		CalendarItems.remove {
+			userIds: userId
+			fetchedBy: externalService.name
+			externalId: $nin: _.pluck result.calendarItems, 'externalId'
+			startDate: $gte: from
+			endDate: $lte: to
+			type: $ne: 'lesson'
+		}, handleCollErr
+
 	errors
 
 personCache = []
