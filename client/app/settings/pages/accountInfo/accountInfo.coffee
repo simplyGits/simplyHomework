@@ -86,7 +86,7 @@ Template.deleteAccountModal.events
 				else if e.error is 'wrongCaptcha'
 					shake '#deleteAccountModal'
 				else
-					notify 'Oops, er is iets fout gegaan.', 'error'
+					notify 'Oops, er is iets fout gegaan', 'error'
 			else
 				ga 'send', 'event', 'remove account'
 				document.location.href = 'https://simplyhomework.nl/'

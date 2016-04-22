@@ -122,7 +122,7 @@ Template.projectView.events
 					if e?
 						notify "Bestand kan niet worden toegevoegd", "error"
 						Kadira.trackError "Remove-add-file", e.message, stacks: e.stack
-					else notify "#{r.docs[0].title} toegevoegd.", "notice"
+					else notify "#{r.docs[0].title} toegevoegd", "notice"
 
 			setPermissions = ->
 				if _.any(r.docs[0].permissions, (p) -> p.type is "anyone" and p.role is "writer") then cb()
@@ -250,9 +250,9 @@ Template.fileRow.events
 		event.preventDefault()
 		Projects.update currentProject()._id, $pull: driveFileIds: @id, (e) =>
 			if e?
-				notify "Bestand kan niet worden verwijderd.", "error"
+				notify "Bestand kan niet worden verwijderd", "error"
 				Kadira.trackError "Remove-project-file", e.message, stacks: e.stack
-			else notify "#{@title} verwijderd.", "notice"
+			else notify "#{@title} verwijderd", "notice"
 
 Template.personRow.events
 	'click': (event) ->

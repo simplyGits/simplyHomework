@@ -42,7 +42,7 @@ Template.magisterInfoModal.events
 
 			unless school?
 				shake $magisterInfoModal
-				notify "Geen school met de naam '#{schoolName}' gevonden.", 'error'
+				notify "Geen school met de naam '#{schoolName}' gevonden", 'error'
 				return undefined
 
 			unless $('#allowGroup input').is ':checked'
@@ -61,9 +61,9 @@ Template.magisterInfoModal.events
 					if e?
 						shake $magisterInfoModal
 						notify (
-							if e.error is 'forbidden' then 'Gebruikersnaam of wachtwoord onjuist.'
+							if e.error is 'forbidden' then 'Gebruikersnaam of wachtwoord onjuist'
 							else if _.isString e.details then "Magister: '#{e.details}'"
-							else 'Onbekende fout bij Magister opgetreden.'
+							else 'Onbekende fout bij Magister opgetreden'
 						), 'error'
 					else
 						r.schoolId = school._id

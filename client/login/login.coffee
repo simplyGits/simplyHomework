@@ -63,7 +63,7 @@ Template.signup.events
 			}, (e, r) ->
 				loading.set no
 				if e?
-					notify 'Onbekende fout, we zijn op de hoogte gesteld.', 'error'
+					notify 'Onbekende fout, we zijn op de hoogte gesteld', 'error'
 					Kadira.trackError 'create-account', e.message, stacks: e.stack
 				else FlowRouter.go 'overview'
 

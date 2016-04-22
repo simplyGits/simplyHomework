@@ -178,7 +178,7 @@ Template.reportUserModal.events
 				notify message, 'error'
 
 			else
-				notify "#{name} gerapporteerd.", 'notice'
+				notify "#{name} gerapporteerd", 'notice'
 
 Template.changePictureModal.onCreated ->
 	getProfileDataPerService (e, r) ->
