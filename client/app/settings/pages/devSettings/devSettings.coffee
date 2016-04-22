@@ -4,9 +4,6 @@ items = [{
 }, {
 	name: 'noticeAlwaysHoverColor'
 	description: 'Maak altijd het randje van een kaart op het overzicht zwart als je er met je muis over gaat.'
-}, {
-	name: 'serviceUpdateNotices'
-	description: 'Magister meldingen weergeven als kaarten op het overizcht.'
 }]
 
 Template['settings_page_devSettings'].helpers

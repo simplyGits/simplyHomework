@@ -1,7 +1,4 @@
 NoticeManager.provide 'serviceUpdates', ->
-	unless getUserField Meteor.userId(), 'settings.devSettings.serviceUpdateNotices'
-		return []
-
 	@subscribe 'serviceUpdates'
 
 	ServiceUpdates.find({}).map (u) ->
