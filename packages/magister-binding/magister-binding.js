@@ -210,74 +210,75 @@ MagisterBinding.getGrades = function (userId, options) {
 	course.grades(false, false, onlyRecent, function (e, r) {
 		if (e) {
 			fut.throw(e);
-		} else {
-			const result = new Array(r.length);
-			const futs = [];
+			return;
+		}
 
-			r
-			.filter(function (g) {
-				return [14, 4].indexOf(g.type().type()) === -1;
-			})
-			.forEach(function (g, i) {
-				// HACK: WET (unDRY, ;)) code.
-				const stored = Grades.findOne({
-					fetchedBy: MagisterBinding.name,
-					externalId: prefixId(magister, g.id()),
-					weight: g.counts() ? g.weight() : 0,
-					gradeStr: g.grade(),
-				});
+		const result = new Array(r.length);
+		const futs = [];
 
-				if (stored) {
-					result[i] = stored;
-				} else {
-					const gradeFut = new Future();
-					futs.push(gradeFut);
-
-					g.fillGrade(function (e) {
-						if (e) {
-							gradeFut.throw(e);
-						} else  {
-							const classInfo = _.find(user.classInfos, function (i) {
-								const abbr = i.externalInfo.abbreviation == g.class().abbreviation;
-								const id = i.externalInfo.id === g.class().id;
-								return abbr || id;
-							});
-							const classId = classInfo && classInfo.id;
-
-							const grade = new Grade(
-								g.grade(),
-								g.counts() ? g.weight() : 0,
-								classId,
-								userId
-							);
-
-							// REVIEW: Better way to check percentages than
-							// this?
-							if (g.type().header() === '%') {
-								grade.gradeType = 'percentage';
-							}
-							grade.fetchedBy = MagisterBinding.name;
-							grade.externalId = prefixId(magister, g.id());
-							grade.description = g.description().trim();
-							grade.passed = g.passed() || grade.passed;
-							grade.dateFilledIn = g.dateFilledIn();
-							grade.dateTestMade = g.testDate();
-							grade.isEnd = g.type().isEnd();
-							grade.period = new GradePeriod(
-								g.gradePeriod().id,
-								g.gradePeriod().name
-							);
-
-							result[i] = grade;
-							gradeFut.return();
-						}
-					});
-				}
+		r
+		.filter(function (g) {
+			return [14, 4].indexOf(g.type().type()) === -1;
+		})
+		.forEach(function (g, i) {
+			// HACK: WET (unDRY, ;)) code.
+			const stored = Grades.findOne({
+				fetchedBy: MagisterBinding.name,
+				externalId: prefixId(magister, g.id()),
+				weight: g.counts() ? g.weight() : 0,
+				gradeStr: g.grade(),
 			});
 
-			for(let i = 0; i < futs.length; i++) futs[i].wait();
-			fut.return(result);
-		}
+			if (stored) {
+				result[i] = stored;
+			} else {
+				const gradeFut = new Future();
+				futs.push(gradeFut);
+
+				g.fillGrade(function (e) {
+					if (e) {
+						gradeFut.throw(e);
+					} else  {
+						const classInfo = _.find(user.classInfos, function (i) {
+							const abbr = i.externalInfo.abbreviation == g.class().abbreviation;
+							const id = i.externalInfo.id === g.class().id;
+							return abbr || id;
+						});
+						const classId = classInfo && classInfo.id;
+
+						const grade = new Grade(
+							g.grade(),
+							g.counts() ? g.weight() : 0,
+							classId,
+							userId
+						);
+
+						// REVIEW: Better way to check percentages than
+						// this?
+						if (g.type().header() === '%') {
+							grade.gradeType = 'percentage';
+						}
+						grade.fetchedBy = MagisterBinding.name;
+						grade.externalId = prefixId(magister, g.id());
+						grade.description = g.description().trim();
+						grade.passed = g.passed() || grade.passed;
+						grade.dateFilledIn = g.dateFilledIn();
+						grade.dateTestMade = g.testDate();
+						grade.isEnd = g.type().isEnd();
+						grade.period = new GradePeriod(
+							g.gradePeriod().id,
+							g.gradePeriod().name
+						);
+
+						result[i] = grade;
+						gradeFut.return();
+					}
+				});
+			}
+		});
+
+		for(let i = 0; i < futs.length; i++) futs[i].wait();
+		fut.return(result);
 	});
 
 	return fut.wait();
@@ -362,59 +363,60 @@ MagisterBinding.getStudyUtils = function (userId, options) {
 	magister.studyGuides(false, function (e, r) {
 		if (e) {
 			fut.throw(e);
-		} else {
-			const studyUtils = [];
-			const files = [];
-			const futs = [];
-
-			r.forEach(function (sg) {
-				const studyGuideFut = new Future();
-				futs.push(studyGuideFut);
-
-				sg.parts(function (e, r) {
-					if (e) {
-						studyGuideFut.throw(e);
-					} else {
-						r.forEach(function (sgp) {
-							const path = `/studiewijzers/${sg.id()}/onderdelen/${sgp.id()}/bijlagen/`;
-							const classInfo = _.find(classInfos, (i) => {
-								return _.contains(sg.classCodes(), i.externalInfo.abbreviation);
-							});
-							const classId = classInfo && classInfo.id;
-
-							const studyUtil = new StudyUtil(
-								sgp.name(),
-								sgp.description(),
-								classId,
-								userId
-							);
-
-							studyUtil.visibleFrom = sgp.from();
-							studyUtil.visibleTo = sgp.to();
-							studyUtil.fetchedBy = MagisterBinding.name;
-							studyUtil.externalInfo = {
-								partId: sgp.id(),
-								parentId: sg.id(),
-							};
-							sgp.files().forEach((file) => {
-								const externalFile = convertMagisterFile(path, file);
-								studyUtil.fileIds.push(externalFile._id);
-								files.push(externalFile);
-							})
-
-							studyUtils.push(studyUtil);
-						});
-						studyGuideFut.return();
-					}
-				});
-			});
-
-			for(let i = 0; i < futs.length; i++) futs[i].wait();
-			fut.return({
-				studyUtils,
-				files,
-			});
+			return;
 		}
+
+		const studyUtils = [];
+		const files = [];
+		const futs = [];
+
+		r.forEach(function (sg) {
+			const studyGuideFut = new Future();
+			futs.push(studyGuideFut);
+
+			sg.parts(function (e, r) {
+				if (e) {
+					studyGuideFut.throw(e);
+				} else {
+					r.forEach(function (sgp) {
+						const path = `/studiewijzers/${sg.id()}/onderdelen/${sgp.id()}/bijlagen/`;
+						const classInfo = _.find(classInfos, (i) => {
+							return _.contains(sg.classCodes(), i.externalInfo.abbreviation);
+						});
+						const classId = classInfo && classInfo.id;
+
+						const studyUtil = new StudyUtil(
+							sgp.name(),
+							sgp.description(),
+							classId,
+							userId
+						);
+
+						studyUtil.visibleFrom = sgp.from();
+						studyUtil.visibleTo = sgp.to();
+						studyUtil.fetchedBy = MagisterBinding.name;
+						studyUtil.externalInfo = {
+							partId: sgp.id(),
+							parentId: sg.id(),
+						};
+						sgp.files().forEach((file) => {
+							const externalFile = convertMagisterFile(path, file);
+							studyUtil.fileIds.push(externalFile._id);
+							files.push(externalFile);
+						})
+
+						studyUtils.push(studyUtil);
+					});
+					studyGuideFut.return();
+				}
+			});
+		});
+
+		for(let i = 0; i < futs.length; i++) futs[i].wait();
+		fut.return({
+			studyUtils,
+			files,
+		});
 	});
 
 	return fut.wait();
@@ -496,99 +498,100 @@ MagisterBinding.getCalendarItems = function (userId, from, to) {
 	magister.appointments(from, to, false, function (e, r) {
 		if (e) {
 			fut.throw(e);
-		} else {
-			const futs = [];
+			return;
+		}
 
-			const calendarItems = [];
-			const absenceInfos = [];
-			const files = [];
+		const futs = [];
 
-			for (let i = 0; i < r.length; i++) {
-				const a = r[i];
+		const calendarItems = [];
+		const absenceInfos = [];
+		const files = [];
 
-				const fut = new Future();
-				futs.push(fut);
+		for (let i = 0; i < r.length; i++) {
+			const a = r[i];
 
-				const classInfo = _.find(user.classInfos, function (i) {
-					const name = i.externalInfo.name;
-					return name != null && name === a.classes()[0];
-				});
-				const classId = classInfo && classInfo.id;
+			const fut = new Future();
+			futs.push(fut);
 
-				const calendarItem = new CalendarItem(
-					userId,
-					a.description(),
-					a.begin(),
-					a.end(),
-					classId || undefined
-				);
+			const classInfo = _.find(user.classInfos, function (i) {
+				const name = i.externalInfo.name;
+				return name != null && name === a.classes()[0];
+			});
+			const classId = classInfo && classInfo.id;
 
-				calendarItem.usersDone = a.isDone() ? [ userId ] : [];
-				calendarItem.externalId = prefixId(magister, a.id());
-				calendarItem.fetchedBy = MagisterBinding.name;
-				if (!_.isEmpty(a.content())) {
-					calendarItem.content = {
-						type: a.infoTypeString(),
-						description: a.content(),
-					};
+			const calendarItem = new CalendarItem(
+				userId,
+				a.description(),
+				a.begin(),
+				a.end(),
+				classId || undefined
+			);
+
+			calendarItem.usersDone = a.isDone() ? [ userId ] : [];
+			calendarItem.externalId = prefixId(magister, a.id());
+			calendarItem.fetchedBy = MagisterBinding.name;
+			if (!_.isEmpty(a.content())) {
+				calendarItem.content = {
+					type: a.infoTypeString(),
+					description: a.content(),
+				};
+			}
+			calendarItem.scrapped = a.scrapped();
+			calendarItem.fullDay = a.fullDay();
+			calendarItem.schoolHour = a.beginBySchoolHour();
+			calendarItem.location = a.location();
+			calendarItem.type = (function (a) {
+				switch (a.type()) {
+				case 1: return 'personal';
+				case 3: return 'schoolwide';
+				case 7: return 'kwt';
+				case 13: return 'lesson';
 				}
-				calendarItem.scrapped = a.scrapped();
-				calendarItem.fullDay = a.fullDay();
-				calendarItem.schoolHour = a.beginBySchoolHour();
-				calendarItem.location = a.location();
-				calendarItem.type = (function (a) {
-					switch (a.type()) {
-					case 1: return 'personal';
-					case 3: return 'schoolwide';
-					case 7: return 'kwt';
-					case 13: return 'lesson';
-					}
-				})(a);
+			})(a);
 
-				const teacher = a.teachers()[0];
-				if (teacher != null) {
-					calendarItem.teacher = {
-						name: teacher.fullName(),
-						id: teacher.id(),
-					};
-				}
-
-				const info = a.absenceInfo();
-				if (info != null) {
-					const absenceInfo = new AbsenceInfo(
-						userId,
-						calendarItem._id,
-						info.typeString(),
-						info.permitted()
-					);
-					absenceInfo.description = info.description();
-					absenceInfo.fetchedBy = MagisterBinding.name;
-					absenceInfo.externalId = prefixId(magister, info.id());
-
-					absenceInfos.push(absenceInfo);
-				}
-
-				a.attachments(function (e, r) {
-					if (e == null) {
-						r.forEach((file) => {
-							const externalFile = convertMagisterFile(path, file, true);
-							calendarItem.fileIds.push(externalFile._id);
-							files.push(externalFile);
-						});
-					}
-					fut.return();
-				});
-
-				calendarItems.push(calendarItem);
+			const teacher = a.teachers()[0];
+			if (teacher != null) {
+				calendarItem.teacher = {
+					name: teacher.fullName(),
+					id: teacher.id(),
+				};
 			}
 
-			for(let i = 0; i < futs.length; i++) futs[i].wait();
-			fut.return({
-				calendarItems,
-				absenceInfos,
-				files,
+			const info = a.absenceInfo();
+			if (info != null) {
+				const absenceInfo = new AbsenceInfo(
+					userId,
+					calendarItem._id,
+					info.typeString(),
+					info.permitted()
+				);
+				absenceInfo.description = info.description();
+				absenceInfo.fetchedBy = MagisterBinding.name;
+				absenceInfo.externalId = prefixId(magister, info.id());
+
+				absenceInfos.push(absenceInfo);
+			}
+
+			a.attachments(function (e, r) {
+				if (e == null) {
+					r.forEach((file) => {
+						const externalFile = convertMagisterFile(path, file, true);
+						calendarItem.fileIds.push(externalFile._id);
+						files.push(externalFile);
+					});
+				}
+				fut.return();
 			});
+
+			calendarItems.push(calendarItem);
 		}
+
+		for(let i = 0; i < futs.length; i++) futs[i].wait();
+		fut.return({
+			calendarItems,
+			absenceInfos,
+			files,
+		});
 	});
 
 	return fut.wait();
@@ -608,24 +611,25 @@ MagisterBinding.getPersonClasses = function (userId) {
 	course.classes(function (e, r) {
 		if (e) {
 			fut.throw(e);
-		} else {
-			fut.return(r.map(function (c) {
-				return {
-					abbreviation: c.abbreviation(),
-					begin: c.beginDate(),
-					end: c.endDate(),
-					exemption: c.classExemption(),
-					name: c.description(),
-					id: c.id(),
-					teacher: (function (t) {
-						const person = new ExternalPerson();
-						person.teacherCode = t.teacherCode();
-						person.fetchedBy = MagisterBinding.name;
-						return person;
-					})(c.teacher()),
-				};
-			}));
+			return;
 		}
+
+		fut.return(r.map(function (c) {
+			return {
+				abbreviation: c.abbreviation(),
+				begin: c.beginDate(),
+				end: c.endDate(),
+				exemption: c.classExemption(),
+				name: c.description(),
+				id: c.id(),
+				teacher: (function (t) {
+					const person = new ExternalPerson();
+					person.teacherCode = t.teacherCode();
+					person.fetchedBy = MagisterBinding.name;
+					return person;
+				})(c.teacher()),
+			};
+		}));
 	});
 
 	return fut.wait();
@@ -724,25 +728,26 @@ MagisterBinding.getAssignments = function (userId) {
 	magister.assignments(function (e, r) {
 		if (e) {
 			fut.throw(e);
-		} else {
-			fut.return(r.map(function (a) {
-				const classInfo = _.find(user.classInfos, function (i) {
-					return i.externalInfo.id === a.class().id();
-				});
-
-				const assignment = new Assignment(
-					a.name(),
-					classInfo ? classInfo.id : undefined,
-					a.deadline()
-				);
-
-				assignment.description = a.description();
-				assignment.externalId = prefixId(magister, a.id());
-				assignment.fetchedBy = MagisterBinding.name;
-
-				return assignment;
-			}));
+			return;
 		}
+
+		fut.return(r.map(function (a) {
+			const classInfo = _.find(user.classInfos, function (i) {
+				return i.externalInfo.id === a.class().id();
+			});
+
+			const assignment = new Assignment(
+				a.name(),
+				classInfo ? classInfo.id : undefined,
+				a.deadline()
+			);
+
+			assignment.description = a.description();
+			assignment.externalId = prefixId(magister, a.id());
+			assignment.fetchedBy = MagisterBinding.name;
+
+			return assignment;
+		}));
 	});
 
 	return fut.wait();
@@ -775,39 +780,40 @@ MagisterBinding.getMessages = function (folderName, skip, limit, userId) {
 	}, function (e, r) {
 		if (e) {
 			fut.throw(e);
-		} else {
-			const messages = [];
-			const files = [];
-
-			r.forEach(function (m) {
-				const path = '/berichten/bijlagen/';
-
-				const message = new Message(
-					m.subject(),
-					m._body,
-					folderName,
-					m.sendDate(),
-					convertMagisterPerson(m.sender(), user)
-				);
-				message.recipients = m.recipients().map((p) => convertMagisterPerson(p, user));
-				message.fetchedBy = MagisterBinding.name;
-				message.externalId = prefixId(magister, m.id());
-				message.readBy = m.isRead() ? [ userId ] : [];
-
-				m.attachments().forEach((file) => {
-					const externalFile = convertMagisterFile(path, file, true);
-					message.attachmentIds.push(externalFile._id);
-					files.push(externalFile);
-				});
-
-				messages.push(message);
-			});
-
-			fut.return({
-				messages,
-				files,
-			});
+			return;
 		}
+
+		const messages = [];
+		const files = [];
+
+		r.forEach(function (m) {
+			const path = '/berichten/bijlagen/';
+
+			const message = new Message(
+				m.subject(),
+				m._body,
+				folderName,
+				m.sendDate(),
+				convertMagisterPerson(m.sender(), user)
+			);
+			message.recipients = m.recipients().map((p) => convertMagisterPerson(p, user));
+			message.fetchedBy = MagisterBinding.name;
+			message.externalId = prefixId(magister, m.id());
+			message.readBy = m.isRead() ? [ userId ] : [];
+
+			m.attachments().forEach((file) => {
+				const externalFile = convertMagisterFile(path, file, true);
+				message.attachmentIds.push(externalFile._id);
+				files.push(externalFile);
+			});
+
+			messages.push(message);
+		});
+
+		fut.return({
+			messages,
+			files,
+		});
 	});
 
 	return fut.wait();
@@ -888,17 +894,18 @@ MagisterBinding.replyMessage = function (id, all, body, userId) {
 	}, function (error, response, content) {
 		if (response && response.statusCode >= 400) {
 			fut.throw(content);
-		} else {
-			const parsed = JSON.parse(content);
-			let message = Magister.Message._convertRaw(magister, parsed);
-
-			if (all) {
-				message = message.createReplyToAllMessage(body);
-			} else {
-				message = message.createReplyMessage(body);
-			}
-			message.send(fut.resolver());
+			return;
 		}
+
+		const parsed = JSON.parse(content);
+		let message = Magister.Message._convertRaw(magister, parsed);
+
+		if (all) {
+			message = message.createReplyToAllMessage(body);
+		} else {
+			message = message.createReplyMessage(body);
+		}
+		message.send(fut.resolver());
 	});
 
 	return fut.wait();
