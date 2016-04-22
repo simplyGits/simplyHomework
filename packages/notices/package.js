@@ -93,6 +93,9 @@ Package.onUse(function(api) {
 		'client/projects/projects.html',
 		'client/projects/projects.styl',
 		'client/projects/projects.coffee',
+
+		'client/serviceUpdates/serviceUpdates.html',
+		'client/serviceUpdates/serviceUpdates.coffee',
 	], 'client');
 	api.addFiles([
 		'server/emails.js',

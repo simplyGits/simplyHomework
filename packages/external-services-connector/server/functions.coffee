@@ -2,6 +2,7 @@
 GRADES_INVALIDATION_TIME         = ms.minutes 20
 STUDYUTILS_INVALIDATION_TIME     = ms.minutes 20
 CALENDAR_ITEMS_INVALIDATION_TIME = ms.minutes 10
+SERVICE_UPDATE_INVALIDATION_TIME = ms.minutes 30
 PERSON_CACHE_INVALIDATION_TIME   = ms.minutes 15
 
 handleCollErr = (e) ->
@@ -58,6 +59,25 @@ markUserEvent = (userId, name) ->
 	check userId, String
 	check name, String
 	Meteor.users.update userId, $set: "events.#{name}": new Date
+
+###*
+# @method checkAndMarkUserEvent
+# @param {String} userId
+# @param {String} name
+# @param {Number} invalidationTime
+# @return {Boolean}
+###
+checkAndMarkUserEvent = (userId, name, invalidationTime) ->
+	check userId, String
+	check name, String
+	check invalidationTime, Number
+
+	updateTime = getEvent name, userId
+	if updateTime? and updateTime > _.now() - invalidationTime
+		no
+	else
+		markUserEvent userId, name
+		yes
 
 diffAndInsertFiles = (userId, files) ->
 	vals = Files.find(
@@ -748,6 +768,42 @@ replyMessage = (id, all, body, service, userId) ->
 	serivce.replyMessage id, all, body, userId
 
 ###*
+# @fetchServiceUpdates
+# @param {String} userId
+# @param {Boolean} [forceUpdate=false]
+# @return {Error[]}
+###
+fetchServiceUpdates = (userId, forceUpdate = no) ->
+	check userId, String
+	check forceUpdate, Boolean
+
+	errors = []
+	updates = []
+
+	services = _.filter Services, (s) -> s.getUpdates? and s.active userId
+	if services.length is 0 or not checkAndMarkUserEvent(
+		userId
+		'serviceUpdatesUpdate'
+		SERVICE_UPDATE_INVALIDATION_TIME
+	)
+		return errors
+
+	for service in services
+		try
+			updates = updates.concat service.getUpdates userId
+		catch e
+			console.log 'error while fetching updates from service.', e
+			ExternalServicesConnector.handleServiceError service.name, userId, e
+			errors.push e
+			continue
+
+	ServiceUpdates.remove { userId }
+	for update in updates
+		ServiceUpdates.insert update, handleCollErr
+
+	errors
+
+###*
 # Returns an array containing info about available services.
 # @method getModuleInfo
 # @param userId {String} The ID of the user to use for the service info.
@@ -777,4 +833,5 @@ getModuleInfo = (userId) ->
 @updateMessages = updateMessages
 @sendMessage = sendMessage
 @replyMessage = replyMessage
+@fetchServiceUpdates = fetchServiceUpdates
 @getModuleInfo = getModuleInfo

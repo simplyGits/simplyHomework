@@ -40,9 +40,6 @@ folders = [{
 	name: 'drafts'
 	friendlyName: 'Concepten'
 }, {
-	name: 'alerts'
-	friendlyName: 'Meldingen'
-}, {
 	name: 'outbox'
 	friendlyName: 'Verzonden'
 }]
