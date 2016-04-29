@@ -811,7 +811,6 @@ fetchServiceUpdates = (userId, forceUpdate = no) ->
 	check forceUpdate, Boolean
 
 	errors = []
-	updates = []
 
 	services = _.filter Services, (s) -> s.getUpdates? and s.active userId
 	if services.length is 0 or not checkAndMarkUserEvent(
@@ -823,16 +822,19 @@ fetchServiceUpdates = (userId, forceUpdate = no) ->
 
 	for service in services
 		try
-			updates = updates.concat service.getUpdates userId
+			updates = service.getUpdates userId
 		catch e
 			console.log 'error while fetching updates from service.', e
 			ExternalServicesConnector.handleServiceError service.name, userId, e
 			errors.push e
 			continue
 
-	ServiceUpdates.remove { userId }
-	for update in updates
-		ServiceUpdates.insert update, handleCollErr
+		ServiceUpdates.remove {
+			userId: userId
+			fetchedBy: service.name
+		}, handleCollErr
+		for update in updates
+			ServiceUpdates.insert update, handleCollErr
 
 	errors
 
