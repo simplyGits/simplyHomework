@@ -304,7 +304,6 @@ Template.chatSidebar.onCreated ->
 								"#{sender.profile.firstName} in #{chatRoom.friendlyName()}"
 						)
 						body = "#{title}\n#{doc._originalContent ? doc.content}"
-						window.stuff = { doc, chatRoom, sender, body }
 
 						lastNotifications[chatId]?.hide()
 						lastNotifications[chatId] = NotificationsManager.notify
