@@ -23,10 +23,13 @@ Template.settings.events
 	'click #closeButton': -> history.back()
 
 Template.settings.onRendered ->
-	slide()
 	setPageOptions
 		title: 'Instellingen'
 		color: null
+
+	@autorun ->
+		FlowRouter.watchPathChange()
+		slide()
 
 	@sequence = sequence = 'up up down down left right left right'
 	field = 'settings.devSettings.enabled'
