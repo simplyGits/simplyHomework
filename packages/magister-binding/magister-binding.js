@@ -422,6 +422,16 @@ MagisterBinding.getStudyUtils = function (userId, options) {
 	return fut.wait();
 };
 
+/**
+ * @method convertMagisterPerson
+ * @param {MagisterPerson} person The `MagisterPerson` to convert to an `ExternalPerson`
+ * @param {User} user The current user object that fetched the user, used to
+ * prefix the person with the school id and to add a shortcut for matching the
+ * userId with itself, which is pretty common when you fetch, for example,
+ * messages where in most of the messages the current user exists inside the
+ * recipients or the sender.
+ * @return {ExternalPerson}
+ */
 function convertMagisterPerson (person, user) {
 	const magister = getMagisterObject(user._id);
 	const res = new ExternalPerson(
