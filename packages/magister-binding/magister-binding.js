@@ -1,6 +1,6 @@
- /* global AbsenceInfo, Magister, Schools, Grades,
+ /* global AbsenceInfo, Schools, Grades,
   Grade, StudyUtil, GradePeriod, ExternalPerson, CalendarItem, Assignment,
-  ExternalFile, getClassInfos, LRU, Message, ms, MagisterBinding, ServiceUpdate */
+  ExternalFile, getClassInfos, Message, ms, MagisterBinding, ServiceUpdate */
 
 // One heck of a binding this is.
 
