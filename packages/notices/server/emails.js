@@ -43,7 +43,12 @@ SyncedCron.add({
 				ownerId: userId,
 				isEnd: false,
 				classId: { $exists: true },
-				dateFilledIn: { $gte: Date.today().addDays(-1) },
+				$and: [
+					{ dateFilledIn: { $gte: Date.today().addDays(-1) }},
+					// user probably has already seen the grade when he logged in on
+					// simplyHomework, no need to send a mail.
+					{ dateFilledIn: { $gt: user.status.lastLogin.date }},
+				]
 			}, {
 				fields: {
 					_id: 1,
@@ -56,12 +61,6 @@ SyncedCron.add({
 			})
 
 			grades.forEach((grade) => {
-				if (user.status.lastLogin.date > grade.dateFilledIn) {
-					// user probably has already seen the grade when he logged in on
-					// simplyHomework, no need to send a mail.
-					return
-				}
-
 				const c = Classes.findOne(grade.classId)
 
 				try {
