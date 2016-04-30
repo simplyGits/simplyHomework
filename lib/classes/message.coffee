@@ -53,6 +53,13 @@ class @Message
 		###
 		@externalId = undefined
 
+		###*
+		# @property notifiedOn
+		# @type Date|undefined
+		# @default undefined
+		###
+		@notifiedOn = undefined
+
 	attachments: -> Files.find(_id: $in: @attachmentIds).fetch()
 
 	# TODO: make this based on length of the res string instead of amount of
@@ -108,6 +115,9 @@ class @Message
 			optional: yes
 		externalId:
 			type: null
+			optional: yes
+		notifiedOn:
+			type: Date
 			optional: yes
 
 @Messages = new Mongo.Collection 'messages', transform: (m) -> _.extend new Message, m

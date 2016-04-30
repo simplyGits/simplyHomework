@@ -89,6 +89,90 @@ SyncedCron.add({
 	},
 })
 
+SyncedCron.add({
+	name: 'Notify new messages',
+	schedule: (parser) => parser.recur().every(1).hour(),
+	job: function () {
+		// TODO: handle replies
+
+		const users = Meteor.users.find({
+			'profile.firstName': { $ne: '' },
+			'settings.devSettings.newMessageNotification': true,
+			'status.online': false,
+		}).fetch()
+		let notifiedCount = 0
+
+		users.forEach((user) => {
+			const userId = user._id
+
+			updateMessages(userId, 0, [ 'inbox' ])
+
+			const messages = Messages.find({
+				fetchedFor: userId,
+				readBy: { $ne: userId },
+				sendDate: { $gt: user.status.lastLogin.date },
+				notifiedOn: { $exists: false },
+			}, {
+				fields: {
+					_id: 1,
+					fetchedFor: 1,
+					readBy: 1,
+					sendDate: 1,
+					notifiedOn: 1,
+
+					attachmentIds: 1,
+					body: 1,
+					sender: 1,
+					subject: 1,
+				},
+			})
+
+			messages.forEach((message) => {
+				const c = Classes.findOne(grade.classId)
+
+				try {
+					// TODO: when we have better support for hotlinking inside
+					// of the router for file paths,
+					// (see ../../external-services-connector/server/router.coffee)
+					// we should add hotlinks to the attachments inside of the
+					// message body.
+
+					const plural = (count, singular, plural) => count === 1 ? singular : plural
+					const body = [
+						`Verzonden om: ${moment(message.sendDate).format('dddd D MMMM YYYY HH:mm')}`,
+						`${plural(message.attachmentIds.length, 'Bijlage', 'Bijlages')}: ${message.attachments().map((f) => f.name).join(', ')}`,
+						'\n',
+						message.body,
+					].join('\n')
+					sendMail(user, `Bericht van ${message.sender.fullName}: '${message.subject}'`, body)
+
+					notifiedCount++
+					Analytics.insert({
+						type: 'send-mail',
+						date: new Date,
+						emailType: 'message',
+					})
+					Messages.update(message._id, {
+						$set: {
+							notifiedOn: new Date(),
+						},
+					})
+				} catch (err) {
+					Kadira.trackError(
+						'notices-emails',
+						err.message,
+						{ stacks: err.stack }
+					)
+				}
+			})
+		})
+
+		const str = `notified ${notifiedCount} new message(s) per mail.`
+		console.log(str)
+		return str
+	},
+})
+
 NoticeMails = {
 	projects(projectId, addedUserId, adderUserId) {
 		const setting = getUserField(
