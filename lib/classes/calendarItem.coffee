@@ -2,12 +2,12 @@
 # Item in the calendar.
 #
 # @class CalendarItem
-# @param ownerId The ID of the creator of this CalendarItem.
-# @param description {String} The description / content of this item.
-# @param startDate {Date} The start date of this item.
-# @param [endDate] {Date} The end date of this item. Defaults to 1 hour after `startDate`.
-# @param [classId] If this item is linked with a class: the ID of the class; otherwise: undefined
 # @constructor
+# @param {String} ownerId The ID of the creator of this CalendarItem.
+# @param {String} description The description this calendarItem.
+# @param {Date} startDate The start date of this item.
+# @param {Date} [endDate] The end date of this item. Defaults to 1 hour after `startDate`.
+# @param {String} [classId] This ID of the Class this calendarItem is linked with.
 ###
 class @CalendarItem
 	# TODO: Better i18n for these methods?
@@ -24,7 +24,7 @@ class @CalendarItem
 
 	constructor: (ownerId, @description, @startDate, @endDate, @classId) ->
 		@_id = new Mongo.ObjectID().toHexString()
-		@endDate ?= moment(@startDate).add(1, "hour").toDate()
+		@endDate ?= moment(@startDate).add(1, 'hour').toDate()
 
 		###*
 		# @property userIds
@@ -51,7 +51,7 @@ class @CalendarItem
 		# The interval for repeating in seconds.
 		# If null, this CalendarItem doesn't repeat.
 		# Warning: This method only supports 'dumb' repeats,
-		# not something like: "every 20th day of the moth".
+		# not something like: 'every 20th day of the month'.
 		#
 		# The start of timing the interval is @startDate.
 		# The end is set by @endDate.

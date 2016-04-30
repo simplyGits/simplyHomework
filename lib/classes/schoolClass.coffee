@@ -68,7 +68,6 @@ classTransform = (c) ->
 	classInfo = _.find getClassInfos(), (info) -> EJSON.equals info.id, c._id
 
 	_.extend c,
-		#__taskAmount: _.filter(homeworkItems.get(), (a) -> groupInfo?.group is a.description() and not a.isDone()).length
 		__book: -> Books.findOne classInfo?.bookId
 		__sidebarName: (
 			val = c.name
@@ -91,8 +90,8 @@ class @SchoolClass
 	constructor: (name, abbreviation, @year, schoolVariant) ->
 		@name = Helpers.cap normalizeClassName name
 		@schoolVariant = normalizeSchoolVariant schoolVariant
-		abbreviation = abbreviation.toLowerCase().trim()
 
+		abbreviation = abbreviation.toLowerCase().trim()
 		###*
 		# @property abbreviations
 		# @type String[]

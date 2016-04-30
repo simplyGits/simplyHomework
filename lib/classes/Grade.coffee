@@ -30,7 +30,7 @@ gradeConverter = (grade) ->
 	check grade, String
 	number = parseFloat grade.replace(',', '.').replace(/[^\d\.]/g, '')
 
-	# Normal Dutch grades
+	# Normal Dutch grades and percentages
 	return number unless _.isNaN number
 
 	# English grades
@@ -47,15 +47,10 @@ gradeConverter = (grade) ->
 			else number
 		)
 
-	# TODO: This seems like it's never called.
-	# Percentages
-	if _.isString(grade) and grade[-1..] is '%' and not _.isNaN number
-		return number
-
 	NaN
 
 ###*
-# A serverside database stored grade.
+# A server side database stored grade.
 #
 # @class Grade
 # @constructor
