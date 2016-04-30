@@ -9,6 +9,9 @@ parseCookies = (str = '') ->
 			res[splitted[0]] = splitted[1]
 	res
 
+# TODO: make this friendlier when the user isn't logged in yet (show a login
+# dialog, for example), so that we can hotlink a link to a file inside of a
+# mail, for example.
 Picker.route '/f/:fid', (params, req, res) ->
 	err = (code, str) ->
 		res.writeHead code, 'Content-Type': 'text/plain'

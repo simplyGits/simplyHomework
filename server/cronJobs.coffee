@@ -124,7 +124,7 @@ SyncedCron.add
 						title: b.title
 						woordjesLerenListCount: b.listCount
 
-				# Update or, if it doesn't currently exist, the class in the database.
+				# Update or, if it doesn't currently exist, create the class in the database.
 				WoordjesLerenClasses.upsert { id: c.id }, c
 
 			# We're done here, stop looping.

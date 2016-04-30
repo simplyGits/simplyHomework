@@ -36,19 +36,19 @@ getMail = function (title, body, schema) {
 /**
  * @method sendMail
  * @param {User|String} user User object or email address
- * @param {String} subject
+ * @param {String} title
  * @param {String} body
  */
-sendMail = function (user, subject, body) {
+sendMail = function (user, title, body) {
 	check(user, Match.OneOf(Object, String))
-	check(subject, String)
+	check(title, String)
 	check(body, String)
 
 	Email.send({
 		from: 'simplyHomework <hello@simplyApps.nl>',
 		to: _.isString(user) ? user : user.emails[0].address,
-		subject: `simplyHomework | ${subject}`,
-		html: getMail(subject, body),
+		subject: `simplyHomework | ${title}`,
+		html: getMail(title, body),
 	})
 }
 
