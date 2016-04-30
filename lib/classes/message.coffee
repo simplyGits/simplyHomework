@@ -5,7 +5,7 @@
 # @param {String} body
 # @param {String} folder
 # @param {Date} sendDate
-# @param {Object} sender
+# @param {ExternalPerson} sender
 ###
 class @Message
 	constructor: (@subject, @body, @folder, @sendDate, @sender) ->
@@ -13,7 +13,7 @@ class @Message
 
 		###*
 		# @property recipients
-		# @type Object[]
+		# @type ExternalPerson[]
 		# @default []
 		###
 		@recipients = []
