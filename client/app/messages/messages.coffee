@@ -163,6 +163,23 @@ Template['message_current_message'].helpers
 
 Template['message_current_message'].events
 	'click #closeButton': -> history.back()
+	'click [data-action="reply"]': ->
+		FlowRouter.go 'composeMessage', undefined,
+			replyId: @_id
+			recipients: @sender.fullName
+			subject: "RE: #{@subject}"
+			body: """
+			\n
+			---
+
+			Oorspronkelijk bericht:
+			Van: #{@sender.fullName}
+			Verzonden: #{moment(@sendDate).format 'dddd D MMMM YYYY HH:mm'}
+			Aan: #{@recipientsString Infinity, no}
+			Onderwerp: #{@subject}
+
+			#{@body}
+			"""
 
 Template['message_current_message'].onCreated ->
 	@autorun =>
@@ -251,18 +268,32 @@ Template['message_compose'].events
 			notify 'Inhoud kan niet leeg zijn', 'error'
 			return undefined
 
-		Meteor.call(
-			'sendMessage'
-			subject
-			body
-			recipients.split(';').map (r) -> r.trim()
-			'magister'
-			FlowRouter.getQueryParam 'draftId'
-			(e, r) ->
-				if e?
-					notify 'Fout tijdens versturen van bericht', 'error'
-					Kadira.trackError 'composeMessage-client', e.message, stacks: e.stack
-				else
-					notify 'Bericht verzonden', 'success'
-					history.back()
-		)
+		replyId = FlowRouter.getQueryParam 'replyId'
+
+		cb = (e, r) ->
+			if e?
+				notify 'Fout tijdens versturen van bericht', 'error'
+				Kadira.trackError 'composeMessage-client', e.message, stacks: e.stack
+			else
+				notify 'Bericht verzonden', 'success'
+				history.back()
+
+		if replyId?
+			Meteor.call(
+				'replyMessage'
+				replyId
+				no
+				body
+				FlowRouter.getQueryParam 'draftId'
+				cb
+			)
+		else
+			Meteor.call(
+				'sendMessage'
+				subject
+				body
+				recipients.split(';').map (r) -> r.trim()
+				'magister'
+				FlowRouter.getQueryParam 'draftId'
+				cb
+			)
