@@ -14,20 +14,24 @@
 			<h1>Jouw overzicht</h1>
 
 			<div id="container">
-				<div id="buttons">
-					{{#if loggingIn}}
-						<a href="{{pathFor 'signup'}}">Account maken</a>
-						<a href="{{pathFor 'login'}}" class="active">Inloggen</a>
-					{{else}}
-						<a href="{{pathFor 'signup'}}" class="active">Account maken</a>
-						<a href="{{pathFor 'login'}}">Inloggen</a>
-					{{/if}}
-				</div>
-
-				{{#if loggingIn}}
-					{{> login}}
+				{{#if tfa}}
+					{{> tfa_login}}
 				{{else}}
-					{{> signup}}
+					<div id="buttons">
+						{{#if loggingIn}}
+							<a href="{{pathFor 'signup'}}">Account maken</a>
+							<a href="{{pathFor 'login'}}" class="active">Inloggen</a>
+						{{else}}
+							<a href="{{pathFor 'signup'}}" class="active">Account maken</a>
+							<a href="{{pathFor 'login'}}">Inloggen</a>
+						{{/if}}
+					</div>
+
+					{{#if loggingIn}}
+						{{> login}}
+					{{else}}
+						{{> signup}}
+					{{/if}}
 				{{/if}}
 			</div>
 		</div>
@@ -80,6 +84,21 @@
 					</label>
 				</div>
 				<input type="submit" class="btn btn-primary" value="Account maken"/>
+			</fieldset>
+		</form>
+	</div>
+</template>
+
+<template name="tfa_login">
+	<div id="tfaForm">
+		<form class="vertical full-width">
+			<fieldset name="Tfa Form">
+				<div id="tfaGroup" class="group">
+					<label for="tfaInput">2-staps authenticatie code</label>
+					<input type="text" id="tfaInput" autofocus />
+				</div>
+
+				<input type="submit" class="btn btn-primary" value="Inloggen"/>
 			</fieldset>
 		</form>
 	</div>

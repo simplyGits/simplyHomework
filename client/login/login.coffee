@@ -1,7 +1,10 @@
 loading = new ReactiveVar no
 
+tfaData = new ReactiveVar undefined # { mail, password }
+
 Template['login_signup'].helpers
 	loggingIn: -> FlowRouter.getRouteName() is 'login'
+	tfa: -> tfaData.get()?
 
 	isLoading: -> loading.get()
 	__loading: -> if loading.get() then 'loading' else ''
@@ -12,9 +15,12 @@ Template.login.events
 		$emailInput = $ '#emailInput'
 		$passwordInput = $ '#passwordInput'
 
+		mail = $emailInput.val().toLowerCase()
+		password = $passwordInput.val()
+
 		loading.set yes
 		ga 'send', 'event', 'login'
-		Meteor.loginWithPassword $emailInput.val().toLowerCase(), $passwordInput.val(), (error) ->
+		Meteor.loginWithPassword mail, password, (error) ->
 			loading.set no
 			if error?
 				Meteor.defer ->
@@ -24,12 +30,39 @@ Template.login.events
 					else if error.reason is 'User not found'
 						setFieldError '#emailGroup', 'Account niet gevonden'
 						$emailInput.focus()
+					else if error.error is 'tfa-required'
+						tfaData.set { mail, password }
 			else FlowRouter.go 'overview'
 
 Template.login.onRendered ->
 	setPageOptions
 		title: 'Login'
 		color: null
+
+Template.tfa_login.events
+	'submit': (event) ->
+		event.preventDefault()
+
+		$tfaInput = $ '#tfaInput'
+		token = $tfaInput.val()
+
+		{ mail, password } = tfaData.get()
+		loading.set yes
+		Meteor.call 'tfa_login', mail, Package.sha.SHA256(password), token, (e, r) ->
+			if e?
+				loading.set no
+				setFieldError '#tfaGroup', 'Code is fout'
+				$tfaInput.focus()
+			else
+				Meteor.loginWithToken r.token, (e, r) ->
+					loading.set no
+					tfaData.set undefined
+
+					if e?
+						notify 'Onbekende fout, we zijn op de hoogte gesteld', 'error'
+						Kadira.trackError '2fa-login', e.message, stacks: e.stack
+					else
+						FlowRouter.go 'overview'
 
 Template.signup.events
 	'submit': (event) ->
@@ -63,6 +96,9 @@ Template.signup.events
 			}, (e, r) ->
 				loading.set no
 				if e?
+					# TODO: better handling when creating account that already exists?
+					# Maybe just try logging in?
+
 					notify 'Onbekende fout, we zijn op de hoogte gesteld', 'error'
 					Kadira.trackError 'create-account', e.message, stacks: e.stack
 				else FlowRouter.go 'overview'

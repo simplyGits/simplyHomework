@@ -10,8 +10,12 @@ Accounts.validateLoginAttempt(function ({ type, allowed, user }) {
 		return true
 	}
 
-	// force the user to login with the 'tfa_login' method
-	return user.devSettings.tfaEnabled !== true
+	if (_.get(user, 'settings.devSettings.tfaEnabled')) {
+		// force the user to login with the 'tfa_login' method
+		throw new Meteor.Error('tfa-required')
+	}
+
+	return true
 })
 
 Meteor.methods({
@@ -116,11 +120,14 @@ Picker.route('/2fa/qr', function (params, req, res) {
 })
 
 Meteor.startup(function () {
+	let loading = true
+
 	Meteor.users.find({
-		'devSettings.tfaEnabled': true,
-		'tfa.secret': { $exists: false },
+		'settings.devSettings.tfaEnabled': true,
 	}).observe({
 		added(user) {
+			if (loading) return
+
 			const secret = speakeasy.generateSecret({
 				length: 32,
 				symbols: true,
@@ -134,5 +141,12 @@ Meteor.startup(function () {
 				},
 			})
 		},
+
+		removed(user) {
+			if (loading) return
+			Meteor.users.update(user._id, { $unset: { 'tfa': true } })
+		},
 	})
+
+	loading = false
 })

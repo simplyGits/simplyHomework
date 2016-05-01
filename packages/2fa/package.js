@@ -4,27 +4,37 @@ Package.describe({
 	summary: '',
 	git: '',
 	documentation: 'README.md',
-});
+})
 
 Npm.depends({
 	'speakeasy': '2.0.0',
 	'qrcode': '0.4.2',
-});
+})
 
 Package.onUse(function(api) {
-	api.versionsFrom('1.3.2.4');
+	api.versionsFrom('1.3.2.4')
+	api.use('ecmascript')
 	api.use([
-		'ecmascript',
+		'templating',
+		'handlebars',
+		'mquandalle:stylus',
+	], 'client')
+	api.use([
 		'meteorhacks:picker',
 		'accounts-base',
 		'check',
-	], 'server');
-	api.mainModule('2fa.js', 'server');
-});
+		'stevezhu:lodash@3.10.1',
+	], 'server')
+	api.addFiles([
+		'modal/modal.html',
+		'modal/modal.styl',
+	], 'client')
+	api.mainModule('2fa.js', 'server')
+})
 
 Package.onTest(function(api) {
-	api.use('ecmascript');
-	api.use('tinytest');
-	api.use('2fa');
-	api.mainModule('2fa-tests.js');
-});
+	api.use('ecmascript')
+	api.use('tinytest')
+	api.use('2fa')
+	api.mainModule('2fa-tests.js')
+})
