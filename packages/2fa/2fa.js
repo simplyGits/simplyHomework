@@ -54,7 +54,6 @@ Meteor.methods({
 
 		const loginToken = Accounts._generateStampedLoginToken()
 		Accounts._insertLoginToken(userId, loginToken)
-		this.setUserId(userId)
 		return loginToken
 	},
 })
