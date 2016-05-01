@@ -1,6 +1,6 @@
 /* global getUserField, checkPasswordHash, Picker */
 
-import QRCode from 'qrcode'
+// import QRCode from 'qrcode'
 import speakeasy from 'speakeasy'
 
 Accounts.validateLoginAttempt(function ({ type, allowed, user }) {
@@ -19,6 +19,25 @@ Accounts.validateLoginAttempt(function ({ type, allowed, user }) {
 })
 
 Meteor.methods({
+	tfa_getkey() {
+		const secret = getUserField(this.userId, 'tfa.secret')
+		if (secret == null) {
+			throw new Meteor.Error('secret-not-found')
+		}
+
+		if (getUserField(this.userId, 'tfa.retrieved', false)) {
+			throw new Meteor.Error('key-already-retrieved')
+		}
+
+		Meteor.users.update(this.userId, {
+			$set: {
+				'tfa.retrieved': true,
+			},
+		})
+
+		return secret.base32
+	},
+
 	tfa_login(mail, hash, token) {
 		check(mail, String)
 		check(hash, String)
@@ -58,6 +77,7 @@ Meteor.methods({
 	},
 })
 
+/*
 Picker.route('/2fa/qr', function (params, req, res) {
 	const err = (code, str) => {
 		res.writeHead(code, { 'Content-Type': 'text/plain' })
@@ -117,6 +137,7 @@ Picker.route('/2fa/qr', function (params, req, res) {
 		},
 	})
 })
+*/
 
 Meteor.startup(function () {
 	let loading = true
@@ -128,7 +149,8 @@ Meteor.startup(function () {
 			if (loading) return
 
 			const secret = speakeasy.generateSecret({
-				length: 32,
+				// length: 32,
+				length: 16,
 				symbols: true,
 				otpauth_url: true,
 				name: 'simplyHomework',
