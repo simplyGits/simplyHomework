@@ -98,7 +98,13 @@ SyncedCron.add({
 		const users = Meteor.users.find({
 			'profile.firstName': { $ne: '' },
 			'settings.devSettings.newMessageNotification': true,
-			'status.online': false,
+
+			// REVIEW: I have commented this out since I'm not really sure why
+			// this was here in the first place, maybe I had a good reason for
+			// it, or maybe it was just pure shit to begin with.
+			// (We could also just check if the person is idle or offline, maybe
+			// that's better.)
+			// 'status.online': false,
 		}).fetch()
 		let notifiedCount = 0
 
