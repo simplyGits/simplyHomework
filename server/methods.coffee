@@ -15,7 +15,7 @@ gradeMeanCache = LRU
 # @param userId {String}
 # @return {Boolean} Whether or not the given `passHash` is correct.
 ###
-checkPasswordHash = (passHash, userId) ->
+@checkPasswordHash = checkPasswordHash = (passHash, userId) ->
 	check passHash, String
 	check userId, String
 

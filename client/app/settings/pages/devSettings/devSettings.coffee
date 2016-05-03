@@ -7,7 +7,17 @@ items = [{
 }, {
 	name: 'newMessageNotification'
 	description: 'Stuur een email als je een nieuw bericht hebt ontvangen.'
+}, {
+	name: 'tfaEnabled'
+	description: '2-staps authenticatie aanzetten.'
+	afterChange: (val) ->
+		return unless val
+		showModal '2fa_key_modal'
 }]
+
+Template['settings_page_devSettings'].onRendered ->
+	unless Helpers.isDesktop()
+		_.remove items, name: 'tfaEnabled'
 
 Template['settings_page_devSettings'].helpers
 	items: ->
@@ -19,5 +29,8 @@ Template.devOption.helpers
 
 Template.devOption.events
 	'change': ->
-		Meteor.users.update Meteor.userId(),
-			$set: "settings.devSettings.#{@name}": not @enabled
+		newState = not @enabled
+		@beforeChange? newState
+		Meteor.users.update Meteor.userId(), {
+			$set: "settings.devSettings.#{@name}": newState
+		}, (e) => @afterChange? newState unless e?

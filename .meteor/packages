@@ -83,3 +83,4 @@ modules
 service-messages
 meteorhacks:aggregate
 admin
+2fa
