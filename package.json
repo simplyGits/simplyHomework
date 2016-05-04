@@ -3,11 +3,11 @@
   "version": "1.0.0",
   "description": "Education with a little more swag.",
   "dependencies": {
-    "fibers": "^1.0.10",
+    "fibers": "^1.0.12",
     "request": "^2.69.0",
     "spin.js": "^2.3.2",
     "sweetalert": "^1.1.3",
-    "tether": "^1.2.0"
+    "tether": "^1.3.2"
   },
   "devDependencies": {},
   "scripts": {
