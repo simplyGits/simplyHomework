@@ -377,38 +377,39 @@ MagisterBinding.getStudyUtils = function (userId, options) {
 			sg.parts(function (e, r) {
 				if (e) {
 					studyGuideFut.throw(e);
-				} else {
-					r.forEach(function (sgp) {
-						const path = `/studiewijzers/${sg.id()}/onderdelen/${sgp.id()}/bijlagen/`;
-						const classInfo = _.find(classInfos, (i) => {
-							return _.contains(sg.classCodes(), i.externalInfo.abbreviation);
-						});
-						const classId = classInfo && classInfo.id;
-
-						const studyUtil = new StudyUtil(
-							sgp.name(),
-							sgp.description(),
-							classId,
-							userId
-						);
-
-						studyUtil.visibleFrom = sgp.from();
-						studyUtil.visibleTo = sgp.to();
-						studyUtil.fetchedBy = MagisterBinding.name;
-						studyUtil.externalInfo = {
-							partId: sgp.id(),
-							parentId: sg.id(),
-						};
-						sgp.files().forEach((file) => {
-							const externalFile = convertMagisterFile(path, file);
-							studyUtil.fileIds.push(externalFile._id);
-							files.push(externalFile);
-						})
-
-						studyUtils.push(studyUtil);
-					});
-					studyGuideFut.return();
+					return;
 				}
+
+				r.forEach(function (sgp) {
+					const path = `/studiewijzers/${sg.id()}/onderdelen/${sgp.id()}/bijlagen/`;
+					const classInfo = _.find(classInfos, (i) => {
+						return _.contains(sg.classCodes(), i.externalInfo.abbreviation);
+					});
+					const classId = classInfo && classInfo.id;
+
+					const studyUtil = new StudyUtil(
+						sgp.name(),
+						sgp.description(),
+						classId,
+						userId
+					);
+
+					studyUtil.visibleFrom = sgp.from();
+					studyUtil.visibleTo = sgp.to();
+					studyUtil.fetchedBy = MagisterBinding.name;
+					studyUtil.externalInfo = {
+						partId: sgp.id(),
+						parentId: sg.id(),
+					};
+					sgp.files().forEach((file) => {
+						const externalFile = convertMagisterFile(path, file);
+						studyUtil.fileIds.push(externalFile._id);
+						files.push(externalFile);
+					})
+
+					studyUtils.push(studyUtil);
+				});
+				studyGuideFut.return();
 			});
 		});
 
