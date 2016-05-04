@@ -117,7 +117,7 @@ SyncedCron.add({
 				fetchedFor: userId,
 				readBy: { $ne: userId },
 				sendDate: { $gt: user.status.lastLogin.date },
-				notifiedOn: { $exists: false },
+				notifiedOn: null,
 			}, {
 				fields: {
 					_id: 1,
@@ -134,8 +134,6 @@ SyncedCron.add({
 			})
 
 			messages.forEach((message) => {
-				const c = Classes.findOne(grade.classId)
-
 				try {
 					// TODO: when we have better support for hotlinking inside
 					// of the router for file paths,

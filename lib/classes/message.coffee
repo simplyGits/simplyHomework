@@ -55,10 +55,10 @@ class @Message
 
 		###*
 		# @property notifiedOn
-		# @type Date|undefined
-		# @default undefined
+		# @type Date|null
+		# @default null
 		###
-		@notifiedOn = undefined
+		@notifiedOn = null
 
 	attachments: -> Files.find(_id: $in: @attachmentIds).fetch()
 
