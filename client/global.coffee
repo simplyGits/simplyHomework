@@ -48,7 +48,6 @@ Meteor.startup ->
 	$body = $ 'body'
 
 	$("html").attr "lang", "nl"
-	moment.locale "nl"
 	emojione.ascii = yes # Convert ascii smileys (eg. :D) to emojis.
 
 	reCAPTCHA.config

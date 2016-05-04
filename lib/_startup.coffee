@@ -1,4 +1,6 @@
 if Meteor.isClient
+	moment.locale 'nl'
+
 	TimeSync.loggingEnabled = no
 
 	# TODO: expand this regex or also add an matchMedia for tablets.

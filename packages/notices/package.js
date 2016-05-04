@@ -8,6 +8,7 @@ Package.describe({
 
 Npm.depends({
 	'simplyemail': '1.0.2',
+	'moment-timezone': '0.5.4',
 });
 
 Package.onUse(function(api) {

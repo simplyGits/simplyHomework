@@ -2,6 +2,8 @@
    GradeFunctions, Analytics */
 
 import emails from 'meteor/emails'
+import moment from 'moment-timezone'
+moment.locale('nl')
 
 // TODO: have a central place for the default options of notifications, just
 // like the 'privacy' package has. Currently if we want to change the default of
@@ -129,6 +131,7 @@ SyncedCron.add({
 					attachmentIds: 1,
 					body: 1,
 					sender: 1,
+					recipients: 1,
 					subject: 1,
 				},
 			})
@@ -141,14 +144,18 @@ SyncedCron.add({
 					// we should add hotlinks to the attachments inside of the
 					// message body.
 
-					const plural = (count, singular, plural) => count === 1 ? singular : plural
-					const body = [
-						`Verzonden om: ${moment(message.sendDate).format('dddd D MMMM YYYY HH:mm')}`,
-						`${plural(message.attachmentIds.length, 'Bijlage', 'Bijlages')}: ${message.attachments().map((f) => f.name).join(', ')}`,
-						'\n',
-						message.body,
-					].join('\n')
-					sendMail(user, `Bericht van ${message.sender.fullName}: '${message.subject}'`, body)
+					const lines = []
+					lines.push(`Van: ${message.sender.fullName}`)
+					lines.push(`Verzonden om: ${moment(message.sendDate).tz('Europe/Amsterdam').format('dddd D MMMM YYYY HH:mm')}`)
+					lines.push(`Aan: ${message.recipientsString(Infinity, false)}`)
+					lines.push(`Onderwerp: ${message.subject}`)
+					if (message.attachmentIds.length > 0) {
+						const plural = (count, singular, plural) => count === 1 ? singular : plural
+						lines.push(`${plural(message.attachmentIds.length, 'Bijlage', 'Bijlages')}: ${message.attachments().map((f) => f.name).join(', ')}`)
+					}
+					lines.push('\n' + message.body)
+
+					sendMail(user, `Bericht van ${message.sender.fullName}`, lines.join('\n'))
 
 					notifiedCount++
 					Analytics.insert({
