@@ -4,33 +4,38 @@
 # REVIEW: Do we want to have the option from the user's perspective (like it is
 # now) or from our perspective?
 
-items = [{
+mailItems = [{
 	description: 'Email sturen als ik toegevoegd ben bij een project'
-	short: 'email_joinedProject'
-	dbField: 'settings.notifications.email.joinedProject'
+	short: 'joinedProject'
 	default: yes
 }, {
 	description: 'Email sturen als ik een nieuw cijfer heb'
-	short: 'email_newGrade'
-	dbField: 'settings.notifications.email.newGrade'
+	short: 'newGrade'
 	default: yes
 }, {
 	description: 'Email sturen als ik een nieuw bericht heb'
-	short: 'email_newMessage'
-	dbField: 'settings.notifications.email.newMessage'
+	short: 'newMessage'
 	default: yes
-}, {
+}].map (item) ->
+	item.dbField = "settings.notifications.email.#{item.short}"
+	item
+
+notifItems = [{
 	description: 'Notificatie tonen bij nieuw chatbericht'
-	short: 'notif_chatMessage'
-	dbField: 'settings.notifications.notif.chat'
+	short: 'chat'
 	default: yes
-}]
+}].map (item) ->
+	item.dbField = "settings.notifications.notif.#{item.short}"
+	item
+
+getItemsArray = (items) ->
+	items.map (item) ->
+		item.enabled = getUserField Meteor.userId(), item.dbField, item.default
+		item
 
 Template['settings_page_notifications'].helpers
-	items: ->
-		items.map (item) ->
-			item.enabled = getUserField Meteor.userId(), item.dbField, item.default
-			item
+	mailItems: -> getItemsArray mailItems
+	notifItems: -> getItemsArray notifItems
 
 Template['settings_page_notifications_item'].events
 	'change': ->

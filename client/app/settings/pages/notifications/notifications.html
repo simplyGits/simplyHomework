@@ -8,10 +8,22 @@
 </template>
 
 <template name="settings_page_notifications">
-	<div>
-		{{! TODO: add some text here? }}
+	<div id="settings_page_notifications">
+		<div>
+			{{! TODO: add some text here? }}
+		</div>
+		<section>
+			<b>Emails</b>
+			{{#each mailItems}}
+				{{> settings_page_notifications_item}}
+			{{/each}}
+		</section>
+
+		<section>
+			<b>Notificaties</b>
+			{{#each notifItems}}
+				{{> settings_page_notifications_item}}
+			{{/each}}
+		</section>
 	</div>
-	{{#each items}}
-		{{> settings_page_notifications_item}}
-	{{/each}}
 </template>
