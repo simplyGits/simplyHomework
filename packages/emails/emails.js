@@ -1,7 +1,7 @@
 import * as emails from 'simplyemail'
 import { Email } from 'meteor/email'
 
-const settingsUrl = Meteor.absoluteUrl('settings')
+const settingsUrl = Meteor.absoluteUrl('settings/notifications')
 
 function wrap (fn) {
 	return function (obj) {
