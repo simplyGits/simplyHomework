@@ -1,4 +1,5 @@
 import * as emails from 'simplyemail'
+import { Email } from 'meteor/email'
 
 const settingsUrl = Meteor.absoluteUrl('settings')
 
