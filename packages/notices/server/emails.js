@@ -145,13 +145,15 @@ SyncedCron.add({
 					// message body.
 
 					const lines = []
-					lines.push(`Van: ${message.sender.fullName}`)
-					lines.push(`Verzonden om: ${moment(message.sendDate).tz('Europe/Amsterdam').format('dddd D MMMM YYYY HH:mm')}`)
-					lines.push(`Aan: ${message.recipientsString(Infinity, false)}`)
-					lines.push(`Onderwerp: ${message.subject}`)
+					const pushKeyVal = (key, val) => lines.push(`<b>${key}</b>: ${val}`)
+
+					pushKeyVal('Van', message.sender.fullName)
+					pushKeyVal('Verzonden om', moment(message.sendDate).tz('Europe/Amsterdam').format('dddd D MMMM YYYY HH:mm'))
+					pushKeyVal('Aan', message.recipientsString(Infinity, false))
+					pushKeyVal('Onderwerp', message.subject)
 					if (message.attachmentIds.length > 0) {
 						const plural = (count, singular, plural) => count === 1 ? singular : plural
-						lines.push(`${plural(message.attachmentIds.length, 'Bijlage', 'Bijlages')}: ${message.attachments().map((f) => f.name).join(', ')}`)
+						pushKeyVal(plural(message.attachmentIds.length, 'Bijlage', 'Bijlages'), message.attachments().map((f) => f.name).join(', '))
 					}
 					lines.push('\n' + message.body)
 
