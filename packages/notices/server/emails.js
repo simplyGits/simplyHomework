@@ -153,7 +153,9 @@ SyncedCron.add({
 					pushKeyVal('Onderwerp', message.subject)
 					if (message.attachmentIds.length > 0) {
 						const plural = (count, singular, plural) => count === 1 ? singular : plural
-						pushKeyVal(plural(message.attachmentIds.length, 'Bijlage', 'Bijlages'), message.attachments().map((f) => f.name).join(', '))
+						const key = plural(message.attachmentIds.length, 'Bijlage', 'Bijlages')
+						const val = message.attachments().map((f) => `<a href="${f.url()}/${userId}">${f.name}</a>`).join(', ')
+						pushKeyVal(key, val)
 					}
 					lines.push('\n' + message.body)
 
