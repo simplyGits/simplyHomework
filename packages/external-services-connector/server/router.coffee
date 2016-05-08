@@ -9,28 +9,28 @@ parseCookies = (str = '') ->
 			res[splitted[0]] = splitted[1]
 	res
 
-# TODO: make this friendlier when the user isn't logged in yet (show a login
-# dialog, for example), so that we can hotlink a link to a file inside of a
-# mail, for example.
-Picker.route '/f/:fid', (params, req, res) ->
+# REVIEW: do we want to require auth for this?
+Picker.route '/f/:fid/:uid?', (params, req, res) ->
 	err = (code, str) ->
 		res.writeHead code, 'Content-Type': 'text/plain'
 		res.end str
 
-	cookies = parseCookies req.headers.cookie
-	token = cookies['meteor_login_token']
-	unless token?
-		err 401, 'not logged in'
-		return undefined
-
-	userId = Meteor.users.findOne({
-		"services.resume.loginTokens.hashedToken": Accounts._hashLoginToken token
-	}, {
-		fields: _id: 1
-	})?._id
+	userId = params.uid
 	unless userId?
-		err 404, 'no user found with provided logintoken'
-		return undefined
+		cookies = parseCookies req.headers.cookie
+		token = cookies['meteor_login_token']
+		unless token?
+			err 401, 'not logged in'
+			return undefined
+
+		userId = Meteor.users.findOne({
+			"services.resume.loginTokens.hashedToken": Accounts._hashLoginToken token
+		}, {
+			fields: _id: 1
+		})?._id
+		unless userId?
+			err 404, 'no user found with provided logintoken'
+			return undefined
 
 	file = Files.findOne
 		_id: params.fid
