@@ -99,7 +99,7 @@ SyncedCron.add({
 
 		const users = Meteor.users.find({
 			'profile.firstName': { $ne: '' },
-			'settings.devSettings.newMessageNotification': true,
+			'settings.notifications.email.newGrade': { $ne: false },
 
 			// REVIEW: I have commented this out since I'm not really sure why
 			// this was here in the first place, maybe I had a good reason for

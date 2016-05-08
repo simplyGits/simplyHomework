@@ -5,9 +5,6 @@ items = [{
 	name: 'noticeAlwaysHoverColor'
 	description: 'Maak altijd het randje van een kaart op het overzicht zwart als je er met je muis over gaat.'
 }, {
-	name: 'newMessageNotification'
-	description: 'Stuur een email als je een nieuw bericht hebt ontvangen.'
-}, {
 	name: 'tfaEnabled'
 	description: '2-staps authenticatie aanzetten.'
 	afterChange: (val) ->

@@ -1,6 +1,9 @@
 # TODO: Create universal component for checkbox based settings.
 # I copied this code for like 49% from the privacy package.
 
+# REVIEW: Do we want to have the option from the user's perspective (like it is
+# now) or from our perspective?
+
 items = [{
 	description: 'Email sturen als ik toegevoegd ben bij een project'
 	short: 'email_joinedProject'
@@ -10,6 +13,11 @@ items = [{
 	description: 'Email sturen als ik een nieuw cijfer heb'
 	short: 'email_newGrade'
 	dbField: 'settings.notifications.email.newGrade'
+	default: yes
+}, {
+	description: 'Email sturen als ik een nieuw bericht heb'
+	short: 'email_newMessage'
+	dbField: 'settings.notifications.email.newMessage'
 	default: yes
 }, {
 	description: 'Notificatie tonen bij nieuw chatbericht'
