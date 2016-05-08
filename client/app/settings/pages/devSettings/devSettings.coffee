@@ -12,7 +12,7 @@ items = [{
 		showModal '2fa_key_modal'
 }]
 
-Template['settings_page_devSettings'].onRendered ->
+Meteor.startup ->
 	unless Helpers.isDesktop()
 		_.remove items, name: 'tfaEnabled'
 
