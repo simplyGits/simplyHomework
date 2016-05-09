@@ -75,6 +75,3 @@ Disallow: /
 
 User-agent: WebReaper
 Disallow: /
-
-User-agent: *
-Disallow: /admin
