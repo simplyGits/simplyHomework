@@ -72,7 +72,6 @@ class NoticeManager
 							_.extend item,
 								_id: item.id ? provider.name
 								name: provider.name
-								ready: undefined
 						)
 
 				catch e
