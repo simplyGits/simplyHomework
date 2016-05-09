@@ -44,7 +44,7 @@ Package.onUse(function(api) {
 		'lib/methods.coffee',
 	]);
 	api.addFiles([
-		'client/noticesManager.coffee',
+		'client/noticeManager.coffee',
 		'client/notices.html',
 		'client/notices.styl',
 		'client/notices.coffee',
