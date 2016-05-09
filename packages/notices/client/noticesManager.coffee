@@ -37,8 +37,8 @@ class NoticeManager
 		undefined
 
 	###*
-	# Fires up all the providers. If the current computation get's stopped it will
-	# make sure to greacefully stop all the providers too.
+	# Fires up all the providers. If the current computation gets stopped it will
+	# make sure to gracefully stop all the providers too.
 	# Returns true if all providers are fired up and ready to go.
 	#
 	# @method run
