@@ -809,6 +809,7 @@ MagisterBinding.getMessages = function (folderName, skip, limit, userId) {
 			message.fetchedBy = MagisterBinding.name;
 			message.externalId = prefixId(magister, m.id());
 			message.readBy = m.isRead() ? [ userId ] : [];
+			message.hasPriority = m.isFlagged();
 
 			m.attachments().forEach((file) => {
 				const externalFile = convertMagisterFile(path, file, true);

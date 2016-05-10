@@ -40,6 +40,13 @@ class @Message
 		@readBy = []
 
 		###*
+		# @property hasPriority
+		# @type Boolean
+		# @default false
+		###
+		@hasPriority = no
+
+		###*
 		# @property fetchedBy
 		# @type String|undefined
 		# @default undefined
