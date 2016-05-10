@@ -88,7 +88,7 @@ class @Message
 		res = names.join ', '
 		diff = @recipients.length - names.length
 		if diff > 0
-			res += " en #{diff} #{if diff is 1 then 'andere' else 'anderen'}."
+			res += " en #{diff} #{if diff is 1 then 'andere' else 'anderen'}"
 
 		res
 
