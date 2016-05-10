@@ -26,6 +26,13 @@ send = (content, updateId) ->
 	document.getElementById('messageInput').value = ''
 
 Template.fullscreenChatWindow.helpers
+	headerClickable: ->
+		if @type in [ 'private', 'project' ] or
+		(@type is 'class' and @class())
+			'clickable'
+		else
+			''
+
 	__editing: -> if editMessageId.get()? then 'editing' else ''
 	__error: ->
 		if error.get() isnt '' then 'error'
