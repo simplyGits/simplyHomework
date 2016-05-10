@@ -380,7 +380,7 @@ class @Helpers
 
 		hours = ~~(seconds / 3600)
 		remainder = ~~(seconds % 3600)
-		minutes = ~~(remainder / 60)
+		minutes = Math.round(remainder / 60)
 
 		arr = []
 		if hours isnt 0
