@@ -23,6 +23,7 @@ pictures = ->
 			value: s.profileData().picture
 			index: i
 			fetchedBy: s.name
+			service: _.find ExternalServicesConnector.services, name: s.name
 		.value()
 
 courseInfos = ->

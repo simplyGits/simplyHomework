@@ -79,7 +79,7 @@
 			<h2>Profielfoto</h2>
 			<div id="pictureSelector" class="selector">
 				{{#each this}}
-				<img src="{{value}}" title="{{fetchedBy}}" alt="{{fetchedBy}}" height="100" width="100" class="{{isSelected}}"/>
+					<img src="{{value}}" title="{{service.friendlyName}}" alt="{{service.friendlyName}}" height="100" width="100" class="{{isSelected}}"/>
 				{{/each}}
 			</div>
 			<hr>
