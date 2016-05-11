@@ -55,7 +55,7 @@ calendarItemToEvent = (calendarItem, compare) ->
 			'opaque'
 	) ? ''
 	calendarItem: calendarItem
-	editable: not calendarItem.fetchedBy?
+	editable: not calendarItem.fetchedBy? # TODO: do this smarter, users can editor custom Magister appointments for example. Updating this upstream would be nice too.
 	content: calendarItem.content
 
 Template.calendar.onCreated ->
