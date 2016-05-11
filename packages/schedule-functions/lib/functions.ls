@@ -1,3 +1,9 @@
+###*
+# @method getInbetweenHours
+# @param {String} [userId=Meteor.userId()]
+# @param {Boolean} [countScrapped=false] Count scrapped hours as inbetweenhours.
+# @return {Object[]} [{ start: Date, end: Date, schoolHour: Number }]
+###
 @ScheduleFunctions.get-inbetween-hours = (user-id = Meteor.user-id!, count-scrapped = no) ->
 	check user-id, String
 	check count-scrapped, Boolean
@@ -24,7 +30,6 @@
 			.value!
 
 		if items.length > 0
-			# REVIEW: Use mean?
 			# REVIEW: Instead of using a time threshold we can also check if the
 			# previous lesson has a schoolHour at least 2 less than the next lesson.
 			# [4] (here we have a inbetween hour)  [6]
