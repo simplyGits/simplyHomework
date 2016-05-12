@@ -109,7 +109,7 @@ Template.mobileCalendar.onRendered ->
 
 	Meteor.defer ->
 		time = +FlowRouter.getParam 'time'
-		setDate new Date unless isFinite time
+		setDate new Date unless Number.isFinite time
 
 	loading = @loading
 	@calendar = calendar = new SwipeView '.mobileCalendar', hastyPageFlip: yes

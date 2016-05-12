@@ -1,7 +1,5 @@
 Number.isInteger ?= (val) ->
-	typeof val is 'number' and
-	isFinite(val) and
-	Math.floor(val) is val
+	Number.isFinite(val) and Math.floor(val) is val
 
 Array::includes ?= (searchElem, fromIndex) ->
 	self = Object this
@@ -26,3 +24,6 @@ Array::includes ?= (searchElem, fromIndex) ->
 		k++
 
 	false
+
+Number.isFinite ?= (val) ->
+	typeof val is 'number' and isFinite val
