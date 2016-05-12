@@ -1,5 +1,7 @@
 Template.calendarItemDetails.helpers
 	people: ->
+		# TODO: when viewing the schedule of someone else it would be nice to show
+		# the currentUser too.
 		if @type is 'schoolwide'
 			[]
 		else

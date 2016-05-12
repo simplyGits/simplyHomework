@@ -71,6 +71,8 @@ class @Message
 
 	# TODO: make this based on length of the res string instead of amount of
 	# items since they can vary in length.
+
+	# TODO: refactor this out into a `ExternalPerson#toHtmlString`
 	recipientsString: (max = Infinity, html = yes) ->
 		names = _(@recipients)
 			.map (r) ->
