@@ -71,8 +71,9 @@ MagisterBinding.createData = function (schoolurl, username, password, userId) {
 	// make sure we relogin.
 	cache.del(userId);
 
+	let magister;
 	try {
-		getMagisterObject(userId);
+		magister = getMagisterObject(userId);
 	} catch (e) {
 		// Remove the stored info.
 		cache.del(userId);
@@ -87,6 +88,18 @@ MagisterBinding.createData = function (schoolurl, username, password, userId) {
 			return e;
 		}
 	}
+
+	magister.profileInfo().settings(function (e, r) {
+		if (e != null) return;
+
+		// TODO: ask this nicely to the user in the setup (and when they enable
+		// message alerts in the setup)
+
+		r.redirectMagisterMessages(false);
+		r.update(function (e) {
+			// REVIEW: do we want to do something with `e`?
+		});
+	});
 }
 
 /**
