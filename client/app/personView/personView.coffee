@@ -192,6 +192,7 @@ Template.changePictureModal.onCreated ->
 					.pairs()
 					.filter ([key, val]) -> val.picture?
 					.map ([ key, val ]) ->
+						fetchedBy: key
 						service: _.find ExternalServicesConnector.services, name: key
 						value: val.picture
 						selected: ->
