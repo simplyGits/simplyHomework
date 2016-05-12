@@ -1,6 +1,6 @@
-/* global GravatarBinding */
+/* global GravatarBinding, ExternalServicesConnector */
 
-/*
+/**
  * simplyHomework binding to Gravatar.
  * @author simply
  * @module gravatar-binding

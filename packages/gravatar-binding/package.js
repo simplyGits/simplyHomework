@@ -13,7 +13,11 @@ Npm.depends({
 Package.onUse(function(api) {
 	api.versionsFrom('1.1.0.2');
 
-	api.use('simply:external-services-connector');
+	api.use([
+		'simply:external-services-connector',
+		'ecmascript',
+		'modules',
+	]);
 	api.use('jparker:crypto-md5', 'server');
 
 	api.addFiles('info.js');
