@@ -233,6 +233,7 @@ Template['message_compose'].helpers
 		else
 			'Concept opgeslagen.'
 
+sending = no
 Template['message_compose'].events
 	'keyup': ->
 		subject = document.getElementById('subject').value
@@ -263,6 +264,9 @@ Template['message_compose'].events
 	'click #send': ->
 		ga 'send', 'event', 'messages', 'send'
 
+		return if sending
+		sending = yes
+
 		subject = document.getElementById('subject').value
 		recipients = document.getElementById('recipients').value
 		body = document.getElementById('message').value.trim()
@@ -274,6 +278,8 @@ Template['message_compose'].events
 		replyId = FlowRouter.getQueryParam 'replyId'
 
 		cb = (e, r) ->
+			sending = no
+
 			if e?
 				notify 'Fout tijdens versturen van bericht', 'error'
 				Kadira.trackError 'composeMessage-client', e.message, stacks: e.stack
