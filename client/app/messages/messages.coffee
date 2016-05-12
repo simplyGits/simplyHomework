@@ -105,6 +105,7 @@ Template['messages_sidebar'].helpers
 
 Template['messages_sidebar'].events
 	'click #compose': ->
+		ga 'send', 'event', 'messages', 'compose'
 		FlowRouter.go 'composeMessage'
 
 Template['messages_sidebar_folder'].helpers
@@ -260,6 +261,8 @@ Template['message_compose'].events
 		saveDraft draft
 
 	'click #send': ->
+		ga 'send', 'event', 'messages', 'send'
+
 		subject = document.getElementById('subject').value
 		recipients = document.getElementById('recipients').value
 		body = document.getElementById('message').value.trim()

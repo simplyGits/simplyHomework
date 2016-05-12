@@ -129,6 +129,7 @@ Template.calendar.onRendered ->
 		eventMouseover: (calendarEvent, event) ->
 			Meteor.clearTimeout popoverTimeout
 			fn = ->
+				ga 'send', 'event', 'calendarEventPopover', 'open'
 				currentOpenEvent.set calendarEvent
 				Meteor.defer ->
 					new Tether
@@ -155,6 +156,7 @@ Template.calendar.onRendered ->
 				lastHoverStop = _.now()
 
 		eventClick: (calendarEvent, event) ->
+			ga 'send', 'event', 'calendarItemsModal', 'open'
 			Meteor.clearInterval popoverTimeout
 			currentOpenEvent.set undefined
 			openCalendarItemsModal calendarEvent.calendarItem._id

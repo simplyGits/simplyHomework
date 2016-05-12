@@ -11,6 +11,7 @@ class @App
 	# @method logout
 	###
 	@logout: ->
+		ga 'send', 'event', 'logout'
 		Meteor.logout()
 		NotificationsManager.hideAll()
 

@@ -40,6 +40,7 @@ Meteor.methods
 		message = new ChatMessage content, @userId, chatRoomId
 		message = ChatMiddlewares.run message, 'insert'
 		if @isSimulation
+			ga 'send', 'event', 'chat', 'send'
 			message.pending = yes
 
 		ChatRooms.update chatRoomId, $set: lastMessageTime: new Date
