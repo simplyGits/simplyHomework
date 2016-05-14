@@ -39,10 +39,9 @@ class NoticeManager
 	###*
 	# Fires up all the providers. If the current computation gets stopped it will
 	# make sure to gracefully stop all the providers too.
-	# Returns true if all providers are fired up and ready to go.
 	#
 	# @method run
-	# @return {Boolean}
+	# @return {Object}
 	###
 	@run: ->
 		# REVIEW: Should we clear the `notices` collection after the current
