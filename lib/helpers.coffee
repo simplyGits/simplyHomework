@@ -458,7 +458,7 @@ class @Helpers
 	# @return {String}
 	###
 	@oneLine: (str) ->
-		str.replace /(.)?\n/g, (match, char) ->
+		str.replace /(.)?\n+/g, (match, char) ->
 			s = char ? ''
 			if char not in [ '.', ',', '!', '?', ';', ':' ]
 				s += ';'
