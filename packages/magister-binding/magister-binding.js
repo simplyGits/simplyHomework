@@ -816,12 +816,13 @@ MagisterBinding.getMessages = function (folderName, skip, limit, userId) {
 				m._body,
 				folderName,
 				m.sendDate(),
-				convertMagisterPerson(m.sender(), user)
+				convertMagisterPerson(m.sender(), user),
+				userId
 			);
 			message.recipients = m.recipients().map((p) => convertMagisterPerson(p, user));
 			message.fetchedBy = MagisterBinding.name;
 			message.externalId = prefixId(magister, m.id());
-			message.readBy = m.isRead() ? [ userId ] : [];
+			messages.isRead = m.isRead();
 			message.hasPriority = m.isFlagged();
 
 			m.attachments().forEach((file) => {

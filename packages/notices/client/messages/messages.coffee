@@ -3,7 +3,7 @@ recentMessages = ->
 	date = Date.today().addDays -5
 	Messages.find({
 		sendDate: $gte: date
-		readBy: $ne: Meteor.userId()
+		isRead: no
 	}, {
 		sort:
 			sendDate: -1

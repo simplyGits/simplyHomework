@@ -191,7 +191,7 @@ Template['message_current_message'].onCreated ->
 		if message?
 			@subscribe 'files', message.attachmentIds
 
-			if Meteor.userId() not in message.readBy
+			unless message.isRead
 				Meteor.call 'markMessageRead', id
 
 savingDraft = new ReactiveVar no

@@ -743,22 +743,22 @@ updateMessages = (userId, offset, folders, forceUpdate = no) ->
 				continue unless message?
 				if message.body?
 					message.body = message.body.replace AD_STRING, ''
-				message.fetchedFor = [ userId ]
 				message.attachmentIds = message.attachmentIds.map (id) ->
 					fileKeyChanges[id] ? id
 
 				val = Messages.findOne
+					fetchedFor: userId
 					externalId: message.externalId
 					fetchedBy: message.fetchedBy
 
 				if val?
+					###
 					mergeUserIdsField = (fieldName) ->
 						message[fieldName] = _(val[fieldName])
 							.concat message[fieldName]
 							.uniq()
 							.value()
-					mergeUserIdsField 'fetchedFor'
-					mergeUserIdsField 'readBy'
+					###
 
 					if hasChanged val, message
 						Messages.update message._id, message, validate: no

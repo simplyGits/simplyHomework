@@ -139,7 +139,7 @@ Meteor.methods
 			_id: id
 			fetchedFor: @userId
 		}, {
-			$addToSet: readBy: @userId
+			$set: isRead: yes
 		}
 
 	###*

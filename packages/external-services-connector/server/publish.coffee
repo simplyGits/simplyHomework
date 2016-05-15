@@ -164,7 +164,7 @@ Meteor.publish 'messages', (offset, folders, unreadOnly = no) ->
 	query =
 		fetchedFor: userId
 		folder: $in: folders
-	query.readBy = { $ne: userId } if unreadOnly
+	query.isRead = no if unreadOnly
 	Messages.find query,
 		sort:
 			sendDate: -1

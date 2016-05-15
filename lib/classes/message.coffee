@@ -6,9 +6,10 @@
 # @param {String} folder
 # @param {Date} sendDate
 # @param {ExternalPerson} sender
+# @param {String} fetchedFor
 ###
 class @Message
-	constructor: (@subject, @body, @folder, @sendDate, @sender) ->
+	constructor: (@subject, @body, @folder, @sendDate, @sender, @fetchedFor) ->
 		@_id = new Mongo.ObjectID().toHexString()
 
 		###*
@@ -26,18 +27,11 @@ class @Message
 		@attachmentIds = []
 
 		###*
-		# @property fetchedFor
-		# @type String[]
-		# @default []
+		# @property isRead
+		# @type Boolean
+		# @default false
 		###
-		@fetchedFor = []
-
-		###*
-		# @property readBy
-		# @type String[]
-		# @default []
-		###
-		@readBy = []
+		@isRead = no
 
 		###*
 		# @property hasPriority
@@ -109,16 +103,16 @@ class @Message
 			index: -1
 		sender:
 			type: ExternalPerson
+		fetchedFor:
+			type: String
+			index: 1
 		recipients:
 			type: [ExternalPerson]
 		attachmentIds:
 			type: [String]
 			defaultValue: []
-		fetchedFor:
-			type: [String]
-			index: 1
-		readBy:
-			type: [String]
+		isRead:
+			type: Boolean
 		fetchedBy:
 			type: String
 			optional: yes
