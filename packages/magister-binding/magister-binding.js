@@ -179,8 +179,12 @@ function getMagisterObject (userId, forceNew = false) {
 	}
 }
 
-function prefixId (magister, id) {
-	return magister.magisterSchool.id + '_' + id;
+function prefixId (magister, ...args) {
+	let res = magister.magisterSchool.id;
+	for (const arg of args) {
+		res += '_' + arg;
+	}
+	return res;
 }
 
 /**
@@ -300,12 +304,14 @@ MagisterBinding.getGrades = function (userId, options) {
 /**
  * Converts the given `file` to a ExternalFile.
  * @method convertMagisterFile
+ * @param userId {String}
  * @param prefix {String}
  * @param file {File} The Magister file to convert.
  * @param [usePersonPath=false] {Boolean}
  * @return {ExternalFile} The given `file` converted to a ExternalFile.
  */
-const convertMagisterFile = function (prefix, file, usePersonPath = false) {
+const convertMagisterFile = function (userId, prefix, file, usePersonPath = false) {
+	check(userId, String);
 	check(prefix, String);
 	check(file, Magister.File);
 	check(usePersonPath, Boolean);
@@ -324,15 +330,17 @@ const convertMagisterFile = function (prefix, file, usePersonPath = false) {
 		};
 	} else if (usePersonPath) {
 		res.downloadInfo = {
+			userId,
 			personPath: prefix + file.id(),
 		};
 	} else {
 		res.downloadInfo = {
+			userId,
 			pupilPath: prefix + file.id(),
 		};
 	}
 	res.fetchedBy = MagisterBinding.name;
-	res.externalId = prefixId(file._magisterObj, file.id());
+	res.externalId = prefixId(file._magisterObj, res.name, res.mime);
 
 	return res;
 };
@@ -341,7 +349,8 @@ MagisterBinding.getFile = function (userId, info) {
 	check(userId, String);
 	check(info, Object);
 
-	const magister = getMagisterObject(userId);
+	// const magister = getMagisterObject(userId);
+	const magister = getMagisterObject(info.userId);
 	let url;
 	if (info.pupilPath) {
 		url = `${magister._pupilUrl}/${info.pupilPath}`;
@@ -415,7 +424,7 @@ MagisterBinding.getStudyUtils = function (userId, options) {
 						parentId: sg.id(),
 					};
 					sgp.files().forEach((file) => {
-						const externalFile = convertMagisterFile(path, file);
+						const externalFile = convertMagisterFile(userId, path, file);
 						studyUtil.fileIds.push(externalFile._id);
 						files.push(externalFile);
 					})
@@ -599,7 +608,7 @@ MagisterBinding.getCalendarItems = function (userId, from, to) {
 			a.attachments(function (e, r) {
 				if (e == null) {
 					r.forEach((file) => {
-						const externalFile = convertMagisterFile(path, file, true);
+						const externalFile = convertMagisterFile(userId, path, file, true);
 						calendarItem.fileIds.push(externalFile._id);
 						files.push(externalFile);
 					});
@@ -826,7 +835,7 @@ MagisterBinding.getMessages = function (folderName, skip, limit, userId) {
 			message.hasPriority = m.isFlagged();
 
 			m.attachments().forEach((file) => {
-				const externalFile = convertMagisterFile(path, file, true);
+				const externalFile = convertMagisterFile(userId, path, file, true);
 				message.attachmentIds.push(externalFile._id);
 				files.push(externalFile);
 			});

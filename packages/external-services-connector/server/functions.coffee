@@ -92,19 +92,15 @@ diffAndInsertFiles = (userId, files) ->
 		val = _.find vals,
 			externalId: file.externalId
 
-		file.userIds = val?.userIds ? []
-		if userId not in file.userIds
-			file.userIds.push userId
-
 		id = file._id
 		if val?
 			ExternalFile.schema.clean file
-			id = val._id
+			id = file._id = val._id
 
 			if hasChanged val, file
-				Files.update val._id, { $set: file }, handleCollErr
+				Files.update val._id, file, { validate: no }, handleCollErr
 		else
-			id = Files.insert file
+			id = Files.insert file, handleCollErr
 
 		res[file._id] = id if file._id?
 

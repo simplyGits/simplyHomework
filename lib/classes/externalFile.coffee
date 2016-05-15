@@ -10,13 +10,6 @@ class @ExternalFile
 		@_id = new Mongo.ObjectID().toHexString()
 
 		###*
-		# @property userIds
-		# @type String[]
-		# @default []
-		###
-		@userIds = []
-
-		###*
 		# The MIME type of the file.
 		# @property mime
 		# @type String
@@ -83,8 +76,6 @@ class @ExternalFile
 			type: String
 		name:
 			type: String
-		userIds:
-			type: [String]
 		mime:
 			type: String
 		creationDate:

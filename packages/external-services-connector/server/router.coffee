@@ -9,7 +9,7 @@ parseCookies = (str = '') ->
 			res[splitted[0]] = splitted[1]
 	res
 
-# REVIEW: do we want to require auth for this?
+# REVIEW: I removed _all_ auth. Do we want to require auth for this?
 Picker.route '/f/:fid/:uid?', (params, req, res) ->
 	err = (code, str) ->
 		res.writeHead code, 'Content-Type': 'text/plain'
@@ -32,9 +32,7 @@ Picker.route '/f/:fid/:uid?', (params, req, res) ->
 			err 404, 'no user found with provided logintoken'
 			return undefined
 
-	file = Files.findOne
-		_id: params.fid
-		userIds: userId
+	file = Files.findOne params.fid
 	unless file?
 		err 404, 'file not found'
 		return undefined

@@ -310,4 +310,3 @@ Meteor.publish 'files', (fileIds) ->
 
 	Files.find
 		_id: $in: fileIds
-		userIds: @userId
