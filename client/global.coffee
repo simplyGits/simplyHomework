@@ -79,10 +79,14 @@ Meteor.startup ->
 
 	console.log 'global() deviceType', Session.get 'deviceType'
 
-	unless Session.equals 'deviceType', 'desktop'
-		document.addEventListener 'visibilitychange', ->
-			if document.hidden then Meteor.disconnect()
-			else Meteor.reconnect()
+	document.addEventListener 'visibilitychange', ->
+		if document.hidden
+			unless Session.equals 'deviceType', 'desktop'
+				Meteor.disconnect()
+		else
+			minuteTracker.changed()
+			unless Session.equals 'deviceType', 'desktop'
+				Meteor.reconnect()
 
 	window.onbeforeunload = ->
 		NotificationsManager.hideAll()
