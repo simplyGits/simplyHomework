@@ -36,10 +36,8 @@ class @ServiceUpdate
 			type: String
 		userId:
 			type: String
-			index: 1
 		fetchedBy:
 			type: String
-			index: 1
 		externalId:
 			type: null
 		date:

@@ -32,6 +32,10 @@ Meteor.startup ->
 		fetchedFor: 1
 		sendDate: -1
 
+	ServiceUpdates._ensureIndex
+		userId: 1
+		fetchedBy: 1
+
 	Files._ensureIndex
 		name: 1
 		mime: 1
