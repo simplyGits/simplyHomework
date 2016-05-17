@@ -14,7 +14,11 @@ Template.notices.helpers
 Template.notices.events
 	'click .notice': ->
 		a = @onClick
-		switch a?.action
+		return unless a?
+
+		ga 'send', 'event', "#{@name} notice", 'click'
+
+		switch a.action
 			when 'route' then FlowRouter.go a.route, a.params, a.queryParams
 
 Template.notices.onCreated ->
