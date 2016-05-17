@@ -18,7 +18,9 @@ getTasksForDate = (date) ->
 			class: -> Classes.findOne item.classId
 			date: item.startDate
 			done: (d) ->
-				Meteor.call 'markCalendarItemDone', item._id, d if d?
+				if d?
+					ga 'send', 'event', 'tasks notice', 'switch calendarItem done state'
+					Meteor.call 'markCalendarItemDone', item._id, d
 				Meteor.userId() in item.usersDone
 			__type: Helpers.cap (
 					type = item.content?.type
