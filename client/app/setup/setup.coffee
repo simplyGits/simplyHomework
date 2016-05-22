@@ -1,3 +1,5 @@
+SReactiveVar = require('meteor/simply:strict-reactive-var').default
+
 currentItemIndex = new SReactiveVar Number, 0
 
 currentSelectedImage      = new SReactiveVar Number, 0

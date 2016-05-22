@@ -115,9 +115,9 @@
       "resolved": "https://registry.npmjs.org/extsprintf/-/extsprintf-1.0.2.tgz"
     },
     "fibers": {
-      "version": "1.0.12",
-      "from": "fibers@1.0.12",
-      "resolved": "https://registry.npmjs.org/fibers/-/fibers-1.0.12.tgz"
+      "version": "1.0.13",
+      "from": "fibers@1.0.13",
+      "resolved": "https://registry.npmjs.org/fibers/-/fibers-1.0.13.tgz"
     },
     "forever-agent": {
       "version": "0.6.1",

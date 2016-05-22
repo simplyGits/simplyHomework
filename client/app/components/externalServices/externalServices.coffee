@@ -1,3 +1,5 @@
+SReactiveVar = require('meteor/simply:strict-reactive-var').default
+
 @externalServices = new SReactiveVar [Object]
 
 Template.externalServices.helpers

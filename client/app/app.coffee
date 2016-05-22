@@ -1,3 +1,5 @@
+SReactiveVar = require('meteor/simply:strict-reactive-var').default
+
 schoolSub = null
 externalClasses = new ReactiveVar()
 @currentBigNotice = new SReactiveVar Match.OneOf(null, Object), null
