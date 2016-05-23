@@ -382,13 +382,14 @@ class @Helpers
 		remainder = ~~(seconds % 3600)
 		minutes = Math.round(remainder / 60)
 
+		if hours is 0 and minutes < 1
+			return 'minder dan 1 minuut'
+
 		arr = []
 		if hours isnt 0
 			arr.push "#{Math.abs hours}u"
 		if minutes isnt 0
 			arr.push "#{Math.abs minutes}m"
-		if hours is 0 and minutes is 0
-			arr.push "minder dan 1 minuut"
 		arr.join ' en '
 
 	###*
