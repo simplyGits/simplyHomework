@@ -347,9 +347,9 @@ updateCalendarItems = (userId, from, to) ->
 					content.type = 'test' if /^(proefwerk|pw|examen|tentamen)\b/i.test content.description
 
 				if content.type in [ 'test', 'exam' ]
-					content.description = content.description.replace /^(proefwerk|pw)\s?/i, ''
+					content.description = content.description.replace /^(proefwerk|pw|toets|test)\s?/i, ''
 				else if content.type is 'quiz'
-					content.description = content.description.replace /^(so|schriftelijke overhoring)\s?/i, ''
+					content.description = content.description.replace /^(so|schriftelijke overhoring|toets|test)\s?/i, ''
 				else if content.type is 'oral'
 					content.description = content.description.replace /^(oral\W?(exam|test)|mondeling)\s?/i, ''
 			calendarItem.content = content
