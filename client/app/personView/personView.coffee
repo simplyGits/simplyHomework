@@ -99,6 +99,7 @@ Template.personSharedHours.helpers
 			date: item.startDate
 			schoolHour: item.schoolHour
 			class: item.class()
+			description: item.description
 
 		inbetweenHours = sharedInbetweenHours.get().map (obj) ->
 			date: obj.start
