@@ -30,6 +30,7 @@ getItems = ->
 			else tomorrow
 		)
 			.map (item) -> item.class()
+			.compact()
 			.uniq '_id'
 			.value()
 
