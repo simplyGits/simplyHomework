@@ -21,6 +21,7 @@
 						{{> loading}}
 					{{/if}}
 				{{else}}
+					{{! TODO: add some nice css for this }}
 					Je bent niet <a href="{{pathFor 'settings' page='externalServices'}}">verbonden</a> met sites die berichten ondersteunen.
 				{{/if}}
 			</div>
@@ -87,7 +88,7 @@
 		{{#if subject}}
 			<header>{{subject}}</header>
 		{{else}}
-			<header class="none">geen onderwerp.</header>
+			<header class="none">geen onderwerp</header>
 		{{/if}}
 		{{#if isDraft}}
 			<div class="lastEditTime">
