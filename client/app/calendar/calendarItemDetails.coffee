@@ -25,6 +25,7 @@ Template.calendarItemDetails.helpers
 		ChatRooms.find(
 			type: 'class'
 			'classInfo.ids': @classId
+			'classInfo.group': @group()
 		).count() > 0
 
 	service: -> _.find ExternalServicesConnector.services, name: @fetchedBy
