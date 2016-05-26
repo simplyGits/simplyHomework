@@ -74,37 +74,6 @@ Template.classView.helpers
 	chatPersons: ->
 		Meteor.users.find _id: $in: getChatRoom()?.users ? []
 
-	###
-	endGrade: ->
-		cursor = Grades.find
-			classId: @_id
-			ownerId: Meteor.userId()
-			isEnd: yes
-
-		if cursor.count() is 1 then cursor.fetch()[0]
-		else
-			grades = Grades.find(
-				classId: @_id
-				ownerId: Meteor.userId()
-				isEnd: no
-			).fetch()
-
-			sum = 0
-			count = 0
-			for grade in grades
-				sum += grade.grade * grade.weight
-				count += grade.weight
-
-			g = sum / count
-			res = new Grade g, 1, @_id, Meteor.userId()
-			res.isEnd = yes
-			_.extend res,
-				# TODO: clean this up, this is an exact copy of the code in
-				# collections.coffee.
-				__insufficient: if g.passed then '' else 'insufficient'
-				__grade: g.toString().replace '.', ','
-	###
-
 Template.classView.onCreated ->
 	@autorun =>
 		id = classId()

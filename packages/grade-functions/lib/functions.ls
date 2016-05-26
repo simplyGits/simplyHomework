@@ -8,14 +8,42 @@
 	).fetch!
 
 @GradeFunctions.get-end-grade = (class-id, user-id = Meteor.user-id!) ->
-	# TODO: add fallback for when endGrade couldn't be found.
 	check class-id, String
 	check user-id, String
 
-	Grades.find-one do
+	g = Grades.find-one do
 		class-id: class-id
 		owner-id: user-id
 		is-end: yes
+
+	unless g?
+		grades = Grades.find(
+			owner-id: user-id
+			class-id: class-id
+			is-end: no
+			grade: $ne: NaN
+		).fetch!
+
+		grade-weight-sum = _(grades)
+			.map (g) -> g.weight * g.grade
+			.sum!
+		weight-sum = _(grades)
+			.map (g) -> g.weight
+			.sum!
+		grade = grade-weight-sum / weight-sum
+
+		if _.is-finite grade
+			g = new Grade do
+				grade
+				1
+				class-id
+				user-id
+			g.is-end = yes
+
+			g.__insufficient = if g.passed then '' else 'insufficient'
+			g.__grade = g.toString!replace '.', ','
+
+	g
 
 @GradeFunctions.get-all-grades = (only-end = no, user-id = Meteor.user-id!) ->
 	check only-end, Boolean
