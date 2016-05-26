@@ -211,6 +211,8 @@ MagisterBinding.getGrades = function (userId, options) {
 	check(userId, String);
 	check(options, Match.Optional(Object));
 
+	// REVIEW: check if isEnd correctly works
+
 	const fut = new Future();
 
 	const magister = getMagisterObject(userId);
