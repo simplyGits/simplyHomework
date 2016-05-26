@@ -1,19 +1,16 @@
 # TODO: Create universal component for checkbox based settings.
 # I copied this code for like 49% from the privacy package.
 
-# REVIEW: Do we want to have the option from the user's perspective (like it is
-# now) or from our perspective?
-
 mailItems = [{
-	description: 'Email sturen als ik toegevoegd ben bij een project'
+	description: 'Stuur email als ik toegevoegd ben bij een project'
 	short: 'joinedProject'
 	default: yes
 }, {
-	description: 'Email sturen als ik een nieuw cijfer heb'
+	description: 'Stuur email bij nieuw cijfer'
 	short: 'newGrade'
 	default: yes
 }, {
-	description: 'Email sturen als ik een nieuw bericht heb'
+	description: 'Stuur email bij nieuw bericht'
 	short: 'newMessage'
 	default: yes
 }].map (item) ->
