@@ -7,12 +7,15 @@ Package.describe({
 	documentation: 'README.md',
 });
 
+Npm.depends({
+	'cheerio': '0.20.0',
+});
+
 Package.onUse(function(api) {
 	api.versionsFrom('1.1.0.3');
 	api.use([
 		'ecmascript',
 		'http',
-		'particle4dev:cheerio',
 		'stevezhu:lodash@3.10.1',
 	], 'server');
 	api.use('search', 'server', { weak: true });

@@ -1,9 +1,9 @@
-/* global cheerio, WoordjesLeren:true, Books:true, Search:true */
+/* global WoordjesLeren:true, Books:true */
 'use strict';
 
 // TODO: make this an external service
+import $ from 'cheerio';
 
-const $ = cheerio;
 const urls = {
 	categories: 'http://www.woordjesleren.nl/api/select_categories.php',
 	books: 'http://www.woordjesleren.nl/api/select_books.php',
