@@ -80,7 +80,7 @@ class @Grade
 		###
 		@gradeStr = switch typeof grade
 			when 'string' then grade
-			when 'number' then grade.toPrecision 2
+			when 'number' then grade.toPrecision(2).replace '.', ','
 
 		###*
 		# Can be one of: [ 'number', 'percentage' ]
