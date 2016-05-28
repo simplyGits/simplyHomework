@@ -108,6 +108,7 @@ npm-mongo@1.4.43
 observe-sequence@1.0.11
 ordered-dict@1.0.7
 particle4dev:cheerio@1.1.0
+percolate:migrations@0.9.8
 percolate:paginated-subscription@0.2.4
 percolate:synced-cron@1.3.2
 privacy@0.0.1

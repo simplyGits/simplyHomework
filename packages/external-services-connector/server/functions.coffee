@@ -156,14 +156,14 @@ updateGrades = (userId, forceUpdate = no) ->
 
 		for grade in result ? []
 			continue unless grade?
-			Grade.schema.clean grade
+			Grade.schema.clean grade, removeEmptyStrings: no
 			val = _.find grades,
 				externalId: grade.externalId
 				fetchedBy: grade.fetchedBy
 
 			if val?
 				if hasChanged val, grade, [ 'dateTestMade' ]
-					Grades.update val._id, { $set: grade }, handleCollErr
+					Grades.update val._id, { $set: grade }, { removeEmptyStrings: no }, handleCollErr
 			else
 				inserts.push grade
 
