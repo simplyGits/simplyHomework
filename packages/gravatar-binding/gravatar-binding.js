@@ -1,6 +1,7 @@
-/* global GravatarBinding, CryptoJS */
+/* global GravatarBinding */
 
 import request from 'request'
+import md5 from 'md5'
 
 /**
  * @method checkGravatarAvailable
@@ -23,10 +24,10 @@ GravatarBinding.createData = function () {
 GravatarBinding.getProfileData = function (userId) {
 	check(userId, String);
 	const user = Meteor.users.findOne(userId);
-	const md5 = CryptoJS.MD5(user.emails[0].address).toString();
+	const hash = md5(user.emails[0].address);
 
-	const has = checkGravatarAvailable(md5);
-	const pictureUrl = 'https://www.gravatar.com/avatar/' + md5 + '?d=identicon&r=PG';
+	const has = checkGravatarAvailable(hash);
+	const pictureUrl = `https://www.gravatar.com/avatar/${hash}?d=identicon&r=PG`;
 
 	return {
 		picture: has ? pictureUrl : undefined,

@@ -1,3 +1,5 @@
+chroma = require 'chroma-js'
+
 gradesSub = undefined
 
 noticeBanner = new ReactiveVar

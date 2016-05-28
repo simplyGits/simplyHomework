@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "Education with a little more swag.",
   "dependencies": {
+    "chroma-js": "^1.1.1",
     "fibers": "^1.0.12",
+    "lru-cache": "^4.0.1",
     "request": "^2.69.0",
     "spin.js": "^2.3.2",
     "sweetalert": "^1.1.3",

@@ -7,7 +7,8 @@ Package.describe({
 });
 
 Npm.depends({
-	request: '2.61.0',
+	'request': '2.72.0',
+	'md5': '2.1.0',
 });
 
 Package.onUse(function(api) {
@@ -18,7 +19,6 @@ Package.onUse(function(api) {
 		'ecmascript',
 		'modules',
 	]);
-	api.use('jparker:crypto-md5', 'server');
 
 	api.addFiles('info.js');
 	api.addFiles('gravatar-binding.js', 'server');

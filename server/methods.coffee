@@ -1,5 +1,6 @@
 request = require 'request'
 Future = require 'fibers/future'
+LRU = require 'lru-cache'
 
 statsCache = LRU
 	max: 75

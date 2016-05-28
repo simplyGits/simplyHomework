@@ -1,4 +1,5 @@
 swal = require 'sweetalert'
+chroma = require 'chroma-js'
 
 ###
       \|\/

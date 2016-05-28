@@ -43,7 +43,6 @@ simply:fullcalendar
 simply:lazy-code-push
 simply:katex
 emojione:emojione
-rcy:chromajs
 audit-argument-checks
 magister-binding
 kadira:flow-router
@@ -74,7 +73,6 @@ grade-functions
 stevezhu:lodash@3.10.1
 mikowals:batch-insert
 simply:logins
-simply:lru
 ms
 standard-minifier-css
 standard-minifier-js
