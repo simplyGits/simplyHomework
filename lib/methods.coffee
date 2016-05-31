@@ -160,7 +160,7 @@ Meteor.methods
 		Meteor.users.update @userId,
 			$set:
 				'profile.firstName': firstName
-				'profile.lastName': firstName
+				'profile.lastName': lastName
 
 	###*
 	# @method saveMessageDraft
