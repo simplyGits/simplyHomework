@@ -10,5 +10,11 @@ Migrations.add
 			multi: true
 		}
 
+Migrations.add
+	version: 2
+	name: 'Remove absenceInfos'
+	up: ->
+		Absences.remove {}
+
 Meteor.startup ->
 	Migrations.migrateTo 'latest'

@@ -315,16 +315,6 @@ updateCalendarItems = (userId, from, to) ->
 		).fetch()
 		###
 
-		absences = Absences.find(
-			userId: userId
-			fetchedBy: externalService.name
-			externalId: $in:
-				_(result.absenceInfos)
-					.pluck 'absenceInfo.externalId'
-					.compact()
-					.value()
-		).fetch()
-
 		fileKeyChanges = diffAndInsertFiles userId, result.files
 
 		for calendarItem in result.calendarItems
@@ -391,8 +381,10 @@ updateCalendarItems = (userId, from, to) ->
 				CalendarItems.insert calendarItem, handleCollErr
 
 		for absenceInfo in result.absenceInfos
-			val = _.find absences,
-				externalId: absenceInfo.externalId
+			val = Absences.findOne
+				userId: userId
+				fetchedBy: externalService.name
+				calendarItemId: absenceInfo.calendarItemId
 
 			if val?
 				if hasChanged val, absenceInfo
