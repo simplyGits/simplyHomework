@@ -378,8 +378,8 @@ class @Helpers
 	@timeDiff: (a, b) ->
 		seconds = moment(b).diff(a) / 1000
 
-		hours = ~~(seconds / 3600)
-		remainder = ~~(seconds % 3600)
+		hours = Math.abs ~~(seconds / 3600)
+		remainder = Math.abs ~~(seconds % 3600)
 		minutes = Math.round(remainder / 60)
 
 		if hours is 0 and minutes < 1
@@ -387,9 +387,9 @@ class @Helpers
 
 		arr = []
 		if hours isnt 0
-			arr.push "#{Math.abs hours}u"
+			arr.push "#{hours}u"
 		if minutes isnt 0
-			arr.push "#{Math.abs minutes}m"
+			arr.push "#{minutes}m"
 		arr.join ' en '
 
 	###*
