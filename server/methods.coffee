@@ -146,14 +146,14 @@ Meteor.methods
 		check captchaResponse, String
 
 		unless @userId?
-			throw new Meteor.Error "notLoggedIn", "User not logged in."
+			throw new Meteor.Error 'notLoggedIn'
 
 		captchaStatus = reCAPTCHA.verifyCaptcha this.connection.clientAddress, captchaResponse
 		unless captchaStatus.data.success
-			throw new Meteor.Error "wrongCaptcha", "Captcha was not correct."
+			throw new Meteor.Error 'wrongCaptcha'
 
 		unless checkPasswordHash passHash, @userId
-			throw new Meteor.Error "wrongPassword", "Given password incorrect."
+			throw new Meteor.Error 'wrongPassword'
 
 		Meteor.users.remove @userId
 
