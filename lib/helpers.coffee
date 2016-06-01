@@ -376,14 +376,14 @@ class @Helpers
 	# @return {String}
 	###
 	@timeDiff: (a, b) ->
-		seconds = moment(b).diff(a) / 1000
+		seconds = Math.abs moment(b).diff(a) / 1000
 
-		hours = Math.abs ~~(seconds / 3600)
-		remainder = Math.abs ~~(seconds % 3600)
-		minutes = Math.round(remainder / 60)
-
-		if hours is 0 and minutes < 1
+		minutes = Math.round seconds / 60
+		if minutes < 1
 			return 'minder dan 1 minuut'
+
+		hours = Math.floor minutes / 60
+		minutes -= hours * 60
 
 		arr = []
 		if hours isnt 0
