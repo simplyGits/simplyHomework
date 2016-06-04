@@ -36,8 +36,8 @@ Meteor.publish 'externalCalendarItems', (from, to) ->
 			@added 'calendarItems', id, transform doc
 
 			absencesObservers[id] ?= Absences.find({
-				calendarItemId: id
 				userId: userId
+				calendarItemId: id
 			}, {
 				limit: 1
 			}).observeChanges

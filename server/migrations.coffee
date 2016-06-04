@@ -7,7 +7,7 @@ Migrations.add
 		}, {
 			$set: description: ''
 		}, {
-			multi: true
+			multi: yes
 		}
 
 Migrations.add
