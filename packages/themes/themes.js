@@ -5,7 +5,7 @@ if (!Package.appcache) {
 	// TODO: Optimize this function.
 	const getNthDayTimeOfThisMonth = function (day, nth) {
 		const now = new Date();
-		let first = new Date(now.getFullYear(), now.getMonth());
+		const first = new Date(now.getFullYear(), now.getMonth());
 		let delta = day - first.getDay() + (7 * ( nth - 1 ));
 		if (delta < 0) {
 			delta += 6 - delta;
@@ -14,28 +14,25 @@ if (!Package.appcache) {
 		return first.getTime();
 	};
 
-	const themes = [
-		{
-			name: 'paarse-vrijdag',
-			func: function () {
-				const today = Date.today();
-				return (
-					today.getMonth() === 11 &&
-					today.getTime() === getNthDayTimeOfThisMonth(5, 2)
-				);
-			},
+	const themes = [{
+		name: 'paarse-vrijdag',
+		func: function () {
+			const today = Date.today();
+			return (
+				today.getMonth() === 11 &&
+				today.getTime() === getNthDayTimeOfThisMonth(5, 2)
+			);
 		},
-		{
-			name: 'christmas',
-			func: function () {
-				const today = Date.today();
-				return (
-					today.getMonth() === 11 &&
-					today.getDate() === 25
-				);
-			},
+	}, {
+		name: 'christmas',
+		func: function () {
+			const today = Date.today();
+			return (
+				today.getMonth() === 11 &&
+				today.getDate() === 25
+			);
 		},
-	];
+	}];
 
 	WebApp.connectHandlers.use(function (req, res, next) {
 		const item = _.find(themes, (theme) => theme.func());
