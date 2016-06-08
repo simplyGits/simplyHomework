@@ -6,6 +6,25 @@ chatRoom = ->
 			lastMessageTime: 0
 	}
 
+handleMessageInput = (input) ->
+	content = input.value.trim()
+	return if content.length is 0
+
+	id = FlowRouter.getParam 'id'
+
+	if Helpers.sed content
+		message = ChatMessages.findOne {
+			creatorId: Meteor.userId()
+			chatRoomId: id
+		}, sort: time: -1
+		changed = Helpers.sed content, message._originalContent
+		Meteor.call 'updateChatMessage', changed, message._id
+	else
+		Meteor.call 'addChatMessage', content, id
+
+	input.value = ''
+	window.sendToBottom()
+
 Template.mobileChatWindow.helpers
 	chat: -> chatRoom()
 	__noHeader: -> if not @sidebarIcon()? then 'noHeader' else ''
@@ -20,22 +39,10 @@ Template.mobileChatWindow.events
 			FlowRouter.go 'classView', id: @class()._id
 
 	'keyup input#messageInput': (event) ->
-		content = event.target.value.trim()
-
-		if event.which is 13 and content.length > 0
-			Meteor.call 'addChatMessage', content, FlowRouter.getParam('id')
-
-			event.target.value = ''
-			window.sendToBottom()
+		handleMessageInput event.target if event.which is 13
 
 	'click #sendButton': ->
-		$input = document.getElementById 'messageInput'
-
-		content = $input.value.trim()
-		Meteor.call 'addChatMessage', content, FlowRouter.getParam('id')
-
-		$input.value = ''
-		window.sendToBottom()
+		handleMessageInput document.getElementById 'messageInput'
 
 Template.mobileChatWindow.onCreated ->
 	@sticky = yes
