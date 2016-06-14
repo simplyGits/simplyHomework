@@ -58,6 +58,7 @@ Template.fullscreenChatWindow.events
 	"click .closeChat": -> ChatManager.closeChat()
 
 	'click .sendButton': (event) ->
+		# REVIEW: sed?
 		$input = document.getElementById 'messageInput'
 		send.call this, $input.value
 		window.sendToBottom()
