@@ -27,7 +27,7 @@ function sendEmail (userId, subject, html) {
 
 SyncedCron.add({
 	name: 'Notify new grades',
-	schedule: (parser) => parser.recur().on(3).hour(),
+	schedule: (parser) => parser.recur().every(1).hour(),
 	job: function () {
 		const toString = (g) => g.toString().replace('.', ',')
 
