@@ -9,3 +9,19 @@ _.mixin
 	###
 	mean: (arr, mapper) ->
 		_.sum(arr, mapper) / arr.length
+
+	###*
+	# Returns the median value of the given array
+	#
+	# @method median
+	# @param {arr} {Number[]}
+	# @return {Number}
+	###
+	median: (arr) ->
+		sorted = _.sortBy arr
+		middleIndex = (arr.length + 1) / 2
+
+		if sorted.length % 2
+			sorted[middleIndex - 1]
+		else
+			(sorted[middleIndex - 1.5] + sorted[middleIndex - 0.5]) / 2
