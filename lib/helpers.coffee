@@ -146,29 +146,6 @@ class @Helpers
 		tmp
 
 	###*
-	# Returns the sum of the values in the given array.
-	#
-	# @method getTotal
-	# @param arr {Array} The array to get the sum of.
-	# @param [mapper] {Function} The function to map the values in the array to before counting it to the sum.
-	# @return {Number} The sum of the given values.
-	###
-	@getTotal: (arr, mapper) ->
-		sum = 0
-		sum += (if _.isFunction(mapper) then mapper i else i) for i in arr
-		sum
-
-	###*
-	# Returns the average of the values in the given array.
-	#
-	# @method getAverage
-	# @param arr {Array} The array to get the average of.
-	# @param [mapper] {Function} The function to map the values in the array to before counting it to the average.
-	# @return {Number} The average of the given values.
-	###
-	@getAverage: (arr, mapper) -> @getTotal(arr, mapper) / arr.length
-
-	###*
 	# Caps the given string.
 	# @method cap
 	# @param string {String} The string to cap.
