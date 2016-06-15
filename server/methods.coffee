@@ -283,7 +283,7 @@ Meteor.methods
 					_id: null
 					mean: { $avg: "$grade" }
 			}])[0].mean
-			if mean?
+			if Number.isFinite mean
 				res.push "Het gemiddelde van je eindcijfers is #{mean.toPrecision(2).replace '.', ','}"
 
 			statsCache.set userId, res
