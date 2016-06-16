@@ -27,13 +27,22 @@ Template.recentGrades.helpers
 						.filter (x) -> x.classId is g.classId
 						.sortBy 'dateFilledIn'
 						.map (g) ->
-							if g.isPerfect()
-								"<b>#{g.__grade}!</b>"
-							else unless g.passed
-								"<b style='color: red'>#{g.__grade}</b>"
+							newGrade = Blaze.toHTMLWithData Template.recentGrade, g
+
+							if g.previousValues?
+								g = g.previousValues
+								g = _.extend new Grade(g.gradeStr), g
+								g.__grade = g.toString().replace '.', ','
+
+								oldGrade = Blaze.toHTMLWithData(
+									Template.recentGrade
+									_.extend new Grade(g.gradeStr), g
+								)
+
+								"<span class='prev'>#{oldGrade}</span> &rarr; #{newGrade}"
 							else
-								g.__grade
-						.join ' & '
+								newGrade
+						.join ' &amp; '
 				)
 			.value()
 

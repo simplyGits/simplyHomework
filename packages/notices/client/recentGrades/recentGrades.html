@@ -10,3 +10,15 @@
 		{{class.name}}: {{{grades}}}
 	</div>
 </template>
+
+<template name="recentGrade">
+	{{#if isPerfect}}
+		<b>{{__grade}}!</b>
+	{{else}}
+		{{#if passed}}
+			{{__grade}}
+		{{else}}
+			<b style="color: red">{{__grade}}</b>
+		{{/if}}
+	{{/if}}
+</template>
