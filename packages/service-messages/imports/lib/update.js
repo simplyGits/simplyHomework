@@ -14,6 +14,12 @@ class Update {
 		this.header = header
 
 		/**
+		 * @property subheader
+		 * @type String|undefined
+		 */
+		this.subheader = undefined
+
+		/**
 		 * @property body
 		 * @type String
 		 */
@@ -63,6 +69,7 @@ class Update {
 
 Update.publishedFields = [
 	'header',
+	'subheader',
 	'body',
 	'priority',
 	'creationDate',

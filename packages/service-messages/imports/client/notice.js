@@ -8,6 +8,7 @@ export default function () {
 		return {
 			id: update._id,
 			header: update.header,
+			subheader: update.subheader,
 			template: 'updates_notice',
 			priority: update.priority,
 			data: update,
