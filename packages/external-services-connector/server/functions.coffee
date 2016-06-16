@@ -163,6 +163,14 @@ updateGrades = (userId, forceUpdate = no) ->
 
 			if val?
 				if hasChanged val, grade, [ 'dateTestMade' ]
+					if not val.updateInfo? and
+					hasChanged val, grade, [ 'dateTestMade' ]
+						grade.previousValues =
+							dateFilledIn: val.dateFilledIn
+							grade: val.grade
+							gradeStr: val.gradeStr
+							weight: val.weight
+
 					Grades.update val._id, { $set: grade }, { removeEmptyStrings: no }, handleCollErr
 			else
 				inserts.push grade
