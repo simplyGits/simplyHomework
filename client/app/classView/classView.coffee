@@ -1,7 +1,5 @@
 chroma = require 'chroma-js'
 
-gradesSub = undefined
-
 noticeBanner = new ReactiveVar
 searchRes = new ReactiveVar undefined
 
@@ -81,7 +79,7 @@ Template.classView.onCreated ->
 		id = classId()
 		slide id
 		@subscribe 'classInfo', id
-		gradesSub = @subscribe 'externalGrades', classId: id
+		@subscribe 'externalGrades', classId: id
 
 	@autorun ->
 		c = currentClass()

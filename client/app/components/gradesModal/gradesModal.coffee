@@ -20,6 +20,9 @@ Template.grades.helpers
 
 	isLoading: -> not gradesSub.ready()
 
+Template.grades.onCreated ->
+	@subscribe 'externalGrades', classId: @data._id
+
 Template.gradeRow.onCreated ->
 	@data._expanded = new ReactiveVar false
 	@data._means = new ReactiveVar undefined

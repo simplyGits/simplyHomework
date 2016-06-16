@@ -1,29 +1,31 @@
 <template name="grades">
 	<div id="grades">
-		{{#with endGrade}}
-			<div id="end" class="{{__insufficient}}">
-				<div id="label">Gemiddelde</div>
-				<div id="grade">{{__grade}}</div>
-			</div>
-		{{/with}}
-		<div id="gradeGroupList">
-			{{#each gradeGroups}}
-				<div class="gradeGroup">
-					<div class="name"><span>{{name}}</span></div>
-					{{#each grades}}
-						{{> gradeRow}}
-					{{/each}}
+		{{#if Template.subscriptionsReady}}
+			{{#with endGrade}}
+				<div id="end" class="{{__insufficient}}">
+					<div id="label">Gemiddelde</div>
+					<div id="grade">{{__grade}}</div>
 				</div>
-			{{else}}
-				<div id="notice">
-					{{#if isLoading}}
-						Cijfers laden...
-					{{else}}
+			{{/with}}
+			<div id="gradeGroupList">
+				{{#each gradeGroups}}
+					<div class="gradeGroup">
+						<div class="name"><span>{{name}}</span></div>
+						{{#each grades}}
+							{{> gradeRow}}
+						{{/each}}
+					</div>
+				{{else}}
+					<div id="notice">
 						Geen cijfers
-					{{/if}}
-				</div>
-			{{/each}}
-		</div>
+					</div>
+				{{/each}}
+			</div>
+		{{else}}
+			<div id="notice">
+				Cijfers laden...
+			</div>
+		{{/if}}
 	</div>
 </template>
 
