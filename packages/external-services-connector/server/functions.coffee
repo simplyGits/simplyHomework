@@ -164,7 +164,7 @@ updateGrades = (userId, forceUpdate = no) ->
 			if val?
 				if hasChanged val, grade, [ 'dateTestMade' ]
 					if not val.updateInfo? and
-					hasChanged val, grade, [ 'dateTestMade' ]
+					hasChanged val, grade, [ 'description' ]
 						grade.previousValues =
 							dateFilledIn: val.dateFilledIn
 							grade: val.grade
