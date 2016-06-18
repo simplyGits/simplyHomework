@@ -32,10 +32,25 @@
       "from": "git://github.com/cbaatz/damerau-levenshtein.git",
       "resolved": "git://github.com/cbaatz/damerau-levenshtein.git#8d7440a51ae9dc6912e44385115c7cb1da4e8ebc"
     },
+    "eruda": {
+      "version": "0.6.5",
+      "from": "eruda@>=0.6.5 <0.7.0",
+      "resolved": "https://registry.npmjs.org/eruda/-/eruda-0.6.5.tgz"
+    },
+    "ev-emitter": {
+      "version": "1.0.3",
+      "from": "ev-emitter@latest",
+      "resolved": "https://registry.npmjs.org/ev-emitter/-/ev-emitter-1.0.3.tgz"
+    },
     "fibers": {
       "version": "1.0.15",
       "from": "fibers@>=1.0.13 <2.0.0",
       "resolved": "https://registry.npmjs.org/fibers/-/fibers-1.0.15.tgz"
+    },
+    "get-size": {
+      "version": "2.0.2",
+      "from": "get-size@latest",
+      "resolved": "https://registry.npmjs.org/get-size/-/get-size-2.0.2.tgz"
     },
     "linkify-it": {
       "version": "2.0.3",
@@ -86,6 +101,16 @@
       "version": "1.0.3",
       "from": "uc.micro@>=1.0.1 <2.0.0",
       "resolved": "https://registry.npmjs.org/uc.micro/-/uc.micro-1.0.3.tgz"
+    },
+    "unidragger": {
+      "version": "2.1.0",
+      "from": "unidragger@latest",
+      "resolved": "https://registry.npmjs.org/unidragger/-/unidragger-2.1.0.tgz"
+    },
+    "unipointer": {
+      "version": "2.1.0",
+      "from": "unipointer@latest",
+      "resolved": "https://registry.npmjs.org/unipointer/-/unipointer-2.1.0.tgz"
     },
     "yallist": {
       "version": "2.0.0",
