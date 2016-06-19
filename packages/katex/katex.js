@@ -13,7 +13,7 @@ if (Package.templating) {
 
 		try {
 			return HTML.Raw(
-				content.replace(/\$\$(.+)\$\$/, function (match, formula) {
+				content.replace(/\$\$(.+?)\$\$/g, function (match, formula) {
 					return katex.renderToString(formula);
 				})
 			);

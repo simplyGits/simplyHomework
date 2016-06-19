@@ -131,7 +131,7 @@ ChatMiddlewares.attach 'kappa', 'client', (message) ->
 	message
 
 ChatMiddlewares.attach 'katex', 'client', (message) ->
-	message.content = message.content.replace /\$\$(.+)\$\$/, (match, formula) ->
+	message.content = message.content.replace /\$\$(.+?)\$\$/g, (match, formula) ->
 		try katex.renderToString formula
 		catch then match
 
