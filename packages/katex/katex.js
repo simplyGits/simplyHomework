@@ -1,13 +1,14 @@
+/* global katex */
+
 if (Package.templating) {
-	var Template = Package.templating.Template;
-	var Blaze = Package.blaze.Blaze; // implied by `templating`
-	var HTML = Package.htmljs.HTML; // implied by `blaze`
+	const Template = Package.templating.Template;
+	const Blaze = Package.blaze.Blaze; // implied by `templating`
+	const HTML = Package.htmljs.HTML; // implied by `blaze`
 
 	Template.registerHelper('katex', new Template('katex', function () {
-		var view = this;
-		var content = '';
-		if (view.templateContentBlock) {
-			content = Blaze._toText(view.templateContentBlock, HTML.TEXTMODE.STRING);
+		let content = '';
+		if (this.templateContentBlock) {
+			content = Blaze._toText(this.templateContentBlock, HTML.TEXTMODE.STRING);
 		}
 
 		try {
@@ -17,7 +18,7 @@ if (Package.templating) {
 				})
 			);
 		} catch (error) {
-			return view.templateElseBlock || HTML.Raw(content);
+			return this.templateElseBlock || HTML.Raw(content);
 		}
 	}));
 }
