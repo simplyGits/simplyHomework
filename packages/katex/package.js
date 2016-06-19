@@ -1,7 +1,7 @@
 // Code halfstolen from https://github.com/stubailo/meteor-katex
 Package.describe({
 	name: 'simply:katex',
-	version: '0.5.1',
+	version: '0.6.0',
 	// Brief, one-line summary of the package.
 	summary: 'The fastest math typesetting library for the web.',
 	// URL to the Git repository containing the source code for this package.
