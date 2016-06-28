@@ -1,6 +1,7 @@
 request = require 'request'
 Future = require 'fibers/future'
 LRU = require 'lru-cache'
+WaitGroup = require('meteor/simply:waitgroup').default
 
 statsCache = LRU
 	max: 75

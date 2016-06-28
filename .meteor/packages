@@ -83,3 +83,4 @@ meteorhacks:aggregate
 admin
 2fa
 percolate:migrations
+simply:waitgroup
