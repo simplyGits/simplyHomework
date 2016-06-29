@@ -78,9 +78,7 @@ class @Grade
 		# @property gradeStr
 		# @type String
 		###
-		@gradeStr = switch typeof grade
-			when 'string' then grade
-			when 'number' then grade.toPrecision(2).replace '.', ','
+		@gradeStr = if typeof grade is 'string' then grade
 
 		###*
 		# Can be one of: [ 'number', 'percentage' ]
