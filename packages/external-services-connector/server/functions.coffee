@@ -69,15 +69,17 @@ markUserEvent = (userId, name) ->
 # @param {String} userId
 # @param {String} name
 # @param {Number} invalidationTime
+# @param {Boolean} [force=false]
 # @return {Boolean}
 ###
-checkAndMarkUserEvent = (userId, name, invalidationTime) ->
+checkAndMarkUserEvent = (userId, name, invalidationTime, force = no) ->
 	check userId, String
 	check name, String
 	check invalidationTime, Number
+	check force, Boolean
 
 	updateTime = getEvent name, userId
-	if updateTime? and updateTime > _.now() - invalidationTime
+	if not force and updateTime? and updateTime > _.now() - invalidationTime
 		no
 	else
 		markUserEvent userId, name
@@ -822,6 +824,7 @@ fetchServiceUpdates = (userId, forceUpdate = no) ->
 		userId
 		'serviceUpdatesUpdate'
 		SERVICE_UPDATE_INVALIDATION_TIME
+		forceUpdate
 	)
 		return errors
 
