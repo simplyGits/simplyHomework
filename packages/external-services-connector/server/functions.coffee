@@ -170,7 +170,7 @@ updateGrades = (userId, forceUpdate = no) ->
 				fetchedBy: grade.fetchedBy
 
 			if val?
-				if hasChanged val, grade, [ 'dateTestMade' ]
+				if hasChanged val, grade, [ 'dateTestMade', 'previousValues' ]
 					if not grade.isEnd and hasChanged val, grade, [ 'description' ]
 						grade.previousValues =
 							dateFilledIn: val.dateFilledIn
