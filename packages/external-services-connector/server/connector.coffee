@@ -83,8 +83,12 @@ class ExternalServicesConnector
 
 		@services.push module
 
+exports.ExternalServicesConnector = ExternalServicesConnector
 # Just a shortcut.
-Services = ExternalServicesConnector.services
+exports.Services = ExternalServicesConnector.services
 
-@Services = Services
-@ExternalServicesConnector = ExternalServicesConnector
+exports.functions = require './functions.coffee'
+
+require './methods.coffee'
+require './publish.coffee'
+require './router.coffee'

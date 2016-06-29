@@ -1,3 +1,7 @@
+{ Services } = require './connector.coffee'
+{ updateCalendarItems, updateGrades, updateStudyUtils, updateMessages,
+  fetchServiceUpdates } = require './functions.coffee'
+
 Meteor.publish 'externalCalendarItems', (from, to) ->
 	check from, Date
 	check to, Date

@@ -179,13 +179,17 @@ Template.app.events
 	'click #bigNotice > #dismissButton': -> currentBigNotice.get().onDismissed? arguments...
 
 Template.app.onCreated ->
-	mailVerified = Meteor.user().emails[0].verified
-	if not mailVerified and
-	Helpers.daysRange(Meteor.user().createdAt, new Date(), no) >= 2
-		notify '''
-			Je hebt je account nog niet geverifiëerd.
-			Check je email!
-		''', 'warning'
+	@autorun ->
+		mailVerified = getUserField Meteor.userId(), 'emails[0].verified'
+		createdAt = getUserField Meteor.userId(), 'createdAt'
+
+		if mailVerified? and
+		not mailVerified and
+		Helpers.daysRange(createdAt, new Date(), no) >= 2
+			notify '''
+				Je hebt je account nog niet geverifiëerd.
+				Check je email!
+			''', 'warning'
 
 	@autorun -> App.logout() unless Meteor.userId()? or Meteor.loggingIn()
 

@@ -1,5 +1,7 @@
+{ functions, Services } = require './connector.coffee'
+
 Meteor.methods
-	'getModuleInfo': -> getModuleInfo @userId
+	'getModuleInfo': -> functions.getModuleInfo @userId
 
 	# REVIEW: should we have checks to ensure that no data has been stored yet for
 	# the service?
@@ -48,31 +50,31 @@ Meteor.methods
 
 	'getServiceProfileData': (serviceName) ->
 		check serviceName, String
-		getServiceProfileData serviceName, @userId
+		functions.getServiceProfileData serviceName, @userId
 
 	'getPersons': (query, type) ->
 		check query, String
 		check type, Match.OneOf String, null
-		getPersons query, type, @userId
+		functions.getPersons query, type, @userId
 
 	'getExternalPersonClasses': ->
 		@unblock()
-		getExternalPersonClasses @userId
+		functions.getExternalPersonClasses @userId
 
 	'getServiceSchools': (serviceName, query) ->
 		@unblock()
 		check serviceName, String
 		check query, String
-		getServiceSchools serviceName, query, @userId
+		functions.getServiceSchools serviceName, query, @userId
 
 	'getSchools': (query) ->
 		@unblock()
 		check query, String
-		getSchools query, @userId
+		functions.getSchools query, @userId
 
 	'getProfileData': ->
 		@unblock()
-		getProfileData @userId
+		functions.getProfileData @userId
 
 	'sendMessage': (subject, body, recipients, service, draftId = undefined) ->
 		@unblock()

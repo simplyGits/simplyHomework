@@ -1,3 +1,5 @@
+{ Services } = require 'meteor/simply:external-services-connector'
+
 Template.calendarItemDetails.helpers
 	people: ->
 		# TODO: when viewing the schedule of someone else it would be nice to show
@@ -28,7 +30,7 @@ Template.calendarItemDetails.helpers
 			'classInfo.group': @group()
 		).count() > 0
 
-	service: -> _.find ExternalServicesConnector.services, name: @fetchedBy
+	service: -> _.find Services, name: @fetchedBy
 
 Template.calendarItemDetails.events
 	'click [data-action="chat"]': (event) ->

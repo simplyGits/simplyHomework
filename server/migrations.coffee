@@ -1,3 +1,5 @@
+{ functions } = require 'meteor/simply:external-services-connector'
+
 Migrations.add
 	version: 1
 	name: 'Add empty strings on grades without a string'

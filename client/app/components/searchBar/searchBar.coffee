@@ -15,6 +15,13 @@ fallbackClasses = [
 	'Wiskunde'
 	'Lichamelijke opvoeding'
 ]
+fallbackNames = [
+	'Piet'
+	'Piet Jansen'
+	'Maria'
+	'Isaac'
+	'Josephine'
+]
 
 getClassName = ->
 	currentLesson = Helpers.embox ScheduleFunctions.currentLesson
@@ -41,9 +48,12 @@ getName = ->
 		transform: null
 	}).fetch()
 
-	s = user.profile.firstName
-	s += " #{user.profile.lastName}" if _.random 1
-	s
+	if user?
+		s = user.profile.firstName
+		s += " #{user.profile.lastName}" if _.random 1
+		s
+	else
+		_.sample fallbackNames
 
 cache = {}
 _fetch = _.throttle ((query, callback) ->

@@ -1,3 +1,5 @@
+{ Services, ExternalServicesConnector } = require './connector.coffee'
+
 # REVIEW: Better way to do this?
 GRADES_INVALIDATION_TIME         = ms.minutes 20
 STUDYUTILS_INVALIDATION_TIME     = ms.minutes 20
@@ -852,18 +854,18 @@ getModuleInfo = (userId) ->
 		loginNeeded: s.loginNeeded
 
 # wat.
-@updateGrades = updateGrades
-@updateStudyUtils = updateStudyUtils
-@updateCalendarItems = updateCalendarItems
-@getPersons = getPersons
-@getExternalPersonClasses = getExternalPersonClasses
-@getExternalAssignments = getExternalAssignments
-@getServiceSchools = getServiceSchools
-@getSchools = getSchools
-@getServiceProfileData = getServiceProfileData
-@getProfileData = getProfileData
-@updateMessages = updateMessages
-@sendMessage = sendMessage
-@replyMessage = replyMessage
-@fetchServiceUpdates = fetchServiceUpdates
-@getModuleInfo = getModuleInfo
+exports.updateGrades = updateGrades
+exports.updateStudyUtils = updateStudyUtils
+exports.updateCalendarItems = updateCalendarItems
+exports.getPersons = getPersons
+exports.getExternalPersonClasses = getExternalPersonClasses
+exports.getExternalAssignments = getExternalAssignments
+exports.getServiceSchools = getServiceSchools
+exports.getSchools = getSchools
+exports.getServiceProfileData = getServiceProfileData
+exports.getProfileData = getProfileData
+exports.updateMessages = updateMessages
+exports.sendMessage = sendMessage
+exports.replyMessage = replyMessage
+exports.fetchServiceUpdates = fetchServiceUpdates
+exports.getModuleInfo = getModuleInfo

@@ -2,6 +2,7 @@ request = require 'request'
 Future = require 'fibers/future'
 LRU = require 'lru-cache'
 WaitGroup = require('meteor/simply:waitgroup').default
+{ functions } = require 'meteor/simply:external-services-connector'
 
 statsCache = LRU
 	max: 75
@@ -168,11 +169,11 @@ Meteor.methods
 
 		group = new WaitGroup()
 
-		group.defer -> updateGrades userId
-		group.defer -> updateStudyUtils userId
+		group.defer -> functions.updateGrades userId
+		group.defer -> functions.updateStudyUtils userId
 
 		group.defer ->
-			updateCalendarItems userId, Date.today(), Date.today().addDays 14
+			functions.updateCalendarItems userId, Date.today(), Date.today().addDays 14
 			user = Meteor.users.findOne userId,
 				fields:
 					classInfos: 1
@@ -283,7 +284,7 @@ Meteor.methods
 				$group:
 					_id: null
 					mean: { $avg: "$grade" }
-			}])[0].mean
+			}])[0]?.mean
 			if Number.isFinite mean
 				res.push "Het gemiddelde van je eindcijfers is #{mean.toPrecision(2).replace '.', ','}"
 

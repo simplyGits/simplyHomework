@@ -16,13 +16,13 @@ Package.onUse(function(api) {
 
 	api.use([
 		'simply:external-services-connector',
+		'ecmascript',
 		'modules',
 	]);
 	api.use([
 		'stevezhu:lodash@3.10.1',
 		'simply:magisterjs@1.21.0',
 		'ejson',
-		'ecmascript',
 		'simply:lru',
 		'ms',
 	], 'server');

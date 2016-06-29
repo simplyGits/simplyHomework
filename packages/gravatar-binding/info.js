@@ -1,4 +1,6 @@
-/* global GravatarBinding, ExternalServicesConnector */
+/* global GravatarBinding */
+
+import { ExternalServicesConnector } from 'meteor/simply:external-services-connector';
 
 /**
  * simplyHomework binding to Gravatar.

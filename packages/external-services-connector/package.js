@@ -20,6 +20,7 @@ Package.onUse(function(api) {
 		'stevezhu:lodash@3.10.1',
 		'coffeescript',
 		'check',
+		'modules',
 	]);
 	api.use([
 		'mongo',
@@ -28,26 +29,8 @@ Package.onUse(function(api) {
 		'ms',
 	], 'server');
 
-	api.addFiles([
-		'client/connector.coffee',
-	], 'client');
-	api.addFiles([
-		'server/connector.coffee',
-		'server/functions.coffee',
-		'server/methods.coffee',
-		'server/publish.coffee',
-		'server/router.coffee',
-	], 'server');
-
-	api.export([
-		'ExternalServicesConnector',
-	]);
-	api.export([
-		'Services',
-		'updateCalendarItems',
-		'updateGrades',
-		'updateStudyUtils',
-	], 'server');
+	api.mainModule('client/connector.coffee', 'client');
+	api.mainModule('server/connector.coffee', 'server');
 });
 
 Package.onTest(function(api) {

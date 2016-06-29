@@ -1,4 +1,6 @@
-/* global ExternalServicesConnector, MagisterBinding */
+/* global MagisterBinding */
+
+import { ExternalServicesConnector } from 'meteor/simply:external-services-connector';
 
 /**
  * simplyHomework binding to Magister.

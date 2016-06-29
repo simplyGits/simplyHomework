@@ -1,3 +1,5 @@
+{ Services } = require 'meteor/simply:external-services-connector'
+
 currentPerson = -> Meteor.users.findOne FlowRouter.getParam 'id'
 sameUser = -> Meteor.userId() is FlowRouter.getParam 'id'
 pictures = new ReactiveVar []
@@ -194,7 +196,7 @@ Template.changePictureModal.onCreated ->
 					.filter ([key, val]) -> val.picture?
 					.map ([ key, val ]) ->
 						fetchedBy: key
-						service: _.find ExternalServicesConnector.services, name: key
+						service: _.find Services, name: key
 						value: val.picture
 						selected: ->
 							if key is getUserField(Meteor.userId(), 'profile.pictureInfo.fetchedBy')

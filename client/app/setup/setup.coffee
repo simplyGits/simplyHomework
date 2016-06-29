@@ -1,4 +1,5 @@
 SReactiveVar = require('meteor/simply:strict-reactive-var').default
+{ Services } = require 'meteor/simply:external-services-connector'
 
 currentItemIndex = new SReactiveVar Number, 0
 
@@ -25,7 +26,7 @@ pictures = ->
 			value: s.profileData().picture
 			index: i
 			fetchedBy: s.name
-			service: _.find ExternalServicesConnector.services, name: s.name
+			service: _.find Services, name: s.name
 		.value()
 
 courseInfos = ->
@@ -239,8 +240,9 @@ running = undefined
 ###
 @runSetup = ->
 	return undefined if ran
+	setupProgress = getUserField Meteor.userId(), 'setupProgress'
+	return undefined unless setupProgress?
 
-	setupProgress = getUserField Meteor.userId(), 'setupProgress', []
 	setupProgress = setupProgress.concat [
 		'welcome'
 		'cookies'
@@ -325,7 +327,7 @@ progressInfo = ->
 
 Template.setup.helpers
 	currentSetupItem: ->
-		item = running[currentItemIndex.get()]
+		item = running?[currentItemIndex.get()]
 		"setup-#{item?.name}"
 
 	progressText: ->

@@ -2,6 +2,7 @@
    GradeFunctions, Analytics */
 
 import emails from 'meteor/emails'
+import { functions } from 'meteor/simply:external-services-connector'
 import moment from 'moment-timezone'
 moment.locale('nl')
 
@@ -39,7 +40,7 @@ SyncedCron.add({
 		users.forEach((user) => {
 			const userId = user._id
 
-			updateGrades(userId, false)
+			functions.updateGrades(userId, false)
 
 			const grades = Grades.find({
 				ownerId: userId,
@@ -113,7 +114,7 @@ SyncedCron.add({
 		users.forEach((user) => {
 			const userId = user._id
 
-			updateMessages(userId, 0, [ 'inbox' ])
+			functions.updateMessages(userId, 0, [ 'inbox' ])
 
 			const messages = Messages.find({
 				fetchedFor: userId,
