@@ -83,6 +83,12 @@ checkAndMarkUserEvent = (userId, name, invalidationTime) ->
 		markUserEvent userId, name
 		yes
 
+###*
+# @method diffAndInsertFiles
+# @param {String} userId
+# @param {ExternalFile[]} files
+# @return {Object}
+###
 diffAndInsertFiles = (userId, files) ->
 	vals = Files.find(
 		externalId: $in: _.pluck files, 'externalId'
