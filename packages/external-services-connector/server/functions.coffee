@@ -105,10 +105,13 @@ diffAndInsertFiles = (userId, files) ->
 		id = file._id
 		if val?
 			ExternalFile.schema.clean file
-			id = file._id = val._id
+			id = val._id
 
-			if hasChanged val, file
-				Files.update val._id, file, { validate: no }, handleCollErr
+			# use the version with the newest creationDate
+			if ((not file.creationDate or not file.creationDate) or file.creationDate > val.creationDate) and
+			hasChanged val, file, [ 'downloadInfo', 'size' ]
+				delete file._id
+				Files.update val._id, { $set: file }, handleCollErr
 		else
 			id = Files.insert file, handleCollErr
 
@@ -767,7 +770,7 @@ updateMessages = (userId, offset, folders, forceUpdate = no) ->
 							.value()
 					###
 
-					if hasChanged val, message
+					if hasChanged val, message, [ 'notifiedOn' ]
 						Messages.update message._id, message, validate: no
 				else
 					Messages.insert message

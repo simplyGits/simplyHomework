@@ -342,7 +342,7 @@ const convertMagisterFile = function (userId, prefix, file, usePersonPath = fals
 		};
 	}
 	res.fetchedBy = MagisterBinding.name;
-	res.externalId = prefixId(file._magisterObj, res.name, res.mime);
+	res.externalId = prefixId(file._magisterObj, file.id());
 
 	return res;
 };
