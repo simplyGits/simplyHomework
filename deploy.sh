@@ -13,6 +13,11 @@ are you sure you want to continue? [y/N] " response
 		exit 1
 	fi
 fi
+
+commit=$(git rev-parse HEAD)
+buildDate="$(date +%s)000"
+echo "export default { commit: '$commit', buildDate: new Date($buildDate) }" > ./imports/version.js
+
 meteor npm install
 docker build -t simplyhomework . && docker-compose up -d app
 ssh simplyhomework 'docker rmi $(docker images -q -f dangling=true)' # reclaim some diskspace
