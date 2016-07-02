@@ -9,6 +9,7 @@ Package.describe({
 
 Package.onUse(function(api) {
 	api.versionsFrom('1.1.0.3');
+	api.use('ecmascript', 'client');
 	api.use('templating', 'client', { weak: true });
 
 	api.addFiles('dist/katex.min.css');

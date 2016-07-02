@@ -18,7 +18,11 @@ commit=$(git rev-parse HEAD)
 buildDate="$(date +%s)000"
 echo "export default { commit: '$commit', buildDate: new Date($buildDate) }" > ./imports/version.js
 
-meteor npm install
-docker build -t simplyhomework . && docker-compose up -d app
+BUILD_DIR=$TMPDIR/simplyHomework-build
+rm -rf $BUILD_DIR
+meteor build --architecture=os.linux.x86_64 --directory $BUILD_DIR
+cp Dockerfile $BUILD_DIR/bundle/
+
+docker build -t simplyhomework $BUILD_DIR/bundle/ && docker-compose up -d app
 ssh simplyhomework 'docker rmi $(docker images -q -f dangling=true)' # reclaim some diskspace
 tput bel
