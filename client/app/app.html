@@ -92,35 +92,6 @@
 	</div>
 </template>
 
-<template name="newSchoolYearModal">
-	<div class="modal fade" aria-hidden="true" id="newSchoolYearModal">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-					<h4 class="modal-title">Nieuw Schooljaar</h4>
-				</div>
-				<div class="modal-body">
-					<h4 style="text-align: center; margin-bottom: 20px;">Welken vakken moeten er weg?<small><br>Vakken kan je zometeen toevoegen.</small></h4>
-					{{#each classes}}
-						<div class="classRemoveRow">
-							<label>
-								<input type="checkbox" classId="{{_id._str}}">
-								<span id="checkboxLabel">
-									{{name}}
-								</span>
-							</label>
-						</div>
-					{{/each}}
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-primary" id="goButton">Okido</button>
-				</div>
-			</div>
-		</div>
-	</div>
-</template>
-
 <template name="addTicketModal">
 	<div class="modal fade" aria-hidden="true" id="addTicketModal">
 		<div class="modal-dialog">

@@ -180,3 +180,47 @@ SyncedCron.add
 				Date.today()
 				Date.today().addDays 14
 			)
+
+SyncedCron.add
+	name: 'Handle new schoolyears'
+	schedule: (parser) -> parser.recur().on(4).hour()
+	job: ->
+		userIds = Meteor.users.find({
+			'profile.firstName': $ne: ''
+		}, {
+			fields:
+				_id: 1
+				'profile.firstName': 1
+				emails: 1
+		}).map (u) -> u._id
+
+		for userId in userIds
+			courses = functions.getCourses userId
+			current = _.find courses, (c) -> c.inside new Date
+			next = _.find courses, (c) -> c.from > new Date
+
+			if current? and Date.today().addDays(-1) < current.start
+				###
+				loginUrl = 'https://app.simplyHomework.nl/login'
+				sendMail user, 'Nieuw schooljaar', """
+					Hey #{user.profile.firstName}!
+
+					Zo te zien is het nieuwe schooljaar zojuist voor je begonnen.
+					We hopen dat simplyHomework je dit jaar weer kan helpen met school! :)
+
+					Je moet wel even eerst de setup doorlopen (ongeveer 2 minuten) op: <a href='#{loginurl}'>#{loginurl}</a>
+
+					Success dit schooljaar!
+				"""
+				###
+				Meteor.users.update(
+					userId
+					$pullAll: setupProgress: [
+						'externalServices'
+						'extractInfo'
+						'getExternalClasses'
+					]
+				)
+
+			# REVIEW: do we want to send a message here? If so, what?
+			# else unless next?
