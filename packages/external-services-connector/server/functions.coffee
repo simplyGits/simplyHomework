@@ -425,7 +425,7 @@ updateCalendarItems = (userId, from, to) ->
 			multi: yes
 		}, handleCollErr
 
-		# remove non-lesson calendarItems that were in the db but are not retunred
+		# remove non-lesson calendarItems that were in the db but are not returned
 		# by the service.
 		CalendarItems.remove {
 			userIds: userId
