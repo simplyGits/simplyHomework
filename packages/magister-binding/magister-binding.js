@@ -250,24 +250,26 @@ function getCurrentCourse (magister) {
 }
 
 /**
- * @method updateCourse
+ * @method getCourses
  * @param {String} userId
+ * @return {Course}
  */
-MagisterBinding.updateCourse = function (userId) {
+MagisterBinding.getCourses = function (userId) {
 	check(userId, String);
 	const magister = getMagisterObject(userId);
-	const c = getCurrentCourse(magister);
+	const courses = Meteor.wrapAsync(magister.courses, magister)();
 
-	const course = new Course(c.begin(), c.end(), c.profile(), userId);
-	course.profile = c.profile();
-	course.typeId = c.type().id;
-	course.externalId = prefixId(magister, c.id());
-	course.fetchedBy = MagisterBinding.name;
+	return courses.map(function (c) {
+		const course = new Course(c.begin(), c.end(), c.profile(), userId);
 
-	course.lastUpdated = new Date();
+		course.profile = c.profile();
+		course.typeId = c.type().id;
+		course.externalId = prefixId(magister, c.id());
+		course.fetchedBy = MagisterBinding.name;
 
-	MagisterBinding.storedInfo(userId, {
-		course: course,
+		course.lastUpdated = new Date();
+
+		return course;
 	});
 };
 

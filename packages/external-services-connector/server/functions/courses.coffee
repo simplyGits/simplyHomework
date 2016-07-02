@@ -1,20 +1,19 @@
 import { Services, ExternalServicesConnector } from '../connector.coffee'
 
 ###*
-# @method updateCourses
+# @method getCourses
 # @param {String} userId
-# @return {Error[]}
+# @return {Course[]}
 ###
-export updateCourses = (userId) ->
+export getCourses = (userId) ->
 	check userId, String
-	errors = []
+	res = []
 
-	services = _.filter Services, (s) -> s.updateCourse? and s.active userId
+	services = _.filter Services, (s) -> s.getCourses? and s.active userId
 	for service in services
 		try
-			service.updateCourse userId
+			res = res.concat service.getCourses userId
 		catch e
 			ExternalServicesConnector.handleServiceError service.name, userId, e
-			errors.push e
 
-	errors
+	res
