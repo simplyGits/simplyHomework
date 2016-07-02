@@ -156,7 +156,6 @@ updateGrades = (userId, forceUpdate = no) ->
 				onlyEnds: no
 
 		catch e
-			console.log 'error while fetching grades from service.', e
 			ExternalServicesConnector.handleServiceError externalService.name, userId, e
 			errors.push e
 			continue
@@ -229,7 +228,6 @@ updateStudyUtils = (userId, forceUpdate = no) ->
 		try
 			result = externalService.getStudyUtils userId
 		catch e
-			console.log 'error while fetching studyUtils from service.', e
 			ExternalServicesConnector.handleServiceError externalService.name, userId, e
 			errors.push e
 			continue
@@ -315,7 +313,6 @@ updateCalendarItems = (userId, from, to) ->
 		try
 			result = externalService.getCalendarItems userId, from, to
 		catch e
-			console.log 'error while fetching calendarItems from service.', e
 			ExternalServicesConnector.handleServiceError externalService.name, userId, e
 			errors.push e
 			continue
@@ -541,7 +538,7 @@ getExternalPersonClasses = (userId) ->
 					'scr'
 				]
 		catch e
-			console.log 'error while fetching classes from service.', e
+			ExternalServicesConnector.handleServiceError service.name, userId, e
 			continue
 
 		result = result.concat classes.map (c) ->
@@ -716,7 +713,6 @@ updateMessages = (userId, offset, folders, forceUpdate = no) ->
 	for folder in folders
 		for service in services
 			handleErr = (e) ->
-				console.log 'error while fetching messages from service.', e
 				ExternalServicesConnector.handleServiceError service.name, userId, e
 				errors.push e
 
@@ -835,7 +831,6 @@ fetchServiceUpdates = (userId, forceUpdate = no) ->
 		try
 			updates = service.getUpdates userId
 		catch e
-			console.log 'error while fetching updates from service.', e
 			ExternalServicesConnector.handleServiceError service.name, userId, e
 			errors.push e
 			continue

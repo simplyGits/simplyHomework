@@ -10,6 +10,7 @@ ExternalServiceErrors = new Mongo.Collection 'externalServiceErrors'
 class ExternalServicesConnector
 	@services: []
 	@handleServiceError: (serviceName, userId, error) ->
+		console.log "error while fetching something from service '#{serviceName}'", error
 		ExternalServiceErrors.insert
 			service: serviceName
 			userId: userId
