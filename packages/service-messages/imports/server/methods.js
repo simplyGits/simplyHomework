@@ -11,6 +11,7 @@ Meteor.methods({
 	 * 	@param {String} options.body
 	 * 	@param {Object} [options.query]
 	 * 	@param {Number} [options.priority=0]
+	 * @return {String} The ID of the update.
 	 */
 	updates_add(options) {
 		check(options, Object)
@@ -29,7 +30,7 @@ Meteor.methods({
 			update.setMatchQuery(query)
 		}
 		update.priority = priority
-		Updates.insert(update)
+		return Updates.insert(update)
 	},
 
 	/**
