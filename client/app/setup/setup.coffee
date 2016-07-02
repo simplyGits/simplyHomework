@@ -160,7 +160,7 @@ setupItems = [
 	{
 		name: 'getExternalClasses'
 		async: yes
-		visisble: no
+		visible: no
 		func: (callback) ->
 			colors = _.shuffle [
 				'#F44336'
@@ -317,7 +317,7 @@ step = ->
 progressInfo = ->
 	current = currentItemIndex.get()
 	length = _(running)
-		.reject (item) -> item.visisble is no
+		.reject (item) -> item.visible is no
 		.value()
 		.length
 
