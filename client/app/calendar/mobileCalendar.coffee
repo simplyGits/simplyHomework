@@ -63,6 +63,8 @@ Template.mobileCalendar.helpers
 
 Template.mobileCalendar.events
 	'click .currentDate': -> setDate Date.today()
+	'click [data-action="pickdate"]': -> $('#datepickercontainer').addClass 'visible'
+	'click #backdrop': -> $('#datepickercontainer').removeClass 'visible'
 
 Template.mobileCalendarHour.events
 	'click .hour': -> FlowRouter.setQueryParams openCalendarItemId: @_id
@@ -110,6 +112,14 @@ Template.mobileCalendar.onRendered ->
 	Meteor.defer ->
 		time = +FlowRouter.getParam 'time'
 		setDate new Date unless Number.isFinite time
+
+	@$('#datepicker')
+		.datetimepicker
+			format: 'YYYY-MM-DD'
+			inline: true
+		.on 'dp.change', (e) ->
+			setDate e.date.toDate()
+			@parentNode.className = ''
 
 	loading = @loading
 	@calendar = calendar = new SwipeView '.mobileCalendar', hastyPageFlip: yes

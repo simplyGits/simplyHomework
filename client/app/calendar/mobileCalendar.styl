@@ -35,6 +35,23 @@
 		padding-left: 15px
 		padding-right: 15px
 
+#datepickercontainer
+	display: none
+	fixed: top left right bottom
+	z-index: 20
+
+	#backdrop
+		absolute: top left right bottom
+		background-color: rgba(0, 0, 0, .8)
+
+	#datepicker
+		absolute: top 50% left 50%
+		background-color: #fff
+		width: 240px
+		transform: translate(-50%, -50%)
+#datepickercontainer.visible
+	display: block
+
 div.swipebar
 	absolute: top left bottom
 	width: 7%
@@ -66,10 +83,20 @@ div.mobileCalendarTopBar
 		margin-top: 10px
 
 	span.currentDate
+		absolute: left 10px right 40px
+		overflow: hidden
+
 		roboto(300)
+		white-space: nowrap
+		text-overflow: ellipsis
+
 		transition: .2s color linear
 	span.currentDate.today
 		color: darkred
+
+	.fa-calendar
+		absolute: top 10px right 10px
+		z-index: 10
 
 div.mobileCalendar
 	absolute: left 0 right 0 bottom 0 top 50px
