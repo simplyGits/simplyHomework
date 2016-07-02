@@ -47,7 +47,7 @@ SyncedCron.add({
 				isEnd: false,
 				classId: { $exists: true },
 				$and: [
-					{ dateFilledIn: { $gte: Date.today().addDays(-1) }},
+					{ dateFilledIn: { $gte: moment().add(-1, 'hours').todate() }},
 					// user probably has already seen the grade when he logged in on
 					// simplyHomework, no need to send a mail.
 					{ dateFilledIn: { $gt: user.status.lastLogin.date }},
