@@ -167,17 +167,7 @@ Template.projectView.events
 
 		showModal 'changeProjectModal', undefined, currentProject()
 
-		$('#changeDeadlineInput').datetimepicker
-			locale: moment.locale()
-			defaultDate: @deadline
-			icons:
-				time: 'fa fa-clock-o'
-				date: 'fa fa-calendar'
-				up: 'fa fa-arrow-up'
-				down: 'fa fa-arrow-down'
-				previous: 'fa fa-chevron-left'
-				next: 'fa fa-chevron-right'
-
+		$('#changeDeadlineInput').datetimepicker defaultDate: @deadline
 	"click #chatButton": -> ChatManager.openProjectChat @_id
 
 Template.changeProjectModal.helpers

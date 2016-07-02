@@ -332,16 +332,7 @@ Template.addProjectModal.events
 				$('#addProjectModal').modal 'hide'
 
 Template.addProjectModal.onRendered ->
-	$('#deadlineInput').datetimepicker
-		locale: moment.locale()
-		defaultDate: new Date()
-		icons:
-			time: 'fa fa-clock-o'
-			date: 'fa fa-calendar'
-			up: 'fa fa-arrow-up'
-			down: 'fa fa-arrow-down'
-			previous: 'fa fa-chevron-left'
-			next: 'fa fa-chevron-right'
+	$('#deadlineInput').datetimepicker defaultDate: new Date()
 
 	### TODO
 	Meteor.call 'getExternalAssignments', (e, r) ->

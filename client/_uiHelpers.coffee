@@ -281,6 +281,16 @@ Meteor.startup ->
 		document.title = Session.get 'documentPageTitle'
 		$colortag.attr 'content', Session.get('pageColor') ? '#32A8CE'
 
+	_.extend $.fn.datetimepicker.defaults,
+		locale: moment.locale()
+		icons:
+			time: 'fa fa-clock-o'
+			date: 'fa fa-calendar'
+			up: 'fa fa-arrow-up'
+			down: 'fa fa-arrow-down'
+			previous: 'fa fa-chevron-left'
+			next: 'fa fa-chevron-right'
+
 	BlazeLayout.setRoot 'body'
 
 	notice = null
