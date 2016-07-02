@@ -1,5 +1,7 @@
 CACHE_TIMEOUT = ms.minutes 10
 
+# improve placeholders
+
 placeholders = [
 	'Samenvattingen voor %class%'
 	'Woordenlijsten voor %class%'
