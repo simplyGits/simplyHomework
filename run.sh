@@ -15,7 +15,7 @@ trap 'trap - SIGTERM && kill 0' SIGINT SIGTERM EXIT
 echo "Starting mongod"
 mongod --dbpath .meteor/local/db &>/dev/null &
 
-base="MONGO_URL=mongodb://localhost:27017/meteor MAIL_URL='smtp://lieuwerooijakkers@gmail.com:3_oSTg-KlPmYICxcGivZMg@smtp.mandrillapp.com:587' DISABLE_WEBSOCKETS=true meteor"
+base="MONGO_URL=mongodb://localhost:27017/meteor MAIL_URL='smtp://lieuwerooijakkers@gmail.com:3_oSTg-KlPmYICxcGivZMg@smtp.mandrillapp.com:587' DISABLE_WEBSOCKETS=true meteor $@"
 if [[ -f settings.json ]]; then
 	eval "$base --settings settings.json"
 else
