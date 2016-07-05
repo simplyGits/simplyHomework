@@ -175,7 +175,8 @@ updateGrades = (userId, forceUpdate = no) ->
 
 			if val?
 				if hasChanged val, grade, [ 'dateTestMade', 'previousValues' ]
-					if not grade.isEnd and hasChanged val, grade, [ 'description' ]
+					items = [ 'dateFilledIn', 'grade', 'gradeStr', 'weight' ]
+					if not grade.isEnd or hasChanged _.pick(items), _.pick(items)
 						grade.previousValues =
 							dateFilledIn: val.dateFilledIn
 							grade: val.grade

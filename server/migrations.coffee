@@ -55,5 +55,19 @@ Migrations.add
 		users.forEach (user) ->
 			functions.updateStudyUtils user._id, yes
 
+Migrations.add
+	version: 6
+	name: "Remove previousValues on grades where previousValues is useless"
+	up: ->
+		grades = Grades.find(previousValues: $exists: true).fetch()
+		ids = []
+		keys = [ 'dateFilledIn', 'grade', 'gradeStr', 'weight' ]
+
+		for grade in grades
+			if _.every(keys, (k) -> grade[k] is grade.previousValues[k])
+				ids.push grade._id
+
+		Grades.update { _id: $in: ids }, $unset: previousValues: yes
+
 Meteor.startup ->
 	Migrations.migrateTo 'latest'
