@@ -64,6 +64,9 @@ http://tomsmeding.com/
 							bootbox.hideAll()
 
 	$('.bootbox-close-button').remove() unless exitButton
+	$('.bootbox.modal').click (e) ->
+		if e.target is e.currentTarget
+			bootbox.hideAll()
 	undefined
 
 @swalert = (options) ->
