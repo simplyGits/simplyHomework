@@ -1,4 +1,14 @@
 {
+	"parserOptions": {
+		"ecmaVersion": 6,
+		"sourceType": "module",
+		"ecmaFeatures": {
+			"jsx": true,
+			"experimentalObjectRestSpread": true,
+			"impliedStrict": true
+		}
+	},
+	"extends": "eslint:recommended",
 	"rules": {
 		"indent": [
 			2,
@@ -69,18 +79,4 @@
 		"serviceworker": true,
 		"es6": true
 	},
-	"extends": "eslint:recommended",
-	"ecmaFeatures": {
-		"experimentalObjectRestSpread": true,
-		"blockBindings": true
-	},
-	"parserOptions": {
-		"ecmaVersion": 6,
-		"sourceType": "module",
-		"ecmaFeatures": {
-			"impliedStrict": true,
-			"experimentalObjectRestSpread": true
-		}
-	},
-	"plugins": []
 }
