@@ -1,4 +1,4 @@
-/* global katex */
+import katex from './dist/katex.min.js'
 
 if (Package.templating) {
 	const Template = Package.templating.Template;
@@ -22,3 +22,5 @@ if (Package.templating) {
 		}
 	}));
 }
+
+export default katex

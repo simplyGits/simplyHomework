@@ -1,4 +1,5 @@
 shitdown = require('meteor/shitdown').default
+katex = require('meteor/simply:katex').default
 
 ###*
 # @class ChatMiddlewares

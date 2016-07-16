@@ -13,7 +13,6 @@ Package.onUse(function(api) {
 	api.use('templating', 'client', { weak: true });
 
 	api.addFiles('dist/katex.min.css');
-	api.addFiles('dist/katex.min.js');
 	api.addFiles('fonts-override.css', 'client');
 	api.addAssets([
 		'dist/fonts/KaTeX_AMS-Regular.eot',
@@ -98,7 +97,7 @@ Package.onUse(function(api) {
 		'dist/fonts/KaTeX_Typewriter-Regular.woff2',
 	], 'client');
 
-	api.addFiles('katex.js', 'client');
+	api.mainModule('katex.js', 'client');
 });
 
 Package.onTest(function(api) {
