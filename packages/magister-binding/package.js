@@ -38,8 +38,6 @@ Package.onUse(function(api) {
 		'modal.html',
 		'modal.coffee',
 	], 'client');
-
-	//api.export('MagisterBinding', 'server');
 });
 
 Package.onTest(function(api) {

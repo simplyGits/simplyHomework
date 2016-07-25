@@ -12,5 +12,4 @@ class ExternalServicesConnector
 		@services.push module
 
 exports.ExternalServicesConnector = ExternalServicesConnector
-# Just a shortcut.
-exports.Services = ExternalServicesConnector.services
+exports.Services = ExternalServicesConnector.services # Just a shortcut.

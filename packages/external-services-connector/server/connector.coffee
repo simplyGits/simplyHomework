@@ -75,18 +75,11 @@ class ExternalServicesConnector
 
 			module.hasData(userId) and (storedInfo?.active ? yes)
 
-		###
-		CalendarItems.find(
-			fetchedBy: module.name
-		).observe
-			changed: module.calendarItemChanged
-		###
 
 		@services.push module
 
 exports.ExternalServicesConnector = ExternalServicesConnector
-# Just a shortcut.
-exports.Services = ExternalServicesConnector.services
+exports.Services = ExternalServicesConnector.services # Just a shortcut.
 
 exports.functions = require './functions.coffee'
 
