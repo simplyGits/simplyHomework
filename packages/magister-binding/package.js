@@ -7,7 +7,7 @@ Package.describe({
 });
 
 Npm.depends({
-	request: '2.67.0',
+	'request': '2.74.0',
 	'marked': '0.3.5',
 });
 
