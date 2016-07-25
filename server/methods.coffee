@@ -1,4 +1,3 @@
-request = require 'request'
 Future = require 'fibers/future'
 LRU = require 'lru-cache'
 WaitGroup = require('meteor/simply:waitgroup').default
@@ -33,34 +32,6 @@ gradeMeanCache = LRU
 	not res.error?
 
 Meteor.methods
-	###*
-	# Streams the file from the given `fromUrl` to the given `destUrl`.
-	#
-	# @method multipart
-	# @param fromUrl {String}
-	# @param destUrl {String}
-	# @param [options] {Object}
-	# @return {Object} { content: String, headers: Object }
-	###
-	multipart: (fromUrl, destUrl, options = {}) ->
-		@unblock()
-		check fromUrl, String
-		check destUrl, String
-		check options, Object
-		headers = _.extend (options.headers ? {}), 'User-Agent': 'simplyHomework'
-		fut = new Future()
-
-		request(fromUrl).pipe(request {
-			method: 'POST'
-			url: destUrl
-			headers
-		}, (error, response, content) ->
-			if error? then fut.throw error
-			else fut.return { content, headers: response.headers }
-		)
-
-		fut.wait()
-
 	###*
 	# @method changeMail
 	# @param {String} mail
