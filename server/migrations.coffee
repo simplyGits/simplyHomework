@@ -69,5 +69,18 @@ Migrations.add
 
 		Grades.update { _id: $in: ids }, $unset: previousValues: yes
 
+Migrations.add
+	version: 7
+	name: "Remove 'created' event in private chatrooms"
+	up: ->
+		ChatRooms.update {
+			type: 'private'
+		}, {
+			$pull: events:
+				type: 'created'
+		}, {
+			multi: yes
+		}
+
 Meteor.startup ->
 	Migrations.migrateTo 'latest'
