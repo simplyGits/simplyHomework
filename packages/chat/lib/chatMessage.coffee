@@ -11,8 +11,7 @@
 class ChatMessage
 	constructor: (@content, @creatorId = Meteor.userId(), @chatRoomId) ->
 		###*
-		# The body of the Message.
-		# (GitHub) Markdown styled.
+		# The body of the Message in Markdown.
 		#
 		# @property content
 		# @type String
@@ -31,7 +30,7 @@ class ChatMessage
 		@time = new Date()
 
 		###*
-		# The IDs of the persons that read this message.
+		# The IDs of the users that has read this message.
 		#
 		# @property readBy
 		# @type String[]
@@ -40,7 +39,7 @@ class ChatMessage
 		@readBy = [ @creatorId ]
 
 		###*
-		# Attachments as base64 encoded String(s).
+		# Attachments as base64 encoded Strings.
 		#
 		# @property attachments
 		# @type String[]
@@ -50,7 +49,7 @@ class ChatMessage
 
 		###*
 		# The date the content of this message was changed since the original insert.
-		# If null the content is still the same.
+		# If null the content hasn't been changed.
 		#
 		# @property changedOn
 		# @type Date|null

@@ -31,7 +31,7 @@ class ChatRoom
 		@projectId = undefined
 
 		###*
-		# For private groups, this will be the subject of the chat.
+		# For group or class chats, this will be the subject of the chat.
 		# This should be `undefined` if this is a 1-on-1 chat or a project chat.
 		#
 		# @property subject
@@ -41,10 +41,10 @@ class ChatRoom
 		@subject = undefined
 
 		###*
-		# Timestamp of the last message.
+		# Date of the last message.
 		#
 		# @property lastMessageTime
-		# @type Date
+		# @type Date|undefined
 		# @default undefined
 		###
 		@lastMessageTime = undefined
