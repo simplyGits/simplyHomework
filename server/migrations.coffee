@@ -57,7 +57,7 @@ Migrations.add
 
 Migrations.add
 	version: 6
-	name: "Remove previousValues on grades where previousValues is useless"
+	name: 'Remove previousValues on grades where previousValues is useless'
 	up: ->
 		grades = Grades.find(previousValues: $exists: true).fetch()
 		ids = []
