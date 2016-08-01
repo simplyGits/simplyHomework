@@ -60,14 +60,19 @@ Migrations.add
 	name: 'Remove previousValues on grades where previousValues is useless'
 	up: ->
 		grades = Grades.find(previousValues: $exists: true).fetch()
-		ids = []
 		keys = [ 'dateFilledIn', 'grade', 'gradeStr', 'weight' ]
 
-		for grade in grades
-			if _.every(keys, (k) -> grade[k] is grade.previousValues[k])
-				ids.push grade._id
-
-		Grades.update { _id: $in: ids }, $unset: previousValues: yes
+		Grades.update {
+			_id: $in: (
+				_(grades)
+					.filter (g) -> _.every keys, (k) -> g[k] is g.previousValues[k]
+					.pluck '_id'
+					.value()
+			)
+		}, {
+			$unset:
+				previousValues: yes
+		}
 
 Meteor.startup ->
 	Migrations.migrateTo 'latest'
