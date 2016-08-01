@@ -316,13 +316,13 @@ Template.addProjectModal.events
 		deadline = $('#addProjectModal #deadlineInput').data('DateTimePicker').date().toDate()
 
 		if name.length is 0
-			setFieldError '#projectNameGroup', 'Naam kan niet leeg zijn.'
+			setFieldError '#nameGroup', 'Naam kan niet leeg zijn.'
 			return
 
 		Meteor.call 'insertProject', name, description, deadline, classId(), (e, r) ->
 			if e?
 				if e.error is 'project-exists'
-					setFieldError '#projectNameGroup', 'Je hebt al een project met dezelfde naam'
+					setFieldError '#nameGroup', 'Je hebt al een project met dezelfde naam'
 				else
 					notify 'Onbekende fout opgetreden tijdens project aanmaken', 'error'
 					shake '#addProjectModal'
