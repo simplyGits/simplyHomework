@@ -81,13 +81,16 @@ currentSearchTerm = new ReactiveVar ''
 							name = "#{_.escape firstName} #{_.escape lastName}"
 							path = FlowRouter.path 'personView', id: u._id
 							userUrl = "<a href='#{path}'>#{name}</a>"
-						else
-							userUrl = 'Iemand'
 
-						switch event.type
-							when 'created' then "Chat aangemaakt door #{userUrl} #{time}"
-							when 'joined' then "#{userUrl} is de chat binnengekomen #{time}"
-							when 'left' then "#{userUrl} heeft de chat verlaten #{time}"
+							switch event.type
+								when 'created' then "Chat aangemaakt door #{userUrl} #{time}"
+								when 'joined' then "#{userUrl} is de chat binnengekomen #{time}"
+								when 'left' then "#{userUrl} heeft de chat verlaten #{time}"
+						else
+							switch event.type
+								when 'created' then "Chat aangemaakt #{time}"
+								when 'joined' then "Iemand is de chat binnengekomen #{time}"
+								when 'left' then "Iemand heeft de chat verlaten #{time}"
 					)
 					time: event.time
 					type: event.type
