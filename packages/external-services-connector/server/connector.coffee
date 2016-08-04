@@ -15,7 +15,8 @@ class ExternalServicesConnector
 			service: serviceName
 			userId: userId
 			date: new Date
-			error: error
+			message: error.message ? error.toString()
+			stack: error.stack
 
 	@pushExternalService: (module) =>
 		###*
