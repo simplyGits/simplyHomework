@@ -138,19 +138,29 @@ function getMagisterObject (userId, forceNew = false) {
 		});
 
 		magister.ready(function (err) {
-			if (err) {
-				fut.throw(new Error(err.message));
-			} else {
-				const school = Schools.findOne({
-					'externalInfo.magister.url': magister.magisterSchool.url,
-				});
-				magister.magisterSchool.id = school && school.externalInfo.magister.id;
-				fut.return(magister);
+			if (err != null) {
+				// HACK: logging in into Magister currently fails when the user
+				// doesn't have enough privileges to get messagefolders.
+				// So we just ignore the error and everything works (expect for
+				// messages, of course).
+				// This will be fixed in Magister.js v2.
+				if (err.fouttype === 'OnvoldoendePrivileges') {
+					magister._ready = true;
+				} else {
+					fut.throw(new Error(err.message));
+					return;
+				}
 			}
+
+			const school = Schools.findOne({
+				'externalInfo.magister.url': magister.magisterSchool.url,
+			});
+			magister.magisterSchool.id = school && school.externalInfo.magister.id;
+			fut.return(magister);
 		});
 
 		try {
-			m = fut.wait();
+			fut.wait();
 		} catch (e) {
 			if (useSessionId) { // retry with new sessionId when currently using an older one.
 				return getMagisterObject(userId, true);
@@ -174,8 +184,8 @@ function getMagisterObject (userId, forceNew = false) {
 			});
 		}
 
-		cache.set(userId, m);
-		return m;
+		cache.set(userId, magister);
+		return magister;
 	}
 }
 
@@ -798,13 +808,15 @@ MagisterBinding.getMessages = function (folderName, skip, limit, userId) {
 	const user = Meteor.users.findOne(userId);
 	const magister = getMagisterObject(userId);
 
-	let folder;
-	if (folderName === 'inbox') {
-		folder = magister.inbox();
-	} else if (folderName === 'outbox') {
-		folder = magister.sentItems();
-	} else {
-		return []; // folder not supported.
+	const folder = ({
+		'inbox': magister.inbox(),
+		'outbox': magister.sentItems(),
+	})[folderName];
+	if (folder == null) { // folder not supported.
+		return {
+			messages: [],
+			files: [],
+		};
 	}
 
 	folder.messages({
