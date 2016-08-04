@@ -163,22 +163,14 @@ class @ChatManager
 	# @param id {String} ID of a ChatRoom.
 	###
 	@openChat: (id) ->
-		if Session.equals 'deviceType', 'phone'
-			FlowRouter.go 'mobileChat', id: id
-		else
-			FlowRouter.withReplaceState ->
-				FlowRouter.setQueryParams openChatId: id
+		FlowRouter.go 'chat', { id }
 
 	###*
 	# Closes the currently open chat.
 	# @method closeChat
 	###
 	@closeChat: ->
-		if Session.equals 'deviceType', 'phone'
-			FlowRouter.go 'overview'
-		else
-			FlowRouter.withReplaceState ->
-				FlowRouter.setQueryParams openChatId: undefined
+		history.back()
 
 ###*
 # Get the current chats, based on search term, if one.
@@ -268,7 +260,10 @@ Template.chatSidebar.onCreated ->
 			added: (doc) ->
 				return if loadingObserve or not getChatNotify()
 
-				id = FlowRouter.getQueryParam 'openChatId'
+				id = (
+					if FlowRouter.getRouteName() is 'chat'
+						FlowRouter.getParam 'id'
+				)
 				unless id? and
 				document.hasFocus() and
 				id is doc.chatRoomId

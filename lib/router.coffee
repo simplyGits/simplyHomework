@@ -93,8 +93,16 @@ appRoutes.route '/person/:id',
 	action: -> renderAppTemplate 'personView'
 
 appRoutes.route '/chat/:id',
-	name: 'mobileChat'
-	action: -> renderAppTemplate 'mobileChatWindow'
+	name: 'chat'
+	triggersEnter: [
+		(context, redirect) ->
+			unless context.oldRoute?
+				FlowRouter.go 'overview'
+				FlowRouter.go 'chat', context.params
+	]
+	action: ->
+		if Helpers.isPhone()
+			renderAppTemplate 'mobileChatWindow'
 
 appRoutes.route '/settings/:page?',
 	name: 'settings'
