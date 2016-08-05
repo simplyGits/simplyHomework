@@ -101,11 +101,14 @@ currentSearchTerm = new ReactiveVar ''
 				.value()
 
 		unreadMessagesCount: ->
-			Math.min 99, ChatMessages.find(
+			count = ChatMessages.find(
 				creatorId: $ne: Meteor.userId()
 				readBy: $ne: Meteor.userId()
 				chatRoomId: room._id
 			).count()
+
+			if count > 99 then ':D'
+			else count
 
 		markRead: -> Meteor.call 'markChatMessagesRead', room._id
 
