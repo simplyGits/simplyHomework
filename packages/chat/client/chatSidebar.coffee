@@ -118,7 +118,7 @@ class @ChatManager
 	@MESSAGES_PER_PAGE: 30
 
 	###*
-	# Opens the chat for with given user.
+	# Opens the chat with given user.
 	# @method openPrivateChat
 	# @param userId {User} The user to open the chat of.
 	###
