@@ -4,8 +4,8 @@ MAINTAINER simplyApps <hello@simplyApps.nl>
 ADD . /opt/app
 
 RUN cd /opt/app/programs/server \
-  && rm -rf node_modules \
-  && npm i --prod
+    && rm -rf node_modules \
+    && npm i --prod --unsafe-perm -q
 
 WORKDIR /opt/app
 
