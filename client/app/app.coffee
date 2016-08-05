@@ -158,12 +158,14 @@ Template.app.helpers
 		not has('noAds') and FlowRouter.getRouteName() not in excluded
 	runningSetup: -> Session.get 'runningSetup'
 	chat: ->
-		ChatRooms.findOne {
-			_id: FlowRouter.getQueryParam('openChatId')
-		}, {
-			fields:
-				lastMessageTime: 0
-		}
+		if not Helpers.isPhone() and
+		FlowRouter.getRouteName() is 'chat'
+			ChatRooms.findOne {
+				_id: FlowRouter.getParam 'id'
+			}, {
+				fields:
+					lastMessageTime: 0
+			}
 
 	currentBigNotice: -> currentBigNotice.get()
 
