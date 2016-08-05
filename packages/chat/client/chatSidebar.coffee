@@ -85,9 +85,15 @@ currentSearchTerm = new ReactiveVar ''
 							userUrl = 'Iemand'
 
 						switch event.type
-							when 'created' then "Chat aangemaakt door #{userUrl} #{time}"
-							when 'joined' then "#{userUrl} is de chat binnengekomen #{time}"
-							when 'left' then "#{userUrl} heeft de chat verlaten #{time}"
+							when 'created'
+								if room.type is 'class'
+									"Chat aangemaakt #{time}"
+								else
+									"Chat aangemaakt door #{userUrl} #{time}"
+							when 'joined'
+								"#{userUrl} is de chat binnengekomen #{time}"
+							when 'left'
+								"#{userUrl} heeft de chat verlaten #{time}"
 					)
 					time: event.time
 					type: event.type
