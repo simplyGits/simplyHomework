@@ -56,10 +56,13 @@ class ChatRoom
 		# @property events
 		# @type Object[]
 		###
-		@events = [{
-			type: 'created'
-			userId: creatorId
-			time: new Date
-		}]
+		@events = (
+			if @type is 'private' then []
+			else [{
+				type: 'created'
+				userId: creatorId
+				time: new Date
+			}]
+		)
 
 @ChatRoom = ChatRoom

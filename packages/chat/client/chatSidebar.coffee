@@ -83,7 +83,9 @@ currentSearchTerm = new ReactiveVar ''
 							userUrl = "<a href='#{path}'>#{name}</a>"
 
 							switch event.type
-								when 'created' then "Chat aangemaakt door #{userUrl} #{time}"
+								when 'created'
+									if room.type is 'class' then "Chat aangemaakt #{time}"
+									else "Chat aangemaakt door #{userUrl} #{time}"
 								when 'joined' then "#{userUrl} is de chat binnengekomen #{time}"
 								when 'left' then "#{userUrl} heeft de chat verlaten #{time}"
 						else
