@@ -1,12 +1,8 @@
 Package.describe({
 	name: 'viewport-units-buggyfill',
-	version: '0.5.5',
-	// Brief, one-line summary of the package.
+	version: '0.6.0',
 	summary: 'Making viewport units (vh|vw|vmin|vmax) work properly in Mobile Safari.',
-	// URL to the Git repository containing the source code for this package.
 	git: 'https://github.com/rodneyrehm/viewport-units-buggyfill',
-	// By default, Meteor will default to using README.md for documentation.
-	// To avoid submitting documentation, set this field to null.
 	documentation: 'dist/README.md',
 });
 
