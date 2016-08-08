@@ -1,4 +1,4 @@
-{ Services } = require './connector.coffee'
+{ Services, getServices } = require './connector.coffee'
 { updateCalendarItems, updateGrades, updateStudyUtils, updateMessages,
   fetchServiceUpdates } = require './functions.coffee'
 
@@ -154,7 +154,7 @@ Meteor.publish 'messages', (offset, folders, unreadOnly = no) ->
 		return undefined
 
 	userId = @userId
-	service = _.find Services, (s) -> s.getMessages? and s.active userId
+	service = _.find Services, (s) -> s.can userId, 'getMessages'
 	if not service?
 		throw new Meteor.Error 'not-supported'
 

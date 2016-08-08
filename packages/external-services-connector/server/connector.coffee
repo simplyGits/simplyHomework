@@ -18,6 +18,15 @@ class ExternalServicesConnector
 			message: error.message ? error.toString()
 			stack: error.stack
 
+	###*
+	# @method getServices
+	# @param {String} userId
+	# @param {String} thing
+	# @return {Service[]}
+	###
+	@getServices: (userId, thing) =>
+		_.filter @services, (s) -> s.can userId, thing
+
 	@pushExternalService: (service) =>
 		###*
 		# Gets or sets the info in the database.
@@ -75,11 +84,22 @@ class ExternalServicesConnector
 
 			service.hasData(userId) and (storedInfo?.active ? yes)
 
+		###*
+		# @method can
+		# @param {String} userId
+		# @param {String} thing
+		# @return {Boolean}
+		###
+		service.can ?= (userId, thing) ->
+			service.active(userId) and _.isFunction service[thing]
 
 		@services.push service
 
 exports.ExternalServicesConnector = ExternalServicesConnector
-exports.Services = ExternalServicesConnector.services # Just a shortcut.
+
+# shortcuts
+exports.Services = ExternalServicesConnector.services
+exports.getServices = ExternalServicesConnector.getServices
 
 exports.functions = require './functions.coffee'
 

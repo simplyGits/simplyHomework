@@ -1,4 +1,4 @@
-{ Services, ExternalServicesConnector } = require './connector.coffee'
+{ Services, ExternalServicesConnector, getServices } = require './connector.coffee'
 
 # REVIEW: Better way to do this?
 GRADES_INVALIDATION_TIME         = ms.minutes 20
@@ -142,7 +142,7 @@ updateGrades = (userId, forceUpdate = no) ->
 	gradeUpdateTime? and gradeUpdateTime > _.now() - GRADES_INVALIDATION_TIME
 		return errors
 
-	services = _.filter Services, (s) -> s.getGrades? and s.active userId
+	services = getServices userId, 'getGrades'
 	markUserEvent userId, 'gradeUpdate' if services.length > 0
 
 	inserts = []
@@ -221,7 +221,7 @@ updateStudyUtils = (userId, forceUpdate = no) ->
 	studyUtilsUpdateTime > _.now() - STUDYUTILS_INVALIDATION_TIME
 		return errors
 
-	services = _.filter Services, (s) -> s.getStudyUtils? and s.active userId
+	services = getServices userId, 'getStudyUtils'
 	markUserEvent userId, 'studyUtilsUpdate' if services.length > 0
 
 	inserts = []
@@ -307,7 +307,7 @@ updateCalendarItems = (userId, from, to) ->
 	to ?= new Date().addDays 7
 	to = new Date().addDays(7) if to < new Date().addDays(7)
 
-	services = _.filter Services, (s) -> s.getCalendarItems? and s.active userId
+	services = getServices userId, 'getCalendarItems'
 	markUserEvent userId, 'calendarItemsUpdate' if services.length > 0
 
 	for externalService in services
@@ -486,7 +486,7 @@ getPersons = (query, type = undefined, userId) ->
 
 	# fetch items if still needed.
 	if types.length > 0
-		services = _.filter Services, (s) -> s.getPersons? and s.active userId
+		services = getServices userId, 'getPersons'
 
 		# we don't want to store the items in result yet, because we only want to
 		# create new cache items for the newely fetched items and the `result` array
@@ -526,7 +526,7 @@ getExternalPersonClasses = (userId) ->
 
 	{ year, schoolVariant } = courseInfo
 
-	services = _.filter Services, (s) -> s.getPersonClasses? and s.active userId
+	services = getServices userId, 'getPersonClasses'
 	for service in services
 		try
 			classes = service.getPersonClasses(userId).filter (c) ->
@@ -590,7 +590,7 @@ getExternalAssignments = (userId) ->
 	unless user?
 		throw new Meteor.Error 'unauthorized'
 
-	services = _.filter Services, (s) -> s.getAssignments? and s.active userId
+	services = getServices userId, 'getAssignments'
 	for service in services
 		assignments = service.getAssignments userId
 		result = result.concat assignments
@@ -707,7 +707,7 @@ updateMessages = (userId, offset, folders, forceUpdate = no) ->
 	check folders, [String]
 	check forceUpdate, Boolean
 
-	services = _.filter Services, (s) -> s.getMessages? and s.active userId
+	services = getServices userId, 'getMessages'
 	errors = []
 	LIMIT = 20
 	MIN_NEW_MESSAGES_LIMIT = 5
@@ -784,7 +784,7 @@ sendMessage = (subject, body, recipients, service, userId) ->
 
 	body += AD_STRING
 
-	service = _.find Services, (s) -> s.name is service and s.sendMessage? and s.active userId
+	service = _.find Services, (s) -> s.name is service and s.can userId, 'sendMessage'
 	if not service?
 		throw new Meteor.Error 'not-supported'
 
@@ -805,7 +805,7 @@ replyMessage = (id, all, body, service, userId) ->
 
 	id = _(message.externalId).split('_').last()
 
-	service = _.find Services, (s) -> s.name is service and s.getMessages? and s.active userId
+	service = _.find Services, (s) -> s.name is service and s.can userId, 'getMessages'
 	serivce.replyMessage id, all, body, userId
 
 ###*
@@ -820,7 +820,7 @@ fetchServiceUpdates = (userId, forceUpdate = no) ->
 
 	errors = []
 
-	services = _.filter Services, (s) -> s.getUpdates? and s.active userId
+	services = getServices userId, 'getUpdates'
 	if services.length is 0 or not checkAndMarkUserEvent(
 		userId
 		'serviceUpdatesUpdate'
