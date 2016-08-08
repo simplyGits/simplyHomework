@@ -18,7 +18,7 @@ class ExternalServicesConnector
 			message: error.message ? error.toString()
 			stack: error.stack
 
-	@pushExternalService: (module) =>
+	@pushExternalService: (service) =>
 		###*
 		# Gets or sets the info in the database.
 		#
@@ -27,7 +27,7 @@ class ExternalServicesConnector
 		# @param [obj] {Object|null} The object to replace the object stored in the database with. If `null` the currently stored info will be _removed_.
 		# @return {Object} The info stored in the database.
 		###
-		module.storedInfo = (userId = Meteor.userId(), obj) ->
+		service.storedInfo = (userId = Meteor.userId(), obj) ->
 			check userId, Match.Optional String
 			check obj, Match.Optional Match.OneOf Object, null
 
@@ -35,49 +35,49 @@ class ExternalServicesConnector
 				Meteor.users.findOne(
 					userId
 					fields: externalServices: 1
-				).externalServices[module.name]
+				).externalServices[service.name]
 			old = data() ? {}
 
 			if obj?
 				Meteor.users.update userId,
-					$set: "externalServices.#{module.name}": _.extend old, obj
+					$set: "externalServices.#{service.name}": _.extend old, obj
 
 			else if _.isNull obj
 				Meteor.users.update userId,
-					$unset: "externalServices.#{module.name}": yes
+					$unset: "externalServices.#{service.name}": yes
 
 			data()
 
 		###*
-		# Checks if the user for the given `userId` has data for this module.
+		# Checks if the user for the given `userId` has data for this service.
 		# @method hasData
 		# @param [userId] {String} The ID of the user to check. If `undefined` the current this.userId will be used.
-		# @return {Boolean} Whether or not the given `user` has data for the current module.
+		# @return {Boolean} Whether or not the given `user` has data for the current service.
 		###
-		module.hasData = (userId = @userId) ->
+		service.hasData = (userId = @userId) ->
 			check userId, Match.Optional Match.OneOf String, Object
-			not _.isEmpty module.storedInfo(userId)
+			not _.isEmpty service.storedInfo(userId)
 
 		###*
-		# Set/Get active state for the current module for the user of the given `userId`.
+		# Set/Get active state for the current service for the user of the given `userId`.
 		# @method active
 		# @param [userId] {String} The ID of the user to check. If null the current this.userId will be used.
-		# @param [val] {Boolean} The value to set the active state of this module to.
-		# @return {Boolean} Whether or not the current module is active.
+		# @param [val] {Boolean} The value to set the active state of this service to.
+		# @return {Boolean} Whether or not the current service is active.
 		###
-		module.active = (userId = @userId, val) ->
+		service.active = (userId = @userId, val) ->
 			check userId, Match.Optional Match.OneOf String, Object
 			check val, Match.Optional Boolean
 
-			storedInfo = module.storedInfo userId
+			storedInfo = service.storedInfo userId
 
 			if val?
-				module.storedInfo userId, active: !!val
+				service.storedInfo userId, active: !!val
 
-			module.hasData(userId) and (storedInfo?.active ? yes)
+			service.hasData(userId) and (storedInfo?.active ? yes)
 
 
-		@services.push module
+		@services.push service
 
 exports.ExternalServicesConnector = ExternalServicesConnector
 exports.Services = ExternalServicesConnector.services # Just a shortcut.
