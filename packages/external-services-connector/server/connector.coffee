@@ -36,11 +36,10 @@ class ExternalServicesConnector
 					userId
 					fields: externalServices: 1
 				).externalServices[service.name]
-			old = data() ? {}
 
 			if obj?
 				Meteor.users.update userId,
-					$set: "externalServices.#{service.name}": _.extend old, obj
+					$set: "externalServices.#{service.name}": _.extend data(), obj
 
 			else if _.isNull obj
 				Meteor.users.update userId,
