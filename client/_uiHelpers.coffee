@@ -317,9 +317,9 @@ Meteor.startup ->
 	Template.registerHelper 'cap', (str) -> Helpers.cap str
 	Template.registerHelper 'plural', (count, a, b) -> if count is 1 then a else b
 
-	Template.registerHelper 'isPhone', -> Session.equals 'deviceType', 'phone'
-	Template.registerHelper 'isTablet', -> Session.equals 'deviceType', 'tablet'
-	Template.registerHelper 'isDesktop', -> Session.equals 'deviceType', 'desktop'
+	Template.registerHelper 'isPhone', -> Helpers.isPhone()
+	Template.registerHelper 'isTablet', -> Helpers.isTablet()
+	Template.registerHelper 'isDesktop', -> Helpers.isDesktop()
 
 	Template.registerHelper 'dateFormat', (format, date) -> moment(date).format format
 	Template.registerHelper 'time', (date) -> moment(date).format 'HH:mm'
