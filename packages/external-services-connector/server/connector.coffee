@@ -77,12 +77,10 @@ class ExternalServicesConnector
 			check userId, Match.Optional Match.OneOf String, Object
 			check val, Match.Optional Boolean
 
-			storedInfo = service.storedInfo userId
-
 			if val?
-				service.storedInfo userId, active: !!val
+				service.storedInfo userId, active: val
 
-			service.hasData(userId) and (storedInfo?.active ? yes)
+			service.hasData(userId) and (service.storedInfo(userId)?.active ? yes)
 
 		###*
 		# @method can
