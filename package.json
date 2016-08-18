@@ -1,6 +1,7 @@
 {
   "name": "simplyhomework",
   "version": "1.0.0",
+  "private": true,
   "description": "Education with a little more swag.",
   "dependencies": {
     "chroma-js": "^1.1.1",
