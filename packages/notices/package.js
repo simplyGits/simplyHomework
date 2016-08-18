@@ -36,6 +36,8 @@ Package.onUse(function(api) {
 		'ecmascript',
 		'percolate:synced-cron',
 		'simply:external-services-connector',
+		'chat',
+		'onesignal',
 		// 'reywood:publish-composite',
 	], 'server');
 
@@ -102,6 +104,7 @@ Package.onUse(function(api) {
 		'client/noServices/noServices.coffee',
 	], 'client');
 	api.addFiles([
+		'server/push.js',
 		'server/emails.js',
 	], 'server');
 
