@@ -2,7 +2,7 @@ require('./dist/OneSignalSDK.js');
 /* global OneSignal */
 
 OneSignal.push(['init', {
-	appId: '627db6f5-0b35-4546-83f0-9818878159fe',
+	appId: Meteor.settings.public.onesignal.appId,
 	autoRegister: false,
 	persistNotification: false,
 	notifyButton: {

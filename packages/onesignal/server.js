@@ -1,5 +1,5 @@
-const APP_ID = '627db6f5-0b35-4546-83f0-9818878159fe';
-const API_KEY = 'MTg1OWY3YzgtNjA0Mi00NjU2LTg5ZTUtMDhlOTVlOGJlYmU2';
+const APP_ID = Meteor.settings.public.onesignal.appId;
+const API_KEY = Meteor.settings.onesignal.apiKey;
 const API_URL = 'https://onesignal.com/api/v1';
 
 import { HTTP } from 'meteor/http';
