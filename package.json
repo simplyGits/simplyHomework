@@ -4,6 +4,7 @@
   "private": true,
   "description": "Education with a little more swag.",
   "dependencies": {
+    "bcrypt": "^0.8.7",
     "chroma-js": "^1.1.1",
     "fibers": "^1.0.13",
     "lru-cache": "^4.0.1",
