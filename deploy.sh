@@ -18,6 +18,9 @@ commit=$(git rev-parse HEAD)
 buildDate="$(date +%s)000"
 echo "export default { commit: '$commit', buildDate: new Date($buildDate) }" > ./imports/version.js
 
+settings=$(jq -c . settings.json)
+sed -i "s/METEOR_SETTINGS[^']\+/METEOR_SETTINGS=$settings/" ./docker-compose.yml
+
 BUILD_DIR=$TMPDIR/simplyHomework-build
 rm -rf $BUILD_DIR
 meteor build --architecture=os.linux.x86_64 --directory $BUILD_DIR
