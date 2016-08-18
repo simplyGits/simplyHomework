@@ -174,7 +174,7 @@ ChatMiddlewares.attach 'escape', 'insert', (message) ->
 ChatMiddlewares.attach 'clickable names', 'insert', (message) ->
 	# REVIEW: maybe add a custom parser, which walks over every word. This way we
 	# have more control over the matching and can we maybe support surnames
-	# contains non-word characters.
+	# containing non-word characters.
 
 	choosen = []
 	schoolId = Meteor.user().profile.schoolId
