@@ -20,6 +20,7 @@
 # @return {String} SURPRISE MOTHERFUCKER
 ###
 @kaas = ->
+	ga 'send', 'event', 'kaas'
 	alertModal 'swag', (
 		if Meteor.userId()?
 			"420 blze it\nKaas FTW\n\ndo u even lift #{Meteor.user().profile.firstName}?"
