@@ -1,7 +1,7 @@
 Package.describe({
 	name: 'simply:fullcalendar',
-	version: '2.5.0',
-	summary: 'vanilla fullcalendar packaged for Meteor.',
+	version: '2.9.1',
+	summary: 'vanilla fullcalendar packaged for Meteor, only loads on desktop machines.',
 	git: '',
 	documentation: 'README.md',
 });
