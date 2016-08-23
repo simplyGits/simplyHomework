@@ -97,6 +97,8 @@ Package.onUse(function(api) {
 
 		'client/serviceUpdates/serviceUpdates.html',
 		'client/serviceUpdates/serviceUpdates.coffee',
+
+		'client/noServices/noServices.coffee',
 	], 'client');
 	api.addFiles([
 		'server/emails.js',
