@@ -15,7 +15,6 @@ http@1.2.9
 browser-policy@1.0.9
 coffeescript@1.2.4
 rosh93:dataset-filter
-meteorhacks:fast-render
 natestrauser:animate-css
 reactive-var@1.0.10
 tsega:bootstrap3-datetimepicker
