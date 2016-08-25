@@ -18,7 +18,18 @@ Template['settings_page_accountInfo'].events
 		newPass = $('#newPassInput').val()
 		newPassRepeat = $('#newPassRepeatInput').val()
 
-		profile = getUserField Meteor.userId(), 'profile'
+		nameChanged = (
+			profile = getUserField Meteor.userId(), 'profile'
+			profile.firstName isnt firstName or profile.lastName isnt lastName
+		)
+
+		mailChanged = mail isnt getUserField Meteor.userId(), 'emails[0].address'
+		passChanged = newPass isnt '' or newPassRepeat isnt ''
+		needsPass = mailChanged or passChanged
+
+		if needsPass and oldPass.length is 0
+			setFieldError '#currentPassGroup', 'Geen wachtwoord ingevuld'
+			return
 
 		###*
 		# Shows success / error message to the user.
@@ -42,23 +53,23 @@ Template['settings_page_accountInfo'].events
 
 			undefined
 
-		if mail isnt Meteor.user().emails[0].address
-			if oldPass.length is 0
-					setFieldError '#currentPassGroup', 'Geen wachtwoord ingevuld'
-			else
-				hash = Package.sha.SHA256 oldPass
-				Meteor.call 'changeMail', mail, hash, (e) ->
-					if e?.error is 'wrong-password'
-						setFieldError '#currentPassGroup', 'Wachtwoord is fout'
-					else
-						callback not e?
+		if mailChanged
+			hash = Package.sha.SHA256 oldPass
+			Meteor.call 'changeMail', mail, hash, (e) ->
+				if e?.error is 'wrong-password'
+					setFieldError '#currentPassGroup', 'Wachtwoord is fout'
+				else
+					callback not e?
 
-		if profile.firstName isnt firstName or profile.lastName isnt lastName
+		if nameChanged
 			Meteor.call 'changeName', firstName, lastName, (e) -> callback not e?
 
-		if oldPass isnt '' and newPass isnt ''
+		if passChanged
 			unless newPass is newPassRepeat
-				setFieldError '#newPassRepeatGroup'
+				setFieldError (
+					if newPass.length is 0 then '#newPassGroup'
+					else '#newPassRepeatGroup'
+				)
 				return
 
 			Accounts.changePassword oldPass, newPass, (error) ->
