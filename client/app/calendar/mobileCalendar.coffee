@@ -113,13 +113,17 @@ Template.mobileCalendar.onRendered ->
 		time = +FlowRouter.getParam 'time'
 		setDate new Date unless Number.isFinite time
 
-	@$('#datepicker')
+	picker = @$ '#datepicker'
+	picker
 		.datetimepicker
 			format: 'YYYY-MM-DD'
 			inline: true
 		.on 'dp.change', (e) ->
 			setDate e.date.toDate()
 			@parentNode.className = ''
+
+	@autorun ->
+		picker.data('DateTimePicker').date currentDate()
 
 	loading = @loading
 	@calendar = calendar = new SwipeView '.mobileCalendar', hastyPageFlip: yes
