@@ -165,6 +165,11 @@ function getMagisterObject (userId, forceNew = false) {
 			if (useSessionId) { // retry with new sessionId when currently using an older one.
 				return getMagisterObject(userId, true);
 			}
+
+			if (e instanceof AuthError) { // when logging in fails we don't want to send the wrong password anymore to Magister.
+				MagisterBinding.storedInfo(userId, null);
+			}
+
 			throw e;
 		}
 
