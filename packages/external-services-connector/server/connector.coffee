@@ -43,7 +43,7 @@ class ExternalServicesConnector
 			data = ->
 				Meteor.users.findOne(
 					userId
-					fields: externalServices: 1
+					fields: "externalServices.#{service.name}": 1
 				).externalServices[service.name]
 
 			if obj?
@@ -100,6 +100,7 @@ exports.Services = ExternalServicesConnector.services
 exports.getServices = ExternalServicesConnector.getServices
 
 exports.functions = require './functions.coffee'
+_.extend exports, require '../lib/errors.coffee'
 
 require './methods.coffee'
 require './publish.coffee'

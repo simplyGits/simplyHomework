@@ -13,3 +13,4 @@ class ExternalServicesConnector
 
 exports.ExternalServicesConnector = ExternalServicesConnector
 exports.Services = ExternalServicesConnector.services # Just a shortcut.
+_.extend exports, require '../lib/errors.coffee'

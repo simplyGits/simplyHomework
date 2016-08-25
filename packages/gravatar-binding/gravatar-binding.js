@@ -14,13 +14,22 @@ function checkGravatarAvailable (md5) {
 	}).statusCode !== 404;
 }
 
-GravatarBinding.createData = function () {
+/**
+ * @method createData
+ * @param {String} userId
+ */
+GravatarBinding.createData = function (userId) {
 	// An user can always create a gravatar and checking is pretty
-	// cheap, so we want to check every time for a gravatar when we
-	// need it.
-	return true;
+	// cheap, so we will just mark the service active, and check every time for
+	// a gravatar when we need it.
+	GravatarBinding.active(userId, true);
 };
 
+/**
+ * @method getProfileData
+ * @param {String} userId
+ * @return {String|undefined}
+ */
 GravatarBinding.getProfileData = function (userId) {
 	check(userId, String);
 	const user = Meteor.users.findOne(userId);

@@ -1,4 +1,4 @@
-{ functions, Services } = require './connector.coffee'
+{ functions, Services, AuthError } = require './connector.coffee'
 
 Meteor.methods
 	'getModuleInfo': -> functions.getModuleInfo @userId
@@ -23,17 +23,14 @@ Meteor.methods
 		unless service?
 			throw new Meteor.Error 'notfound', "No module with the name '#{serviceName}' found."
 
-		res = service.createData params..., @userId
-
-		if _.isError res # custom error
-			throw new Meteor.Error 'error', 'Other error.', res.message
-			ExternalServicesConnector.handleServiceError service.name, @userId, res
-
-		else if not service.loginNeeded # res is true if service is active.
-			service.active @userId, res
-
-		else if res is false # login credentials wrong.
-			throw new Meteor.Error 'forbidden', 'Login credentials incorrect.'
+		try
+			service.createData params..., @userId
+		catch err
+			if err instanceof AuthError # incorrect login credentials
+				throw new Meteor.Error 'forbidden', 'Login credentials incorrect.'
+			else # custom error
+				throw new Meteor.Error 'error', 'Other error.', err.message
+				ExternalServicesConnector.handleServiceError service.name, @userId, err
 
 		Meteor.call 'getServiceProfileData', serviceName, @userId
 

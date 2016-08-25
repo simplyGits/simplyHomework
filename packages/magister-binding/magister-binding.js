@@ -10,6 +10,7 @@ import { LRU } from 'meteor/simply:lru';
 import request from 'request';
 import marked from 'marked';
 import Future from 'fibers/future';
+import { AuthError } from 'meteor/simply:external-services-connector';
 
 const ONLY_RECENT_LIMIT = ms.days(6);
 
@@ -43,7 +44,8 @@ marked.setOptions({
  * @param {String} username
  * @param {String} password
  * @param {String} userId The ID of the user to save the info to.
- * @return {undefined|Boolean|Error} undefined if the data was stored, false if the login credentials are incorrect. Returns an error containg more info when an error occured.
+ * @throws {AuthError} Throws an AuthError when the given the given login credentials are incorrect.
+ * @throws {Error} Throws an error containing more info when an unknown error occured.
  */
 MagisterBinding.createData = function (schoolurl, username, password, userId) {
 	check(schoolurl, String);
@@ -56,7 +58,7 @@ MagisterBinding.createData = function (schoolurl, username, password, userId) {
 		username.length === 0 ||
 		password.length === 0
 	) {
-		return false;
+		throw new AuthError('schoolurl, username, and password required');
 	}
 
 	MagisterBinding.storedInfo(userId, {
@@ -78,15 +80,7 @@ MagisterBinding.createData = function (schoolurl, username, password, userId) {
 		// Remove the stored info.
 		cache.del(userId);
 		MagisterBinding.storedInfo(userId, null);
-
-		if (_.contains([
-			'Ongeldig account of verkeerde combinatie van gebruikersnaam en wachtwoord. Probeer het nog eens of neem contact op met de applicatiebeheerder van de school.',
-			'Je gebruikersnaam en/of wachtwoord is niet correct.',
-		], e.message)) {
-			return false;
-		} else {
-			return e;
-		}
+		throw e;
 	}
 
 	magister.profileInfo().settings(function (e, r) {
@@ -147,8 +141,14 @@ function getMagisterObject (userId, forceNew = false) {
 				if (err.fouttype === 'OnvoldoendePrivileges') {
 					magister._ready = true;
 				} else {
-					fut.throw(new Error(err.message));
-					return;
+					fut.throw((
+						_.contains([
+							'Ongeldig account of verkeerde combinatie van gebruikersnaam en wachtwoord. Probeer het nog eens of neem contact op met de applicatiebeheerder van de school.',
+							'Je gebruikersnaam en/of wachtwoord is niet correct.',
+						], err.message) ?
+						new AuthError(err.message) :
+						new Error(err.message)
+					));
 				}
 			}
 
