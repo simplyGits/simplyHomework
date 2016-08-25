@@ -95,11 +95,12 @@ http://tomsmeding.com/
 
 ###*
 # Sets the given `selector` to show an error state.
+# The error state will dissapear when the input has been changed.
 #
 # @method setFieldError
-# @param selector {jQuery|String} The thing to show an error on.
-# @param message {String} The message to show as error.
-# @param [trigger="manual"] {String} When to trigger the bootstrap tooltip.
+# @param {jQuery|String} selector The thing to show an error on.
+# @param {String} [message] The message to show as error.
+# @param {String} [trigger="manual"] When to trigger the bootstrap tooltip.
 # @param {jQuery} The given `selector`.
 ###
 @setFieldError = (selector, message, trigger = 'manual') ->
