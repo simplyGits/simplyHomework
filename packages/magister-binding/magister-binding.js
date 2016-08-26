@@ -149,6 +149,7 @@ function getMagisterObject (userId, forceNew = false) {
 						new AuthError(err.message) :
 						new Error(err.message)
 					));
+					return;
 				}
 			}
 
