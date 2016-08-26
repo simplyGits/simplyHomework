@@ -1,4 +1,5 @@
 ExternalServiceErrors = new Mongo.Collection 'externalServiceErrors'
+{ AuthError } = require '../lib/errors.coffee'
 
 ###*
 # A static class that connects to and retrieves data from
@@ -10,6 +11,7 @@ ExternalServiceErrors = new Mongo.Collection 'externalServiceErrors'
 class ExternalServicesConnector
 	@services: []
 	@handleServiceError: (serviceName, userId, error) ->
+		return if error instanceof AuthError
 		console.log "error while running '#{arguments.callee.caller.name}' for service '#{serviceName}'", error
 		ExternalServiceErrors.insert
 			service: serviceName
