@@ -1,4 +1,4 @@
-Future = Npm.require 'fibers/future'
+Future = require 'fibers/future'
 
 # TODO: remind people to finish the setup when they didn't finished it
 # TODO: remind people to use the app after a long time of inactivity

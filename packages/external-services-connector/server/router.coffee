@@ -1,4 +1,4 @@
-request = Npm.require 'request'
+request = require 'request'
 { Services } = require './connector.coffee'
 
 parseCookies = (str = '') ->
