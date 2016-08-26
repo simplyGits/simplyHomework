@@ -108,7 +108,6 @@ function getMagisterObject (userId, forceNew = false) {
 	check(userId, String);
 	check(forceNew, Boolean);
 
-	const fut = new Future();
 	const data = MagisterBinding.storedInfo(userId);
 	if (_.isEmpty(data)) {
 		cache.del(userId);
@@ -131,48 +130,42 @@ function getMagisterObject (userId, forceNew = false) {
 			sessionId: useSessionId ? data.lastLogin.sessionId : undefined,
 		});
 
-		magister.ready(function (err) {
-			if (err != null) {
-				// HACK: logging in into Magister currently fails when the user
-				// doesn't have enough privileges to get messagefolders.
-				// So we just ignore the error and everything works (expect for
-				// messages, of course).
-				// This will be fixed in Magister.js v2.
-				if (err.fouttype === 'OnvoldoendePrivileges') {
-					magister._ready = true;
-				} else {
-					fut.throw((
-						_.contains([
-							'Ongeldig account of verkeerde combinatie van gebruikersnaam en wachtwoord. Probeer het nog eens of neem contact op met de applicatiebeheerder van de school.',
-							'Je gebruikersnaam en/of wachtwoord is niet correct.',
-						], err.message) ?
-						new AuthError(err.message) :
-						new Error(err.message)
-					));
-					return;
-				}
-			}
-
-			const school = Schools.findOne({
-				'externalInfo.magister.url': magister.magisterSchool.url,
-			});
-			magister.magisterSchool.id = school && school.externalInfo.magister.id;
-			fut.return(magister);
-		});
-
 		try {
-			fut.wait();
-		} catch (e) {
-			if (useSessionId) { // retry with new sessionId when currently using an older one.
-				return getMagisterObject(userId, true);
-			}
+			Meteor.wrapAsync(magister.ready, magister)();
+		} catch (err) {
+			// HACK: logging in into Magister currently fails when the user
+			// doesn't have enough privileges to get messagefolders.
+			// So we just ignore the error and everything works (expect for
+			// messages, of course).
+			// This will be fixed in Magister.js v2.
+			if (err.fouttype === 'OnvoldoendePrivileges') {
+				magister._ready = true;
+			} else {
+				const e = (
+					_.contains([
+						'Ongeldig account of verkeerde combinatie van gebruikersnaam en wachtwoord. Probeer het nog eens of neem contact op met de applicatiebeheerder van de school.',
+						'Je gebruikersnaam en/of wachtwoord is niet correct.',
+					], err.message) ?
+					new AuthError(err.message) :
+					new Error(err.message)
+				);
 
-			if (e instanceof AuthError) { // when logging in fails we don't want to send the wrong password anymore to Magister.
-				MagisterBinding.storedInfo(userId, null);
-			}
+				if (useSessionId) { // retry with new sessionId when currently using an older one.
+					return getMagisterObject(userId, true);
+				}
 
-			throw e;
+				if (e instanceof AuthError) { // when logging in fails we don't want to send the wrong password anymore to Magister.
+					MagisterBinding.storedInfo(userId, null);
+				}
+
+				throw e;
+			}
 		}
+
+		const school = Schools.findOne({
+			'externalInfo.magister.url': magister.magisterSchool.url,
+		});
+		magister.magisterSchool.id = school && school.externalInfo.magister.id;
 
 		if (!useSessionId) { // Update login info
 			const getVersionInfo = Meteor.wrapAsync(
