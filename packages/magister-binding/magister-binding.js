@@ -16,6 +16,9 @@ import { AuthError } from 'meteor/simply:external-services-connector';
 const ONLY_RECENT_LIMIT = ms.days(6);
 
 const log = MagisterBinding.log;
+// FIXME: this technically is a memory leak, since no keys are removed, but I
+// don't think this is going to be a problem. And I don't even know what a
+// better way to handle this would be.
 const userMutexes = new Map();
 
 const cache = LRU({
