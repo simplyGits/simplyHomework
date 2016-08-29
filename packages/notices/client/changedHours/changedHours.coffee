@@ -16,8 +16,7 @@ getChangedHours = ->
 
 NoticeManager.provide 'changedHours', ->
 	minuteTracker.depend()
-	# REVIEW the date range here.
-	@subscribe 'externalCalendarItems', Date.today(), Date.today().addDays 4
+	@subscribe 'externalCalendarItems', Date.today(), Date.today().addDays 5
 
 	changedHours = getChangedHours()
 
