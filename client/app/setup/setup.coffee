@@ -71,6 +71,14 @@ setupItems = [
 				.map (s) -> s.profileData()?.schoolId
 				.find _.negate _.isUndefined
 
+			done = (success) ->
+				if success?
+					Meteor.users.update(
+						Meteor.userId()
+						$addToSet: setupProgress: 'externalServices'
+					)
+				cb success
+
 			loginServices = _.filter externalServices.get(), 'loginNeeded'
 			data = _.filter loginServices, (s) -> s.profileData()?
 			if loginServices.length > 0 and data.length is 0
@@ -86,15 +94,12 @@ setupItems = [
 					DialogButtons.OkCancel
 					{ main: 'doorgaan', second: 'woops' }
 					{ main: 'btn-danger' }
-					main: ->
-						cb true
-						Meteor.users.update Meteor.userId(), $addToSet: setupProgress: 'externalServices'
-					second: -> cb false
+					main: -> done yes
+					second: -> done no
 				)
 				return
 
-			Meteor.users.update Meteor.userId(), $addToSet: setupProgress: 'externalServices'
-			cb yes
+			done yes
 	}
 
 	{
