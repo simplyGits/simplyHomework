@@ -115,7 +115,7 @@ function getMagisterObject (userId, forceNew = false) {
 		cache.del(userId);
 		throw new Error('No credentials found.');
 	} else {
-		let m = cache.get(userId);
+		const m = cache.get(userId);
 		if (m !== undefined && !forceNew) {
 			return m;
 		}
