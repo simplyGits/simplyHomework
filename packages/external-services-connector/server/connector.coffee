@@ -93,6 +93,14 @@ class ExternalServicesConnector
 		service.can ?= (userId, thing) ->
 			service.active(userId) and _.isFunction service[thing]
 
+		###*
+		# @method log
+		# @param {...String} strings
+		###
+		service.log = (strings...) ->
+			console.log '[' + service.name + ']', strings...
+			undefined
+
 		@services.push service
 
 exports.ExternalServicesConnector = ExternalServicesConnector

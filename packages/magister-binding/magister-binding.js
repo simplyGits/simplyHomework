@@ -14,6 +14,8 @@ import { AuthError } from 'meteor/simply:external-services-connector';
 
 const ONLY_RECENT_LIMIT = ms.days(6);
 
+const log = MagisterBinding.log;
+
 const cache = LRU({
 	max: 50,
 	// we cache magister objects infinitely currently since we also uesr
@@ -155,6 +157,7 @@ function getMagisterObject (userId, forceNew = false) {
 				}
 
 				if (e instanceof AuthError) { // when logging in fails we don't want to send the wrong password anymore to Magister.
+					log(`logging in failed with AuthError for user with id '${userId}', removing storedInfo`);
 					MagisterBinding.storedInfo(userId, null);
 				}
 
