@@ -31,18 +31,22 @@ Template.externalServices.onCreated ->
 					_loading: new SReactiveVar Boolean, yes
 					ready: -> not @_loading.get()
 			.each (service) ->
+				setData = (e, r) ->
+					service._loading.set no
+					if e?
+						console.error e
+						service.setProfileData error: e
+					else
+						service.setProfileData r
+
 				if not service.loginNeeded
 					# Create data for services that don't need to be logged into
 					# (eg. Gravatar)
 					Meteor.call 'createServiceData', service.name, (e, r) ->
-						service._loading.set no
-						if e? then console.error e
-						else service.setProfileData r
+						setData e, r
 				else if service.hasData
 					Meteor.call 'getServiceProfileData', service.name, (e, r) ->
-						service._loading.set no
-						if e? then console.error e
-						else service.setProfileData r
+						setData e, r
 				else service._loading.set no
 			.value()
 

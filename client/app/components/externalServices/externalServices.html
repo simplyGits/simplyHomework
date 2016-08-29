@@ -6,11 +6,7 @@
 
 	{{#each externalServices}}
 		{{#if loginNeeded}}
-			{{#unless ready}}
-				<div class="externalServiceResult">
-					{{> loading}}
-				</div>
-			{{else}}
+			{{#if ready}}
 				{{#if profileData}}
 					{{> externalServiceResult}}
 				{{else}}
@@ -18,7 +14,11 @@
 						Inloggen met {{friendlyName}}
 					</div>
 				{{/if}}
-			{{/unless}}
+			{{else}}
+				<div class="externalServiceResult">
+					{{> loading}}
+				</div>
+			{{/if}}
 		{{/if}}
 	{{else}}
 		{{> loading}}
@@ -30,14 +30,18 @@
 		<h1>{{friendlyName}}</h1>
 
 		<div id="center">
-			<img src="{{profileData.picture}}" width="100" height="100" alt="profielfoto"/>
+			{{#if profileData.error}}
+				Fout tijdens het ophalen van jouw profielinformatie van {{friendlyName}}
+			{{else}}
+				<img src="{{profileData.picture}}" width="100" height="100" alt="profielfoto"/>
 
-			{{! TODO: clean this markup up. }}
-			<span>
-				Ingelogd als {{profileData.nameInfo.firstName}}<br>
-				{{profileData.courseInfo.year}} {{toUpperCase profileData.courseInfo.schoolVariant}}<br>
-				{{profileData.mainGroup}}
-			</span>
+				{{! TODO: clean this markup up. }}
+				<span>
+					Ingelogd als {{profileData.nameInfo.firstName}}<br>
+					{{profileData.courseInfo.year}} {{toUpperCase profileData.courseInfo.schoolVariant}}<br>
+					{{profileData.mainGroup}}
+				</span>
+			{{/if}}
 		</div>
 
 		<button type="button" class="btn btn-danger deleteButton">Uitloggen</button>
