@@ -1,4 +1,4 @@
-/* global ms */
+/* global ms:true */
 'use strict'
 
 const seconds = 1000

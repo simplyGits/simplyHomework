@@ -1,4 +1,4 @@
-/* global MagisterBinding */
+/* global MagisterBinding:true */
 
 import { ExternalServicesConnector } from 'meteor/simply:external-services-connector';
 

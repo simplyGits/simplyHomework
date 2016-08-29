@@ -1,4 +1,4 @@
-/* global GravatarBinding */
+/* global GravatarBinding:true */
 
 import { ExternalServicesConnector } from 'meteor/simply:external-services-connector';
 
