@@ -103,6 +103,11 @@ MagisterBinding.createData = function (schoolurl, username, password, userId) {
 	});
 }
 
+/**
+ * @method getMutex
+ * @param {String} userId
+ * @return {Mutex} The mutex for the user, `lockSync` is added to it.
+ */
 function getMutex (userId) {
 	let mutex = userMutexes.get(userId);
 
