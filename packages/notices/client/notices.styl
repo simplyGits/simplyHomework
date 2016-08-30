@@ -2,6 +2,17 @@
 @require "jeet"
 @require "./vars"
 
+avoidBreakInside()
+	break-inside: avoid-column
+	-webkit-column-break-inside: avoid
+	-moz-column-break-inside: avoid
+	-o-column-break-inside: avoid
+	column-break-inside: avoid
+	page-break-inside: avoid
+
+	display: inline-block
+	width: 100%
+
 #overviewNotices
 	margin-left: -25px
 	margin-right: -25px
@@ -19,9 +30,7 @@
 		-moz-column-count: 1
 
 	div.notice
-		-webkit-column-break-inside: avoid
-		page-break-inside: avoid
-		break-inside: avoid
+		avoidBreakInside()
 
 		position: relative
 		width: 100%
