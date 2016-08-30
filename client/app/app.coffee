@@ -125,7 +125,7 @@ setKeyboardShortcuts = ->
 	Mousetrap.bind ['ctrl+/', 'command+/', 'ctrl+?', 'command+?', '?'], ->
 		alertModal(
 			'Toetsenbord shortcuts'
-			Locals['nl-NL'].KeyboardShortcuts()
+			TAPi18n.__ 'keyboardShortcuts'
 			DialogButtons.Ok
 			{ main: 'Sluiten' }
 			{ main: 'btn-primary' }

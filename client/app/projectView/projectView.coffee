@@ -229,7 +229,7 @@ addUser = ->
 		if e?
 			notify 'Onbekende fout, we zijn op de hoogte gesteld', 'error'
 		else
-			notify Locals['nl-NL'].ProjectPersonAddedNotice(val.profile.firstName), 'notice'
+			notify TAPi18n.__('projectPersonAddedNotice', val.profile.firstName), 'notice'
 
 Template.addParticipantModal.events
 	"click #goButton": addUser
@@ -252,11 +252,11 @@ Template.personRow.events
 	'click .removePersonButton': ->
 		alertModal(
 			'Zeker weten?',
-			Locals['nl-NL'].ProjectPersonRemovalMessage(@profile.firstName),
+			TAPi18n.__ 'projectPersonRemovalMessage', @profile.firstName
 			DialogButtons.OkCancel,
 			{ main: 'Is de bedoeling', second: 'heh!?' },
 			{ main: 'btn-danger' },
 			main: =>
 				Projects.update currentProject()._id, $pull: participants: @_id
-				notify Locals['nl-NL'].ProjectPersonRemovedNotice(@profile.firstName), 'notice'
+				notify TAPi18n.__('projectPersonRemovedNotice', @profile.firstName), 'notice'
 		)
