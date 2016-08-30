@@ -108,7 +108,7 @@ function getMutex (userId) {
 
 	if (mutex == null) {
 		mutex = locks.createMutex();
-		userMutexes.set(userId, mutex)
+		userMutexes.set(userId, mutex);
 	}
 
 	mutex.lockSync = Meteor.wrapAsync(mutex.lock, mutex);
@@ -475,7 +475,7 @@ MagisterBinding.getStudyUtils = function (userId, options) {
 						const externalFile = convertMagisterFile(userId, path, file);
 						studyUtil.fileIds.push(externalFile._id);
 						files.push(externalFile);
-					})
+					});
 
 					studyUtils.push(studyUtil);
 				});
