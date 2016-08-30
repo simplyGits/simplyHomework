@@ -55,7 +55,7 @@ Template.addTicketModal.events
 
 # == End Modals ==
 
-setMobileSettings = ->
+setSnapper = ->
 	window.snapper = snapper = new Snap
 		element: document.getElementById 'wrapper'
 		minPosition: -200
@@ -241,6 +241,7 @@ Template.app.onCreated ->
 			delete notifmap[doc._id]
 
 Template.app.onRendered ->
+	setSnapper()
 	setKeyboardShortcuts()
 
 	if Session.equals 'deviceType', 'desktop'
@@ -253,5 +254,3 @@ Template.app.onRendered ->
 				try UserStatus.startMonitor idleOnBlur: yes
 			else if UserStatus.isMonitoring()
 				UserStatus.stopMonitor()
-	else
-		setMobileSettings()
