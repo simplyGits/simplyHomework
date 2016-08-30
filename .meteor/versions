@@ -26,6 +26,7 @@ browser-policy-framing@1.0.11
 caching-compiler@1.1.7
 caching-html-compiler@1.0.6
 callback-hook@1.0.9
+cfs:http-methods@0.0.32
 chat@0.0.1
 check@1.2.3
 chuangbo:cookie@1.1.0
@@ -81,6 +82,7 @@ meteorhacks:meteorx@1.4.1
 meteorhacks:picker@1.0.3
 meteorhacks:subs-manager@1.6.4
 meteorhacks:unblock@1.1.0
+meteorspark:util@0.2.0
 mikowals:batch-insert@1.1.13
 minifier-css@1.2.14
 minifier-js@1.2.14
@@ -150,6 +152,7 @@ standard-minifier-css@1.2.0
 standard-minifier-js@1.2.0
 stevezhu:lodash@3.10.1
 stylus@2.513.5
+tap:i18n@1.8.2
 templating@1.2.14
 templating-tools@1.0.4
 themes@0.0.1

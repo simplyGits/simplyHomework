@@ -48,6 +48,7 @@
 Meteor.startup ->
 	$body = $ 'body'
 
+	TAPi18n.setLanguage "nl"
 	$("html").attr "lang", "nl"
 	emojione.ascii = yes # Convert ascii smileys (eg. :D) to emojis.
 

@@ -86,3 +86,4 @@ percolate:migrations
 simply:waitgroup
 ecmascript@0.5.8
 shell-server@0.2.1
+tap:i18n
