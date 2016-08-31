@@ -48,9 +48,9 @@
       "resolved": "https://registry.npmjs.org/sweetalert/-/sweetalert-1.1.3.tgz"
     },
     "tether": {
-      "version": "1.3.4",
-      "from": "tether@1.3.4",
-      "resolved": "https://registry.npmjs.org/tether/-/tether-1.3.4.tgz"
+      "version": "1.3.5",
+      "from": "tether@1.3.5",
+      "resolved": "https://registry.npmjs.org/tether/-/tether-1.3.5.tgz"
     },
     "yallist": {
       "version": "2.0.0",
