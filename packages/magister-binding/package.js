@@ -9,6 +9,7 @@ Package.describe({
 Npm.depends({
 	'request': '2.74.0',
 	'marked': '0.3.5',
+	'locks': '0.2.2',
 });
 
 Package.onUse(function(api) {

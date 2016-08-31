@@ -9,12 +9,17 @@ import { Magister } from 'meteor/simply:magisterjs';
 import { LRU } from 'meteor/simply:lru';
 import request from 'request';
 import marked from 'marked';
+import locks from 'locks';
 import Future from 'fibers/future';
 import { AuthError } from 'meteor/simply:external-services-connector';
 
 const ONLY_RECENT_LIMIT = ms.days(6);
 
 const log = MagisterBinding.log;
+// FIXME: this technically is a memory leak, since no keys are removed, but I
+// don't think this is going to be a problem. And I don't even know what a
+// better way to handle this would be.
+const userMutexes = new Map();
 
 const cache = LRU({
 	max: 50,
@@ -99,24 +104,55 @@ MagisterBinding.createData = function (schoolurl, username, password, userId) {
 }
 
 /**
+ * @method getMutex
+ * @param {String} userId
+ * @return {Mutex} The mutex for the user, `lockSync` is added to it.
+ */
+function getMutex (userId) {
+	let mutex = userMutexes.get(userId);
+
+	if (mutex == null) {
+		mutex = locks.createMutex();
+		mutex.lockSync = Meteor.wrapAsync(mutex.lock, mutex);
+		userMutexes.set(userId, mutex);
+	}
+
+	return mutex;
+}
+
+/**
  * Gets a magister object for the given `userId`.
  * @method getMagisterObject
  * @private
  * @param {String} userId The ID of the user to get a Magister object for.
  * @param {Boolean} [forceNew=false] Get a new sessionId and Magister object, even when there is a previous one.
+ * @param {Mutex} [mutex] If provided, should be a locked mutex that will be
+ * unlocked by this function.
  * @return {Magister} A Magister object for the given `userId`.
  */
-function getMagisterObject (userId, forceNew = false) {
+function getMagisterObject (userId, forceNew = false, mutex) {
 	check(userId, String);
 	check(forceNew, Boolean);
+	check(mutex, Match.Any);
+
+	// if we already got a mutex object...
+	if (mutex == null) {
+		// we dont have to fetch one...
+		mutex = getMutex(userId);
+		// and we don't have to lock it (we assume it's already locked and we
+		// retrieved the lock).
+		mutex.lockSync();
+	}
 
 	const data = MagisterBinding.storedInfo(userId);
 	if (_.isEmpty(data)) {
 		cache.del(userId);
+		mutex.unlock();
 		throw new Error('No credentials found.');
 	} else {
 		const m = cache.get(userId);
 		if (m !== undefined && !forceNew) {
+			mutex.unlock();
 			return m;
 		}
 
@@ -153,7 +189,7 @@ function getMagisterObject (userId, forceNew = false) {
 				);
 
 				if (useSessionId) { // retry with new sessionId when currently using an older one.
-					return getMagisterObject(userId, true);
+					return getMagisterObject(userId, true, mutex);
 				}
 
 				if (e instanceof AuthError) { // when logging in fails we don't want to send the wrong password anymore to Magister.
@@ -161,6 +197,7 @@ function getMagisterObject (userId, forceNew = false) {
 					MagisterBinding.storedInfo(userId, null);
 				}
 
+				mutex.unlock();
 				throw e;
 			}
 		}
@@ -186,6 +223,7 @@ function getMagisterObject (userId, forceNew = false) {
 			});
 		}
 
+		mutex.unlock();
 		cache.set(userId, magister);
 		return magister;
 	}
@@ -441,7 +479,7 @@ MagisterBinding.getStudyUtils = function (userId, options) {
 						const externalFile = convertMagisterFile(userId, path, file);
 						studyUtil.fileIds.push(externalFile._id);
 						files.push(externalFile);
-					})
+					});
 
 					studyUtils.push(studyUtil);
 				});
