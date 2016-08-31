@@ -113,10 +113,9 @@ function getMutex (userId) {
 
 	if (mutex == null) {
 		mutex = locks.createMutex();
+		mutex.lockSync = Meteor.wrapAsync(mutex.lock, mutex);
 		userMutexes.set(userId, mutex);
 	}
-
-	mutex.lockSync = Meteor.wrapAsync(mutex.lock, mutex);
 
 	return mutex;
 }
