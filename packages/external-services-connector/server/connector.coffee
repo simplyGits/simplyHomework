@@ -34,12 +34,12 @@ class ExternalServicesConnector
 		# Gets or sets the info in the database.
 		#
 		# @method storedInfo
-		# @param [userId=Meteor.userId()] {String} The ID of the user to get (and modify) the data in the database of. If null the current Meteor.userId() will be used.
+		# @param userId {String} The ID of the user to get (and modify) the data in the database of. If null the current Meteor.userId() will be used.
 		# @param [obj] {Object|null} The object to replace the object stored in the database with. If `null` the currently stored info will be _removed_.
 		# @return {Object} The info stored in the database.
 		###
-		service.storedInfo = (userId = Meteor.userId(), obj) ->
-			check userId, Match.Optional String
+		service.storedInfo = (userId, obj) ->
+			check userId, String
 			check obj, Match.Optional Match.OneOf Object, null
 
 			data = ->
@@ -48,7 +48,7 @@ class ExternalServicesConnector
 					fields: "externalServices.#{service.name}": 1
 				).externalServices[service.name]
 
-			if obj?
+			if _.isPlainObject obj
 				Meteor.users.update userId,
 					$set: "externalServices.#{service.name}": _.extend data() ? {}, obj
 
