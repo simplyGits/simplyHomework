@@ -29,8 +29,8 @@ Meteor.methods
 			if err instanceof AuthError # incorrect login credentials
 				throw new Meteor.Error 'forbidden', 'Login credentials incorrect.'
 			else # custom error
-				throw new Meteor.Error 'error', 'Other error.', err.message
 				ExternalServicesConnector.handleServiceError service.name, @userId, err
+				throw new Meteor.Error 'error', 'Other error.', err.message
 
 		Meteor.call 'getServiceProfileData', serviceName, @userId
 
