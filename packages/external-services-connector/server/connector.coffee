@@ -50,7 +50,7 @@ class ExternalServicesConnector
 
 			if obj?
 				Meteor.users.update userId,
-					$set: "externalServices.#{service.name}": _.extend data(), obj
+					$set: "externalServices.#{service.name}": _.extend data() ? {}, obj
 
 			else if _.isNull obj
 				Meteor.users.update userId,
