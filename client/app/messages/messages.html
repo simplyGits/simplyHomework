@@ -22,7 +22,11 @@
 					{{/if}}
 				{{else}}
 					{{! TODO: add some nice css for this }}
-					Je bent niet <a href="{{pathFor 'settings' page='externalServices'}}">verbonden</a> met sites die berichten ondersteunen.
+					<div class="pageContent" id="messageList">
+						<div class="notice">
+							Je bent niet <a href="{{pathFor 'settings' page='externalServices'}}">verbonden</a> met sites die berichten ondersteunen.
+						</div>
+					</div>
 				{{/if}}
 			</div>
 		{{/if}}

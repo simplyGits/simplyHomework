@@ -65,7 +65,7 @@ Template.messages.onCreated ->
 
 		else if folder?
 			Meteor.subscribe 'messagesCount', folder
-			Meteor.subscribe 'messages', offset.get(), [ folder ], (e) ->
+			Meteor.subscribe 'messages', offset.get(), [ folder ], onStop: (e) ->
 				isLoadingNext.set no
 				if e?.error is 'not-supported'
 					hasService.set no
