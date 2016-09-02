@@ -162,17 +162,33 @@ class @Helpers
 	###
 	@nameCap: (name) ->
 		nonCapped = [
+			'aan'
+			'bij'
+			'd'
 			'de'
 			'den'
 			'der'
 			'en'
+			'het'
+			'in'
 			'in'
 			'o'
 			'of'
+			'onder'
+			'op'
+			'over'
+			's'
+			't'
+			'te'
 			'ten'
+			'ter'
+			'tot'
+			'uit'
 			'uit'
 			'van'
 			'vanden'
+			'vd'
+			'voor'
 		]
 
 		name
