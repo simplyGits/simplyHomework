@@ -1,3 +1,4 @@
+Mutex = require('meteor/mutex').default
 { Services, ExternalServicesConnector, getServices } = require './connector.coffee'
 
 # REVIEW: Better way to do this?
@@ -267,6 +268,8 @@ updateStudyUtils = (userId, forceUpdate = no) ->
 	StudyUtils.batchInsert inserts if inserts.length > 0
 	errors
 
+calendarItemMutexes = {}
+
 # REVIEW: Should we have different functions for absenceInfo and calendarItems?
 # TODO: think out some throttling for this.
 ###*
@@ -294,6 +297,9 @@ updateCalendarItems = (userId, from, to) ->
 		'scrapped'
 	]
 
+	calendarItemMutexes[userId] ?= new Mutex()
+	mutex = calendarItemMutexes[userId]
+
 	# TODO: fix using `events.calendarItemsUpdate` here.
 
 	user = Meteor.users.findOne userId
@@ -307,6 +313,7 @@ updateCalendarItems = (userId, from, to) ->
 	to ?= new Date().addDays 7
 	to = new Date().addDays(7) if to < new Date().addDays(7)
 
+	mutex.lock()
 	services = getServices userId, 'getCalendarItems'
 	markUserEvent userId, 'calendarItemsUpdate' if services.length > 0
 
@@ -438,6 +445,7 @@ updateCalendarItems = (userId, from, to) ->
 			type: $ne: 'lesson'
 		}, handleCollErr
 
+	mutex.unlock()
 	errors
 
 personCache = []
