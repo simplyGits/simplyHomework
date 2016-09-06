@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "locks": {
+      "version": "0.2.2",
+      "resolved": "https://registry.npmjs.org/locks/-/locks-0.2.2.tgz",
+      "from": "locks@0.2.2"
+    }
+  }
+}

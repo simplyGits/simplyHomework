@@ -27,6 +27,7 @@ Package.onUse(function(api) {
 		'ejson',
 		'meteorhacks:picker',
 		'ms',
+		'mutex',
 	], 'server');
 
 	api.mainModule('client/connector.coffee', 'client');

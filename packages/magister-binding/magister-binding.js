@@ -9,7 +9,7 @@ import { Magister } from 'meteor/simply:magisterjs';
 import { LRU } from 'meteor/simply:lru';
 import request from 'request';
 import marked from 'marked';
-import locks from 'locks';
+import Mutex from 'meteor/mutex';
 import Future from 'fibers/future';
 import { AuthError } from 'meteor/simply:external-services-connector';
 
@@ -106,14 +106,13 @@ MagisterBinding.createData = function (schoolurl, username, password, userId) {
 /**
  * @method getMutex
  * @param {String} userId
- * @return {Mutex} The mutex for the user, `lockSync` is added to it.
+ * @return {Mutex} The mutex for the user
  */
 function getMutex (userId) {
 	let mutex = userMutexes.get(userId);
 
 	if (mutex == null) {
-		mutex = locks.createMutex();
-		mutex.lockSync = Meteor.wrapAsync(mutex.lock, mutex);
+		mutex = new Mutex();
 		userMutexes.set(userId, mutex);
 	}
 
@@ -141,7 +140,7 @@ function getMagisterObject (userId, forceNew = false, mutex) {
 		mutex = getMutex(userId);
 		// and we don't have to lock it (we assume it's already locked and we
 		// retrieved the lock).
-		mutex.lockSync();
+		mutex.lock();
 	}
 
 	const data = MagisterBinding.storedInfo(userId);
