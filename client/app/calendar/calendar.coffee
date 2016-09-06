@@ -1,6 +1,6 @@
 Tether = require 'tether'
 
-height = -> $('.content').height()
+POPOVER_RESET_TIME_MS = 150
 
 currentSub = undefined
 
@@ -11,6 +11,9 @@ currentOpenEvent = new ReactiveVar
 popoverTimeout = undefined
 popoverView = undefined
 lastHoverStop = -1
+
+height = ->
+	$('.content').height()
 
 setQueryParam = (id) ->
 	FlowRouter.withReplaceState ->
@@ -26,10 +29,6 @@ openCalendarItemsModal = (id) ->
 		}, -> CalendarItems.findOne id
 
 calendarItemToEvent = (calendarItem, compare) ->
-	# commented out since this is currently not needed, but we have to keep
-	# remembered about.
-	#calendarItem = _.extend new CalendarItem, calendarItem
-
 	_class = Classes.findOne calendarItem.classId
 
 	id: calendarItem._id
@@ -55,7 +54,9 @@ calendarItemToEvent = (calendarItem, compare) ->
 			'opaque'
 	) ? ''
 	calendarItem: calendarItem
-	editable: not calendarItem.fetchedBy? # TODO: do this smarter, users can editor custom Magister appointments for example. Updating this upstream would be nice too.
+	# TODO: do this smarter, users can editor custom Magister appointments for
+	# example. Updating this upstream would be nice too.
+	editable: not calendarItem.fetchedBy?
 	content: calendarItem.content
 
 Template.calendar.onCreated ->
@@ -123,7 +124,6 @@ Template.calendar.onRendered ->
 					)
 
 			dblDate = date
-
 			dblDateResetHandle = _.delay ( -> dblDate = dblDateResetHandle = null ), 500
 
 		eventMouseover: (calendarEvent, event) ->
@@ -145,7 +145,7 @@ Template.calendar.onRendered ->
 							}
 						]
 			popoverTimeout = Meteor.setTimeout fn, (
-				if _.now() - lastHoverStop < 150 then 0
+				if _.now() - lastHoverStop < POPOVER_RESET_TIME_MS then 0
 				else 500
 			)
 

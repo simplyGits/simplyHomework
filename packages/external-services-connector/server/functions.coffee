@@ -850,7 +850,7 @@ fetchServiceUpdates = (userId, forceUpdate = no) ->
 # Returns an array containing info about available services.
 # @method getModuleInfo
 # @param userId {String} The ID of the user to use for the service info.
-# return {Object[]} An array containing objects that hold the info about all the services.
+# @return {Object[]} An array containing objects that hold the info about all the services.
 ###
 getModuleInfo = (userId) ->
 	check userId, String
