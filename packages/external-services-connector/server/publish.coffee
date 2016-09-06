@@ -1,6 +1,6 @@
 { Services, getServices } = require './connector.coffee'
 { updateCalendarItems, updateGrades, updateStudyUtils, updateMessages,
-  fetchServiceUpdates } = require './functions.coffee'
+  fetchServiceUpdates, getModuleInfo } = require './functions.coffee'
 
 Meteor.publish 'externalCalendarItems', (from, to) ->
 	check from, Date
@@ -189,3 +189,24 @@ Meteor.publish 'serviceUpdates', ->
 		Meteor.clearInterval handle
 
 	ServiceUpdates.find { userId }
+
+Meteor.publish 'servicesInfo', ->
+	@unblock()
+	userId = @userId
+	unless userId?
+		@ready()
+		return undefined
+
+	for info in getModuleInfo(userId)
+		@added 'services', info.name, info
+
+	observer = Meteor.users.find(userId, {
+		fields:
+			'externalServices': 1
+	}).observeChanges
+		changed: (id, fields) =>
+			for info in getModuleInfo(userId)
+				@changed 'services', info.name, info
+
+	@onStop ->
+		observer.stop()

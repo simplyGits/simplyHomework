@@ -1,12 +1,12 @@
-val = new ReactiveVar undefined
+services = new Mongo.Collection 'services'
 
 NoticeManager.provide 'noServices', ->
-	has = val.get()
+	@subscribe 'servicesInfo'
 
-	unless has?
-		Meteor.call 'getModuleInfo', (e, r) ->
-			val.set _.any r, (m) -> m.loginNeeded and m.active
-	else unless has
+	infos = services.find().fetch()
+	has = _.any infos, (s) -> s.loginNeeded and s.active
+
+	unless has
 		header: 'Je hebt geen sites verbonden met simplyHomework'
 		subheader: '''
 		Zonder een verbonden site heeft simplyHomework weinig nut.
