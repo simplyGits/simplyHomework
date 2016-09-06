@@ -56,13 +56,14 @@ Template.addTicketModal.events
 # == End Modals ==
 
 setSnapper = ->
-	window.snapper = snapper = new Snap
+	window.snapper?.disable()
+	window.snapper = new Snap
 		element: document.getElementById 'wrapper'
 		minPosition: -200
 		maxPosition: 200
 		flickThreshold: 45
 		resistance: .9
-	window.closeSidebar = -> snapper.close()
+	window.closeSidebar = -> window.snapper.close()
 
 setKeyboardShortcuts = ->
 	Mousetrap.bind 'g o', ->
@@ -244,7 +245,13 @@ Template.app.onRendered ->
 	setSnapper()
 	setKeyboardShortcuts()
 
-	if Session.equals 'deviceType', 'desktop'
+	@autorun ->
+		if Helpers.isDesktop()
+			window.snapper.disable()
+		else
+			window.snapper.enable()
+
+	if Helpers.isDesktop()
 		# `startMonitor` will throw an error when the time isn't synced yet, when
 		# the time is done syncing the current computation will invalidate, so to
 		# effectively enable the monitor ASAP we put it inside of an `autorun` and a
