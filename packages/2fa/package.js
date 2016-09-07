@@ -8,6 +8,7 @@ Package.describe({
 
 Npm.depends({
 	'speakeasy': '2.0.0',
+	'qrcode': '0.4.2',
 })
 
 Package.onUse(function(api) {
@@ -16,7 +17,6 @@ Package.onUse(function(api) {
 	api.use([
 		'templating',
 		'handlebars',
-		'reactive-var'
 	], 'client')
 	api.use([
 		'meteorhacks:picker',
@@ -26,8 +26,6 @@ Package.onUse(function(api) {
 	], 'server')
 	api.addFiles([
 		'modal/modal.html',
-		'modal/modal.css',
-		'modal/modal.js',
 	], 'client')
 	api.mainModule('2fa.js', 'server')
 })

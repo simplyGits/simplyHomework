@@ -8,12 +8,12 @@
 				</div>
 				<div class="modal-body">
 					<div id="description">
-						Typ de onderstaande code over in een programma zoals <a href="https://support.google.com/accounts/answer/1066447?hl=nl" target="_blank">Google Authenticator</a>.<br>
+						Scan de onderstaande code in een programma zoals <a href="https://support.google.com/accounts/answer/1066447?hl=nl" target="_blank">Google Authenticator</a>.<br>
 						Voortaan wordt bij het inloggen om een speciale code gevraagd, de code kan je zien met de app waarmee je deze code gescand hebt. Als je een nieuwe sleutel nodig hebt moet je 2-staps authenticatie wéér uit en aan zetten.<br><br>
 						Mocht er iets fout gaan waardoor je niet meer kan inloggen op je account, <a href="mailto:hello@simplyApps.nl">stuur ons dan een mail</a>.
 					</div>
-					<div id="tfa_key">{{key}}</div>
-					{{! <img id="qr" src="/2fa/qr" alt="privé sleutel"/> }}
+					<img id="qr" src="/2fa/qr" alt="privé sleutel"/>
+					{{! TODO: add base32 code here to enable users without a camera to manually enter the code in their authenticator app }}
 					{{! TODO: provide a recovery token }}
 				</div>
 				<div class="modal-footer">
