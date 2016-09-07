@@ -36,6 +36,7 @@ SyncedCron.add({
 			'profile.firstName': { $ne: '' },
 			'settings.notifications.email.newGrade': { $ne: false },
 		}).fetch()
+		let notifiedCount = 0
 
 		users.forEach((user) => {
 			const userId = user._id
@@ -74,7 +75,10 @@ SyncedCron.add({
 						passed: grade.passed,
 						average: toString(GradeFunctions.getEndGrade(c._id, userId)),
 					}))
+
 					sendEmail(userId, `Nieuw cijfer voor ${c.name}`, html)
+
+					notifiedCount++
 					Analytics.insert({
 						type: 'send-mail',
 						date: new Date,
@@ -89,6 +93,10 @@ SyncedCron.add({
 				}
 			})
 		})
+
+		const str = `notified ${notifiedCount} new grade(s) per mail.`
+		console.log(str)
+		return str
 	},
 })
 
