@@ -95,10 +95,10 @@ class ExternalServicesConnector
 
 		###*
 		# @method log
-		# @param {...String} strings
+		# @param {...any} items
 		###
-		service.log = (strings...) ->
-			console.log '[' + service.name + ']', strings...
+		service.log = (items...) ->
+			console.log '[' + service.name + ']', items...
 			undefined
 
 		@services.push service
