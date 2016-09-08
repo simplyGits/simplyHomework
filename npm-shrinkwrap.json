@@ -17,6 +17,11 @@
       "from": "chroma-js@1.2.1",
       "resolved": "https://registry.npmjs.org/chroma-js/-/chroma-js-1.2.1.tgz"
     },
+    "damerau-levenshtein": {
+      "version": "0.0.1",
+      "from": "git://github.com/cbaatz/damerau-levenshtein.git",
+      "resolved": "git://github.com/cbaatz/damerau-levenshtein.git#8d7440a51ae9dc6912e44385115c7cb1da4e8ebc"
+    },
     "fibers": {
       "version": "1.0.13",
       "from": "fibers@*",

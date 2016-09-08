@@ -6,6 +6,7 @@
   "dependencies": {
     "bcrypt": "^0.8.7",
     "chroma-js": "^1.1.1",
+    "damerau-levenshtein": "git://github.com/cbaatz/damerau-levenshtein.git",
     "fibers": "^1.0.13",
     "lru-cache": "^4.0.1",
     "spin.js": "^2.3.2",

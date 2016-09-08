@@ -6,6 +6,10 @@ Package.describe({
 	documentation: 'README.md',
 });
 
+Npm.depends({
+	'damerau-levenshtein': 'git://github.com/cbaatz/damerau-levenshtein.git',
+});
+
 Package.onUse(function(api) {
 	api.versionsFrom('1.2.1');
 
@@ -37,7 +41,7 @@ Package.onUse(function(api) {
 		'audio/chatNotification.mp3',
 
 		'images/kappa.png',
-	], 'client')
+	], 'client');
 
 	api.addFiles([
 		'lib/chatRoom.coffee',

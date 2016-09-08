@@ -1,3 +1,5 @@
+DamerauLevenshtein = require 'damerau-levenshtein'
+
 infos = [
 	[/volgende (\w+) les/i, 1, "lesson", 1]
 	[/volgende les (\w+)/i, 1, "lesson", 1]

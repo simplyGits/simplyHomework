@@ -1,3 +1,5 @@
+DamerauLevenshtein = require 'damerau-levenshtein'
+
 NOTIFICATION_SOUND_SOURCES = [
 	[ 'audio/ogg', '/packages/chat/audio/chatNotification.ogg' ]
 	[ 'audio/mpeg', '/packages/chat/audio/chatNotification.mp3' ]

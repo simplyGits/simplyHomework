@@ -6,6 +6,10 @@ Package.describe({
 	documentation: 'README.md',
 })
 
+Npm.depends({
+	'damerau-levenshtein': 'git://github.com/cbaatz/damerau-levenshtein.git',
+})
+
 Package.onUse(function(api) {
 	api.versionsFrom('1.2.1')
 	api.use([
@@ -13,6 +17,7 @@ Package.onUse(function(api) {
 		'check',
 		'stevezhu:lodash@3.10.1',
 		'mongo',
+		'modules',
 	], 'server')
 	api.addFiles([
 		'search.coffee',

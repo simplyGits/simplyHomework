@@ -1,3 +1,5 @@
+DamerauLevenshtein = require 'damerau-levenshtein'
+
 fileTypes = [{
 	mimes: [
 		'application/vnd.ms-powerpoint'
