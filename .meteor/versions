@@ -105,7 +105,7 @@ mutex@0.0.1
 natestrauser:animate-css@3.5.1
 notifications-manager@0.0.1
 npm-bcrypt@0.9.1
-npm-mongo@1.5.48
+npm-mongo@1.5.49
 observe-sequence@1.0.12
 ordered-dict@1.0.8
 percolate:migrations@0.9.8
@@ -123,7 +123,7 @@ retry@1.0.8
 reywood:publish-composite@1.4.2
 rosh93:dataset-filter@0.0.6
 routepolicy@1.0.11
-rzymek:moment-locale-nl@2.12.0
+rzymek:moment-locale-nl@2.14.1
 schedule-functions@0.0.1
 scholieren@0.0.1
 search@0.0.1
