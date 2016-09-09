@@ -43,7 +43,7 @@ Template.fullscreenChatWindow.helpers
 			when 'too-long'
 				"maximaal #{CHATMESSAGE_MAX_LENGTH} karakters toegestaan"
 			when 'rate-limited'
-				'je hebt teveel berichten in een korte tijd gestuurd'
+				'je hebt te veel berichten in een korte tijd gestuurd'
 
 Template.fullscreenChatWindow.events
 	"click #header": (e) ->
