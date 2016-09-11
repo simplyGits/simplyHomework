@@ -136,7 +136,7 @@ Meteor.methods
 	'bootstrapUser': ->
 		userId = @userId
 		unless userId?
-			throw new Meteor.Error 'notLoggedIn', 'User not logged in.'
+			throw new Meteor.Error 'not-logged-in', 'User not logged in.'
 
 		group = new WaitGroup()
 
