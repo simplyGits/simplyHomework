@@ -167,38 +167,11 @@ setupItems = [
 		async: yes
 		visible: no
 		func: (callback) ->
-			colors = _.shuffle [
-				'#F44336'
-				'#E91E63'
-				'#9C27B0'
-				'#673AB7'
-				'#3F51B5'
-				'#03A9F4'
-				'#009688'
-				'#4CAF50'
-				'#8BC34A'
-				'#CDDC39'
-				'#FFEB3B'
-				'#FFC107'
-				'#FF9800'
-				'#FF5722'
-			]
-
-			userId = Meteor.userId()
-			Meteor.call 'getExternalPersonClasses', (e, r) ->
-				Meteor.users.update userId, $addToSet: setupProgress: 'getExternalClasses'
-
-				if e? or _.isEmpty r
-					console.log 'if e? or _.isEmpty r', e
+			Meteor.call 'fetchExternalPersonClasses', (e, r) ->
+				Meteor.users.update Meteor.userId(), $addToSet: setupProgress: 'getExternalClasses'
+				if e?
 					callback false
 				else
-					Meteor.users.update userId, $pushAll: classInfos:
-						r.map (c, i) ->
-							id: c._id
-							color: colors[ i % colors.length ]
-							externalInfo: c.externalInfo
-							hidden: no
-
 					Meteor.call 'bootstrapUser'
 					callback true
 	}

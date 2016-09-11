@@ -187,6 +187,39 @@ Meteor.methods
 
 		group.wait()
 
+	'fetchExternalPersonClasses': ->
+		userId = @userId
+		unless userId?
+			throw new Meteor.Error 'not-logged-in', 'User not logged in.'
+
+		classes = functions.getExternalPersonClasses userId
+		if classes.length is 0
+			throw new Meteor.Error 'no-classes','No external classes found.'
+
+		colors = _.shuffle [
+			'#F44336'
+			'#E91E63'
+			'#9C27B0'
+			'#673AB7'
+			'#3F51B5'
+			'#03A9F4'
+			'#009688'
+			'#4CAF50'
+			'#8BC34A'
+			'#CDDC39'
+			'#FFEB3B'
+			'#FFC107'
+			'#FF9800'
+			'#FF5722'
+		]
+
+		Meteor.users.update userId, $set: classInfos:
+			classes.map (c, i) ->
+				id: c._id
+				color: colors[i % colors.length]
+				externalInfo: c.externalInfo
+				hidden: no
+
 	'getPersonStats': ->
 		@unblock()
 		userId = @userId
