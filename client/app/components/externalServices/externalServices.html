@@ -33,12 +33,16 @@
 			{{#if profileData.error}}
 				Fout tijdens het ophalen van jouw profielinformatie van {{friendlyName}}
 			{{else}}
-				<img src="{{profileData.picture}}" width="100" height="100" alt="profielfoto"/>
+				{{#if profileData.picture}}
+					<img src="{{profileData.picture}}" width="100" height="100" alt="profielfoto"/>
+				{{/if}}
 
 				{{! TODO: clean this markup up. }}
 				<span>
 					Ingelogd als {{profileData.nameInfo.firstName}}<br>
-					{{profileData.courseInfo.year}} {{toUpperCase profileData.courseInfo.schoolVariant}}<br>
+					{{#if profileData.courseInfo}}
+						{{profileData.courseInfo.year}} {{toUpperCase profileData.courseInfo.schoolVariant}}<br>
+					{{/if}}
 					{{profileData.mainGroup}}
 				</span>
 			{{/if}}
