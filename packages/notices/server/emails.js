@@ -127,7 +127,6 @@ SyncedCron.add({
 			const messages = Messages.find({
 				fetchedFor: userId,
 				isRead: false,
-				sendDate: { $gt: user.status.lastLogin.date },
 				notifiedOn: null,
 			}, {
 				fields: {

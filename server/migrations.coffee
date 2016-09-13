@@ -87,5 +87,18 @@ Migrations.add
 			multi: yes
 		}
 
+Migrations.add
+	version: 8
+	name: 'Mark all non-read messages as notified'
+	up: ->
+		Messages.update {
+			isRead: non
+			notifiedOn: null
+		}, {
+			$set: notifiedOn: new Date
+		}, {
+			multi: yes
+		}
+
 Meteor.startup ->
 	Migrations.migrateTo 'latest'
