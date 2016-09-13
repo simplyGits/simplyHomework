@@ -8,8 +8,6 @@ CALENDAR_ITEMS_INVALIDATION_TIME = ms.minutes 10
 SERVICE_UPDATE_INVALIDATION_TIME = ms.minutes 30
 PERSON_CACHE_INVALIDATION_TIME   = ms.minutes 15
 
-min = (a, b) -> if a < b then a else b
-
 handleCollErr = (e) ->
 	if e?
 		Kadira.trackError(
@@ -738,7 +736,7 @@ updateMessages = (userId, offset, folders, forceUpdate = no) ->
 			if offset > 0 # fetch new messages at top, unless we are asked for them.
 				try
 					results.push(
-						service.getMessages folder, 0, min(MIN_NEW_MESSAGES_LIMIT, offset), userId
+						service.getMessages folder, 0, Math.min(MIN_NEW_MESSAGES_LIMIT, offset), userId
 					)
 				catch e
 					handleErr e
