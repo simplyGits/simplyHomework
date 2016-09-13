@@ -247,6 +247,7 @@ Template.app.onRendered ->
 
 	@autorun ->
 		if Helpers.isDesktop()
+			window.snapper.close()
 			window.snapper.disable()
 		else
 			window.snapper.enable()
