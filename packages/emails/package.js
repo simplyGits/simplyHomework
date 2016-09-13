@@ -22,13 +22,6 @@ Package.onUse(function(api) {
 	], 'server');
 	api.mainModule('emails.js', 'server');
 	api.addFiles('mailSettings.coffee', 'server');
-	api.imply([
-		'email',
-	], 'server');
-	api.export([
-		'getMail',
-		'sendMail',
-	], 'server');
 });
 
 Package.onTest(function(api) {

@@ -1,3 +1,5 @@
+{ sendHtmlMail } = require 'meteor/emails'
+
 Meteor.startup ->
 	SyncedCron.start()
 	reCAPTCHA.config
@@ -58,7 +60,7 @@ Meteor.startup ->
 					else if not passChanged and mailChanged then 'Mail Adres Veranderd'
 				)
 
-				sendMail user, subject, message
+				sendHtmlMail user, subject, message
 
 	users = {}
 	olderThan = (val, min) -> val? and _.now() - val > min
@@ -80,7 +82,7 @@ Meteor.startup ->
 
 		if ++val.times >= 5 and not val.mailSentAt?
 			Meteor.defer ->
-				sendMail user, 'Account mogelijk in gevaar', """
+				sendHtmlMail user, 'Account mogelijk in gevaar', """
 					Hey #{user.profile.firstName},
 	
 					Pas heeft iemand in een korte tijd meerdere keren een fout wachtwoord ingevuld.

@@ -1,7 +1,7 @@
-/* global Kadira, Grades, Projects, updateGrades, SyncedCron, Classes,
+/* global Kadira, Grades, Projects, Messages, SyncedCron, Classes,
    GradeFunctions, Analytics */
 
-import emails from 'meteor/emails'
+import * as emails from 'meteor/emails'
 import { functions } from 'meteor/simply:external-services-connector'
 import moment from 'moment-timezone'
 moment.locale('nl')
@@ -167,7 +167,7 @@ SyncedCron.add({
 					}
 					lines.push('\n' + message.body)
 
-					sendMail(user, `Bericht van ${message.sender.fullName}`, lines.join('\n'))
+					emails.sendHtmlMail(user, `Bericht van ${message.sender.fullName}`, lines.join('\n'))
 
 					notifiedCount++
 					Analytics.insert({

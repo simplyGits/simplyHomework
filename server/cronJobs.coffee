@@ -1,4 +1,5 @@
 Future = require 'fibers/future'
+{ sendHtmlMail } = require 'meteor/emails'
 
 # TODO: remind people to finish the setup when they didn't finished it
 # TODO: remind people to use the app after a long time of inactivity
@@ -18,7 +19,7 @@ SyncedCron.add
 		).fetch()
 
 		for user in usersWarned
-			sendMail user, 'Inactief account', """
+			sendHtmlMail user, 'Inactief account', """
 				Hey #{user.profile.firstName}!
 
 				Je hebt al voor #{moment().diff user.status.lastActivity, 'days'} dagen niet ingelogd.
@@ -153,7 +154,7 @@ SyncedCron.add
 			birthDate? and Helpers.datesEqual new Date, birthDate
 
 		for user in users
-			sendMail user, 'Gefeliciteerd!', """
+			sendHtmlMail user, 'Gefeliciteerd!', """
 				Hey #{user.profile.firstName}!
 
 				Wij wensen je een fijne verjaardag! :D

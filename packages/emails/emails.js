@@ -12,35 +12,33 @@ function wrap (fn) {
 	}
 }
 
-const exported = {
-	cijfer: wrap(emails.cijfer),
-	html: wrap(emails.html),
-	project: wrap(emails.project),
-}
+export const cijfer = wrap(emails.cijfer)
+export const html = wrap(emails.html)
+export const project = wrap(emails.project)
 
 /**
- * @method getMail
+ * @method getHtmlMail
  * @param {String} title
  * @param {String} body
  * @param {Object} [schema]
  * @return {String}
  */
-getMail = function (title, body, schema) {
+export function getHtmlMail (title, body, schema) {
 	check(title, String)
 	check(body, String)
 	check(schema, Match.Optional(Object))
 
 	body = body.replace(/\n/ig, '<br>')
-	return exported.html({ title, body })
+	return html({ title, body })
 }
 
 /**
- * @method sendMail
+ * @method sendHtmlMail
  * @param {User|String} user User object or email address
  * @param {String} title
  * @param {String} body
  */
-sendMail = function (user, title, body) {
+export function sendHtmlMail (user, title, body) {
 	check(user, Match.OneOf(Object, String))
 	check(title, String)
 	check(body, String)
@@ -49,8 +47,6 @@ sendMail = function (user, title, body) {
 		from: 'simplyHomework <hello@simplyApps.nl>',
 		to: _.isString(user) ? user : user.emails[0].address,
 		subject: `simplyHomework | ${title}`,
-		html: getMail(title, body),
+		html: getHtmlMail(title, body),
 	})
 }
-
-export default exported
