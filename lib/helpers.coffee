@@ -9,10 +9,10 @@
 Date.today = -> new Date().date()
 
 ###*
-# Adds the given amount of days to the current/new Date object.
+# Creates a new Date object with the given amount of days added.
 #
 # @method addDays
-# @param days {Number} The amount of days to add.
+# @param {Number} days The amount of days to add.
 # @return {Date} A Date object with the given amount of days added.
 ###
 Date::addDays = (days) ->
