@@ -73,5 +73,13 @@ Template['changedHour_diffItem'].helpers
 			when 'startDate' then 'Begin'
 			when 'endDate' then 'Eind'
 			when 'description' then 'Beschrijving'
-			when 'fullDay' then 'Hele dag'
+			when 'fullDay' then 'Duurt hele dag'
 			else Helpers.cap @key
+
+	fmt: (val) ->
+		if _.isDate val
+			moment(val).format 'HH:mm'
+		else if _.isBoolean val
+			if val then 'ja' else 'nee'
+		else
+			val
