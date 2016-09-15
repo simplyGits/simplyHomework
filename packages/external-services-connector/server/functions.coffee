@@ -268,6 +268,8 @@ updateStudyUtils = (userId, forceUpdate = no) ->
 
 calendarItemMutexes = {}
 
+# REVIEW: Do we want to call `.date` on each date object here to make sure we
+# don't pass date objects with a time attached to them to external services?
 # REVIEW: Should we have different functions for absenceInfo and calendarItems?
 # TODO: think out some throttling for this.
 ###*
