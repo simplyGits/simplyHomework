@@ -1,4 +1,5 @@
 { functions } = require 'meteor/simply:external-services-connector'
+{ sendHtmlMail } = require 'meteor/emails'
 
 Migrations.add
 	version: 1
@@ -92,13 +93,27 @@ Migrations.add
 	name: 'Mark all non-read messages as notified'
 	up: ->
 		Messages.update {
-			isRead: non
 			notifiedOn: null
 		}, {
 			$set: notifiedOn: new Date
 		}, {
 			multi: yes
 		}
+
+Migrations.add
+	version: 9
+	name: 'Send email explaining bug to every person'
+	up: ->
+		users = Meteor.users.find({
+			'externalServices.magister': $exists: true
+		}).fetch()
+		for user in users
+			sendHtmlMail user, 'Technische storing', """
+				Hey #{user.profile.firstName}!
+
+				Door een technische fout hebben we onterecht een groot aantal mails van oude Magister berichten verzonden.
+				Onze excuses als dit bij jou ook het geval is en we je inbox overhoop gegooid hebben.
+			"""
 
 Meteor.startup ->
 	Migrations.migrateTo 'latest'
