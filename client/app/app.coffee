@@ -197,17 +197,22 @@ Template.app.onCreated ->
 	@autorun -> App.logout() unless Meteor.userId()? or Meteor.loggingIn()
 
 	@autorun ->
+		events = getUserField Meteor.userId(), 'events'
+		return unless events?
+
 		dateTracker.depend()
 		now = new Date
 		birthDate = getUserField Meteor.userId(), 'profile.birthDate'
-		event = getEvent 'congratulated'
+		event = events.congratulated
 
 		if birthDate? and Helpers.datesEqual(now, birthDate) and
-		event?.getUTCFullYear() isnt now.getUTCFullYear()
+		event?.getFullYear() isnt now.getFullYear()
+			Meteor.defer ->
+				Meteor.call 'markUserEvent', 'congratulated'
+
 			swalert
 				title: 'Gefeliciteerd!'
 				text: "Gefeliciteerd met je #{moment().diff birthDate, 'years'}e verjaardag!"
-			Meteor.call 'markUserEvent', 'congratulated'
 
 	# REVIEW: Maybe use a cleaner method using Blaze and stuff?
 	# TODO: move this in the 'notices' packages
