@@ -4,3 +4,4 @@ NoticeManager.provide 'birthday', ->
 
 	if birthDate? and Helpers.datesEqual(new Date, birthDate)
 		template: 'birthday'
+		priority: 2
