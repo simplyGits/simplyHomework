@@ -72,11 +72,14 @@
 			$ne: null
 	, fields: _id: 1).count! is 0
 
-@ScheduleFunctions.lessons-for-date = (user-id = Meteor.user-id!, date = new Date!) ->
+@ScheduleFunctions.lessons-for-date = (user-id = Meteor.user-id!, date) ->
 	check user-id, String
 	check date, Date
 
-	dateTracker?depend!
+	unless date?
+		dateTracker?depend!
+		date = new Date!
+
 	date .= date!
 	CalendarItems.find(
 		user-ids: user-id
