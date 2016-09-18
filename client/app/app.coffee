@@ -206,7 +206,7 @@ Template.app.onCreated ->
 		event?.getUTCFullYear() isnt now.getUTCFullYear()
 			swalert
 				title: 'Gefeliciteerd!'
-				text: "Gefeliciteerd met je #{moment().diff val, 'years'}e verjaardag!"
+				text: "Gefeliciteerd met je #{moment().diff birthDate, 'years'}e verjaardag!"
 			Meteor.call 'markUserEvent', 'congratulated'
 
 	# REVIEW: Maybe use a cleaner method using Blaze and stuff?
