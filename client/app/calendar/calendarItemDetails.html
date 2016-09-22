@@ -39,11 +39,21 @@
 		{{/if}}
 		<div class="row">
 			<div>Begin:</div>
-			<div>{{dateFormat 'dddd D MMMM HH:mm' startDate}}</div>
+			<div>
+				{{dateFormat 'dddd D MMMM' startDate}}
+				{{#unless fullDay}}
+					{{dateFormat 'HH:mm' startDate}}
+				{{/unless}}
+			</div>
 		</div>
 		<div class="row">
 			<div>Eind:</div>
-			<div>{{dateFormat 'dddd D MMMM HH:mm' endDate}}</div>
+			<div>
+				{{dateFormat 'dddd D MMMM' endDate}}
+				{{#unless fullDay}}
+					{{dateFormat 'HH:mm' endDate}}
+				{{/unless}}
+			</div>
 		</div>
 		{{#if location}}
 			<div class="row">
