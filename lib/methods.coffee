@@ -152,7 +152,7 @@ Meteor.methods
 		check lastName, String
 
 		firstName = firstName.trim()
-		lastName = lastName.trim()
+		lastName = Helpers.nameCap lastName.trim()
 
 		if firstName.length is 0 or lastName.length is 0
 			throw new Meteor.Error 'name-empty'
