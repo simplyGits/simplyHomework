@@ -10,6 +10,9 @@ items = [{
 	afterChange: (val) ->
 		return unless val
 		showModal '2fa_key_modal'
+}, {
+	name: 'messageEmailNotifMarkRead'
+	description: 'Berichten als gelezen markeren als je het leest vanuit je email.'
 }]
 
 Meteor.startup ->
