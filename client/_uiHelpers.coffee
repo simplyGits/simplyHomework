@@ -312,6 +312,8 @@ Meteor.startup ->
 					notice?.hide()
 					Session.set 'allowNotifications', yes
 
+	Template.registerHelper 'equals', (a, b) -> a is b
+
 	Template.registerHelper 'picture', (user, size) -> picture user, if _.isNumber(size) then size else undefined
 	Template.registerHelper 'has', has
 	Template.registerHelper 'toUpperCase', (str) -> str.toUpperCase()
@@ -353,6 +355,7 @@ Meteor.startup ->
 		FlowRouter.path(path, view.hash, query) + hashBang
 
 	Template.registerHelper 'newlines', (s) -> s.replace /\r?\n/g, '<br>'
+	Template.registerHelper 'oneline', (s) -> Helpers.oneLine s
 
 	disconnectedNotice = null
 	Tracker.autorun ->

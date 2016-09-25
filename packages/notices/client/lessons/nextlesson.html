@@ -1,7 +1,12 @@
 <template name="infoNextLesson">
 	Over {{timeLeft}}<br>
-	{{time startDate}} - {{time endDate}}<br>
+	{{time startDate}} - {{time endDate}}
 	{{#if location}}
+		<br>
 		Locatie: {{location}}
+	{{/if}}
+	{{#if equals content.type "information"}}
+		<br>
+		Informatie: {{oneline content.description}}
 	{{/if}}
 </template>
