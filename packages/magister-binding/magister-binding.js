@@ -884,7 +884,8 @@ MagisterBinding.getMessages = function (folderName, skip, limit, userId) {
 			messages.isRead = m.isRead();
 			message.hasPriority = m.isFlagged();
 
-			m.attachments().forEach((file) => {
+			const attachments = m.attachments() || []; // HACK
+			attachments.forEach((file) => {
 				const externalFile = convertMagisterFile(userId, path, file, true);
 				message.attachmentIds.push(externalFile._id);
 				files.push(externalFile);
