@@ -26,7 +26,7 @@ variantMap =
 		if variant is type or variant in items
 			return type
 
-	variant
+	variant.replace /[^a-z]/ig, ''
 
 @normalizeClassName = (name) ->
 	name = name.toLowerCase()
