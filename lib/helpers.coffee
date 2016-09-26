@@ -452,6 +452,7 @@ class @Helpers
 	# @return {String}
 	###
 	@oneLine: (str) ->
+		# REVIEW: does this handle a space before a \n correctly?
 		str.replace /(.)?\n+/g, (match, char) ->
 			s = char ? ''
 			if char not in [ '.', ',', '!', '?', ';', ':' ]
