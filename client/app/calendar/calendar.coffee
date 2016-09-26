@@ -53,6 +53,7 @@ calendarItemToEvent = (calendarItem, compare) ->
 		if not compare and type in [ 'absent', 'sick', 'exemption', 'discharged' ]
 			'opaque'
 	) ? ''
+	comparing: compare
 	calendarItem: calendarItem
 	# TODO: do this smarter, users can editor custom Magister appointments for
 	# example. Updating this upstream would be nice too.
@@ -104,6 +105,8 @@ Template.calendar.onRendered ->
 			month: 'ddd'
 			week: 'ddd D-M'
 			day: 'dddd'
+
+		eventOrder: [ 'comparing', 'title' ]
 
 		events: (start, end, timezone, callback) ->
 			callback currentItems
