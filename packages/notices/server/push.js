@@ -16,12 +16,12 @@ function notifyMessage (userId, message) {
 	})
 }
 
-let infos = [] // { userId, id, count }
+let infos = [] // { userId, messageId, count }
 Meteor.setInterval(function () {
 	for (const obj of infos) {
 		if (++obj.count === 5) {
 			const message = ChatMessages.findOne({
-				_id: obj.id,
+				_id: obj.messageId,
 				readBy: {
 					$ne: obj.userId,
 				},
@@ -48,7 +48,7 @@ Meteor.startup(function () {
 			for (const userId of userIds) {
 				infos.push({
 					userId: userId,
-					id: doc._id,
+					messageId: doc._id,
 					count: 0,
 				})
 			}
