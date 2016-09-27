@@ -208,7 +208,9 @@ class @Helpers
 	@convertLinksToAnchor: (string) ->
 		return undefined unless string?
 		string.replace /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}(:\d+)?\b((\/|\?)[-a-zA-Z0-9@:%_\+.~#?&//=]+)?\b/ig, (match) ->
-			if /^https?:\/\/.+/i.test match
+			if /^[^\/]+@/.test match
+				"<a target='_blank' href='mailto:#{match}'>#{match}</a>"
+			else if /^https?:\/\/.+/i.test match
 				"<a target='_blank' href='#{match}'>#{match}</a>"
 			else
 				"<a target='_blank' href='http://#{match}'>#{match}</a>"
