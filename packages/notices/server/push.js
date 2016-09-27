@@ -17,7 +17,7 @@ function notifyMessage (userId, message) {
 }
 
 let infos = [] // { userId, messageId, count }
-Meteor.setInterval(function () {
+function queueTick () {
 	for (const obj of infos) {
 		if (++obj.count === 5) {
 			const message = ChatMessages.findOne({
@@ -32,7 +32,10 @@ Meteor.setInterval(function () {
 			infos = _.without(infos, obj)
 		}
 	}
-}, 1000)
+
+	Meteor.setTimeout(queueTick, 1000)
+}
+queueTick()
 
 Meteor.startup(function () {
 	let loading = true
@@ -43,7 +46,11 @@ Meteor.startup(function () {
 				return
 			}
 
-			const chatRoom = ChatRooms.findOne(doc.chatRoomId)
+			const chatRoom = ChatRooms.findOne(doc.chatRoomId, {
+				fields: {
+					users: 1,
+				},
+			})
 			const userIds = _.reject(chatRoom.users, doc.creatorId)
 			for (const userId of userIds) {
 				infos.push({
