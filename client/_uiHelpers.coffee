@@ -1,3 +1,4 @@
+onesignal = require 'meteor/onesignal'
 swal = require 'sweetalert'
 chroma = require 'chroma-js'
 
@@ -311,6 +312,10 @@ Meteor.startup ->
 				when 'granted'
 					notice?.hide()
 					Session.set 'allowNotifications', yes
+
+	Tracker.autorun ->
+		if Session.get 'allowNotifications'
+			onesignal.register()
 
 	Template.registerHelper 'equals', (a, b) -> a is b
 

@@ -49,17 +49,7 @@ currentSearchTerm = new ReactiveVar ''
 				when 'private'
 					u = user()
 					picture u if u?
-		friendlyName: ->
-			switch room.type
-				when 'project'
-					project().name
-				when 'private'
-					u = user()
-					if u? then "#{u.profile.firstName} #{u.profile.lastName}" else ''
-				when 'group', 'class'
-					room.subject ? ''
-
-				else ''
+		friendlyName: -> room.getSubject Meteor.userId()
 		initial: -> Helpers.first(@friendlyName()).toUpperCase()
 
 		items: ->

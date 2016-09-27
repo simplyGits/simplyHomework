@@ -65,4 +65,25 @@ class ChatRoom
 			}]
 		)
 
+	###*
+	# @method getSubject
+	# @param {String} userId
+	# @return {String}
+	###
+	getSubject: (userId) ->
+		(
+			switch @type
+				when 'project'
+					p = Projects.findOne @projectId
+					p?.name
+				when 'private'
+					u = Meteor.users.findOne
+						_id:
+							$in: @users
+							$ne: userId
+					"#{u.profile.firstName} #{u.profile.lastName}" if u?
+				when 'group', 'class'
+					@subject
+		) ? ''
+
 @ChatRoom = ChatRoom

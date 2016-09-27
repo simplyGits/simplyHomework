@@ -23,6 +23,7 @@ Meteor.startup -> # my eyes feel dizzy, i think. cant remember. please. help.
 	BrowserPolicy.content.allowScriptOrigin 'www.gstatic.com'
 	BrowserPolicy.content.allowScriptOrigin 'cdn.mathjax.org'
 	BrowserPolicy.content.allowScriptOrigin 'https://ajax.cloudflare.com/'
+	BrowserPolicy.content.allowScriptOrigin 'https://cdn.onesignal.com/'
 
 	BrowserPolicy.content.allowFrameOrigin 'accounts.google.com'
 	BrowserPolicy.content.allowFrameOrigin 'docs.google.com'

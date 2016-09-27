@@ -107,6 +107,7 @@ notifications-manager@0.0.1
 npm-bcrypt@0.9.1
 npm-mongo@1.5.49
 observe-sequence@1.0.12
+onesignal@0.0.1
 ordered-dict@1.0.8
 percolate:migrations@0.9.8
 percolate:paginated-subscription@0.2.4
