@@ -75,13 +75,13 @@ class ChatRoom
 			switch @type
 				when 'project'
 					p = Projects.findOne @projectId
-					if p? then p.name
+					p?.name
 				when 'private'
 					u = Meteor.users.findOne
 						_id:
 							$in: @users
 							$ne: userId
-					if u? then "#{u.profile.firstName} #{u.profile.lastName}"
+					"#{u.profile.firstName} #{u.profile.lastName}" if u?
 				when 'group', 'class'
 					@subject
 		) ? ''
