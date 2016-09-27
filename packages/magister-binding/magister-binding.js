@@ -184,7 +184,7 @@ function getMagisterObject (userId, forceNew = false, mutex) {
 						'Je gebruikersnaam en/of wachtwoord is niet correct.',
 					], err.message) ?
 					new AuthError(err.message) :
-					new Error(err.message)
+					err
 				);
 
 				if (useSessionId) { // retry with new sessionId when currently using an older one.
