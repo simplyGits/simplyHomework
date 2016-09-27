@@ -1,4 +1,4 @@
-/* global ChatRooms, ChatMessages, picture */
+/* global ChatRooms, ChatMessages, picture, Kadira */
 import onesignal from 'meteor/onesignal'
 
 // TODO: sync dismissal
@@ -19,7 +19,11 @@ function notifyMessage (userId, message) {
 let infos = [] // { userId, messageId, count }
 function queueTick () {
 	for (const obj of infos) {
-		if (++obj.count === 5) {
+		if (++obj.count < 5) {
+			continue
+		}
+
+		try {
 			const message = ChatMessages.findOne({
 				_id: obj.messageId,
 				readBy: {
@@ -30,6 +34,12 @@ function queueTick () {
 				notifyMessage(obj.userId, message)
 			}
 			infos = _.without(infos, obj)
+		} catch (err) {
+			Kadira.trackError(
+				'notices-push',
+				err.message,
+				{ stacks: err.stack }
+			)
 		}
 	}
 
