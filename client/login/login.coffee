@@ -39,6 +39,9 @@ Template.login.onRendered ->
 		title: 'Login'
 		color: null
 
+Template.tfa_login.onRendered ->
+	@$('#tfaInput').focus()
+
 Template.tfa_login.events
 	'submit': (event) ->
 		event.preventDefault()
