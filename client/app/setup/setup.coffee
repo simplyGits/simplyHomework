@@ -1,3 +1,5 @@
+# TODO: clean all of this shit up.
+
 SReactiveVar = require('meteor/simply:strict-reactive-var').default
 { Services } = require 'meteor/simply:external-services-connector'
 

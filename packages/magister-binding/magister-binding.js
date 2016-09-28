@@ -588,7 +588,7 @@ MagisterBinding.getCalendarItems = function (userId, from, to) {
 		const absenceInfos = [];
 		const files = [];
 
-		for (let i = 0; i < r.length; i++) {
+		for (let i = 0; i < r.length; i++) { // REVIEW: `r` was `null` at least one time here.
 			const a = r[i];
 
 			const fut = new Future();
