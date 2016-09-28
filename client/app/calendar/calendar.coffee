@@ -28,7 +28,7 @@ openCalendarItemsModal = (id) ->
 			onHide: -> setQueryParam undefined
 		}, -> CalendarItems.findOne id
 
-calendarItemToEvent = (calendarItem, compare) ->
+calendarItemToEvent = (calendarItem, comparing = no) ->
 	_class = Classes.findOne calendarItem.classId
 
 	id: calendarItem._id
@@ -37,7 +37,7 @@ calendarItemToEvent = (calendarItem, compare) ->
 	start: calendarItem.startDate
 	end: calendarItem.endDate
 	color: (
-		if compare
+		if comparing is 'other'
 			if calendarItem.scrapped then '#458A83'
 			else '#009688'
 		else if calendarItem.scrapped then 'gray'
@@ -49,11 +49,18 @@ calendarItemToEvent = (calendarItem, compare) ->
 			else '#3a87ad'
 	)
 	className: (
+		classes = []
+
 		type = calendarItem.getAbsenceInfo()?.type
-		if not compare and type in [ 'absent', 'sick', 'exemption', 'discharged' ]
-			'opaque'
+		if not comparing and type in [ 'absent', 'sick', 'exemption', 'discharged' ]
+			classes.push 'opaque'
+
+		if comparing isnt no
+			classes.push comparing
+
+		classes.join ' '
 	) ? ''
-	comparing: compare
+	comparing: comparing is 'other'
 	calendarItem: calendarItem
 	# TODO: do this smarter, users can editor custom Magister appointments for
 	# example. Updating this upstream would be nice too.
@@ -214,6 +221,9 @@ Template.calendar.onRendered ->
 	@autorun =>
 		dateTracker.depend()
 
+		ids = FlowRouter.getQueryParam 'userIds'
+		comparing = ids? and ids.length > 0
+
 		[ start, end ] = dates.get()
 		@subscribe 'externalCalendarItems', start, end
 		currentItems = CalendarItems.find({
@@ -222,10 +232,9 @@ Template.calendar.onRendered ->
 			endDate: $lte: end
 		}, {
 			sort: startDate: 1
-		}).map (item) -> calendarItemToEvent item, no
+		}).map (item) -> calendarItemToEvent item, if comparing then 'own' else no
 
-		ids = FlowRouter.getQueryParam 'userIds'
-		if ids? and ids.length > 0
+		if comparing
 			@subscribe 'foreignCalendarItems', ids, start, end
 			currentItems = currentItems.concat CalendarItems.find({
 				userIds: $in: ids
@@ -233,7 +242,7 @@ Template.calendar.onRendered ->
 				endDate: $lte: end
 			}, {
 				sort: startDate: 1
-			}).map (item) -> calendarItemToEvent item, yes
+			}).map (item) -> calendarItemToEvent item, 'other'
 
 			currentItems = _.reject currentItems, (item) -> item.calendarItem.type is 'schoolwide'
 
