@@ -54,8 +54,9 @@ Template.tfa_login.events
 		Meteor.call 'tfa_login', mail, Package.sha.SHA256(password), token, (e, r) ->
 			if e?
 				loading.set no
-				setFieldError '#tfaGroup', 'Code is fout'
-				$tfaInput.focus()
+				Meteor.defer ->
+					setFieldError '#tfaGroup', 'Code is fout'
+					$tfaInput.focus()
 			else
 				Meteor.loginWithToken r.token, (e, r) ->
 					loading.set no
