@@ -251,11 +251,12 @@ Template.app.onRendered ->
 	setKeyboardShortcuts()
 
 	@autorun ->
-		if Helpers.isDesktop()
-			window.snapper.close()
-			window.snapper.disable()
-		else
-			window.snapper.enable()
+		try
+			if Helpers.isDesktop()
+				window.snapper.close()
+				window.snapper.disable()
+			else
+				window.snapper.enable()
 
 	if Helpers.isDesktop()
 		# `startMonitor` will throw an error when the time isn't synced yet, when
