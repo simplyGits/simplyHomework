@@ -44,11 +44,7 @@ currentSearchTerm = new ReactiveVar ''
 				else if u.status.online then 'online'
 				else 'offline'
 
-		sidebarIcon: ->
-			switch room.type
-				when 'private'
-					u = user()
-					picture u if u?
+		sidebarIcon: -> room.getPicture Meteor.userId(), 100
 		friendlyName: -> room.getSubject Meteor.userId()
 		initial: -> Helpers.first(@friendlyName()).toUpperCase()
 
