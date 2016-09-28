@@ -55,7 +55,7 @@ calendarItemToEvent = (calendarItem, comparing = no) ->
 		if not comparing and type in [ 'absent', 'sick', 'exemption', 'discharged' ]
 			classes.push 'opaque'
 
-		if comparing isnt no
+		if comparing isnt no and not calendarItem.fullDay
 			classes.push comparing
 
 		classes.join ' '
