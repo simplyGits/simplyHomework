@@ -100,11 +100,13 @@ Template.signup.events
 			}, (e, r) ->
 				loading.set no
 				if e?
-					# TODO: better handling when creating account that already exists?
-					# Maybe just try logging in?
-
-					notify 'Onbekende fout, we zijn op de hoogte gesteld', 'error'
-					Kadira.trackError 'create-account', e.message, stacks: e.stack
+					Meteor.defer ->
+						if e.reason is 'Email already exists.'
+							setFieldError '#emailGroup', 'Er is al account met deze email'
+							$emailInput.focus()
+						else
+							notify 'Onbekende fout, we zijn op de hoogte gesteld', 'error'
+							Kadira.trackError 'create-account', e.message, stacks: e.stack
 				else FlowRouter.go 'overview'
 
 Template.signup.onRendered ->
