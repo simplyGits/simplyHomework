@@ -47,7 +47,7 @@ Template.tfa_login.events
 		event.preventDefault()
 
 		$tfaInput = $ '#tfaInput'
-		token = $tfaInput.val()
+		token = $tfaInput.val().replace /[^0-9]/g, ''
 
 		{ mail, password } = tfaData.get()
 		loading.set yes
