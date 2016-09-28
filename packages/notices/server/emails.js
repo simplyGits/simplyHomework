@@ -28,7 +28,7 @@ function sendEmail (userId, subject, html) {
 
 SyncedCron.add({
 	name: 'Notify new grades',
-	schedule: (parser) => parser.recur().every(1).hour(),
+	schedule: (parser) => parser.recur().every(30).minute(),
 	job: function () {
 		const toString = (g) => g.toString().replace('.', ',')
 
@@ -48,7 +48,9 @@ SyncedCron.add({
 				isEnd: false,
 				classId: { $exists: true },
 				$and: [
-					{ dateFilledIn: { $gte: moment().add(-1, 'hours').toDate() }},
+					// REVIEW: add an field like `notifiedOn` to `Grade` instead
+					// of doing something like this.
+					{ dateFilledIn: { $gte: moment().add(-30, 'minutes').toDate() }},
 					// user probably has already seen the grade when he logged in on
 					// simplyHomework, no need to send a mail.
 					{ dateFilledIn: { $gt: user.status.lastLogin.date }},
@@ -102,7 +104,7 @@ SyncedCron.add({
 
 SyncedCron.add({
 	name: 'Notify new messages',
-	schedule: (parser) => parser.recur().every(1).hour(),
+	schedule: (parser) => parser.recur().every(30).minute(),
 	job: function () {
 		// TODO: handle replies
 
