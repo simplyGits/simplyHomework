@@ -168,19 +168,23 @@ setupItems = [
 		visible: no
 		func: (callback) ->
 			Meteor.call 'fetchExternalPersonClasses', (e, r) ->
-				Meteor.users.update Meteor.userId(), $addToSet: setupProgress: 'getExternalClasses'
-				if e?
-					callback false
-				else
-					Meteor.call 'bootstrapUser'
-					callback true
+				Meteor.users.update Meteor.userId(), {
+					$addToSet: setupProgress: 'getExternalClasses'
+				}, ->
+					if e?
+						callback false
+					else
+						Meteor.call 'bootstrapUser'
+						callback true
 	}
 
 	{
 		name: 'privacy'
 		async: no
-		onDone: ->
-			Meteor.users.update Meteor.userId(), $addToSet: setupProgress: 'privacy'
+		onDone: (callback) ->
+			Meteor.users.update Meteor.userId(), {
+				$addToSet: setupProgress: 'privacy'
+			}, -> callback()
 	}
 
 	{
