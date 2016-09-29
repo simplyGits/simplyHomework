@@ -14,9 +14,13 @@ function notifyMessages (chatRoomId) {
 			readBy: {
 				$ne: userId,
 			},
-		}).fetch()
+		})
 
-		const body = messages.map(m => {
+		if (messages.count() === 0) {
+			continue
+		}
+
+		const body = messages.fetch().map(m => {
 			let prefix = ''
 			if (chatRoom.type !== 'private') {
 				const u = Meteor.users.findOne(m.creatorId)
@@ -43,9 +47,9 @@ function queueTick () {
 			continue
 		}
 
+		delete infos[chatRoomId]
 		try {
 			notifyMessages(chatRoomId)
-			infos[chatRoomId] = undefined
 		} catch (err) {
 			Kadira.trackError(
 				'notices-push',
