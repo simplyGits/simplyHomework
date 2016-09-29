@@ -30,6 +30,7 @@ Package.onUse(function(api) {
 		'mquandalle:stylus',
 		'reactive-var',
 		'notifications-manager',
+		'ms',
 	], 'client');
 	api.use([
 		'reywood:publish-composite',

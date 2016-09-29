@@ -1,3 +1,5 @@
+INACTIVE_THRESHOLD = ms.minutes 1
+
 sub = undefined
 
 localCount = ->
@@ -57,6 +59,8 @@ Template.chatMessages.onCreated ->
 	)
 
 Template.chatMessages.onRendered ->
+	lastActive = new Date
+
 	$messages = document.getElementById 'chatMessages'
 
 	@atBottom = -> $messages.scrollTop >= $messages.scrollHeight - $messages.clientHeight
@@ -66,33 +70,46 @@ Template.chatMessages.onRendered ->
 	@sendToBottom = =>
 		$messages.scrollTop = $messages.scrollHeight - $messages.clientHeight
 		@sticky = yes
-
 	@sendToBottomIfNecessary = _.debounce =>
 		if @sticky and not @atBottom()
 			@sendToBottom()
 	, 10
 	@sendToBottomIfNecessary()
 
+	# when the user resize the window, make sure we're still scrolled to the
+	# bottom
 	@onWindowResize = => Meteor.defer => @sendToBottomIfNecessary()
 	window.addEventListener 'resize', @onWindowResize
 
-	@markRead = => Meteor.defer => throttledMarkRead this
-	window.addEventListener 'mousemove', @markRead
-	window.addEventListener 'keyup', @markRead
+	# when the user makes an activity ...
+	@onActivity = => Meteor.defer =>
+		# update the lastActive variable ...
+		lastActive = new Date
+		# and mark all unread messages as read
+		throttledMarkRead this
+	window.addEventListener 'mousemove', @onActivity
+	window.addEventListener 'keyup', @onActivity
 
 	@autorun => # HACK
+		# on a new message
 		localCount()
 		currentBigNotice._reactiveVar.dep.depend()
+
+		# mark unread messages as read if the user has been active in the last 1
+		# minute or we are on a phone, and the chat messages has been scrolled to
+		# the bottom.
+		isActive = new Date() - lastActive < INACTIVE_THRESHOLD
+		if (isActive or Session.equals 'deviceType', 'phone') and @sticky
+			@data.markRead()
+
+		# go to the bottom of the screen
 		Meteor.defer =>
 			@sendToBottomIfNecessary()
 
-		if Session.equals 'deviceType', 'phone'
-			@data.markRead()
-
 Template.chatMessages.onDestroyed ->
 	window.removeEventListener 'resize', @onWindowResize
-	window.removeEventListener 'mousemove', @markRead
-	window.removeEventListener 'keyup', @markRead
+	window.removeEventListener 'mousemove', @onActivity
+	window.removeEventListener 'keyup', @onActivity
 
 	sub.stop()
 
