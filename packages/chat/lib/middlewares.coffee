@@ -171,6 +171,8 @@ ChatMiddlewares.attach 'escape', 'insert', (message) ->
 	message.content = s
 	message
 
+# TODO: improve 'clickable {names,classes}' middlewares
+
 ChatMiddlewares.attach 'clickable names', 'insert', (message) ->
 	# REVIEW: maybe add a custom parser, which walks over every word. This way we
 	# have more control over the matching and can we maybe support surnames
@@ -240,7 +242,7 @@ ChatMiddlewares.attach 'clickable classes', 'insert', (message) ->
 		.map (word) ->
 			Classes.findOne
 				$or: (
-					x = [name: $regex: "\\b#{_.escapeRegExp word}\\b", $options: 'i']
+					x = [ name: $regex: "\\b#{_.escapeRegExp word}\\b", $options: 'i' ]
 					if word is word.toUpperCase()
 						x.push abbreviations: word.toLowerCase()
 					x
@@ -255,7 +257,7 @@ ChatMiddlewares.attach 'clickable classes', 'insert', (message) ->
 		.value()
 
 	for c in classes
-		regex = new RegExp "(#{c.name})|(#{c.abbreviations.join '|'})", 'ig'
+		regex = new RegExp "\\b((#{c.name})|#{c.abbreviations.join '|'})\\b", 'ig'
 		message.content = message.content.replace regex, (str) ->
 			path = FlowRouter.path 'classView', id: c._id
 			"<a href='#{path}' class='class'>#{str}</a>"
