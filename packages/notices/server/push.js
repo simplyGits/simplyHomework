@@ -2,57 +2,56 @@
 import onesignal from 'meteor/onesignal'
 
 // TODO: sync dismissal
-function notifyMessages (chatRoomId) {
+function notifyMessages (userId, chatRoomId) {
+	const messages = ChatMessages.find({
+		chatRoomId: chatRoomId,
+		creatorId: {
+			$ne: userId,
+		},
+		readBy: {
+			$ne: userId,
+		},
+	})
+
+	if (
+		messages.count() === 0 ||
+		!getUserField(userId, 'settings.notifications.notif.chat', true)
+	) {
+		return
+	}
+
 	const chatRoom = ChatRooms.findOne(chatRoomId)
 
-	for (const userId of chatRoom.users) {
-		const messages = ChatMessages.find({
-			chatRoomId: chatRoomId,
-			creatorId: {
-				$ne: userId,
-			},
-			readBy: {
-				$ne: userId,
-			},
-		})
-
-		if (
-			messages.count() === 0 ||
-			!getUserField(userId, 'settings.notifications.notif.chat', true)
-		) {
-			continue
+	const body = messages.fetch().map(m => {
+		let prefix = ''
+		if (chatRoom.type !== 'private') {
+			const u = Meteor.users.findOne(m.creatorId)
+			const name = u != null ?
+				`${u.profile.firstName} ${u.profile.lastName}` :
+				'Iemand'
+			prefix = `${name}: `
 		}
 
-		const body = messages.fetch().map(m => {
-			let prefix = ''
-			if (chatRoom.type !== 'private') {
-				const u = Meteor.users.findOne(m.creatorId)
-				const name = u != null ?
-					`${u.profile.firstName} ${u.profile.lastName}` :
-					'Iemand'
-				prefix = `${name}: `
-			}
-			return prefix + m.content
-		}).join('\n')
+		return prefix + m.content
+	}).join('\n')
 
-		onesignal.sendNotification(userId, body, {
-			title: chatRoom.getSubject(userId),
-			picture: chatRoom.getPicture(userId, 500),
-			url: Meteor.absoluteUrl(`chat/${chatRoomId}`),
-		})
-	}
+	onesignal.sendNotification(userId, body, {
+		title: chatRoom.getSubject(userId),
+		picture: chatRoom.getPicture(userId, 500),
+		url: Meteor.absoluteUrl(`chat/${chatRoomId}`),
+	})
 }
 
-const infos = {} // key: chatRoomId, val: count
+const infos = [] // { chatRoomId, userId, count }
 function queueTick () {
-	for (const chatRoomId in infos) {
-		if (++infos[chatRoomId] < 5) {
+	for (const info of infos) {
+		if (++info.count < 5) {
 			continue
 		}
 
-		delete infos[chatRoomId]
+		_.pull(infos, info)
 		try {
-			notifyMessages(chatRoomId)
+			notifyMessages(info.userId, info.chatRoomId)
 		} catch (err) {
 			Kadira.trackError(
 				'notices-push',
@@ -73,15 +72,27 @@ Meteor.startup(function () {
 		fields: {
 			_id: 1,
 			lastMessageTime: 1,
+			users: 1,
 		},
-	}).observeChanges({
-		changed(id) {
-			if (loading) {
+	}).observe({
+		changed(newDoc, oldDoc) {
+			const time = doc => doc.lastMessageTime.getTime()
+			if (loading || time(oldDoc) === time(newDoc)) {
 				return
 			}
 
-			if (infos[id] == null) {
-				infos[id] = 0
+			for (const userId of newDoc.users) {
+				const has = infos.some(i => {
+					return i.userId === userId && i.chatRoomId === newDoc.id
+				})
+
+				if (!has) {
+					infos.push({
+						chatRoomId: newDoc._id,
+						userId: userId,
+						count: 0,
+					})
+				}
 			}
 		},
 	})
