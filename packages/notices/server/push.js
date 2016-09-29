@@ -1,4 +1,4 @@
-/* global ChatRooms, ChatMessages, Kadira */
+/* global ChatRooms, ChatMessages, Kadira, getUserField */
 import onesignal from 'meteor/onesignal'
 
 // TODO: sync dismissal
@@ -16,7 +16,10 @@ function notifyMessages (chatRoomId) {
 			},
 		})
 
-		if (messages.count() === 0) {
+		if (
+			messages.count() === 0 ||
+			!getUserField(userId, 'settings.notifications.notif.chat', true)
+		) {
 			continue
 		}
 
