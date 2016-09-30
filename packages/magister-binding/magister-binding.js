@@ -486,7 +486,14 @@ MagisterBinding.getStudyUtils = function (userId, options) {
 			});
 		});
 
-		for(let i = 0; i < futs.length; i++) futs[i].wait();
+		for (let i = 0; i < futs.length; i++) {
+			try {
+				futs[i].wait();
+			} catch (e) {
+				fut.throw(e);
+				return;
+			}
+		}
 		fut.return({
 			studyUtils,
 			files,
