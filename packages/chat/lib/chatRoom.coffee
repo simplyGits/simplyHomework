@@ -90,14 +90,12 @@ class ChatRoom
 	# @method getPicture
 	# @param {String} userId
 	# @param {Number} [size=100]
-	# @return {String}
+	# @return {String|undefined}
 	###
 	getPicture: (userId, size = 100) ->
-		(
-			switch @type
-				when 'private'
-					id = _.without(@users, userId)[0]
-					picture id, size
-		) ? ''
+		switch @type
+			when 'private'
+				id = _.without(@users, userId)[0]
+				picture id, size
 
 @ChatRoom = ChatRoom
