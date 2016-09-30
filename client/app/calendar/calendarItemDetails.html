@@ -37,24 +37,21 @@
 				<div>{{relativeTime}}</div>
 			</div>
 		{{/if}}
-		<div class="row">
-			<div>Begin:</div>
-			<div>
-				{{dateFormat 'dddd D MMMM' startDate}}
-				{{#unless fullDay}}
-					{{dateFormat 'HH:mm' startDate}}
-				{{/unless}}
+		{{#if fullDay}}
+			<div class="row">
+				<div>Datum:</div>
+				<div>{{dateFormat 'dddd D MMMM' startDate}} hele dag</div>
 			</div>
-		</div>
-		<div class="row">
-			<div>Eind:</div>
-			<div>
-				{{dateFormat 'dddd D MMMM' endDate}}
-				{{#unless fullDay}}
-					{{dateFormat 'HH:mm' endDate}}
-				{{/unless}}
+		{{else}}
+			<div class="row">
+				<div>Begin:</div>
+				<div>{{dateFormat 'dddd D MMMM HH:mm' startDate}}</div>
 			</div>
-		</div>
+			<div class="row">
+				<div>Eind:</div>
+				<div>{{dateFormat 'dddd D MMMM HH:mm' endDate}}</div>
+			</div>
+		{{/if}}
 		{{#if location}}
 			<div class="row">
 				<div>Locatie:</div>
