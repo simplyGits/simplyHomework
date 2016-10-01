@@ -68,6 +68,7 @@ Meteor.methods
 			throw new Meteor.Error 'same-content'
 
 		if @isSimulation
+			ga 'send', 'event', 'chat', 'update'
 			pending = yes
 
 		ChatMessages.update chatMessageId,
