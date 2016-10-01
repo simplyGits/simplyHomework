@@ -18,7 +18,7 @@ binary-heap@1.0.9
 blaze@2.1.9
 blaze-html-templates@1.0.5
 blaze-tools@1.0.10
-boilerplate-generator@1.0.9
+boilerplate-generator@1.0.10
 browser-policy@1.0.9
 browser-policy-common@1.0.10
 browser-policy-content@1.0.11
@@ -48,7 +48,7 @@ emails@0.0.1
 emojione:emojione@2.2.6
 fastclick@1.0.12
 force-ssl@1.0.12
-fortawesome:fontawesome@4.5.0
+fortawesome:fontawesome@4.6.3
 geojson-utils@1.0.9
 grade-functions@0.0.1
 gravatar-binding@0.0.1
@@ -94,7 +94,7 @@ mobile-experience@1.0.4
 mobile-status-bar@1.0.12
 modules@0.7.6
 modules-runtime@0.7.6
-momentjs:moment@2.15.0
+momentjs:moment@2.15.1
 mongo@1.1.12
 mongo-id@1.0.5
 mongo-livedata@1.0.12
@@ -105,7 +105,7 @@ mutex@0.0.1
 natestrauser:animate-css@3.5.1
 notifications-manager@0.0.1
 npm-bcrypt@0.9.1
-npm-mongo@1.5.49
+npm-mongo@1.5.50
 observe-sequence@1.0.12
 onesignal@0.0.1
 ordered-dict@1.0.8
@@ -150,7 +150,7 @@ simply:woordjesleren@0.0.1
 spacebars@1.0.13
 spacebars-compiler@1.0.13
 srp@1.0.9
-standard-minifier-css@1.2.0
+standard-minifier-css@1.2.1
 standard-minifier-js@1.2.0
 stevezhu:lodash@3.10.1
 stylus@2.513.5
