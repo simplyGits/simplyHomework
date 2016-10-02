@@ -48,9 +48,11 @@ ChatMiddlewares.attach 'preserve original content', 'client', (message) ->
 	message._originalContent = message.content
 	message
 
+###
 ChatMiddlewares.attach 'shitdown', 'client', (message) ->
 	message.content = shitdown message.content, [ 'code' ]
 	message
+###
 
 chatReplacements = [
 	[[ '(y)'                ], ':thumbsup:'      ]
@@ -93,9 +95,11 @@ ChatMiddlewares.attach 'convert smileys', 'client', (message) ->
 		message.content = res
 	message
 
+###
 ChatMiddlewares.attach 'shitdown code blocks', 'client', (message) ->
 	message.content = shitdown.one message.content, 'code'
 	message
+###
 
 ChatMiddlewares.attach 'links', 'client', (message) ->
 	s = message.content
