@@ -11,6 +11,10 @@ function notifyMessages (userId, chatRoomId) {
 		readBy: {
 			$ne: userId,
 		},
+	}, {
+		sort: {
+			time: 1,
+		},
 	})
 
 	if (
