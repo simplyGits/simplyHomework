@@ -158,7 +158,7 @@ SyncedCron.add({
 					const pushKeyVal = (key, val) => lines.push(`<b>${key}</b>: ${val}`)
 
 					pushKeyVal('Van', message.sender.fullName)
-					pushKeyVal('Verzonden om', moment(message.sendDate).tz('Europe/Amsterdam').format('dddd D MMMM YYYY HH:mm'))
+					pushKeyVal('Verzonden', moment(message.sendDate).tz('Europe/Amsterdam').format('dddd D MMMM YYYY HH:mm'))
 					pushKeyVal('Aan', message.recipientsString(Infinity, false))
 					pushKeyVal('Onderwerp', message.subject)
 					if (message.attachmentIds.length > 0) {
