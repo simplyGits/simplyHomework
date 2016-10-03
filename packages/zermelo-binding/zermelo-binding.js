@@ -95,7 +95,14 @@ ZermeloBinding.getCalendarItems = function (userId, from, to) {
 		calendarItem.scrapped = appointment.isCancelled
 		calendarItem.schoolHour = appointment.beginBySchoolHour
 		calendarItem.location = appointment.locations[0]
-		calendarItem.type = appointment.type // REVIEW
+		calendarItem.type = 'lesson'
+
+		if (!_.isEmpty(calendarItem.remark)) {
+			calendarItem.content = {
+				type: appointment.type === 'exam' ? 'exam' : 'information',
+				description: calendarItem.remark,
+			}
+		}
 		// TODO: teacher
 
 		calendarItems.push(calendarItem)
