@@ -65,11 +65,11 @@ function prefixId (zermelo, ...args) {
 }
 
 ZermeloBinding.getCalendarItems = function (userId, from, to) {
-	check(userId, String);
+	check(userId, String)
 
-	const zermelo = getZermeloObject(userId);
-	const appointments = Promise.await(zermelo.appointments(from, to));
-	const calendarItems = [];
+	const zermelo = getZermeloObject(userId)
+	const appointments = Promise.await(zermelo.appointments(from, to))
+	const calendarItems = []
 	const classInfos = getClassInfos(userId)
 
 	for (const appointment of appointments) {
@@ -109,13 +109,13 @@ ZermeloBinding.getCalendarItems = function (userId, from, to) {
 }
 
 ZermeloBinding.getPersonClasses = function (userId) {
-	check(userId, String);
+	check(userId, String)
 
 	// REVIEW: can we do something like this with the Zermelo API?
-};
+}
 
 ZermeloBinding.getProfileData = function (userId) {
-	check(userId, String);
+	check(userId, String)
 
 	const zermelo = getZermeloObject(userId)
 	const userInfo = Promise.await(zermelo.userInfo())
@@ -130,10 +130,10 @@ ZermeloBinding.getProfileData = function (userId) {
 		},
 		schoolId: school ? school._id : undefined,
 	}
-};
+}
 
 ZermeloBinding.getUpdates = function (userId) {
-	check(userId, String);
+	check(userId, String)
 
 	const zermelo = getZermeloObject(userId)
 	const announcements = Promise.await(zermelo.announcements())
