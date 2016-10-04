@@ -41,7 +41,7 @@ function notifyMessages (userId, chatRoomId) {
 
 	onesignal.sendNotification(userId, body, {
 		title: chatRoom.getSubject(userId),
-		picture: chatRoom.getPicture(userId, 500),
+		picture: Meteor.absoluteUrl(`onesignal/chatpic/${userId}/${chatRoomId}/500`),
 		url: Meteor.absoluteUrl(`chat/${chatRoomId}`),
 	})
 }
