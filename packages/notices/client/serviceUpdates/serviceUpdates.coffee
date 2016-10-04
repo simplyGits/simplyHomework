@@ -5,6 +5,8 @@ NoticeManager.provide 'serviceUpdates', ->
 
 	ServiceUpdates.find({}).map (u) ->
 		service = _.find Services, name: u.fetchedBy
+		body = Helpers.convertLinksToAnchor u.body.trim().replace /\r?\n/g, '<br>'
+
 		id: u._id
 
 		header: u.header
@@ -12,4 +14,4 @@ NoticeManager.provide 'serviceUpdates', ->
 
 		template: 'serviceUpdateNotice'
 		priority: u.priority - 10
-		data: u
+		data: _.extend u, { body }
