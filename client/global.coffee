@@ -40,6 +40,7 @@
 # @return {Boolean}
 ###
 @has = (feature) ->
+	return yes if feature is 'noAds' # we don't have ads yet.
 	deadline = getUserField Meteor.userId(), "premiumInfo.#{feature}.deadline"
 	deadline > new Date
 
