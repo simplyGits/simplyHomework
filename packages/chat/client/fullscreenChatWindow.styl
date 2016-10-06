@@ -86,35 +86,42 @@ div#fullscreenChatWindow
 
 			aside
 				position: absolute
-				opacity: .3
-				width: 165px
+				width: 200px
+				align(vertical)
 
-				transition: .1s opacity linear
-
-				left: -170px
+				left: -200px
 				right: initial
 
 				text-align: right
 
 				cursor: default
 
-				.edited
+				transition: .1s opacity linear
+
+				img.senderImage
 					float: right
-					margin-left: 5px
-					margin-right: 0
+					pointer-events: all
+					margin-left: 10px
 
-				.readBy
-					absolute: left -20px top 50%
-					transform: translateY(-50%)
+				.extraInfo
+					display: inline-block
+					opacity: .3
+					width: calc(100% - 40px)
 
-					img
-						pointer-events: all
+					.edited
+						float: right
+						margin-left: 5px
+						margin-right: 0
 
-			aside:hover
-				opacity: .8
+					.readBy
+						absolute: left -20px top 50%
+						transform: translateY(-50%)
 
-			img.senderImage
-				pointer-events all
+						img
+							pointer-events: all
+
+				.extraInfo:hover
+					opacity: .8
 
 			div.messageContent
 				display: inline-block
@@ -136,9 +143,13 @@ div#fullscreenChatWindow
 				left: initial
 				right: -170px
 
-				align(vertical)
 				font-size: 15px
 				text-align: left
+
+				img.senderImage
+					float: left
+					margin-left: 0
+					margin-right: 10px
 
 				.edited
 					float: left
@@ -152,9 +163,6 @@ div#fullscreenChatWindow
 
 					img
 						pointer-events: all
-
-			img.senderImage
-				float: right
 
 			div.messageContent
 				margin-left: 0px
