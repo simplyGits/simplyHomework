@@ -23,6 +23,7 @@ handleMessageInput = (input) ->
 		Meteor.call 'addChatMessage', content, id
 
 	input.value = ''
+	input.focus()
 	window.sendToBottom()
 
 Template.mobileChatWindow.helpers
