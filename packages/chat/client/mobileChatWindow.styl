@@ -1,5 +1,8 @@
 headerHeight = 40px
 
+footerHeight = 40px
+sendButtonWidth = footerHeight + 5px
+
 // Swag™ colors for activity of other person.
 div.mobileChatWindow.online > .header
 	background-color: #4CAF50
@@ -42,7 +45,7 @@ div.mobileChatWindow
 			text-align: center
 
 	div#chatMessages
-		absolute: top headerHeight bottom 30px left right
+		absolute: top headerHeight bottom left right
 		overflow: hidden
 		overflow-y: scroll
 
@@ -81,26 +84,32 @@ div.mobileChatWindow
 			border-bottom: 1px lightgray solid
 			margin-bottom: 10px
 
+		div.padding
+			width: 100%
+			height: footerHeight
+
 	div.footer
 		absolute: left bottom right
-		height: 30px
+		height: footerHeight
+		background-color: rgba(255, 255, 255, .85)
+		border-top: 1px lightgray solid
 
 		input[type="text"]
-			width: 100%
+			width: 'calc(100% - %s)' % sendButtonWidth
 			height: 100%
-			padding: 5px
+			padding: 7px
 			font-size: 17px
 
 			border: none
 			outline: none
-			border-top: 1px lightgray solid
 			background-color: transparent
 
 		button#sendButton
 			absolute: top bottom right
-			width: 30px
-			background-color: #fff
-			border: 1px lightgray solid
+			width: sendButtonWidth
+			background-color: transparent
+			border: none
+			border-left: 1px lightgray solid
 			outline: none
 
 div.mobileChatWindow.noHeader
