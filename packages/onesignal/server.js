@@ -107,10 +107,12 @@ Picker.route('/onesignal/chatpic/:uid/:cid/:size?', function (params, req, res) 
 		size = 100;
 	}
 
-	const url = chatRoom.getPicture(params.uid, size);
+	let url = chatRoom.getPicture(params.uid, size);
 	if (_.isEmpty(url)) {
-		res.end('');
-	} else if (url.includes(';base64')) {
+		url = 'https://app.simplyhomework.nl/images/app_icon/192.png';
+	}
+
+	if (url.includes(';base64')) {
 		const match = /^data:([^;]+);base64,(.+)$/.exec(url);
 		const mediatype = match[1];
 		const buf = toBuffer(match[2], 'base64');
