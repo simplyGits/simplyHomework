@@ -130,6 +130,7 @@ SyncedCron.add({
 				fetchedFor: userId,
 				isRead: false,
 				notifiedOn: null,
+				folder: 'inbox',
 			}, {
 				fields: {
 					_id: 1,
