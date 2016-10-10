@@ -1,4 +1,4 @@
-Mutex = require('meteor/mutex').default
+Future = require 'fibers/future'
 { Services, ExternalServicesConnector, getServices } = require './connector.coffee'
 
 # REVIEW: Better way to do this?
@@ -266,7 +266,39 @@ updateStudyUtils = (userId, forceUpdate = no) ->
 	StudyUtils.batchInsert inserts if inserts.length > 0
 	errors
 
-calendarItemMutexes = {}
+calendarItemsLocks = [] # { userId, start, end, callbacks }
+getLock = (userId, start, end, cb) ->
+	lock = _.find(
+		calendarItemsLocks
+		(l) ->
+			l.userId is userId and
+			(l.start <= start <= l.end or l.start <= end <= l.end)
+	)
+
+	if lock?
+		lock.callbacks.push cb
+	else
+		lock =
+			start: start
+			end: end
+			callbacks: [ cb ]
+		calendarItemsLocks.push lock
+
+		removeLock = ->
+			if lock.callbacks.length > 0
+				lock.callbacks.shift() ->
+					removeLock()
+			else
+				_.pull calendarItemsLocks, lock
+
+		Meteor.defer removeLock
+
+	lock
+
+getLockSync = (userId, start, end) ->
+	fut = new Future()
+	getLock userId, start, end, (done) -> fut.return done
+	fut.wait()
 
 # REVIEW: Do we want to call `.date` on each date object here to make sure we
 # don't pass date objects with a time attached to them to external services?
@@ -297,9 +329,6 @@ updateCalendarItems = (userId, from, to) ->
 		'scrapped'
 	]
 
-	calendarItemMutexes[userId] ?= new Mutex()
-	mutex = calendarItemMutexes[userId]
-
 	# TODO: fix using `events.calendarItemsUpdate` here.
 
 	user = Meteor.users.findOne userId
@@ -313,7 +342,7 @@ updateCalendarItems = (userId, from, to) ->
 	to ?= new Date().addDays 7
 	to = new Date().addDays(7) if to < new Date().addDays(7)
 
-	mutex.lock()
+	done = getLockSync userId, from, to
 	services = getServices userId, 'getCalendarItems'
 	markUserEvent userId, 'calendarItemsUpdate' if services.length > 0
 
@@ -445,7 +474,7 @@ updateCalendarItems = (userId, from, to) ->
 			type: $ne: 'lesson'
 		}, handleCollErr
 
-	mutex.unlock()
+	done()
 	errors
 
 personCache = []
