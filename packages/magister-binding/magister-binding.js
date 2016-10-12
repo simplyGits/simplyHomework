@@ -874,6 +874,7 @@ MagisterBinding.getMessages = function (folderName, skip, limit, userId) {
 		const messages = [];
 		const files = [];
 
+		r = r || []; // HACK
 		r.forEach(function (m) {
 			const path = '/berichten/bijlagen/';
 
