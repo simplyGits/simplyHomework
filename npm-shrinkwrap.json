@@ -23,9 +23,9 @@
       "resolved": "git://github.com/cbaatz/damerau-levenshtein.git#8d7440a51ae9dc6912e44385115c7cb1da4e8ebc"
     },
     "fibers": {
-      "version": "1.0.14",
-      "from": "fibers@1.0.14",
-      "resolved": "https://registry.npmjs.org/fibers/-/fibers-1.0.14.tgz"
+      "version": "1.0.15",
+      "from": "fibers@1.0.15",
+      "resolved": "https://registry.npmjs.org/fibers/-/fibers-1.0.15.tgz"
     },
     "lru-cache": {
       "version": "4.0.1",

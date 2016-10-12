@@ -144,7 +144,6 @@ updateGrades = (userId, forceUpdate = no) ->
 	services = getServices userId, 'getGrades'
 	markUserEvent userId, 'gradeUpdate' if services.length > 0
 
-	inserts = []
 	for externalService in services
 		result = null
 		try
@@ -185,9 +184,8 @@ updateGrades = (userId, forceUpdate = no) ->
 
 					Grades.update val._id, { $set: grade }, { removeEmptyStrings: no }, handleCollErr
 			else
-				inserts.push grade
+				Grades.insert grade
 
-	Grades.batchInsert inserts if inserts.length > 0
 	errors
 
 ###*
@@ -223,7 +221,6 @@ updateStudyUtils = (userId, forceUpdate = no) ->
 	services = getServices userId, 'getStudyUtils'
 	markUserEvent userId, 'studyUtilsUpdate' if services.length > 0
 
-	inserts = []
 	for externalService in services
 		result = null
 		try
@@ -261,9 +258,8 @@ updateStudyUtils = (userId, forceUpdate = no) ->
 				else if studyUtil.userIds.length isnt val.userIds.length
 					StudyUtils.update val._id, { $set: studyUtil }, handleCollErr
 			else
-				inserts.push studyUtil
+				StudyUtils.insert studyUtil
 
-	StudyUtils.batchInsert inserts if inserts.length > 0
 	errors
 
 calendarItemsLocks = [] # { userId, start, end, callbacks }
@@ -653,7 +649,6 @@ getServiceSchools = (serviceName, query, userId) ->
 		ExternalServicesConnector.handleServiceError service.name, userId, e
 		throw new Meteor.Error 'externalError', "Error while retreiving schools from #{serviceName}"
 
-	inserts = []
 	for school in result
 		val = Schools.findOne "externalInfo.#{serviceName}.id": school.id
 
@@ -662,9 +657,8 @@ getServiceSchools = (serviceName, query, userId) ->
 			s.externalInfo[serviceName] =
 				id: school.id
 				url: school.url
-			inserts.push s
+			Schools.insert s
 
-	Schools.batchInsert inserts if inserts.length > 0
 	Schools.find(
 		"externalInfo.#{serviceName}": $exists: yes
 		name: $regex: query, $options: 'i'
