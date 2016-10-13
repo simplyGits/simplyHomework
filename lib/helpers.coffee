@@ -1,5 +1,8 @@
 @_ = lodash # Shortcut for lo-dash. Replaces underscore.
 
+linkify = require('linkify-it')()
+linkify.tlds require 'tlds'
+
 ###*
 # Returns today as an Date object.
 #
@@ -202,18 +205,18 @@ class @Helpers
 	# those into anchor tags.
 	#
 	# @method convertLinksToAnchor
-	# @param {String} string The string to convert.
-	# @return {String} An HTML string containing the converted `string`.
+	# @param {String} str The string to convert.
+	# @return {String} An HTML string containing the converted `str`.
 	###
-	@convertLinksToAnchor: (string) ->
-		return undefined unless string?
-		string.replace /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}(:\d+)?\b((\/|\?)[-a-zA-Z0-9@:%_\+.~#?&//=]+)?\b/ig, (match) ->
-			if /^[^\/]+@/.test match
-				"<a target='_blank' href='mailto:#{match}'>#{match}</a>"
-			else if /^https?:\/\/.+/i.test match
-				"<a target='_blank' href='#{match}'>#{match}</a>"
-			else
-				"<a target='_blank' href='http://#{match}'>#{match}</a>"
+	@convertLinksToAnchor: (str) ->
+		matches = linkify.match str
+
+		for match in matches ? []
+			str = str.slice(0, match.index) +
+				"<a href='#{match.url}'>#{match.text}</a>" +
+				str.slice(match.lastIndex)
+
+		str
 
 	###*
 	# Sets an interval for the given `func`. While immediately executing it.
