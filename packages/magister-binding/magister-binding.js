@@ -616,8 +616,10 @@ MagisterBinding.getCalendarItems = function (userId, from, to) {
 			);
 
 			calendarItem.usersDone = a.isDone() ? [ userId ] : [];
-			calendarItem.externalId = prefixId(magister, a.id());
-			calendarItem.fetchedBy = MagisterBinding.name;
+			calendarItem.externalInfo = {
+				id: prefixId(magister, a.id()),
+				editable: false,
+			};
 			if (!_.isEmpty(a.content())) {
 				calendarItem.content = {
 					type: a.infoTypeString(),
@@ -654,8 +656,9 @@ MagisterBinding.getCalendarItems = function (userId, from, to) {
 					info.permitted()
 				);
 				absenceInfo.description = info.description();
-				absenceInfo.fetchedBy = MagisterBinding.name;
-				absenceInfo.externalId = prefixId(magister, info.id());
+				absenceInfo.externalInfo = {
+					id: prefixId(magister, info.id()),
+				};
 
 				absenceInfos.push(absenceInfo);
 			}

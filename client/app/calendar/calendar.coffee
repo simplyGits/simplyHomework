@@ -62,9 +62,9 @@ calendarItemToEvent = (calendarItem, comparing = no) ->
 	) ? ''
 	comparing: comparing is 'other'
 	calendarItem: calendarItem
-	# TODO: do this smarter, users can editor custom Magister appointments for
-	# example. Updating this upstream would be nice too.
-	editable: not calendarItem.fetchedBy?
+	# kinda HACK
+	# TODO: Update edited calendarItems to upstream.
+	editable: _.every calendarItem.externalInfos, 'editable'
 	content: calendarItem.content
 
 Template.calendar.onCreated ->

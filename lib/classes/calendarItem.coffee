@@ -62,24 +62,21 @@ class @CalendarItem
 		###
 		@repeatInterval = null
 
-		###*
-		# If this calendarItem is linked to an appointment
-		# (eg for giving up homework that isn't filled in
-		# into Magister, `externalId` will contain the
-		# ID of the appointment this calendarItem is linked to.
-		#
-		# @property externalId
-		# @type mixed
-		# @default undefined
-		###
-		@externalId = undefined
+		# TODO: update the calendarItem upstream when the item has been changed and
+		# this option is true.
 
 		###*
-		# @property fetchedBy
-		# @type String|undefined
-		# @default undefined
+		# `ExternalInfos` will contain info about this calendarItem on a service
+		# paired with the service's name.
+		#
+		# A service can store arbitrary information in the key. The manage is fully
+		# responsible for using and providing the data.
+		#
+		# @property externalInfos
+		# @type Object
+		# @default {}
 		###
-		@fetchedBy = undefined
+		@externalInfos = {}
 
 		###*
 		# @property scrapped
@@ -203,12 +200,9 @@ class @CalendarItem
 		repeatInterval:
 			type: Number
 			optional: yes
-		externalId:
-			type: null
-			optional: yes
-		fetchedBy:
-			type: String
-			optional: yes
+		externalInfos:
+			type: Object
+			blackbox: yes
 		scrapped:
 			type: Boolean
 		fullDay:

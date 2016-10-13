@@ -321,7 +321,7 @@ updateCalendarItems = (userId, from, to) ->
 		'fileIds'
 		'teacher'
 		'classId'
-		'externalId'
+		'externalInfos'
 		'scrapped'
 	]
 
@@ -342,133 +342,161 @@ updateCalendarItems = (userId, from, to) ->
 	services = getServices userId, 'getCalendarItems'
 	markUserEvent userId, 'calendarItemsUpdate' if services.length > 0
 
-	for externalService in services
-		result = null
+	absences = []
+	files = []
+	calendarItems = []
+
+	for service in services
+		result = undefined
 		try
-			result = externalService.getCalendarItems userId, from, to
+			result = service.getCalendarItems userId, from, to
 		catch e
-			ExternalServicesConnector.handleServiceError externalService.name, userId, e
+			ExternalServicesConnector.handleServiceError service.name, userId, e
 			errors.push e
 			continue
 
-		###
-		calendarItems = CalendarItems.find(
-			fetchedBy: externalService.name
-			$or: [
-				{ externalId: $in: _.pluck result.calendarItems, 'externalId' }
-				{
-					classId: $in: _.pluck result.calendarItems, 'classId'
-					startDate: $in: _.pluck result.calendarItems, 'startDate'
-					endDate: $in: _.pluck result.calendarItems, 'endDate'
+		files = files.concat result.files
+
+		for item in result.calendarItems
+			find = (coll, query) ->
+				matcher = createMatcher query
+				_.find coll, (i) -> matcher i
+
+			old = find calendarItems,
+				userIds: userId
+				classId: item.classId
+				startDate: item.startDate
+				endDate: item.endDate
+				description: item.description
+
+			unless item.fullDay
+				old ?= find calendarItems,
 					userIds: userId
-				}
-			]
-		).fetch()
-		###
-
-		fileKeyChanges = diffAndInsertFiles userId, result.files
-
-		for calendarItem in result.calendarItems
-			old = CalendarItems.findOne
-				fetchedBy: externalService.name
-				externalId: calendarItem.externalId
-
-			unless calendarItem.fullDay
-				old ?= CalendarItems.findOne
-					fetchedBy: externalService.name
-					userIds: userId
-					classId: calendarItem.classId
-					startDate: calendarItem.startDate
-					endDate: calendarItem.endDate
-
-			content = calendarItem.content
-			if content?
-				if not content.type? or content.type is 'homework'
-					content.type = 'quiz' if /^(so|schriftelijke overhoring|(\w+\W?)?(toets|test))\b/i.test content.description
-					content.type = 'test' if /^(proefwerk|pw|examen|tentamen)\b/i.test content.description
-
-				if content.type in [ 'test', 'exam' ]
-					content.description = content.description.replace /^(proefwerk|pw|toets|test)\s?/i, ''
-				else if content.type is 'quiz'
-					content.description = content.description.replace /^(so|schriftelijke overhoring|toets|test)\s?/i, ''
-				else if content.type is 'oral'
-					content.description = content.description.replace /^(oral\W?(exam|test)|mondeling)\s?/i, ''
-			calendarItem.content = content
-
-			calendarItem.fileIds = calendarItem.fileIds.map (id) ->
-				fileKeyChanges[id] ? id
+					classId: item.classId
+					startDate: item.startDate
+					endDate: item.endDate
 
 			if old?
-				# set the old calendarItem id for every absenceinfo fetched for this new
-				# calendarItem.
-				absenceInfo = _.find result.absenceInfos, calendarItemId: calendarItem._id
-				absenceInfo?.calendarItemId = old._id
+				#console.log old, item
 
-				# clean `calendarItem`, this is way faster than using the `clean` method
-				# of the schema.
-				delete calendarItem._id
-				delete calendarItem.updateInfo
-				for [ key, val ] in _.pairs calendarItem
-					switch val
-						when '' then calendarItem[key] = null
-
-				mergeUserIdsField = (fieldName) ->
-					calendarItem[fieldName] = _(old[fieldName])
-						.concat calendarItem[fieldName]
-						.uniq()
-						.value()
-				mergeUserIdsField 'userIds'
-				mergeUserIdsField 'usersDone'
-
-				if hasChanged old, calendarItem, [ 'updateInfo' ]
-					if not old.updateInfo? and
-					hasChanged old, calendarItem, UPDATE_CHECK_OMITTED
-						calendarItem.updateInfo =
-							when: new Date()
-							diff: diffObjects old, calendarItem, UPDATE_CHECK_OMITTED
-
-					CalendarItems.update old._id, { $set: calendarItem }, handleCollErr
+				old.externalInfos[service.name] = item.externalInfo
+				for [ key, val ] in _.pairs(item) when key not in [ 'externalInfo', 'externalInfos', '_id' ]
+					old[key] = val if (
+						switch key
+							when 'scrapped' then val is true
+							else val?
+					)
 			else
-				CalendarItems.insert calendarItem, handleCollErr
+				item.externalInfos[service.name] = item.externalInfo
+				calendarItems.push item
 
-		for absenceInfo in result.absenceInfos
-			val = Absences.findOne
-				userId: userId
-				fetchedBy: externalService.name
-				calendarItemId: absenceInfo.calendarItemId
+	fileKeyChanges = diffAndInsertFiles userId, files
 
-			if val?
-				if hasChanged val, absenceInfo
-					Absences.update val._id, { $set: absenceInfo }, handleCollErr
-			else
-				Absences.insert absenceInfo
+	for calendarItem in calendarItems
+		old = CalendarItems.findOne $or: (
+			 _(calendarItem.externalInfos)
+				.pairs()
+				# HACK
+				.map ([ name, val ]) -> "externalInfos.#{name}.id": val.id
+				.value()
+		)
 
-		# mark lesson calendarItems that were in the db but are not returned by the
-		# service as scrapped.
-		CalendarItems.update {
-			userIds: userId
-			fetchedBy: externalService.name
-			externalId: $nin: _.pluck result.calendarItems, 'externalId'
-			startDate: $gte: from
-			endDate: $lte: to
-			type: 'lesson'
-		}, {
-			$set:
-				scrapped: yes
-		}, {
-			multi: yes
-		}, handleCollErr
+		unless calendarItem.fullDay
+			old ?= CalendarItems.findOne
+				userIds: userId
+				classId: calendarItem.classId
+				startDate: calendarItem.startDate
+				endDate: calendarItem.endDate
 
-		# remove non-lesson calendarItems that were in the db but are not returned
-		# by the service.
-		CalendarItems.remove {
-			userIds: userId
-			fetchedBy: externalService.name
-			externalId: $nin: _.pluck result.calendarItems, 'externalId'
-			startDate: $gte: from
-			endDate: $lte: to
-			type: $ne: 'lesson'
-		}, handleCollErr
+		content = calendarItem.content
+		if content?
+			if not content.type? or content.type is 'homework'
+				content.type = 'quiz' if /^(so|schriftelijke overhoring|(\w+\W?)?(toets|test))\b/i.test content.description
+				content.type = 'test' if /^(proefwerk|pw|examen|tentamen)\b/i.test content.description
+
+			if content.type in [ 'test', 'exam' ]
+				content.description = content.description.replace /^(proefwerk|pw|toets|test)\s?/i, ''
+			else if content.type is 'quiz'
+				content.description = content.description.replace /^(so|schriftelijke overhoring|toets|test)\s?/i, ''
+			else if content.type is 'oral'
+				content.description = content.description.replace /^(oral\W?(exam|test)|mondeling)\s?/i, ''
+		calendarItem.content = content
+
+		calendarItem.fileIds = calendarItem.fileIds.map (id) ->
+			fileKeyChanges[id] ? id
+
+		if old?
+			# set the old calendarItem id for every absenceinfo fetched for this new
+			# calendarItem.
+			absenceInfo = _.find absences, calendarItemId: calendarItem._id
+			absenceInfo?.calendarItemId = old._id
+
+			# clean `calendarItem`, this is way faster than using the `clean` method
+			# of the schema.
+			delete calendarItem._id
+			delete calendarItem.updateInfo
+			delete calendarItem.externalInfo
+			for [ key, val ] in _.pairs calendarItem
+				switch val
+					when '' then calendarItem[key] = null
+
+			mergeUserIdsField = (fieldName) ->
+				calendarItem[fieldName] = _(old[fieldName])
+					.concat calendarItem[fieldName]
+					.uniq()
+					.value()
+			mergeUserIdsField 'userIds'
+			mergeUserIdsField 'usersDone'
+
+			if hasChanged old, calendarItem, [ 'updateInfo' ]
+				if not old.updateInfo? and
+				hasChanged old, calendarItem, UPDATE_CHECK_OMITTED
+					calendarItem.updateInfo =
+						when: new Date()
+						diff: diffObjects old, calendarItem, UPDATE_CHECK_OMITTED
+
+				CalendarItems.update old._id, { $set: calendarItem }, handleCollErr
+		else
+			delete calendarItem.externalInfo
+			CalendarItems.insert calendarItem, handleCollErr
+
+	for absenceInfo in absences
+		val = Absences.findOne
+			userId: userId
+			fetchedBy: absenceInfo.fetchedBy
+			calendarItemId: absenceInfo.calendarItemId
+
+		if val?
+			if hasChanged val, absenceInfo
+				Absences.update val._id, { $set: absenceInfo }, handleCollErr
+		else
+			Absences.insert absenceInfo
+
+	match = (lesson) ->
+		userIds: userId
+		startDate: $gte: from
+		endDate: $lte: to
+		type: if lesson then 'lesson' else $ne: 'lesson'
+		$and: _(calendarItems)
+			.pluck 'externalInfos'
+			.keys()
+			.uniq()
+			# HACK
+			.map (name) -> "externalInfos.#{name}.id": $nin: _.pluck calendarItems, "externalInfos.#{name}.id"
+			.value()
+
+	# mark lesson calendarItems that were in the db but are not returned by the
+	# service as scrapped.
+	CalendarItems.update match(yes), {
+		$set:
+			scrapped: yes
+	}, {
+		multi: yes
+	}, handleCollErr
+
+	# remove non-lesson calendarItems that were in the db but are not returned
+	# by the service.
+	CalendarItems.remove match(no), handleCollErr
 
 	done()
 	errors

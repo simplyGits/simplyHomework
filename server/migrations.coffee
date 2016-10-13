@@ -115,5 +115,22 @@ Migrations.add
 				Onze excuses als dit bij jou ook het geval is en we je inbox overhoop gegooid hebben.
 			"""
 
+Migrations.add
+	version: 10
+	name: 'Update calendarItems in the database to the new service format'
+	up: ->
+		for item in CalendarItems.find({}).fetch()
+			CalendarItems.update item._id, {
+				$set:
+					externalInfos:
+						"#{item.fetchedBy}": id: item.externalId
+				$unset:
+					fetchedBy: yes
+					externalId: yes
+			}, {
+				validate: no
+			}, (e) ->
+				console.log "error for item with id '#{item._id}'", e if e?
+
 Meteor.startup ->
 	Migrations.migrateTo 'latest'

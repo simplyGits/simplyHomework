@@ -30,7 +30,13 @@ Template.calendarItemDetails.helpers
 			'classInfo.group': @group()
 		).count() > 0
 
-	service: -> _.find Services, name: @fetchedBy
+	services: ->
+		_(@externalInfos)
+			.keys()
+			.map (k) -> _.find Services, name: k
+			.pluck 'friendlyName'
+			.value()
+			.join ', '
 
 Template.calendarItemDetails.events
 	'click [data-action="chat"]': (event) ->

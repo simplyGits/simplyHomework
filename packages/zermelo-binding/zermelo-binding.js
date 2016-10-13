@@ -90,8 +90,10 @@ ZermeloBinding.getCalendarItems = function (userId, from, to) {
 			classId || undefined
 		)
 
-		calendarItem.externalId = prefixId(zermelo, appointment.id)
-		calendarItem.fetchedBy = ZermeloBinding.name
+		calendarItem.externalInfo = {
+			id: prefixId(zermelo, appointment.id),
+			editable: false,
+		}
 		calendarItem.scrapped = appointment.isCancelled
 		calendarItem.schoolHour = appointment.beginBySchoolHour
 		calendarItem.location = appointment.locations[0]
