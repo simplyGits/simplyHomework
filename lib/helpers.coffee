@@ -213,7 +213,7 @@ class @Helpers
 
 		for match in matches ? []
 			str = str.slice(0, match.index) +
-				"<a href='#{match.url}'>#{match.text}</a>" +
+				"<a target='_blank' href='#{match.url}'>#{match.text}</a>" +
 				str.slice(match.lastIndex)
 
 		str
