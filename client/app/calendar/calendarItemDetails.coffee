@@ -35,7 +35,7 @@ Template.calendarItemDetails.helpers
 			.keys()
 			.map (k) -> _.find Services, name: k
 			.pluck 'friendlyName'
-			.value()
+			.sortBy()
 			.join ', '
 
 Template.calendarItemDetails.events
