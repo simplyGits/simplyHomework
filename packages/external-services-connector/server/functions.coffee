@@ -377,13 +377,13 @@ updateCalendarItems = (userId, from, to) ->
 					endDate: item.endDate
 
 			if old?
-				#console.log old, item
-
 				old.externalInfos[service.name] = item.externalInfo
+				# HACK
 				for [ key, val ] in _.pairs(item) when key not in [ 'externalInfo', 'externalInfos', '_id' ]
 					old[key] = val if (
 						switch key
 							when 'scrapped' then val is true
+							when 'description' then service.name isnt 'zermelo'
 							else val?
 					)
 			else
