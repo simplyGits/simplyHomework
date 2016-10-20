@@ -42,7 +42,7 @@ hasChanged = (a, b, omitExtra = []) ->
 		omit clone(b), omitKeys
 	)
 
-diffObjects = (a, b, exclude = []) ->
+diffObjects = (a, b, exclude = [], ignoreCasing = yes) ->
 	a = clone(a)
 	b = clone(b)
 	omitKeys = [ '_id' ].concat exclude
@@ -55,7 +55,13 @@ diffObjects = (a, b, exclude = []) ->
 			key: key
 			prev: a[key]
 			next: b[key]
-		.reject (obj) -> EJSON.equals obj.prev, obj.next
+		.reject (obj) ->
+			EJSON.equals(obj.prev, obj.next) or
+			(
+				ignoreCasing and
+				_.isString(obj.prev) and _.isString(obj.next) and
+				obj.prev.toLowerCase() is obj.next.toLowerCase()
+			)
 		.value()
 
 markUserEvent = (userId, name) ->
