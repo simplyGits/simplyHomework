@@ -7,9 +7,7 @@ NoticeManager.provide 'nextLesson', ->
 		startDate: $gt: new Date
 		endDate: $lte: Date.today().addDays 1
 		scrapped: false
-		schoolHour:
-			$exists: yes
-			$ne: null
+		type: 'lesson'
 	}, sort: 'startDate': 1
 
 	if nextAppointmentToday?

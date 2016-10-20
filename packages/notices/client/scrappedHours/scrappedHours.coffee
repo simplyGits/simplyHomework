@@ -4,10 +4,7 @@ getScrappedHours = ->
 		userIds: Meteor.userId()
 		startDate: $gte: Date.today().addDays if dayOver then 1 else 0
 		scrapped: yes
-
-		schoolHour:
-			$exists: yes
-			$ne: null
+		type: 'lesson'
 	}, {
 		sort:
 			startDate: 1

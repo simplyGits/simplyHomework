@@ -15,7 +15,10 @@
 	<div class="changedHour">
 		<div class="back" style="background-color: {{class.__color}}"></div>
 		<div class="info">
-			{{name}} ({{schoolHour}}<sup>e</sup> uur)
+			{{name}}
+			{{#if schoolHour}}
+				({{schoolHour}}<sup>e</sup> uur)
+			{{/if}}
 		</div>
 		<ul class="diff">
 			{{#each updateInfo.diff}}

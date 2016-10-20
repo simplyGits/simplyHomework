@@ -4,18 +4,14 @@ getItems = ->
 		startDate: $gte: Date.today()
 		endDate: $lte: Date.today().addDays 1
 		scrapped: false
-		schoolHour:
-			$exists: yes
-			$ne: null
+		type: 'lesson'
 	}, sort: 'startDate': 1).fetch()
 	tomorrow = CalendarItems.find({
 		userIds: Meteor.userId()
 		startDate: $gte: Date.today().addDays 1
 		endDate: $lte: Date.today().addDays 2
 		scrapped: false
-		schoolHour:
-			$exists: yes
-			$ne: null
+		type: 'lesson'
 	}, sort: 'startDate': 1).fetch()
 
 	show = (

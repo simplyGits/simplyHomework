@@ -67,9 +67,7 @@
 			if count-scrapped-as-lesson then { $exists: yes }
 			else no
 		)
-		school-hour:
-			$exists: yes
-			$ne: null
+		type: 'lesson'
 	, fields: _id: 1).count! is 0
 
 @ScheduleFunctions.lessons-for-date = (user-id = Meteor.user-id!, date) ->
@@ -86,9 +84,7 @@
 		start-date: $gte: date
 		end-date: $lte: date.add-days 1
 		scrapped: false
-		school-hour:
-			$exists: yes
-			$ne: null
+		type: 'lesson'
 	).fetch!
 
 @ScheduleFunctions.current-lesson = (user-id = Meteor.user-id!) ->
@@ -100,6 +96,4 @@
 		start-date: $lt: new Date
 		end-date: $gt: new Date
 		scrapped: false
-		school-hour:
-			$exists: yes
-			$ne: null
+		type: 'lesson'

@@ -14,6 +14,9 @@
 <template name="scrappedHour">
 	<div class="scrappedHour">
 		<div class="back" style="background-color: {{class.__color}}"></div>
-		{{day}} {{name}} ({{schoolHour}}<sup>e</sup> uur)
+		{{day}} {{name}}
+		{{#if schoolHour}}
+			({{schoolHour}}<sup>e</sup> uur)
+		{{/if}}
 	</div>
 </template>

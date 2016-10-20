@@ -232,9 +232,7 @@ Meteor.methods
 				userIds: userId
 				startDate: $gte: Date.today()
 				endDate: $lte: Date.today().addDays 7
-				schoolHour:
-					$exists: yes
-					$ne: null
+				type: 'lesson'
 			}, {
 				fields:
 					userIds: 1
