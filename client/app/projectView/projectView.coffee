@@ -203,6 +203,7 @@ Template.addParticipantModal.helpers
 	persons: -> getOthers().fetch()
 
 Template.addParticipantModal.onCreated ->
+	# REVIEW: performance of this?
 	@subscribe 'usersData'
 
 Template.addParticipantModal.onRendered ->

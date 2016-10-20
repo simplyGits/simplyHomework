@@ -33,7 +33,7 @@ getTasksForDate = (date) ->
 
 ###*
 # @method getTasks
-# @return {Object[]}
+# @return {mixed[]}
 ###
 getTasks = ->
 	# TODO: Also mix homework for tommorow and homework for days where the day

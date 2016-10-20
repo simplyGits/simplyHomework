@@ -117,10 +117,15 @@ Meteor.publish 'externalGrades', (options) ->
 
 	date = Date.today().addDays -4
 
-	query = ownerId: @userId
-	query.classId = classId if classId?
-	query.dateFilledIn = { $gte: date } if onlyRecent
-	Grades.find query, sort: dateFilledIn: -1
+	Grades.find (
+		query = ownerId: @userId
+		query.classId = classId if classId?
+
+		if onlyRecent
+			query.dateFilledIn = $gte: date
+
+		query
+	), sort: dateFilledIn: -1
 
 Meteor.publish 'externalStudyUtils', (options) ->
 	check options, Object
