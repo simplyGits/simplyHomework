@@ -463,6 +463,26 @@ class @Helpers
 				s += ';'
 			"#{s} "
 
+	###*
+	# @method find
+	# @param {Array|Object} coll
+	# @param {Object} query
+	# @return {any}
+	###
+	@find: (coll, query) ->
+		matcher = createMatcher query
+		_.find coll, (x) -> matcher x
+
+	###*
+	# @method filter
+	# @param {Array|Object} coll
+	# @param {Object} query
+	# @return any
+	###
+	@filter: (coll, query) ->
+		matcher = createMatcher query
+		_.filter coll, (x) -> matcher x
+
 	@isPhone: -> Session.equals 'deviceType', 'phone'
 	@isTablet: -> Session.equals 'deviceType', 'tablet'
 	@isDesktop: -> Session.equals 'deviceType', 'desktop'

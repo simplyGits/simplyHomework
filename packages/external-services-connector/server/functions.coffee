@@ -364,11 +364,7 @@ updateCalendarItems = (userId, from, to) ->
 		files = files.concat result.files
 
 		for item in result.calendarItems
-			find = (coll, query) ->
-				matcher = createMatcher query
-				_.find coll, (i) -> matcher i
-
-			old = find calendarItems,
+			old = Helpers.find calendarItems,
 				userIds: userId
 				classId: item.classId
 				startDate: item.startDate
@@ -376,7 +372,7 @@ updateCalendarItems = (userId, from, to) ->
 				description: item.description
 
 			unless item.fullDay
-				old ?= find calendarItems,
+				old ?= Helpers.find calendarItems,
 					userIds: userId
 					classId: item.classId
 					startDate: item.startDate
