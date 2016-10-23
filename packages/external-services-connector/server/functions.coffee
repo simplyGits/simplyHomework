@@ -60,7 +60,7 @@ diffObjects = (a, b, exclude = [], ignoreCasing = yes) ->
 			(
 				ignoreCasing and
 				_.isString(obj.prev) and _.isString(obj.next) and
-				obj.prev.toLowerCase() is obj.next.toLowerCase()
+				obj.prev.trim().toLowerCase() is obj.next.trim().toLowerCase()
 			)
 		.value()
 
