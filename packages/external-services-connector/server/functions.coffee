@@ -8,6 +8,10 @@ CALENDAR_ITEMS_INVALIDATION_TIME = ms.minutes 10
 SERVICE_UPDATE_INVALIDATION_TIME = ms.minutes 30
 PERSON_CACHE_INVALIDATION_TIME   = ms.minutes 15
 
+###*
+# @method handleCollErr
+# @param {Error} e
+###
 handleCollErr = (e) ->
 	if e?
 		Kadira.trackError(
@@ -16,7 +20,20 @@ handleCollErr = (e) ->
 			{ stacks: e.stack }
 		)
 
+###*
+# @method clone
+# @param {Object} obj
+# @return {Object}
+###
 clone = (obj) -> EJSON.parse EJSON.stringify obj
+###*
+# Recursively omits the given keys from the given array or object.
+# If `obj` isn't an array or object, this function will just return `obj`.
+# @method omit
+# @param {any} obj
+# @param {String[]} keys
+# @return {Object}
+###
 omit = (obj, keys) ->
 	if _.isArray obj
 		_.map obj, (x) -> omit x, keys
@@ -34,6 +51,13 @@ omit = (obj, keys) ->
 	else
 		obj
 
+###*
+# @method hasChanged
+# @param {Object} a
+# @param {Object} b
+# @param {String[]} omitExtra
+# @return {Boolean}
+###
 hasChanged = (a, b, omitExtra = []) ->
 	omitKeys = [ '_id' ].concat omitExtra
 
@@ -42,6 +66,14 @@ hasChanged = (a, b, omitExtra = []) ->
 		omit clone(b), omitKeys
 	)
 
+###*
+# @method diffObjects
+# @param {Object} a
+# @param {Object} b
+# @param {String[]} [exclude=[]]
+# @param {Boolean} [ignoreCasing=true]
+# @return {Object[]}
+###
 diffObjects = (a, b, exclude = [], ignoreCasing = yes) ->
 	a = clone(a)
 	b = clone(b)
@@ -64,6 +96,11 @@ diffObjects = (a, b, exclude = [], ignoreCasing = yes) ->
 			)
 		.value()
 
+###*
+# @method markUserEvent
+# @param {String} userId
+# @param {String} name
+###
 markUserEvent = (userId, name) ->
 	check userId, String
 	check name, String
