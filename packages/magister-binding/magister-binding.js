@@ -282,15 +282,15 @@ MagisterBinding.getGrades = function (userId, options) {
 		}
 
 		const result = new Array(r.length);
-		const futs = [];
+		const grades = r.filter(g => ![14, 4].includes(g.type().type()));
 
-		r
-		.filter(function (g) {
-			return [14, 4].indexOf(g.type().type()) === -1;
-		})
-		.forEach(function (g, i) {
+		const futs = [];
+		for (let i = 0; i < grades.length; i++) {
+			const g = grades[i];
+
 			// HACK: WET (unDRY, ;)) code.
 			const stored = Grades.findOne({
+				ownerId: userId,
 				fetchedBy: MagisterBinding.name,
 				externalId: prefixId(magister, g.id()),
 				weight: g.counts() ? g.weight() : 0,
@@ -304,7 +304,7 @@ MagisterBinding.getGrades = function (userId, options) {
 				futs.push(gradeFut);
 
 				g.fillGrade(function (e) {
-					if (e) {
+					if (e != null) {
 						gradeFut.throw(e);
 					} else  {
 						const classInfo = _.find(user.classInfos, function (i) {
@@ -343,10 +343,13 @@ MagisterBinding.getGrades = function (userId, options) {
 					}
 				});
 			}
-		});
-
-		for(let i = 0; i < futs.length; i++) futs[i].wait();
-		fut.return(result);
+		}
+		Future.task(function () {
+			for (let i = 0; i < futs.length; i++) {
+				futs[i].wait();
+			}
+			return result;
+		}).proxy(fut);
 	});
 
 	return fut.wait();
