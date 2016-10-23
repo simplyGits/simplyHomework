@@ -451,11 +451,12 @@ updateCalendarItems = (userId, from, to) ->
 			mergeUserIdsField 'usersDone'
 
 			if hasChanged old, calendarItem, [ 'updateInfo' ]
-				if not old.updateInfo? and
-				hasChanged old, calendarItem, UPDATE_CHECK_OMITTED
-					calendarItem.updateInfo =
-						when: new Date()
-						diff: diffObjects old, calendarItem, UPDATE_CHECK_OMITTED
+				if not old.updateInfo?
+					diff = diffObjects old, calendarItem, UPDATE_CHECK_OMITTED
+					if diff.length > 0
+						calendarItem.updateInfo =
+							when: new Date()
+							diff: diff
 
 				CalendarItems.update old._id, { $set: calendarItem }, handleCollErr
 		else
