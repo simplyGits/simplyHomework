@@ -266,16 +266,20 @@ MagisterBinding.getGrades = function (userId, options) {
 
 	const magister = getMagisterObject(userId);
 	const user = Meteor.users.findOne(userId);
-	const lastUpdateTime = user.events.gradeUpdate;
-	const onlyRecent = options.onlyRecent ||
-		lastUpdateTime && (_.now() - lastUpdateTime.getTime() <= ONLY_RECENT_LIMIT);
+	// TODO: fix this onlyRecent stuff.
+	//const lastUpdateTime = user.events.gradeUpdate;
+	//const onlyRecent = options.onlyRecent ||
+	//	lastUpdateTime && (_.now() - lastUpdateTime.getTime() <= ONLY_RECENT_LIMIT);
 
 	const course = getCurrentCourse(magister);
 	if (course == null) {
 		throw new Meteor.Error('no-course');
 	}
 
-	course.grades(false, false, onlyRecent, function (e, r) {
+	course.grades({
+		fillPersons: false,
+		fillGrade: false,
+	}, function (e, r) {
 		if (e) {
 			fut.throw(e);
 			return;
@@ -334,8 +338,8 @@ MagisterBinding.getGrades = function (userId, options) {
 						grade.dateTestMade = g.testDate();
 						grade.isEnd = g.type().isEnd();
 						grade.period = new GradePeriod(
-							g.gradePeriod().id,
-							g.gradePeriod().name
+							g.period().id(),
+							g.period().name()
 						);
 
 						result[i] = grade;

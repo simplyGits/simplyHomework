@@ -21,7 +21,7 @@ Package.onUse(function(api) {
 	]);
 	api.use([
 		'stevezhu:lodash@3.10.1',
-		'simply:magisterjs@1.21.0',
+		'simply:magisterjs@1.22.0',
 		'ejson',
 		'simply:lru',
 		'ms',
