@@ -70,14 +70,14 @@ SyncedCron.add({
 				const c = Classes.findOne(grade.classId)
 
 				try {
-					const html = Promise.await(emails.cijfer({
+					const html = emails.cijfer({
 						className: c.name,
 						classUrl: Meteor.absoluteUrl(`class/${c._id}`),
 						grade: toString(grade),
 						passed: grade.passed,
 						description: grade.description.trim() || undefined,
 						average: toString(GradeFunctions.getEndGrade(c._id, userId)),
-					}))
+					})
 
 					sendEmail(userId, `Nieuw cijfer voor ${c.name}`, html)
 
@@ -214,11 +214,11 @@ NoticeMails = {
 		const project = Projects.findOne(projectId)
 		const adder = Meteor.users.findOne(adderUserId)
 		try {
-			const html = Promise.await(emails.project({
+			const html = emails.project({
 				projectName: project.name,
 				projectUrl: Meteor.absoluteUrl(`project/${projectId}`),
 				personName: `${adder.profile.firstName} ${adder.profile.lastName}`,
-			}))
+			})
 			sendEmail(addedUserId, 'Toegevoegd aan project', html)
 			Analytics.insert({
 				type: 'send-mail',
