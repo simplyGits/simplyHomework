@@ -3,9 +3,15 @@
 'use strict'
 import { createSession, loginBySessionInfo } from 'zermelo.js'
 import { AuthError } from 'meteor/simply:external-services-connector'
+import { LRU } from 'meteor/simply:lru'
 
 // REVIEW Do we want this?
 const log = ZermeloBinding.log
+
+const cache = LRU({
+	max: 50,
+	maxAge: null,
+})
 
 /**
  * Creates data for the user with given `userId` with the given
@@ -48,11 +54,16 @@ function getZermeloObject (userId) {
 
 	const data = ZermeloBinding.storedInfo(userId)
 	if (_.isEmpty(data)) {
+		cache.del(userId)
 		throw new Error('No credentials found.')
 	}
 
-	const zermelo = loginBySessionInfo(data.schoolid, data.sessionInfo)
-	zermelo.school = Promise.await(zermelo.school())
+	let zermelo = cache.get(userId)
+	if (zermelo === undefined) {
+		zermelo = loginBySessionInfo(data.schoolid, data.sessionInfo)
+		zermelo.school = Promise.await(zermelo.school())
+		cache.set(userId, zermelo)
+	}
 	return zermelo
 }
 
