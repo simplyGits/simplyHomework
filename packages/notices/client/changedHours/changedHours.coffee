@@ -32,6 +32,9 @@ Template.changedHours.helpers
 	hourGroups: ->
 		arr = getChangedHours()
 		_(arr)
+			.reject (h) ->
+				d = h.updateInfo.diff
+				d.length is 1 and d[0].key is 'description'
 			.uniq (h) -> h.startDate.date().getTime()
 			.map (h) ->
 				today = h.startDate.date().getTime() is Date.today().getTime()
