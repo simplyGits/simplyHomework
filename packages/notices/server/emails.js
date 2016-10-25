@@ -75,6 +75,7 @@ SyncedCron.add({
 						classUrl: Meteor.absoluteUrl(`class/${c._id}`),
 						grade: toString(grade),
 						passed: grade.passed,
+						description: grade.description.trim() || undefined,
 						average: toString(GradeFunctions.getEndGrade(c._id, userId)),
 					}))
 
