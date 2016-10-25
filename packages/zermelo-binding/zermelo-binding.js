@@ -149,7 +149,7 @@ ZermeloBinding.getUpdates = function (userId) {
 	return announcements.map(a => {
 		const update = new ServiceUpdate(
 			a.title,
-			a.text,
+			a.content,
 			userId,
 			ZermeloBinding.name,
 			prefixId(zermelo, a.id)

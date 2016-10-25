@@ -7,7 +7,7 @@ Package.describe({
 });
 
 Npm.depends({
-	'zermelo.js': '0.0.3',
+	'zermelo.js': '1.0.0',
 });
 
 Package.onUse(function(api) {
