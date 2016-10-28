@@ -20,7 +20,7 @@ Date.today = -> new Date().date()
 ###
 Date::addDays = (days) ->
 	check days, Match.Integer
-	new Date @getTime() + (86400000 * days)
+	moment(this).add(days, 'days').toDate()
 
 Date::date = -> new Date @getFullYear(), @getMonth(), @getDate()
 
