@@ -392,18 +392,18 @@ class @Helpers
 
 	###*
 	# @method formatDateRelative
-	# @param {Date|moment} date
+	# @param {Date} date
 	# @param {Boolean} [showTime=true]
 	# @return {String}
 	###
 	@formatDateRelative: (date, showTime = yes) ->
-		date = moment date
+		m = moment date
 
-		day = date.format 'dddd'
-		time = date.format 'HH:mm'
-		sameYear = date.year() is moment().year()
+		day = m.format 'dddd'
+		time = m.format 'HH:mm'
+		sameYear = m.year() is moment().year()
 
-		date = switch @daysRange new Date, date.toDate(), no
+		date = switch @daysRange new Date, date, no
 			when -6, -5, -4, -3 then "afgelopen #{day}"
 			when -2 then 'eergisteren'
 			when -1 then 'gisteren'
@@ -411,7 +411,7 @@ class @Helpers
 			when 1 then 'morgen'
 			when 2 then 'overmorgen'
 			when 3, 4, 5, 6 then "aanstaande #{day}"
-			else "#{day} #{DateToDutch date.toDate(), not sameYear}"
+			else "#{day} #{DateToDutch date, not sameYear}"
 
 		if showTime then "#{date} #{time}"
 		else date
