@@ -5,19 +5,19 @@
 
 meteor-base@1.0.4             # Packages every Meteor app needs to have
 mobile-experience@1.0.4       # Packages for a great mobile UX
-mongo@1.1.13                   # The database Meteor supports right now
-session@1.1.6                 # Client-side reactive dictionary for your app
-jquery@1.11.9                  # Helpful client-side library
-tracker@1.1.0                 # Meteor's client-side reactive programming library
+mongo@1.1.14                   # The database Meteor supports right now
+session@1.1.7                 # Client-side reactive dictionary for your app
+jquery@1.11.10                  # Helpful client-side library
+tracker@1.1.1                 # Meteor's client-side reactive programming library
 
-accounts-password@1.3.0
-http@1.2.9_1
+accounts-password@1.3.1
+http@1.2.10
 browser-policy@1.0.9
-coffeescript@1.2.4_2
+coffeescript@1.11.1_2
 rosh93:dataset-filter
 meteorhacks:fast-render
 natestrauser:animate-css
-reactive-var@1.0.10
+reactive-var@1.0.11
 tsega:bootstrap3-datetimepicker
 meteorhacks:unblock
 meteorhacks:subs-manager
@@ -47,12 +47,12 @@ audit-argument-checks@1.0.7
 magister-binding
 kadira:flow-router
 kadira:blaze-layout
-check@1.2.3
-ejson@1.0.12
-crosswalk@1.6.2
+check@1.2.4
+ejson@1.0.13
+crosswalk@1.7.0
 blaze-html-templates@1.0.4
 simply:external-services-connector
-ddp-rate-limiter@1.0.5
+ddp-rate-limiter@1.0.6
 mquandalle:stylus
 simply:typeahead
 privacy
@@ -64,8 +64,8 @@ chat
 reywood:publish-composite
 simply:notices
 simply:performance-logging
-force-ssl@1.0.12
-service-configuration@1.0.10
+force-ssl@1.0.13
+service-configuration@1.0.11
 schedule-functions
 search
 notifications-manager
@@ -73,17 +73,17 @@ grade-functions
 stevezhu:lodash@3.10.1
 simply:logins
 ms
-standard-minifier-css@1.2.0_1
-standard-minifier-js@1.2.0_1
+standard-minifier-css@1.3.2
+standard-minifier-js@1.2.1
 emails
-modules@0.7.6_1
+modules@0.7.7
 service-messages
 meteorhacks:aggregate
 admin
 2fa
 percolate:migrations
 simply:waitgroup
-ecmascript@0.5.8_1
+ecmascript@0.5.9
 shell-server@0.2.1
 tap:i18n
 onesignal
