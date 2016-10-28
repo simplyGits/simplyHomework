@@ -90,6 +90,7 @@ Template.calendar.onRendered ->
 		defaultView: 'agendaWeek'
 		height: height()
 		firstDay: 1
+		nowIndicator: yes
 		lang: 'nl'
 		timezone: 'local'
 		handleWindowResize: no
