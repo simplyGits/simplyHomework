@@ -44,8 +44,12 @@
 			{{__grade}}
 			<div class="means">
 				{{#with means}}
-					Klas: {{class}}<br>
-					School: {{school}}
+					{{#if class}}
+						Klas: {{class}}<br>
+					{{/if}}
+					{{#if school}}
+						School: {{school}}
+					{{/if}}
 				{{else}}
 					School en klas gemiddelden laden...
 				{{/with}}

@@ -37,7 +37,12 @@ Template.gradeRow.events
 
 		unless template.data._means.get()?
 			Meteor.call 'gradeMeans', @_id, (e, r) ->
-				unless e?
-					template.data._means.set
-						class: r.class.toPrecision 2
-						school: r.school.toPrecision 2
+				return if e?
+				obj = {}
+
+				for key in [ 'class', 'school' ]
+					val = r[key]
+					unless _.isNaN val
+						obj[key] = val.toPrecision 2
+
+				template.data._means.set obj
