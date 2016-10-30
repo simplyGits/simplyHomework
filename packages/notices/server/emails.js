@@ -47,14 +47,9 @@ SyncedCron.add({
 				ownerId: userId,
 				isEnd: false,
 				classId: { $exists: true },
-				$and: [
-					// REVIEW: add an field like `notifiedOn` to `Grade` instead
-					// of doing something like this.
-					{ dateFilledIn: { $gte: moment().add(-30, 'minutes').toDate() }},
-					// user probably has already seen the grade when he logged in on
-					// simplyHomework, no need to send a mail.
-					{ dateFilledIn: { $gt: user.status.lastLogin.date }},
-				]
+				// REVIEW: add an field like `notifiedOn` to `Grade` instead
+				// of doing something like this.
+				dateFilledIn: { $gte: moment().add(-30, 'minutes').toDate() },
 			}, {
 				fields: {
 					_id: 1,
