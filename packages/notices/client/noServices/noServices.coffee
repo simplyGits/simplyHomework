@@ -1,9 +1,9 @@
-services = new Mongo.Collection 'services'
+{ ServiceInfos } = require 'meteor/simply:external-services-connector'
 
 NoticeManager.provide 'noServices', ->
 	@subscribe 'servicesInfo'
 
-	infos = services.find().fetch()
+	infos = ServiceInfos.find().fetch()
 
 	any = _.any infos, (s) -> s.loginNeeded
 	has = _.any infos, (s) -> s.loginNeeded and s.active

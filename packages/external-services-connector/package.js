@@ -21,9 +21,9 @@ Package.onUse(function(api) {
 		'coffeescript',
 		'check',
 		'modules',
+		'mongo',
 	]);
 	api.use([
-		'mongo',
 		'ejson',
 		'meteorhacks:picker',
 		'ms',

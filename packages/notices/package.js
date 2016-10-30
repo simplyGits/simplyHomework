@@ -18,6 +18,7 @@ Package.onUse(function(api) {
 		'stevezhu:lodash@3.10.1',
 		'mongo',
 		'modules',
+		'simply:external-services-connector',
 	]);
 	api.use([
 		'tracker',
@@ -34,7 +35,6 @@ Package.onUse(function(api) {
 		'emails',
 		'ecmascript',
 		'percolate:synced-cron',
-		'simply:external-services-connector',
 		'chat',
 		'onesignal',
 		// 'reywood:publish-composite',

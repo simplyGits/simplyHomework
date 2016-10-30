@@ -13,4 +13,5 @@ class ExternalServicesConnector
 
 exports.ExternalServicesConnector = ExternalServicesConnector
 exports.Services = ExternalServicesConnector.services # Just a shortcut.
+exports.ServiceInfos = new Mongo.Collection 'services'
 _.extend exports, require '../lib/errors.coffee'
