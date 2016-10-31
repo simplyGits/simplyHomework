@@ -76,6 +76,7 @@ function prefixId (zermelo, ...args) {
 }
 
 ZermeloBinding.getCalendarItems = function (userId, from, to) {
+	return { calendarItems: [], absenceInfos: [], files: [] }
 	check(userId, String)
 
 	const zermelo = getZermeloObject(userId)
