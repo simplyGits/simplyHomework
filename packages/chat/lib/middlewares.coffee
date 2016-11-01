@@ -137,8 +137,11 @@ ChatMiddlewares.attach 'kappa', 'client', (message) ->
 
 ChatMiddlewares.attach 'katex', 'client', (message) ->
 	message.content = message.content.replace /\$\$(.+?)\$\$/g, (match, formula) ->
-		try katex.renderToString formula
-		catch then match
+		try
+			rendered = katex.renderToString formula
+			rendered.replace /^<span/, '$& data-snap-ignore="true" '
+		catch
+			match
 
 	message
 
