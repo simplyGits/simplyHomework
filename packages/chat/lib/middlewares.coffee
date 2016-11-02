@@ -161,6 +161,8 @@ ChatMiddlewares.attach 'add hidden fields', 'client', (cm) ->
 					$nin: [ Meteor.userId(), cm.creatorId ]
 			}, {
 				limit: 3
+				sort:
+					'profile.firstName': 1
 			}
 		__rawString: cm._originalContent.replace /<[^>]+>/g, ''
 
