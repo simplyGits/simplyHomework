@@ -141,6 +141,9 @@ SyncedCron.add({
 					recipients: 1,
 					subject: 1,
 				},
+				sort: {
+					sendDate: 1,
+				},
 			})
 
 			messages.forEach((message) => {
