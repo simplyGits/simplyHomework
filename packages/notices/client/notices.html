@@ -1,21 +1,6 @@
 <template name="notices">
 	{{#each notices}}
-		<div class="notice {{clickable}} {{hover}}">
-			{{#if header}}
-				<div class="header">
-					{{header}}
-
-					{{#if subheader}}
-						<div class="subheader">
-							{{subheader}}
-						</div>
-					{{/if}}
-				</div>
-			{{/if}}
-			{{#if template}}
-				{{> Template.dynamic template=template data=data}}
-			{{/if}}
-		</div>
+		{{> notice}}
 	{{else}}
 		{{#if ready}}
 			<div id="nocardsnotice">
@@ -26,4 +11,23 @@
 			{{> loading}}
 		{{/if}}
 	{{/each}}
+</template>
+
+<template name="notice">
+	<div class="notice {{clickable}} {{hover}}">
+		{{#if header}}
+			<div class="header">
+				{{header}}
+
+				{{#if subheader}}
+					<div class="subheader">
+						{{subheader}}
+					</div>
+				{{/if}}
+			</div>
+		{{/if}}
+		{{#if template}}
+			{{> Template.dynamic template=template data=data}}
+		{{/if}}
+	</div>
 </template>

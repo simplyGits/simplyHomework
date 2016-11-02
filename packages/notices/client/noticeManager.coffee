@@ -19,8 +19,6 @@ class NoticeManager
 			sort:
 				priority: -1
 				name: 1
-			transform: (n) -> _.extend n,
-				clickable: if n.onClick? then 'clickable' else ''
 
 	@_providers: []
 
