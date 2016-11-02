@@ -1,5 +1,6 @@
 Future = require 'fibers/future'
 { sendHtmlMail } = require 'meteor/emails'
+{ functions } = require 'meteor/simply:external-services-connector'
 
 # TODO: remind people to finish the setup when they didn't finished it
 # TODO: remind people to use the app after a long time of inactivity
@@ -164,3 +165,22 @@ SyncedCron.add
 		result = "Congratulated #{users.length} users."
 		console.log result
 		result
+
+SyncedCron.add
+	name: 'Preload users\' schedules for today'
+	schedule: (parser) -> parser.recur().on(7).hour()
+	job: ->
+		users = Meteor.users.find({
+			'profile.firstName': $ne: ''
+		}, {
+			fields:
+				_id: 1
+				'profile.firstName': 1
+		}).fetch()
+
+		for { _id: userId } in users
+			functions.updateCalendarItems(
+				userId
+				Date.today()
+				Date.today().addDays 1
+			)
