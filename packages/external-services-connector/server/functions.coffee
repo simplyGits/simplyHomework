@@ -398,6 +398,7 @@ updateCalendarItems = (userId, from, to) ->
 			errors.push e
 			continue
 
+		absences = absences.concat result.absences
 		files = files.concat result.files
 
 		for item in result.calendarItems
@@ -425,6 +426,9 @@ updateCalendarItems = (userId, from, to) ->
 							when 'description' then service.name isnt 'zermelo'
 							else val?
 					)
+
+				absence = _.find result.absences, calendarItemId: item._id
+				absence?.calendarItemId = old._id
 			else
 				item.externalInfos[service.name] = item.externalInfo
 				calendarItems.push item
@@ -500,17 +504,17 @@ updateCalendarItems = (userId, from, to) ->
 			delete calendarItem.externalInfo
 			CalendarItems.insert calendarItem, handleCollErr
 
-	for absenceInfo in absences
+	for absence in absences
 		val = Absences.findOne
 			userId: userId
-			fetchedBy: absenceInfo.fetchedBy
-			calendarItemId: absenceInfo.calendarItemId
+			fetchedBy: absence.fetchedBy
+			calendarItemId: absence.calendarItemId
 
 		if val?
-			if hasChanged val, absenceInfo
-				Absences.update val._id, { $set: absenceInfo }, handleCollErr
+			if hasChanged val, absence
+				Absences.update val._id, { $set: absence }, handleCollErr
 		else
-			Absences.insert absenceInfo
+			Absences.insert absence
 
 	match = (lesson) ->
 		userIds: userId

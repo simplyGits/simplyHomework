@@ -599,7 +599,7 @@ MagisterBinding.getCalendarItems = function (userId, from, to) {
 		const futs = [];
 
 		const calendarItems = [];
-		const absenceInfos = [];
+		const absences = [];
 		const files = [];
 
 		for (let i = 0; i < r.length; i++) { // REVIEW: `r` was `null` at least one time here.
@@ -667,7 +667,7 @@ MagisterBinding.getCalendarItems = function (userId, from, to) {
 					id: prefixId(magister, info.id()),
 				};
 
-				absenceInfos.push(absenceInfo);
+				absences.push(absenceInfo);
 			}
 
 			a.attachments(function (e, r) {
@@ -687,7 +687,7 @@ MagisterBinding.getCalendarItems = function (userId, from, to) {
 		for(let i = 0; i < futs.length; i++) futs[i].wait();
 		fut.return({
 			calendarItems,
-			absenceInfos,
+			absences,
 			files,
 		});
 	});
