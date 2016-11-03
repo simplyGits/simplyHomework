@@ -374,12 +374,7 @@ updateCalendarItems = (userId, from, to) ->
 	calendarItemsUpdate = undefined#user.events.calendarItemsUpdate
 	errors = []
 
-	from ?= calendarItemsUpdate ? new Date().addDays -14
-	if not calendarItemsUpdate? and from > new Date().addDays -14
-		from = new Date().addDays -14
 
-	to ?= new Date().addDays 7
-	to = new Date().addDays(7) if to < new Date().addDays(7)
 
 	done = getLockSync userId, from, to
 	services = getServices userId, 'getCalendarItems'
