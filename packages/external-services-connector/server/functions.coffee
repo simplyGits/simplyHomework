@@ -339,10 +339,43 @@ getLockSync = (userId, start, end) ->
 	getLock userId, start, end, (done) -> fut.return done
 	fut.wait()
 
+calendarItemFetches = [] # { userId, start, end, time }
+shouldFetch = (userId, start, end) ->
+	start = start.date()
+	end = end.date()
+
+	range = Helpers.daysRange start, end, no
+	dates = _([0...range])
+		.map (n) -> start.addDays n
+		.reject (d) ->
+			_(calendarItemFetches)
+				.reject (f) -> _.now() - f.time > CALENDAR_ITEMS_INVALIDATION_TIME
+				.some (f) -> f.userId is userId and f.start <= d <= f.end
+		.value()
+
+	if dates.length > 0
+		[
+			_.min dates
+			_.max dates
+		]
+	else
+		undefined
+
+addFetch = (userId, start, end) ->
+	calendarItemFetches.push
+		userId: userId
+		start: start
+		end: end
+		time: new Date()
+
+Meteor.setInterval (->
+	_.remove calendarItemFetches, (f) ->
+		_.now() - f.time > CALENDAR_ITEMS_INVALIDATION_TIME
+), ms.minutes 5
+
 # REVIEW: Do we want to call `.date` on each date object here to make sure we
 # don't pass date objects with a time attached to them to external services?
 # REVIEW: Should we have different functions for absenceInfo and calendarItems?
-# TODO: think out some throttling for this.
 ###*
 # Updates the CalendarItems in the database for the given `userId` or the user
 # in of current connection, unless the utils were updated shortly before.
@@ -374,9 +407,15 @@ updateCalendarItems = (userId, from, to) ->
 	calendarItemsUpdate = undefined#user.events.calendarItemsUpdate
 	errors = []
 
-
-
 	done = getLockSync userId, from, to
+
+	range = shouldFetch userId, from, to
+	unless range?
+		done()
+		return
+
+	[ from, to ] = range
+
 	services = getServices userId, 'getCalendarItems'
 	markUserEvent userId, 'calendarItemsUpdate' if services.length > 0
 
@@ -537,6 +576,7 @@ updateCalendarItems = (userId, from, to) ->
 	# by the service.
 	CalendarItems.remove match(no), handleCollErr
 
+	addFetch userId, from, to
 	done()
 	errors
 
