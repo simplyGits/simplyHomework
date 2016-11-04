@@ -8,11 +8,11 @@
 class ExternalServicesConnector
 	@services: []
 
-	@pushExternalService: (module) =>
+	@pushExternalService: (service) =>
 		if _.some(@services, name: service.name)
 			throw new Error "Already a service with name '#{service.name}' added"
 
-		@services.push module
+		@services.push service
 
 exports.ExternalServicesConnector = ExternalServicesConnector
 exports.Services = ExternalServicesConnector.services # Just a shortcut.
