@@ -30,6 +30,9 @@ class ExternalServicesConnector
 		_.filter @services, (s) -> s.can userId, thing
 
 	@pushExternalService: (service) =>
+		if _.some(@services, name: service.name)
+			throw new Error "Already a service with name '#{service.name}' added"
+
 		###*
 		# Gets or sets the info in the database.
 		#
