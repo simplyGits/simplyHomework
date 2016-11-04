@@ -344,8 +344,8 @@ shouldFetch = (userId, start, end) ->
 	start = start.date()
 	end = end.date()
 
-	range = Helpers.daysRange(start, end, no) + 1
-	dates = _([0...range])
+	dates = _.chain()
+		.range Helpers.daysRange(start, end) + 1
 		.map (n) -> start.addDays n
 		.reject (d) ->
 			_(calendarItemFetches)
@@ -368,13 +368,12 @@ addFetch = (userId, start, end) ->
 		end: end
 		time: new Date()
 
+# cleanup stale entries to prevent memory leak
 Meteor.setInterval (->
 	_.remove calendarItemFetches, (f) ->
 		_.now() - f.time > CALENDAR_ITEMS_INVALIDATION_TIME
-), ms.minutes 5
+), ms.minutes 2.5
 
-# REVIEW: Do we want to call `.date` on each date object here to make sure we
-# don't pass date objects with a time attached to them to external services?
 # REVIEW: Should we have different functions for absenceInfo and calendarItems?
 ###*
 # Updates the CalendarItems in the database for the given `userId` or the user
