@@ -317,10 +317,12 @@ getLock = (userId, start, end, cb) ->
 	if lock?
 		lock.callbacks.push cb
 	else
-		lock =
-			start: start
-			end: end
+		lock = {
+			userId
+			start
+			end
 			callbacks: [ cb ]
+		}
 		calendarItemsLocks.push lock
 
 		removeLock = ->
