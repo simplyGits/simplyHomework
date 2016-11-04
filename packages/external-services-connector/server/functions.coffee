@@ -344,7 +344,7 @@ shouldFetch = (userId, start, end) ->
 	start = start.date()
 	end = end.date()
 
-	range = Helpers.daysRange start, end, no
+	range = Helpers.daysRange(start, end, no) + 1
 	dates = _([0...range])
 		.map (n) -> start.addDays n
 		.reject (d) ->
