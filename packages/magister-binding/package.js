@@ -9,6 +9,7 @@ Package.describe({
 Npm.depends({
 	'request': '2.74.0',
 	'marked': '0.3.5',
+	'lru-cache': '4.0.1',
 });
 
 Package.onUse(function(api) {
@@ -23,7 +24,6 @@ Package.onUse(function(api) {
 		'stevezhu:lodash@3.10.1',
 		'simply:magisterjs@1.22.0',
 		'ejson',
-		'simply:lru',
 		'ms',
 		'mutex',
 	], 'server');

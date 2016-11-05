@@ -8,6 +8,7 @@ Package.describe({
 
 Npm.depends({
 	'zermelo.js': '1.0.0',
+	'lru-cache': '4.0.1',
 });
 
 Package.onUse(function(api) {
@@ -21,7 +22,6 @@ Package.onUse(function(api) {
 	api.use([
 		'stevezhu:lodash@3.10.1',
 		'ejson',
-		'simply:lru',
 		'ms',
 		'mutex',
 	], 'server');

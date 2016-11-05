@@ -3,7 +3,7 @@
 'use strict'
 import { createSession, loginBySessionInfo } from 'zermelo.js'
 import { AuthError } from 'meteor/simply:external-services-connector'
-import { LRU } from 'meteor/simply:lru'
+import LRU from 'lru-cache'
 
 // REVIEW Do we want this?
 const log = ZermeloBinding.log

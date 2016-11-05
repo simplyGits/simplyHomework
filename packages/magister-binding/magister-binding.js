@@ -6,7 +6,7 @@
 
 'use strict';
 import { Magister } from 'meteor/simply:magisterjs';
-import { LRU } from 'meteor/simply:lru';
+import LRU from 'lru-cache';
 import request from 'request';
 import marked from 'marked';
 import Mutex from 'meteor/mutex';
