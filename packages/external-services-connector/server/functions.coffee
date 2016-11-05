@@ -325,14 +325,14 @@ getLock = (userId, start, end, cb) ->
 		}
 		calendarItemsLocks.push lock
 
-		removeLock = ->
+		lockTick = ->
 			if lock.callbacks.length > 0
 				lock.callbacks.shift() ->
-					removeLock()
+					lockTick()
 			else
 				_.pull calendarItemsLocks, lock
 
-		Meteor.defer removeLock
+		Meteor.defer lockTick
 
 	lock
 
