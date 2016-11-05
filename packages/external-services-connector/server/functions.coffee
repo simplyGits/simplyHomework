@@ -402,10 +402,7 @@ updateCalendarItems = (userId, from, to) ->
 		'scrapped'
 	]
 
-	# TODO: fix using `events.calendarItemsUpdate` here.
-
 	user = Meteor.users.findOne userId
-	calendarItemsUpdate = undefined#user.events.calendarItemsUpdate
 	errors = []
 
 	done = getLockSync userId, from, to
@@ -416,9 +413,7 @@ updateCalendarItems = (userId, from, to) ->
 		return
 
 	[ from, to ] = range
-
 	services = getServices userId, 'getCalendarItems'
-	markUserEvent userId, 'calendarItemsUpdate' if services.length > 0
 
 	absences = []
 	files = []

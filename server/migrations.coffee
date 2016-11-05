@@ -132,5 +132,16 @@ Migrations.add
 			}, (e) ->
 				console.log "error for item with id '#{item._id}'", e if e?
 
+Migrations.add
+	version: 11
+	name: "Remove 'calendarItemsUpdate' user events"
+	up: ->
+		Meteor.users.update {}, {
+			$unset:
+				'events.calendarItemsUpdate': yes
+		}, {
+			multi: yes
+		}
+
 Meteor.startup ->
 	Migrations.migrateTo 'latest'
