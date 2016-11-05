@@ -346,13 +346,15 @@ shouldFetch = (userId, start, end) ->
 	start = start.date()
 	end = end.date()
 
+	fetches = _(calendarItemFetches)
+		.reject (f) -> _.now() - f.time > CALENDAR_ITEMS_INVALIDATION_TIME
+		.filter { userId }
+		.value()
+
 	dates = _.chain()
 		.range Helpers.daysRange(start, end) + 1
 		.map (n) -> start.addDays n
-		.reject (d) ->
-			_(calendarItemFetches)
-				.reject (f) -> _.now() - f.time > CALENDAR_ITEMS_INVALIDATION_TIME
-				.some (f) -> f.userId is userId and f.start <= d <= f.end
+		.reject (d) -> _.some fetches, (f) -> f.start <= d <= f.end
 		.value()
 
 	if dates.length > 0
