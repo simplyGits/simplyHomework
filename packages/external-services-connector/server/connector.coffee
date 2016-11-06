@@ -85,7 +85,8 @@ class ExternalServicesConnector
 			if val?
 				service.storedInfo userId, active: val
 
-			service.hasData(userId) and (service.storedInfo(userId)?.active ? yes)
+			info = service.storedInfo userId
+			not _.isEmpty(info) and info.active ? yes
 
 		###*
 		# @method can
