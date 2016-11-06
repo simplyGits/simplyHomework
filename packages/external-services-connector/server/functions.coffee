@@ -548,31 +548,32 @@ updateCalendarItems = (userId, from, to) ->
 		else
 			Absences.insert absence
 
-	match = (lesson) ->
-		userIds: userId
-		startDate: $gte: from
-		endDate: $lte: to
-		type: if lesson then 'lesson' else $ne: 'lesson'
-		$and: _(calendarItems)
-			.pluck 'externalInfos'
-			.keys()
-			.uniq()
-			# HACK
-			.map (name) -> "externalInfos.#{name}.id": $nin: _.pluck calendarItems, "externalInfos.#{name}.id"
-			.value()
+	if calendarItems.length > 0
+		match = (lesson) ->
+			userIds: userId
+			startDate: $gte: from
+			endDate: $lte: to
+			type: if lesson then 'lesson' else $ne: 'lesson'
+			$and: _(calendarItems)
+				.pluck 'externalInfos'
+				.keys()
+				.uniq()
+				# HACK
+				.map (name) -> "externalInfos.#{name}.id": $nin: _.pluck calendarItems, "externalInfos.#{name}.id"
+				.value()
 
-	# mark lesson calendarItems that were in the db but are not returned by the
-	# service as scrapped.
-	CalendarItems.update match(yes), {
-		$set:
-			scrapped: yes
-	}, {
-		multi: yes
-	}, handleCollErr
+		# mark lesson calendarItems that were in the db but are not returned by the
+		# service as scrapped.
+		CalendarItems.update match(yes), {
+			$set:
+				scrapped: yes
+		}, {
+			multi: yes
+		}, handleCollErr
 
-	# remove non-lesson calendarItems that were in the db but are not returned
-	# by the service.
-	CalendarItems.remove match(no), handleCollErr
+		# remove non-lesson calendarItems that were in the db but are not returned
+		# by the service.
+		CalendarItems.remove match(no), handleCollErr
 
 	addFetch userId, from, to
 	done()
