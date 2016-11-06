@@ -185,22 +185,17 @@ Template.changeClassModal.events
 		Meteor.call 'insertBook', bookName, c._id, (e, r) ->
 			if e? then notify 'Fout tijdens methode veranderen', 'error'
 			else
-				Meteor.users.update Meteor.userId(), $pull: classInfos: id: c._id
-				Meteor.users.update Meteor.userId(), $push: classInfos:
-					_.extend c.__classInfo, bookId: r
-
-				noticeBanner.set undefined
-				notify 'Methode veranderd', 'notice'
-				ga 'send', 'event', 'changeClassModal', 'save'
-				$('#changeClassModal').modal 'hide'
+				Meteor.call 'setClassBookId', c._id, r, ->
+					noticeBanner.set undefined
+					notify 'Methode veranderd', 'notice'
+					ga 'send', 'event', 'changeClassModal', 'save'
+					$('#changeClassModal').modal 'hide'
 
 	'click #hideClassButton': ->
 		userId = Meteor.userId()
 
 		setHidden = (val) =>
-			Meteor.users.update userId, $pull: classInfos: id: @_id
-			Meteor.users.update userId, $push: classInfos:
-				_.extend @__classInfo, hidden: val
+			Meteor.call 'setClassHidden', @_id, val
 
 		show = =>
 			setHidden no

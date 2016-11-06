@@ -10,9 +10,7 @@ Template['settings_page_classes_row'].helpers
 Template['settings_page_classes_row'].events
 	'click .fa': ->
 		current = @__classInfo.hidden
-		updateUser = (mod) -> Meteor.users.update Meteor.userId(), mod
-		updateUser $pull: classInfos: id: @_id
-		updateUser $push: classInfos: _.extend @__classInfo, hidden: not current
+		Meteor.call 'setClassHidden', @_id, not current
 
 Template['settings_page_classes'].onCreated ->
 	@subscribe 'classes', hidden: yes

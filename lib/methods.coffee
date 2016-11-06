@@ -188,3 +188,38 @@ Meteor.methods
 				Drafts.insert draft
 
 		undefined
+
+###*
+# @method genClassInfoChangeFunc
+# @param {String} field
+# @param {Function} type
+# @return {Function}
+###
+genClassInfoChangeFunc = (field, type) ->
+	(classId, val) ->
+		check classId, String
+		check val, type
+
+		classInfo = _.find getClassInfos(@userId), id: classId
+		unless classInfo[field] is val
+			Meteor.users.update @userId, $pull:
+				classInfos: id: classId
+			Meteor.users.update @userId, $push:
+				classInfos: _.extend classInfo, "#{field}": val
+
+		undefined
+
+Meteor.methods
+	###*
+	# @method setClassHidden
+	# @param {String} classId
+	# @param {Boolean} hidden
+	###
+	setClassHidden: genClassInfoChangeFunc 'hidden', Boolean
+
+	###*
+	# @method setClassBookId
+	# @param {String} classId
+	# @param {Boolean} bookId
+	###
+	setClassBookId: genClassInfoChangeFunc 'bookId', String

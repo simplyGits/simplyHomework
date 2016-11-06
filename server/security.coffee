@@ -36,7 +36,6 @@ Meteor.users.allow
 	update: (userId, doc, fields, modifier) ->
 		allowed = [
 			'events'
-			'classInfos'
 			'settings'
 			'profile'
 			'setupProgress'
