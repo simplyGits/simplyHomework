@@ -27,6 +27,40 @@ WebApp.connectHandlers.use (req, res, next) ->
 
 	undefined
 
+WebApp.connectHandlers.use (err, req, res, next) ->
+	console.error err.stack
+	res.writeHead 500, 'Content-Type': 'text/html'
+	res.end '''
+	<!DOCTYPE html>
+	<html lang="en">
+	<head>
+			<meta charset="UTF-8">
+			<title>simplyHomework | Serverfout</title>
+			<style>
+				body {
+						height: 100%;
+						background-color: #32A8CE;
+
+						-webkit-font-smoothing: antialiased;
+						color: white;
+						font-size: 35px;
+						text-align: center;
+						line-height: 90vh;
+						font-family: sans-serif;
+						font-weight: 100;
+				}
+
+				span#status {
+						font-size: 50%;
+				}
+			</style>
+	</head>
+	<body>
+			<span id="status">500.</span> internal server error.
+	</body>
+	</html>
+	'''
+
 FastRender.onAllRoutes ->
 	# Don't subscribe on 'basicChatInfo' here, this will mess up the notification
 	# handling (will sound a dong when there are unread messages when the app is
