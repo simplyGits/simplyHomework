@@ -170,14 +170,7 @@ SyncedCron.add
 	name: 'Preload users\' schedules for today'
 	schedule: (parser) -> parser.recur().on(7).hour()
 	job: ->
-		users = Meteor.users.find({
-			'profile.firstName': $ne: ''
-		}, {
-			fields:
-				_id: 1
-				'profile.firstName': 1
-		}).fetch()
-
+		users = Meteor.users.find({}, fields: _id: 1).fetch()
 		for { _id: userId } in users
 			functions.updateCalendarItems(
 				userId
