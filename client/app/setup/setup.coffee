@@ -99,9 +99,8 @@ setupItems = [
 					main: -> done yes
 					second: -> done no
 				)
-				return
-
-			done yes
+			else
+				done yes
 	}
 
 	{

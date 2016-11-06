@@ -220,6 +220,8 @@ Meteor.methods
 				externalInfo: c.externalInfo
 				hidden: no
 
+		undefined
+
 	'getPersonStats': ->
 		@unblock()
 		userId = @userId
