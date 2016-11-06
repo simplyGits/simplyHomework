@@ -663,6 +663,8 @@ MagisterBinding.getCalendarItems = function (userId, from, to) {
 					info.permitted()
 				);
 				absenceInfo.description = info.description();
+
+				absenceInfo.fetchedBy = MagisterBinding.name;
 				absenceInfo.externalInfo = {
 					id: prefixId(magister, info.id()),
 				};

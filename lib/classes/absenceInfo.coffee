@@ -15,11 +15,11 @@ class @AbsenceInfo
 		###
 		@description = ''
 		###*
-		# @property externalId
-		# @type mixed
-		# @default undefined
+		# @property externalInfo
+		# @type Object
+		# @default {}
 		###
-		@externalId = undefined
+		@externalInfo = {}
 		###*
 		# @property fetchedBy
 		# @type String|undefined
@@ -40,9 +40,9 @@ class @AbsenceInfo
 			type: Boolean
 		description:
 			type: String
-		externalId:
-			type: null # any type
-			optional: yes
+		externalInfo:
+			type: Object
+			blackbox: yes
 		fetchedBy:
 			type: String
 			optional: yes
