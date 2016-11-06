@@ -28,7 +28,7 @@ function sendEmail (userId, subject, html) {
 
 SyncedCron.add({
 	name: 'Notify new grades',
-	schedule: (parser) => parser.recur().every(30).minute(),
+	schedule: (parser) => parser.recur().every(15).minute(),
 	job: function () {
 		const toString = (g) => g.toString().replace('.', ',')
 
@@ -49,7 +49,7 @@ SyncedCron.add({
 				classId: { $exists: true },
 				// REVIEW: add an field like `notifiedOn` to `Grade` instead
 				// of doing something like this.
-				dateFilledIn: { $gte: moment().add(-30, 'minutes').toDate() },
+				dateFilledIn: { $gte: moment().add(-15, 'minutes').toDate() },
 			}, {
 				fields: {
 					_id: 1,
@@ -100,7 +100,7 @@ SyncedCron.add({
 
 SyncedCron.add({
 	name: 'Notify new messages',
-	schedule: (parser) => parser.recur().every(30).minute(),
+	schedule: (parser) => parser.recur().every(15).minute(),
 	job: function () {
 		// TODO: handle replies
 
