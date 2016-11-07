@@ -14,8 +14,8 @@
 			<h1>Jouw overzicht</h1>
 
 			<div id="container">
-				{{#if tfa}}
-					{{> tfa_login}}
+				{{#if template}}
+					{{> template}}
 				{{else}}
 					<div id="buttons">
 						{{#if loggingIn}}
@@ -99,6 +99,21 @@
 				</div>
 
 				<input type="submit" class="btn btn-primary" value="Inloggen"/>
+			</fieldset>
+		</form>
+	</div>
+</template>
+
+<template name="forgotPass_login">
+	<div id="tfaForm">
+		<form class="vertical full-width">
+			<fieldset name="Password forgotten Form">
+				<div id="emailGroup" class="group">
+					<label for="emailInput">Email</label>
+					<input type="email" id="emailInput" placeholder="hello@simplyApps.nl" autofocus />
+				</div>
+
+				<input type="submit" class="btn btn-primary" value="Wachtwoord resetten"/>
 			</fieldset>
 		</form>
 	</div>

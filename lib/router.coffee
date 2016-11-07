@@ -37,16 +37,20 @@ FlowRouter.route '/signup',
 	]
 	action: -> BlazeLayout.render 'login_signup'
 
+FlowRouter.route '/forgot',
+	name: 'forgotPass'
+	triggersEnter: [
+		(context, redirect) ->
+			redirect 'overview' if Meteor.userId()? or Meteor.loggingIn()
+	]
+	action: -> BlazeLayout.render 'login_signup'
+
 FlowRouter.route '/verify/:token',
 	name: 'verifyMail'
 	action: (params) ->
 		Accounts.verifyEmail params.token, ->
 			FlowRouter.go 'overview'
 			notify 'Email geverifiëerd', 'success'
-
-FlowRouter.route '/forgot',
-	name: 'forgotPass'
-	action: -> BlazeLayout.render 'forgotPass'
 
 FlowRouter.route '/reset/:token',
 	name: 'resetPass'

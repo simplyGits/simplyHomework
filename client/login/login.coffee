@@ -3,8 +3,13 @@ loading = new ReactiveVar no
 tfaData = new ReactiveVar undefined # { mail, password }
 
 Template['login_signup'].helpers
+	template: ->
+		if tfaData.get()?
+			Template['tfa_login']
+		else if FlowRouter.getRouteName() is 'forgotPass'
+			Template['forgotPass_login']
+
 	loggingIn: -> FlowRouter.getRouteName() is 'login'
-	tfa: -> tfaData.get()?
 
 	isLoading: -> loading.get()
 	__loading: -> if loading.get() then 'loading' else ''
@@ -112,4 +117,40 @@ Template.signup.events
 Template.signup.onRendered ->
 	setPageOptions
 		title: 'Account maken'
+		color: null
+
+Template.forgotPass_login.events
+	'submit': (event) ->
+		event.preventDefault()
+
+		$emailInput = $ '#emailInput'
+		mail = $emailInput.val().toLowerCase().trim()
+
+		if mail.length is 0
+			setFieldError '#emailGroup', 'Email is leeg'
+			return
+		else if not Helpers.validMail mail
+			setFieldError '#emailGroup', 'Ongeldig email adres'
+			return
+
+		Accounts.forgotPassword { email: mail }, (e) ->
+			if e?
+				if e.error is 403
+					setFieldError '#emailGroup', 'Geen account met dit adres gevonden'
+				else
+					swalert
+						title: 'Fout'
+						text: 'Onbekende fout, we zijn op de hoogte gesteld'
+						type: 'error'
+
+					Kadira.trackError 'forgotPass-client', e.message, stacks: e.stack
+			else
+				swalert
+					title: 'Mail verstuurd'
+					text: 'Je krijgt zometeen een mailtje waar je je wachtwoord kan veranderen.'
+					type: 'success'
+
+Template.forgotPass_login.onRendered ->
+	setPageOptions
+		title: 'Wachtwoord Vergeten'
 		color: null
