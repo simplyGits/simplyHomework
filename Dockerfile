@@ -1,4 +1,4 @@
-FROM node:4.6.0
+FROM node:4.6.1
 MAINTAINER simplyApps <hello@simplyApps.nl>
 
 ADD . /opt/app
