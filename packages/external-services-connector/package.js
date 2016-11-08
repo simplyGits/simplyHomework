@@ -22,6 +22,7 @@ Package.onUse(function(api) {
 		'check',
 		'modules',
 		'mongo',
+		'accounts-base',
 	]);
 	api.use([
 		'ejson',

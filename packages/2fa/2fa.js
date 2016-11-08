@@ -6,8 +6,6 @@ import speakeasy from 'speakeasy'
 Accounts.validateLoginAttempt(function ({ type, allowed, user }) {
 	if (!allowed) {
 		return false
-	} else if (type !== 'password') {
-		return true
 	}
 
 	if (_.get(user, 'settings.devSettings.tfaEnabled')) {

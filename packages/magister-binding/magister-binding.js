@@ -1051,3 +1051,32 @@ MagisterBinding.replyMessage = function (id, all, body, userId) {
 
 	return fut.wait();
 }
+
+/**
+ * @method validateLoginAttempt
+ * @param {String} username
+ * @param {String} digest
+ * @return {String|null}
+ */
+MagisterBinding.validateLoginAttempt = function (username, digest) {
+	const users = Meteor.users.find({
+		'externalServices.magister.credentials.username': username,
+	}, {
+		fields: {
+			_id: 1,
+			'externalServices.magister.credentials': 1,
+		},
+	}).fetch();
+
+	for (const user of users) {
+		const hash = Package.sha.SHA256(
+			user.externalServices.magister.credentials.password
+		);
+
+		if (hash === digest) {
+			return user._id;
+		}
+	}
+
+	return null;
+};

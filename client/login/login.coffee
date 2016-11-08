@@ -25,7 +25,10 @@ Template.login.events
 
 		loading.set yes
 		ga 'send', 'event', 'login'
-		Meteor.loginWithPassword mail, password, (error) ->
+		(
+			if Helpers.validMail(mail) then Meteor.loginWithPassword
+			else Meteor.loginWithExternalServices
+		) mail, password, (error) ->
 			loading.set no
 			if error?
 				Meteor.defer ->
