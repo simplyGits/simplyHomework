@@ -167,7 +167,7 @@ SyncedCron.add
 		result
 
 SyncedCron.add
-	name: 'Preload users\' schedules for today'
+	name: 'Preload users\' schedules for the next two weeks'
 	schedule: (parser) -> parser.recur().on(7).hour()
 	job: ->
 		users = Meteor.users.find({}, fields: _id: 1).fetch()
@@ -175,5 +175,5 @@ SyncedCron.add
 			functions.updateCalendarItems(
 				userId
 				Date.today()
-				Date.today().addDays 1
+				Date.today().addDays 14
 			)
