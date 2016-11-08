@@ -2,11 +2,11 @@ Future = require 'fibers/future'
 { Services, ExternalServicesConnector, getServices } = require './connector.coffee'
 
 # REVIEW: Better way to do this?
-GRADES_INVALIDATION_TIME         = ms.minutes 20
+GRADES_INVALIDATION_TIME         = ms.minutes 15
 STUDYUTILS_INVALIDATION_TIME     = ms.minutes 20
 CALENDAR_ITEMS_INVALIDATION_TIME = ms.minutes 10
 SERVICE_UPDATE_INVALIDATION_TIME = ms.minutes 30
-PERSON_CACHE_INVALIDATION_TIME   = ms.minutes 15
+PERSON_CACHE_INVALIDATION_TIME   = ms.minutes 10
 
 ###*
 # @method handleCollErr
