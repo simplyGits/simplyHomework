@@ -262,8 +262,6 @@ MagisterBinding.getGrades = function (userId, options) {
 
 	// REVIEW: check if isEnd correctly works
 
-	const fut = new Future();
-
 	const magister = getMagisterObject(userId);
 	const user = Meteor.users.findOne(userId);
 	// TODO: fix this onlyRecent stuff.
@@ -273,90 +271,51 @@ MagisterBinding.getGrades = function (userId, options) {
 
 	const course = getCurrentCourse(magister);
 	if (course == null) {
-		throw new Meteor.Error('no-course');
+		return [];
 	}
 
-	course.grades({
+	const grades = Meteor.wrapAsync(course.grades, course)({
 		fillPersons: false,
-		fillGrade: false,
-	}, function (e, r) {
-		if (e) {
-			fut.throw(e);
-			return;
-		}
-
-		const result = new Array(r.length);
-		const grades = r.filter(g => ![14, 4].includes(g.type().type()));
-
-		const futs = [];
-		for (let i = 0; i < grades.length; i++) {
-			const g = grades[i];
-
-			// HACK: WET (unDRY, ;)) code.
-			const stored = Grades.findOne({
-				ownerId: userId,
-				fetchedBy: MagisterBinding.name,
-				externalId: prefixId(magister, g.id()),
-				weight: g.counts() ? g.weight() : 0,
-				gradeStr: g.grade(),
-			});
-
-			if (stored) {
-				result[i] = stored;
-			} else {
-				const gradeFut = new Future();
-				futs.push(gradeFut);
-
-				g.fillGrade(function (e) {
-					if (e != null) {
-						gradeFut.throw(e);
-					} else  {
-						const classInfo = _.find(user.classInfos, function (i) {
-							const abbr = i.externalInfo.abbreviation == g.class().abbreviation;
-							const id = i.externalInfo.id === g.class().id;
-							return abbr || id;
-						});
-						const classId = classInfo && classInfo.id;
-
-						const grade = new Grade(
-							g.grade(),
-							g.counts() ? g.weight() : 0,
-							classId,
-							userId
-						);
-
-						// REVIEW: Better way to check percentages than
-						// this?
-						if (g.type().header() === '%') {
-							grade.gradeType = 'percentage';
-						}
-						grade.fetchedBy = MagisterBinding.name;
-						grade.externalId = prefixId(magister, g.id());
-						grade.description = g.description().trim();
-						grade.passed = g.passed() || grade.passed;
-						grade.dateFilledIn = g.dateFilledIn();
-						grade.dateTestMade = g.testDate();
-						grade.isEnd = g.type().isEnd();
-						grade.period = new GradePeriod(
-							g.period().id(),
-							g.period().name()
-						);
-
-						result[i] = grade;
-						gradeFut.return();
-					}
-				});
-			}
-		}
-		Future.task(function () {
-			for (let i = 0; i < futs.length; i++) {
-				futs[i].wait();
-			}
-			return result;
-		}).proxy(fut);
+		fillGrade: true,
 	});
 
-	return fut.wait();
+	return _(grades)
+	.filter(g => ![14, 4].includes(g.type().type()))
+	.map(g => {
+		const classInfo = _.find(user.classInfos, function (i) {
+			const abbr = i.externalInfo.abbreviation == g.class().abbreviation;
+			const id = i.externalInfo.id === g.class().id;
+			return abbr || id;
+		});
+		const classId = classInfo && classInfo.id;
+
+		const grade = new Grade(
+			g.grade(),
+			g.counts() ? g.weight() : 0,
+			classId,
+			userId
+		);
+
+		// REVIEW: Better way to check percentages than
+		// this?
+		if (g.type().header() === '%') {
+			grade.gradeType = 'percentage';
+		}
+		grade.fetchedBy = MagisterBinding.name;
+		grade.externalId = prefixId(magister, g.id());
+		grade.description = g.description().trim();
+		grade.passed = g.passed() || grade.passed;
+		grade.dateFilledIn = g.dateFilledIn();
+		grade.dateTestMade = g.testDate();
+		grade.isEnd = g.type().isEnd();
+		grade.period = new GradePeriod(
+			g.period().id(),
+			g.period().name()
+		);
+
+		return grade;
+	})
+	.value();
 };
 
 /**
