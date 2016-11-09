@@ -31,30 +31,23 @@ Meteor.methods
 		unless c?
 			throw new Meteor.Error 'non-existing-class'
 
-		book = Books.findOne title: title
+		book = Books.findOne { title, classId }
 		if book?
 			book._id
 		else
 			book = new Book title, classId
 
 			containsTitle = (str) -> Helpers.contains str, title, yes
-			if c.externalInfo['woordjesleren']?
-				wlbooks = WoordjesLerenClasses.findOne(
-					id: c.externalInfo['woordjesleren'].id
-				).books
-				wlbook = _.find wlbooks, (b) -> containsTitle b.title
+			for [ service, coll ] in _.pairs(
+				woordjesleren: WoordjesLerenClasses
+				scholieren: ScholierenClasses
+			)
+				if c.externalInfo[service]?
+					serviceBooks = coll.findOne(id: c.externalInfo[service].id).books
+					serviceBook = _.find serviceBooks, (b) -> containsTitle b.title
 
-				if wlbook?
-					book.externalInfo['woordjesleren'] = wlbook.id
-
-			if c.externalInfo['scholieren']?
-				slbooks = ScholierenClasses.findOne(
-					id: c.externalInfo['scholieren'].id
-				).books
-				slbook = _.find slbooks, (b) -> containsTitle b.title
-
-				if slbook?
-					book.externalInfo['scholieren'] = slbook.id
+					if serviceBook?
+						book.externalInfo[service] = serviceBook.id
 
 			Books.insert book
 
