@@ -1,6 +1,9 @@
 { Services } = require './connector.coffee'
 
 Accounts.registerLoginHandler 'externalServices', ({ username, passHash }) ->
+	unless username? and passHash?
+		return undefined
+
 	services = _.filter Services, 'validateLoginAttempt'
 
 	for service in services
