@@ -14,24 +14,6 @@ Meteor.methods
 		undefined
 
 	###*
-	# @method insertClass
-	# @param {String} name
-	# @param {String} course
-	# @return {String} The id of the newely inserted class.
-	###
-	insertClass: (name, course) ->
-		check name, String
-		check course, String
-
-		{ year, schoolVariant } = getCourseInfo @userId
-		insertClass new SchoolClass(
-			name
-			course
-			year
-			schoolVariant
-		)
-
-	###*
 	# Creates and inserts a book.
 	# @method insertBook
 	# @param {String} title
