@@ -129,12 +129,6 @@ ZermeloBinding.getCalendarItems = function (userId, from, to) {
 	}
 }
 
-ZermeloBinding.getPersonClasses = function (userId) {
-	check(userId, String)
-
-	// REVIEW: can we do something like this with the Zermelo API?
-}
-
 ZermeloBinding.getProfileData = function (userId) {
 	check(userId, String)
 
