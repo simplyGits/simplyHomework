@@ -41,7 +41,7 @@ NoticeManager.provide 'lessonsOverview', ->
 		template: 'lessonsOverview'
 
 		header: "Lessen van #{if data[1] is 'today' then 'vandaag' else 'morgen'}"
-		priority: 0
+		priority: 2
 
 		onClick:
 			action: 'route'
