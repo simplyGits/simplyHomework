@@ -145,16 +145,19 @@ SyncedCron.add
 	name: 'Congratulate users'
 	schedule: (parser) -> parser.recur().on(5).hour()
 	job: ->
-		users = _.filter Meteor.users.find({}, {
+		count = 0
+
+		Meteor.users.find({}, {
 			fields:
 				'profile.birthDate': 1
 				'profile.firstName': 1
 				'emails': 1
-		}).fetch(), (u) ->
+		}).forEach (user) ->
 			birthDate = u.profile.birthDate
-			birthDate? and Helpers.datesEqual new Date, birthDate
+			unless birthDate? and Helpers.datesEqual new Date, birthDate
+				return
 
-		for user in users
+			count++
 			sendHtmlMail user, 'Gefeliciteerd!', """
 				Hey #{user.profile.firstName}!
 
@@ -162,7 +165,7 @@ SyncedCron.add
 				Je #{moment().diff user.profile.birthDate, 'years'}e was het toch?
 			"""
 
-		result = "Congratulated #{users.length} users."
+		result = "Congratulated #{count} users."
 		console.log result
 		result
 

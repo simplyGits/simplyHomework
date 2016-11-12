@@ -35,7 +35,7 @@ SyncedCron.add({
 		const users = Meteor.users.find({
 			'profile.firstName': { $ne: '' },
 			'settings.notifications.email.newGrade': { $ne: false },
-		}).fetch()
+		})
 		let notifiedCount = 0
 
 		users.forEach((user) => {
@@ -114,7 +114,7 @@ SyncedCron.add({
 			// (We could also just check if the person is idle or offline, maybe
 			// that's better.)
 			// 'status.online': false,
-		}).fetch()
+		})
 		let notifiedCount = 0
 
 		users.forEach((user) => {
