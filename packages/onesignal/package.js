@@ -8,10 +8,6 @@ Package.describe({
 	documentation: 'README.md',
 });
 
-Npm.depends({
-	'request': '2.74.0',
-});
-
 Package.onUse(function(api) {
 	api.versionsFrom('1.4');
 	api.use('ecmascript');
@@ -21,7 +17,6 @@ Package.onUse(function(api) {
 	api.use([
 		'check',
 		'http',
-		'meteorhacks:picker',
 	], 'server');
 	api.mainModule('server.js', 'server');
 });

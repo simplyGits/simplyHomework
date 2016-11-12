@@ -8,6 +8,7 @@ Package.describe({
 
 Npm.depends({
 	'damerau-levenshtein': 'git://github.com/cbaatz/damerau-levenshtein.git',
+	'request': '2.78.0',
 });
 
 Package.onUse(function(api) {
@@ -23,6 +24,7 @@ Package.onUse(function(api) {
 		'mongo',
 		'shitdown',
 		'modules',
+		'ecmascript',
 	]);
 	api.use([
 		'templating',
@@ -35,6 +37,7 @@ Package.onUse(function(api) {
 	api.use([
 		'reywood:publish-composite',
 		'ddp-rate-limiter',
+		'meteorhacks:picker',
 	], 'server');
 
 	api.addAssets([
@@ -71,6 +74,7 @@ Package.onUse(function(api) {
 		'server/publish.coffee',
 		'server/rateLimits.coffee',
 		'server/indices.coffee',
+		'server/router.js',
 	], 'server');
 
 	api.export([
