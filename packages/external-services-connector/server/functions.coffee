@@ -403,6 +403,15 @@ updateCalendarItems = (userId, from, to) ->
 		'externalInfos'
 		'scrapped'
 	]
+	OVERWRITE_IGNORE = [
+		'externalInfo'
+		'externalInfos'
+		'_id'
+		'startDate'
+		'endDate'
+		'fullDay'
+		'usersDone'
+	]
 
 	user = Meteor.users.findOne userId
 	errors = []
@@ -451,12 +460,13 @@ updateCalendarItems = (userId, from, to) ->
 			if old?
 				old.externalInfos[service.name] = item.externalInfo
 				# HACK
-				for [ key, val ] in _.pairs(item) when key not in [ 'externalInfo', 'externalInfos', '_id' ]
+				for [ key, val ] in _.pairs(item) when key not in OVERWRITE_IGNORE
 					old[key] = val if (
 						switch key
 							when 'scrapped' then val is true
 							when 'description' then service.name isnt 'zermelo'
-							else val?
+							when 'location' then val.toLowerCase() isnt old[key].toLowerCase()
+							else not _.isEmpty val
 					)
 
 				absence = _.find result.absences, calendarItemId: item._id

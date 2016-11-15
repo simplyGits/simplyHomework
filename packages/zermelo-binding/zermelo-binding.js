@@ -76,7 +76,6 @@ function prefixId (zermelo, ...args) {
 }
 
 ZermeloBinding.getCalendarItems = function (userId, from, to) {
-	return { calendarItems: [], absences: [], files: [] }
 	check(userId, String)
 
 	const zermelo = getZermeloObject(userId)
@@ -85,18 +84,20 @@ ZermeloBinding.getCalendarItems = function (userId, from, to) {
 	const classInfos = getClassInfos(userId)
 
 	for (const appointment of appointments) {
+		const subject = appointment.subjects[0]
+
 		const classInfo = classInfos.find(i => {
 			const abbr = i.externalInfo.abbreviation
 			return (
 				abbr != null &&
-				abbr.toLowerCase() === appointment.subjects[0].toLowerCase()
+				abbr.toLowerCase() === subject.toLowerCase()
 			)
 		})
 		const classId = classInfo && classInfo.id
 
 		const calendarItem = new CalendarItem(
 			userId,
-			appointment.subjects[0],
+			subject,
 			appointment.start,
 			appointment.end,
 			classId || undefined
@@ -117,7 +118,8 @@ ZermeloBinding.getCalendarItems = function (userId, from, to) {
 				description: calendarItem.remark,
 			}
 		}
-		// TODO: teacher
+
+		calendarItem.teacher = undefined // TODO
 
 		calendarItems.push(calendarItem)
 	}
