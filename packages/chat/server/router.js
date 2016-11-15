@@ -1,7 +1,7 @@
 /* global Picker, ChatRooms */
 import request from 'request';
 
-Picker.route('/onesignal/chatpic/:uid/:cid/:size?', function (params, req, res) {
+Picker.route('/chat/pic/:uid/:cid/:size?', function (params, req, res) {
 	const err = (code, str) => {
 		res.writeHead(code, { 'Content-Type': 'text/plain' });
 		res.end(str);
