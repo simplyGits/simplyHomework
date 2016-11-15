@@ -97,3 +97,14 @@
 		end-date: $gt: new Date
 		scrapped: false
 		type: 'lesson'
+
+@ScheduleFunctions.next-lesson = (user-id = Meteor.user-id!) ->
+	check user-id, String
+
+	minuteTracker?.depend!
+	CalendarItems.find-one do
+		user-ids: user-id
+		start-date: $gt: new Date
+		end-date: $lt: new Date
+		scrapped: false
+		type: 'lesson'

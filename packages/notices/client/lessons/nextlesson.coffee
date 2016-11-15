@@ -2,14 +2,7 @@ NoticeManager.provide 'nextLesson', ->
 	minuteTracker.depend()
 	@subscribe 'externalCalendarItems', Date.today(), Date.today().addDays 1
 
-	nextAppointmentToday = CalendarItems.findOne {
-		userIds: Meteor.userId()
-		startDate: $gt: new Date
-		endDate: $lte: Date.today().addDays 1
-		scrapped: false
-		type: 'lesson'
-	}, sort: 'startDate': 1
-
+	nextAppointmentToday = ScheduleFunctions.nextLesson()
 	if nextAppointmentToday?
 		template: 'infoNextLesson'
 		data: nextAppointmentToday
