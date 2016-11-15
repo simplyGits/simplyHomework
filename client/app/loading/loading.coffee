@@ -17,7 +17,7 @@ Template.loading.onRendered ->
 		className: 'spinner'
 		top: '50%'
 		left: '50%'
-	).spin document.getElementById 'spinner'
+	).spin @$('#spinner')[0]
 
 Template.loading.onDestroyed ->
 	@spinner?.stop()
