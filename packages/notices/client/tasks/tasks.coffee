@@ -61,7 +61,7 @@ NoticeManager.provide 'tasks', ->
 		template: 'tasks'
 		header: "Huiswerk voor #{Helpers.formatDateRelative date, no}"
 		data: tasks
-		priority: 1
+		priority: 2
 
 Template.taskRow.helpers
 	__done: -> if @done() then 'done' else ''
