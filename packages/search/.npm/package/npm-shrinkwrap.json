@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "damerau-levenshtein": {
+      "version": "0.0.1",
+      "resolved": "git://github.com/cbaatz/damerau-levenshtein.git#8d7440a51ae9dc6912e44385115c7cb1da4e8ebc",
+      "from": "damerau-levenshtein@git://github.com/cbaatz/damerau-levenshtein.git"
+    }
+  }
+}
