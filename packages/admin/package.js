@@ -14,5 +14,8 @@ Package.onUse(function(api) {
 		'check',
 		'mongo',
 	], 'server')
-	api.addFiles('server/publish.js', 'server')
+	api.addFiles([
+		'server/publish.js',
+		'server/methods.js',
+	], 'server')
 })
