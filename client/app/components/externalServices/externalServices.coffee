@@ -7,10 +7,12 @@ Template.externalServices.helpers
 
 Template.externalServices.events
 	'click .externalServiceButton': (event) ->
+		ga 'send', 'event', 'externalServices', 'show modal'
 		showModal @templateName, undefined, this if @template?
 
 Template.externalServiceResult.events
 	'click .deleteButton': ->
+		ga 'send', 'event', 'externalServices', 'delete'
 		@setProfileData undefined
 		Meteor.call 'deleteServiceData', @name
 

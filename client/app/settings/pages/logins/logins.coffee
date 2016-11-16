@@ -13,4 +13,6 @@ Template['settings_page_logins'].onCreated ->
 	@subscribe 'logins'
 
 Template['settings_page_logins_login'].events
-	'click [data-action="kill"]': -> Logins.kill @_id
+	'click [data-action="kill"]': ->
+		ga 'send', 'event', 'logins', 'kill'
+		Logins.kill @_id

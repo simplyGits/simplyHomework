@@ -131,8 +131,10 @@ Template.classView.events
 			event.target.blur()
 
 	'click #gradesButton': ->
+		ga 'send', 'event', 'gradesModal', 'open'
 		showModal 'gradesModal', undefined, currentClass
 	'click #hoursButton': ->
+		ga 'send', 'event', 'click', 'nextHourButton'
 		nextHourDate = CalendarItems.findOne({
 			userIds: Meteor.userId()
 			classId: classId()
@@ -147,6 +149,7 @@ Template.classView.events
 			FlowRouter.go 'calendar', time: nextHourDate.getTime()
 
 	'click #nextTestButton': ->
+		ga 'send', 'event', 'click', 'nextTestButton'
 		test = getNextTest()
 		if test?
 			FlowRouter.go(
@@ -156,13 +159,16 @@ Template.classView.events
 			)
 
 	'click #projectsButton': ->
+		ga 'send', 'event', 'projectsModal', 'open'
 		showModal 'projectsModal'
 
 	'click #teacherButton': ->
+		ga 'send', 'event', 'click', 'teacherButton'
 		FlowRouter.go 'composeMessage', undefined,
 			recipients: @__classInfo.externalInfo.teacherName
 
 	'click #chatContainer > header': ->
+		ga 'send', 'event', 'click', 'chatContainerHeader'
 		ChatManager.openClassChat @_id
 
 Template.classView.onRendered ->
@@ -180,7 +186,9 @@ Template.classView.onDestroyed ->
 	Mousetrap.unbind 's'
 
 Template.chatPersonRow.events
-	'click': -> FlowRouter.go 'personView', id: @_id
+	'click': ->
+		ga 'send', 'event', 'click', 'chatPersonRow'
+		FlowRouter.go 'personView', id: @_id
 
 Template.changeClassModal.events
 	'click #goButton': ->
@@ -198,6 +206,7 @@ Template.changeClassModal.events
 
 	'click #hideClassButton': ->
 		userId = Meteor.userId()
+		ga 'send', 'event', 'class', 'hide'
 
 		setHidden = (val) =>
 			Meteor.call 'setClassHidden', @_id, val

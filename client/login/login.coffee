@@ -136,6 +136,7 @@ Template.forgotPass_login.events
 			setFieldError '#emailGroup', 'Ongeldig email adres'
 			return
 
+		ga 'send', 'event', 'forgot password'
 		Accounts.forgotPassword { email: mail }, (e) ->
 			if e?
 				if e.error is 403

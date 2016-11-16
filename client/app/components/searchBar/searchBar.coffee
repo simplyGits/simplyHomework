@@ -85,6 +85,7 @@ fetch = (query, sync, callback) ->
 route = (query, d) ->
 	$('#searchBar input').val('').blur()
 	if d?
+		ga 'send', 'event', 'search', 'open result'
 		if d.type is 'route'
 			FlowRouter.go d.path, d.params
 		else if d.type is 'modal'

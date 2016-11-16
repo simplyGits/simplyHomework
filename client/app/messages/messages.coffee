@@ -262,8 +262,6 @@ Template['message_compose'].events
 		saveDraft draft
 
 	'click #send': ->
-		ga 'send', 'event', 'messages', 'send'
-
 		return if sending
 		sending = yes
 
@@ -288,6 +286,7 @@ Template['message_compose'].events
 				history.back()
 
 		if replyId?
+			ga 'send', 'event', 'messages', 'send', 'reply'
 			Meteor.call(
 				'replyMessage'
 				replyId
@@ -297,6 +296,7 @@ Template['message_compose'].events
 				cb
 			)
 		else
+			ga 'send', 'event', 'messages', 'send', 'new'
 			Meteor.call(
 				'sendMessage'
 				subject
