@@ -72,7 +72,12 @@ Template.classView.helpers
 			}
 
 	chatPersons: ->
-		Meteor.users.find _id: $in: getChatRoom()?.users ? []
+		Meteor.users.find {
+			_id: $in: getChatRoom()?.users ? []
+		}, {
+			sort:
+				'profile.firstName': 1
+		}
 
 Template.classView.onCreated ->
 	@autorun =>
