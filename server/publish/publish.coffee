@@ -43,9 +43,7 @@ Meteor.publish 'status', (ids) ->
 	Meteor.users.find {
 		_id: $in: ids
 		'profile.schoolId': schoolId
-		$or: [
-			{ 'settings.privacy.publishStatus': $ne: no }
-		]
+		'settings.privacy.publishStatus': $ne: no
 	}, {
 		fields:
 			'status.online': 1
