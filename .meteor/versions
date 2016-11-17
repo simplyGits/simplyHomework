@@ -1,6 +1,6 @@
 2fa@0.0.1
 accounts-base@1.2.14
-accounts-password@1.3.2
+accounts-password@1.3.3
 admin@0.0.1
 aldeed:collection2@2.10.0
 aldeed:collection2-core@1.2.0
@@ -12,7 +12,7 @@ appshore:recaptcha@2.1.0
 audit-argument-checks@1.0.7
 autoupdate@1.3.12
 babel-compiler@6.13.0
-babel-runtime@1.0.0
+babel-runtime@1.0.1
 base64@1.0.10
 binary-heap@1.0.10
 blaze@2.2.0
@@ -30,7 +30,7 @@ cfs:http-methods@0.0.32
 chat@0.0.1
 check@1.2.4
 chuangbo:cookie@1.1.0
-coffeescript@1.11.1_3
+coffeescript@1.11.1_4
 crosswalk@1.7.0
 ddp@1.2.5
 ddp-client@1.3.2
@@ -39,7 +39,7 @@ ddp-rate-limiter@1.0.6
 ddp-server@1.3.12
 deps@1.0.12
 diff-sequence@1.0.7
-ecmascript@0.6.0
+ecmascript@0.6.1
 ecmascript-runtime@0.3.15
 ejson@1.0.13
 email@1.1.18
@@ -84,7 +84,7 @@ meteorhacks:unblock@1.1.0
 meteorspark:util@0.2.0
 minifier-css@1.2.15
 minifier-js@1.2.15
-minimongo@1.0.18
+minimongo@1.0.19
 mizzao:bootboxjs@4.4.0
 mizzao:timesync@0.4.0
 mizzao:user-status@0.6.6
@@ -150,7 +150,7 @@ srp@1.0.10
 standard-minifier-css@1.3.2
 standard-minifier-js@1.2.1
 stevezhu:lodash@3.10.1
-stylus@2.513.7
+stylus@2.513.8
 tap:i18n@1.8.2
 templating@1.2.15
 templating-compiler@1.2.15
