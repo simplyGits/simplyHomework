@@ -102,9 +102,10 @@
 	check user-id, String
 
 	minuteTracker?.depend!
-	CalendarItems.find-one do
+	CalendarItems.find-one(
 		user-ids: user-id
 		start-date: $gt: new Date
 		end-date: $lt: Date.today!add-days 1
 		scrapped: false
 		type: 'lesson'
+	, sort: startDate: 1)
