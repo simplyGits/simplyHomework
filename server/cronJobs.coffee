@@ -153,7 +153,7 @@ SyncedCron.add
 				'profile.firstName': 1
 				'emails': 1
 		}).forEach (user) ->
-			birthDate = u.profile.birthDate
+			birthDate = user.profile.birthDate
 			unless birthDate? and Helpers.datesEqual new Date, birthDate
 				return
 
