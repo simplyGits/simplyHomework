@@ -105,6 +105,6 @@
 	CalendarItems.find-one do
 		user-ids: user-id
 		start-date: $gt: new Date
-		end-date: $lt: new Date
+		end-date: $lt: Date.today!add-days 1
 		scrapped: false
 		type: 'lesson'
