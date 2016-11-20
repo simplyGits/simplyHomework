@@ -155,20 +155,20 @@ class @CalendarItem
 
 			else '??'
 
-	relativeTime: (ignoreScrapped = no) ->
+	relativeTime: (showForScrapped = no) ->
 		return '' unless Meteor.isClient
 
 		minuteTracker.depend()
 		now = new Date
-		diff = moment(@startDate).diff now
+		m = moment @startDate
 
-		if not moment(@startDate).isSame(now, 'day') or
-		@fullDay or ( not ignoreScrapped and @scrapped )
+		if not m.isSame(now, 'day') or
+		@fullDay or (not showForScrapped and @scrapped)
 			return ''
 
 		if @startDate <= now <= @endDate
 			"nog #{Helpers.timeDiff now, @endDate}"
-		else if diff > 0
+		else if now < @startDate
 			"over #{Helpers.timeDiff now, @startDate}"
 		else
 			"#{Helpers.timeDiff now, @endDate} geleden"
