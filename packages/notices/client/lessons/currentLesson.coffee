@@ -21,8 +21,3 @@ NoticeManager.provide 'currentLesson', ->
 				time: +Date.today()
 			queryParams:
 				openCalendarItemId: currentAppointment._id
-
-Template.infoCurrentAppointment.helpers
-	timeLeft: ->
-		minuteTracker.depend()
-		Helpers.timeDiff new Date(), @endDate
