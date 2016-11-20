@@ -65,13 +65,14 @@ SyncedCron.add({
 				const c = Classes.findOne(grade.classId)
 
 				try {
+					const end = GradeFunctions.getEndGrade(c._id, userId)
 					const html = emails.cijfer({
 						className: c.name,
 						classUrl: Meteor.absoluteUrl(`class/${c._id}`),
 						grade: toString(grade),
 						passed: grade.passed,
 						description: grade.description.trim() || undefined,
-						average: toString(GradeFunctions.getEndGrade(c._id, userId)),
+						average: end != null && toString(end),
 					})
 
 					sendEmail(userId, `Nieuw cijfer voor ${c.name}`, html)
