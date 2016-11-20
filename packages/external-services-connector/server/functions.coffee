@@ -953,7 +953,7 @@ replyMessage = (id, all, body, service, userId) ->
 	id = _(message.externalId).split('_').last()
 
 	service = _.find Services, (s) -> s.name is service and s.can userId, 'getMessages'
-	serivce.replyMessage id, all, body, userId
+	service.replyMessage id, all, body, userId
 
 ###*
 # @fetchServiceUpdates
