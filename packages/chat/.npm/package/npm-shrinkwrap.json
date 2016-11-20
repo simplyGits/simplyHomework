@@ -225,13 +225,13 @@
       "from": "jsprim@>=1.2.2 <2.0.0"
     },
     "mime-db": {
-      "version": "1.24.0",
-      "resolved": "https://registry.npmjs.org/mime-db/-/mime-db-1.24.0.tgz",
-      "from": "mime-db@>=1.24.0 <1.25.0"
+      "version": "1.25.0",
+      "resolved": "https://registry.npmjs.org/mime-db/-/mime-db-1.25.0.tgz",
+      "from": "mime-db@>=1.25.0 <1.26.0"
     },
     "mime-types": {
-      "version": "2.1.12",
-      "resolved": "https://registry.npmjs.org/mime-types/-/mime-types-2.1.12.tgz",
+      "version": "2.1.13",
+      "resolved": "https://registry.npmjs.org/mime-types/-/mime-types-2.1.13.tgz",
       "from": "mime-types@>=2.1.7 <2.2.0"
     },
     "node-uuid": {

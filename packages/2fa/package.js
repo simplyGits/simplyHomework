@@ -8,7 +8,7 @@ Package.describe({
 
 Npm.depends({
 	'speakeasy': '2.0.0',
-	'qrcode': '0.4.2',
+	'qrcode': '0.5.0',
 })
 
 Package.onUse(function(api) {

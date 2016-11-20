@@ -16,8 +16,8 @@
       "from": "align-text@>=0.1.3 <0.2.0"
     },
     "amdefine": {
-      "version": "1.0.0",
-      "resolved": "https://registry.npmjs.org/amdefine/-/amdefine-1.0.0.tgz",
+      "version": "1.0.1",
+      "resolved": "https://registry.npmjs.org/amdefine/-/amdefine-1.0.1.tgz",
       "from": "amdefine@>=0.0.4"
     },
     "asap": {
@@ -66,8 +66,8 @@
       "from": "cheerio@>=0.19.0 <0.20.0"
     },
     "clean-css": {
-      "version": "3.4.20",
-      "resolved": "https://registry.npmjs.org/clean-css/-/clean-css-3.4.20.tgz",
+      "version": "3.4.21",
+      "resolved": "https://registry.npmjs.org/clean-css/-/clean-css-3.4.21.tgz",
       "from": "clean-css@>=3.1.9 <4.0.0",
       "dependencies": {
         "commander": {
@@ -160,8 +160,8 @@
       "from": "cssom@>=0.3.0 <0.4.0"
     },
     "debug": {
-      "version": "2.2.0",
-      "resolved": "https://registry.npmjs.org/debug/-/debug-2.2.0.tgz",
+      "version": "2.3.3",
+      "resolved": "https://registry.npmjs.org/debug/-/debug-2.3.3.tgz",
       "from": "debug@>=2.0.0 <3.0.0"
     },
     "decamelize": {
@@ -286,7 +286,7 @@
     "isobject": {
       "version": "2.1.0",
       "resolved": "https://registry.npmjs.org/isobject/-/isobject-2.1.0.tgz",
-      "from": "isobject@>=2.0.0 <3.0.0",
+      "from": "isobject@>=2.1.0 <3.0.0",
       "dependencies": {
         "isarray": {
           "version": "1.0.0",
@@ -346,13 +346,13 @@
       "from": "mime@1.3.4"
     },
     "mime-db": {
-      "version": "1.24.0",
-      "resolved": "https://registry.npmjs.org/mime-db/-/mime-db-1.24.0.tgz",
-      "from": "mime-db@>=1.24.0 <1.25.0"
+      "version": "1.25.0",
+      "resolved": "https://registry.npmjs.org/mime-db/-/mime-db-1.25.0.tgz",
+      "from": "mime-db@>=1.25.0 <1.26.0"
     },
     "mime-types": {
-      "version": "2.1.12",
-      "resolved": "https://registry.npmjs.org/mime-types/-/mime-types-2.1.12.tgz",
+      "version": "2.1.13",
+      "resolved": "https://registry.npmjs.org/mime-types/-/mime-types-2.1.13.tgz",
       "from": "mime-types@>=2.1.3 <3.0.0"
     },
     "minimist": {
@@ -366,9 +366,9 @@
       "from": "mkdirp@>=0.5.0 <0.6.0"
     },
     "ms": {
-      "version": "0.7.1",
-      "resolved": "https://registry.npmjs.org/ms/-/ms-0.7.1.tgz",
-      "from": "ms@0.7.1"
+      "version": "0.7.2",
+      "resolved": "https://registry.npmjs.org/ms/-/ms-0.7.2.tgz",
+      "from": "ms@0.7.2"
     },
     "nth-check": {
       "version": "1.0.1",
@@ -376,8 +376,8 @@
       "from": "nth-check@>=1.0.0 <1.1.0"
     },
     "object.pick": {
-      "version": "1.1.2",
-      "resolved": "https://registry.npmjs.org/object.pick/-/object.pick-1.1.2.tgz",
+      "version": "1.2.0",
+      "resolved": "https://registry.npmjs.org/object.pick/-/object.pick-1.2.0.tgz",
       "from": "object.pick@>=1.1.1 <2.0.0"
     },
     "optimist": {
@@ -421,9 +421,9 @@
       "from": "right-align@>=0.1.1 <0.2.0"
     },
     "simplyemail": {
-      "version": "1.0.7",
-      "resolved": "https://registry.npmjs.org/simplyemail/-/simplyemail-1.0.7.tgz",
-      "from": "simplyemail@1.0.7"
+      "version": "1.0.8",
+      "resolved": "https://registry.npmjs.org/simplyemail/-/simplyemail-1.0.8.tgz",
+      "from": "simplyemail@1.0.8"
     },
     "slick": {
       "version": "1.12.2",

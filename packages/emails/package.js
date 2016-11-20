@@ -7,7 +7,7 @@ Package.describe({
 });
 
 Npm.depends({
-	'simplyemail': '1.0.7',
+	'simplyemail': '1.0.8',
 });
 
 Package.onUse(function(api) {
