@@ -93,7 +93,7 @@
 	minuteTracker?.depend!
 	CalendarItems.find-one do
 		user-ids: user-id
-		start-date: $lt: new Date
+		start-date: $lte: new Date
 		end-date: $gt: new Date
 		scrapped: false
 		type: 'lesson'
