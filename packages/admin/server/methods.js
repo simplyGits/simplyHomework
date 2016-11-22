@@ -1,4 +1,4 @@
-/* global userIsInRole */
+/* global userIsInRole, Analytics */
 import { sendHtmlMail } from 'meteor/emails'
 
 Meteor.methods({
@@ -25,6 +25,17 @@ Meteor.methods({
 			sendHtmlMail(u, title, body)
 		}
 
-		return users.map(u => u._id)
+		const userIds = users.map(u => u._id)
+		Analytics.insert({
+			type: 'send-mail',
+			emailType: 'manual',
+			senderId: this.userId,
+			title,
+			body,
+			userQuery: EJSON.stringify(userQuery),
+			userIds,
+			date: new Date(),
+		})
+		return userIds
 	},
 })
