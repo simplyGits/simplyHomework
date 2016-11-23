@@ -1,6 +1,7 @@
-{ Services, getServices } = require './connector.coffee'
-{ updateCalendarItems, updateGrades, updateStudyUtils, updateMessages,
-  fetchServiceUpdates, getModuleInfo } = require './functions.coffee'
+import { Services, getServices } from './connector.coffee'
+import { updateCalendarItems, updateGrades, updateStudyUtils, updateMessages,
+         fetchServiceUpdates, getModuleInfo } from './functions.coffee'
+import { calendarItemsInvalidationTime } from './constants.coffee'
 
 Meteor.publish 'externalCalendarItems', (from, to) ->
 	check from, Date
