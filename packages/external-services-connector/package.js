@@ -29,6 +29,7 @@ Package.onUse(function(api) {
 		'meteorhacks:picker',
 		'ms',
 		'mutex',
+		'simply:waitgroup',
 	], 'server');
 
 	api.mainModule('client/connector.coffee', 'client');
