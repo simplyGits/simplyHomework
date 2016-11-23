@@ -111,10 +111,10 @@ Template.personSharedHours.helpers
 		_(sharedCalendarItems)
 			.concat inbetweenHours
 			.uniq (a) -> a.date.date().getTime()
-			.sortBy (a) -> a.date.getDay() + 1
+			.sortBy (a) -> Helpers.daysRange new Date, a.date, no
 			.map (a) ->
 				m = moment a.date
-				name: Helpers.cap DayToDutch Helpers.weekDay a.date.date()
+				name: Helpers.cap Helpers.formatDateRelative a.date, no
 				hours: (
 					_(sharedCalendarItems)
 						.concat inbetweenHours
