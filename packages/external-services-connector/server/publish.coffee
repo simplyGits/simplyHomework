@@ -15,7 +15,7 @@ Meteor.publish 'externalCalendarItems', (from, to) ->
 
 	handle = Helpers.interval (->
 		updateCalendarItems userId, from, to
-	), ms.minutes 20
+	), calendarItemsInvalidationTime/2
 
 	cursor =
 		CalendarItems.find {
@@ -83,7 +83,7 @@ Meteor.publish 'foreignCalendarItems', (userIds, from, to) ->
 	handle = Helpers.interval (->
 		for id in userIds
 			updateCalendarItems id, from, to
-	), ms.minutes 20
+	), calendarItemsInvalidationTime/2
 
 	@onStop ->
 		Meteor.clearInterval handle
