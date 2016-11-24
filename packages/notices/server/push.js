@@ -80,7 +80,7 @@ Meteor.startup(function () {
 		},
 	}).observe({
 		changed(newDoc, oldDoc) {
-			const time = doc => doc.lastMessageTime.getTime()
+			const time = doc => (doc.lastMessageTime || new Date).getTime()
 			if (loading || time(oldDoc) === time(newDoc)) {
 				return
 			}
