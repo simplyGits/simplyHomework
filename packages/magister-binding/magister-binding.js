@@ -884,10 +884,15 @@ MagisterBinding.getMessages = function (folderName, skip, limit, userId) {
 
 MagisterBinding.getUpdates = function (userId) {
 	check(userId, String);
-	const fut = new Future();
 
 	const magister = getMagisterObject(userId);
 	const folder = magister.alerts();
+
+	if (folder == null) {
+		return [];
+	}
+
+	const fut = new Future();
 
 	folder.messages({
 		skip: 0,
