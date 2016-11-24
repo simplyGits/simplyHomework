@@ -49,6 +49,7 @@ Template.classView.helpers
 	nextTestString: ->
 		test = getNextTest()
 		if test?
+			minuteTracker.depend()
 			moment(test.startDate).fromNow yes
 		else
 			'geen'
