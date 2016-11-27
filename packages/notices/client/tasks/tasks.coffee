@@ -63,6 +63,17 @@ NoticeManager.provide 'tasks', ->
 		data: tasks
 		priority: 2
 
+NoticeManager.provide 'tasks today', ->
+	@subscribe 'externalCalendarItems', Date.today(), Date.today().addDays 1
+
+	tasks = _.filter getTasksForDate(Date.today()), (t) -> new Date < t.date
+
+	if tasks.length > 0
+		template: 'tasks'
+		header: "Huiswerk voor komdende lessen vandaag"
+		data: tasks
+		priority: 1
+
 Template.taskRow.helpers
 	__done: -> if @done() then 'done' else ''
 	__checked: -> if @done() then 'checked' else ''
