@@ -39,20 +39,27 @@ getLockSync = (userId, start, end) ->
 	getLock userId, start, end, (done) -> fut.return done
 	fut.wait()
 
-calendarItemFetches = [] # { userId, start, end, time }
+class Fetch
+	constructor: (@userId, @start, @end) ->
+		@time = new Date()
+
+	expired: -> _.now() - @time > calendarItemsInvalidationTime
+	dateInRange: (date) -> @start <= date <= @end
+
+calendarItemFetches = []
 shouldFetch = (userId, start, end) ->
 	start = start.date()
 	end = end.date()
 
 	fetches = _(calendarItemFetches)
-		.reject (f) -> _.now() - f.time > calendarItemsInvalidationTime
+		.reject (f) -> f.expired()
 		.filter { userId }
 		.value()
 
 	dates = _.chain()
 		.range Helpers.daysRange(start, end) + 1
 		.map (n) -> start.addDays n
-		.reject (d) -> _.some fetches, (f) -> f.start <= d <= f.end
+		.reject (d) -> _.some fetches, (f) -> f.dateInRange d
 		.value()
 
 	if dates.length > 0
@@ -64,16 +71,11 @@ shouldFetch = (userId, start, end) ->
 		undefined
 
 addFetch = (userId, start, end) ->
-	calendarItemFetches.push
-		userId: userId
-		start: start
-		end: end
-		time: new Date()
+	calendarItemFetches.push new Fetch(userId, start, end)
 
 # cleanup stale entries to prevent memory leak
 Meteor.setInterval (->
-	_.remove calendarItemFetches, (f) ->
-		_.now() - f.time > calendarItemsInvalidationTime
+	_.remove calendarItemFetches, (f) -> f.expired()
 ), ms.minutes 2.5
 
 # REVIEW: Should we have different functions for absenceInfo and calendarItems?
