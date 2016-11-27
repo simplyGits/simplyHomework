@@ -76,8 +76,8 @@
       "from": "damerau-levenshtein@git://github.com/cbaatz/damerau-levenshtein.git"
     },
     "dashdash": {
-      "version": "1.14.0",
-      "resolved": "https://registry.npmjs.org/dashdash/-/dashdash-1.14.0.tgz",
+      "version": "1.14.1",
+      "resolved": "https://registry.npmjs.org/dashdash/-/dashdash-1.14.1.tgz",
       "from": "dashdash@>=1.12.0 <2.0.0",
       "dependencies": {
         "assert-plus": {
