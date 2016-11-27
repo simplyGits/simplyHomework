@@ -134,11 +134,7 @@ export updateCalendarItems = (userId, from, to) ->
 	for service in services
 		{ result, error } = results[service.name]
 		if error?
-			ExternalServicesConnector.handleServiceError(
-				service.name,
-				userId,
-				error
-			)
+			ExternalServicesConnector.handleServiceError service.name, userId, error
 			errors.push error
 			continue
 

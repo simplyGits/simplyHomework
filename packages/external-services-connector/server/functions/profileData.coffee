@@ -4,26 +4,18 @@ export getServiceProfileData = (serviceName, userId) ->
 	check serviceName, String
 	check userId, String
 
-	service = _.find Services, (s) -> s.name is serviceName
+	service = _.find Services, (s) -> name: serviceName
 
 	unless service?
-		throw new Meteor.Error 'notFound', "No service with name '#{serviceName}' found"
-
+		throw new Meteor.Error 'service-not-found', "No service with name '#{serviceName}' found"
 	unless service.getProfileData?
-		throw new Meteor.Error(
-			'incorrectRequest'
-			"#{serviceName} doesn't have an `getProfileData` method"
-		)
+		return undefined
 
 	try
 		service.getProfileData userId
 	catch e
 		ExternalServicesConnector.handleServiceError service.name, userId, e
-		throw new Meteor.Error(
-			'externalError'
-			"Error while retreiving profile data from #{serviceName}"
-			e.toString()
-		)
+		e
 
 ###*
 # Gets the profile data for every enabled external service as an object. Key

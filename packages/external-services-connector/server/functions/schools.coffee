@@ -5,19 +5,18 @@ export getServiceSchools = (serviceName, query, userId) ->
 	check query, String
 	check userId, String
 
-	service = _.find Services, (s) -> s.name is serviceName
+	service = _.find Services, (s) -> name: serviceName
 
 	unless service?
-		throw new Meteor.Error 'notFound', "No service with name '#{serviceName}' found"
-
+		throw new Meteor.Error 'service-not-found', "No service with name '#{serviceName}' found"
 	unless service.getSchools?
-		throw new Meteor.Error 'incorrectRequest', "#{serviceName} doesn't have an `getSchools` method"
+		return []
 
 	try
 		result = service.getSchools query
 	catch e
 		ExternalServicesConnector.handleServiceError service.name, userId, e
-		throw new Meteor.Error 'externalError', "Error while retreiving schools from #{serviceName}"
+		throw e
 
 	for school in result
 		val = Schools.findOne "externalInfo.#{serviceName}.id": school.id
@@ -38,8 +37,7 @@ export getSchools = (query, userId) ->
 	check query, String
 	check userId, String
 
-	services = _.filter Services, (s) -> s.getSchools?
-	for service in services
+	for service in Services
 		getServiceSchools service.name, query, userId
 
 	Schools.find(

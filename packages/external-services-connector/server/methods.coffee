@@ -32,7 +32,7 @@ Meteor.methods
 				ExternalServicesConnector.handleServiceError service.name, @userId, err
 				throw new Meteor.Error 'error', 'Other error.', err.message
 
-		Meteor.call 'getServiceProfileData', serviceName, @userId
+		functions.getServiceProfileData serviceName, @userId
 
 	'deleteServiceData': (serviceName) ->
 		@unblock()

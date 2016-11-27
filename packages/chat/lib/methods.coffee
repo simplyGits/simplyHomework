@@ -8,7 +8,7 @@ Meteor.methods
 		check userId, String
 
 		if userId is @userId
-			throw new Meteor.Error 'same-person', "Can't create a chat with yourself."
+			throw new Meteor.Error 'same-person', "Can't create a chatroom with yourself."
 
 		room = ChatRooms.findOne
 			type: 'private'

@@ -15,7 +15,7 @@ getTasksForDate = (date) ->
 				description = item.content.description
 				Helpers.oneLine Helpers.convertLinksToAnchor(description)
 			)
-			class: -> Classes.findOne item.classId
+			class: item.class
 			date: item.startDate
 			done: (d) ->
 				if d?
