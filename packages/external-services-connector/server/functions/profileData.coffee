@@ -12,7 +12,11 @@ export getServiceProfileData = (serviceName, userId) ->
 		return undefined
 
 	try
-		service.getProfileData userId
+		data = service.getProfileData userId
+		if data.courseInfo?.schoolVariant?
+			data.courseInfo.schoolVariant =
+				normalizeSchoolVariant data.courseInfo.schoolVariant
+		data
 	catch e
 		ExternalServicesConnector.handleServiceError service.name, userId, e
 		e
@@ -31,10 +35,8 @@ export getProfileData = (userId) ->
 
 	services = _.filter Services, (s) -> s.active userId
 
-	res = {}
-	for service in services
-		data = getServiceProfileData service.name, userId
-		if data.courseInfo?
-			data.courseInfo.schoolVariant = normalizeSchoolVariant data.courseInfo.schoolVariant
-		res[service.name] = data
-	res
+	_(services)
+		.pluck 'name'
+		.map (name) -> [ name, getServiceProfileData(name, userId) ]
+		.object()
+		.value()
