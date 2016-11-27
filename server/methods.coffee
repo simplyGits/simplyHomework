@@ -318,6 +318,9 @@ Meteor.methods
 		if Meteor.users.find(userId).count() is 0
 			throw new Meteor.Error 'user-not-found'
 
+		unless Privacy.getOptions(userId).publishCalendarItems
+			throw new Meteor.Error 'blocked-by-privacy'
+
 		mine = ScheduleFunctions.getInbetweenHours @userId, yes
 		theirs = ScheduleFunctions.getInbetweenHours userId, yes
 
