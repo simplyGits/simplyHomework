@@ -1,7 +1,6 @@
 import Future from 'fibers/future'
-import WaitGroup from 'meteor/simply:waitgroup'
 import { ExternalServicesConnector, getServices } from '../connector.coffee'
-import { handleCollErr, hasChanged, diffObjects, diffAndInsertFiles } from './util.coffee'
+import { handleCollErr, hasChanged, diffObjects, diffAndInsertFiles, fetchConcurrently } from './util.coffee'
 import { calendarItemsInvalidationTime } from '../constants.coffee'
 
 calendarItemsLocks = [] # { userId, start, end, callbacks }
@@ -124,17 +123,7 @@ export updateCalendarItems = (userId, from, to) ->
 
 	[ from, to ] = range
 	services = getServices userId, 'getCalendarItems'
-	results = {}
-
-	group = new WaitGroup
-	services.forEach (service) ->
-		 group.defer ->
-			try
-				results[service.name] =
-					result: service.getCalendarItems userId, from, to
-			catch error
-				results[service.name] = { error }
-	group.wait()
+	results = fetchConcurrently services, 'getCalendarItems', userId, from, to
 
 	absences = []
 	files = []

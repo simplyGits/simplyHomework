@@ -1,6 +1,6 @@
 import { ExternalServicesConnector, getServices } from '../connector.coffee'
 import { serviceUpdateInvalidationTime } from '../constants.coffee'
-import { handleCollErr, checkAndMarkUserEvent } from './util.coffee'
+import { handleCollErr, checkAndMarkUserEvent, fetchConcurrently } from './util.coffee'
 
 ###*
 # @fetchServiceUpdates
@@ -23,11 +23,11 @@ export fetchServiceUpdates = (userId, forceUpdate = no) ->
 	)
 		return errors
 
+	results = fetchConcurrently services, 'getUpdates', userId
 	for service in services
-		try
-			updates = service.getUpdates userId
-		catch e
-			ExternalServicesConnector.handleServiceError service.name, userId, e
+		{ result, error } = results[service.name]
+		if error?
+			ExternalServicesConnector.handleServiceError service.name, userId, error
 			errors.push e
 			continue
 
@@ -35,7 +35,7 @@ export fetchServiceUpdates = (userId, forceUpdate = no) ->
 			userId: userId
 			fetchedBy: service.name
 		}, handleCollErr
-		for update in updates
+		for update in result
 			ServiceUpdates.insert update, handleCollErr
 
 	errors

@@ -1,3 +1,6 @@
+import WaitGroup from 'meteor/simply:waitgroup'
+ExternalServicePerformance = new Mongo.Collection 'externalServicePerformance'
+
 ###*
 # @method handleCollErr
 # @param {Error} e
@@ -150,3 +153,31 @@ export diffAndInsertFiles = (userId, files) ->
 		res[file._id] = id if file._id?
 
 	res
+
+trackPerformance = (sname, fname, params) ->
+	a = process.hrtime()
+	->
+		diff = process.hrtime a
+		ExternalServicePerformance.insert {
+			service: sname
+			fn: fname
+			date: new Date
+			params: params
+			ns: diff[0]*1e9 + diff[1]
+		}, handleCollErr
+
+export fetchConcurrently = (services, fname, params...) ->
+	results = {}
+	group = new WaitGroup
+
+	services.forEach (service) ->
+		group.defer ->
+			done = trackPerformance service.name, fname, params
+			try
+				results[service.name] = result: service[fname] params...
+			catch error
+				results[service.name] = { error }
+			done()
+
+	group.wait()
+	results
