@@ -70,7 +70,7 @@ NoticeManager.provide 'tasks today', ->
 
 	if tasks.length > 0
 		template: 'tasks'
-		header: "Huiswerk voor komdende lessen vandaag"
+		header: "Huiswerk voor komende lessen vandaag"
 		data: tasks
 		priority: 1
 
