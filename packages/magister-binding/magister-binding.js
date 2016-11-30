@@ -22,7 +22,7 @@ const log = MagisterBinding.log;
 const userMutexes = new Map();
 
 const cache = LRU({
-	max: 50,
+	max: 75,
 	// we cache magister objects infinitely currently since we also uesr
 	// sessionIds infinitely, so we stay in style ;)
 	maxAge: null,
