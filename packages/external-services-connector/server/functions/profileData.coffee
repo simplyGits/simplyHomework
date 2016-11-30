@@ -4,7 +4,7 @@ export getServiceProfileData = (serviceName, userId) ->
 	check serviceName, String
 	check userId, String
 
-	service = _.find Services, (s) -> name: serviceName
+	service = _.find Services, name: serviceName
 
 	unless service?
 		throw new Meteor.Error 'service-not-found', "No service with name '#{serviceName}' found"
