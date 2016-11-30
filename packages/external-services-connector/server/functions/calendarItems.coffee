@@ -156,6 +156,13 @@ export updateCalendarItems = (userId, from, to) ->
 					startDate: item.startDate
 					endDate: item.endDate
 
+				if item.type is 'lesson'
+					old ?= Helpers.find calendarItems,
+						userIds: userId
+						startDate: item.startDate
+						endDate: item.endDate
+						type: item.type
+
 			if old?
 				old.externalInfos[service.name] = item.externalInfo
 				# HACK
