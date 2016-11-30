@@ -56,7 +56,11 @@ Picker.route '/f/:fid/:uid?', (params, req, res) ->
 				err 500, 'service not found'
 				return undefined
 
-			service.getFile(userId, info).pipe(res)
+			try
+				service.getFile(userId, info).pipe(res)
+			catch e
+				console.error 'error while getting file from service', e
+				err 500, 'internal server error'
 
 	trackFileDownload params.fid
 	undefined
