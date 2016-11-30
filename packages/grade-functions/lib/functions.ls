@@ -11,10 +11,12 @@
 	check class-id, String
 	check user-id, String
 
-	g = Grades.find-one do
+	grades = Grades.find(
 		class-id: class-id
 		owner-id: user-id
 		is-end: yes
+	).fetch!
+	g = _.find(grades, weight: 0) ? grades[0]
 
 	unless g?
 		grades = Grades.find(
