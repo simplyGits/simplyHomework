@@ -143,5 +143,38 @@ Migrations.add
 			multi: yes
 		}
 
+Migrations.add
+	version: 12
+	name: 'Give ChatMessages a changes field'
+	up: ->
+		ChatMessages.find({}, {
+			transform: null
+		}).forEach (m) ->
+			ChatMessages.update m._id, {
+				$set:
+					changes: (
+						res = []
+						if m.changedOn?
+							res.push
+								date: m.changedOn
+								new: m.content
+						res
+					)
+				$unset:
+					changedOn: yes
+			}, validate: no
+	down: ->
+		ChatMessages.find({
+			changes: $ne: []
+		}, {
+			transform: null
+		}).forEach (m) ->
+			ChatMessages.update m._id, {
+				$set:
+					changedOn: _.last(m.changes)?.date
+				$unset:
+					changes: yes
+			}, validate: no
+
 Meteor.startup ->
 	Migrations.migrateTo 'latest'

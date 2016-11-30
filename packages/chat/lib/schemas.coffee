@@ -20,9 +20,9 @@ if Package['aldeed:collection2']?
 			autoValue: -> if @isInsert then [@userId] else @value
 		attachments:
 			type: [String]
-		changedOn:
-			type: Date
-			optional: yes
+		changes:
+			type: [Object]
+			blackbox: yes
 		pending:
 			type: Boolean
 			optional: yes

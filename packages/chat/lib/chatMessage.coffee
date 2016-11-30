@@ -9,7 +9,7 @@
 # @param {String} chatRoomId The ID of the ChatRoom this ChatMessage is sent in.
 ###
 class ChatMessage
-	constructor: (@content, @creatorId = Meteor.userId(), @chatRoomId) ->
+	constructor: (@content, @creatorId, @chatRoomId) ->
 		###*
 		# The body of the Message in Markdown.
 		#
@@ -48,13 +48,17 @@ class ChatMessage
 		@attachments = []
 
 		###*
-		# The date the content of this message was changed since the original insert.
-		# If null the content hasn't been changed.
-		#
-		# @property changedOn
-		# @type Date|null
-		# @default null
+		# {
+		# 	date: The date of the changes
+		# 	old: The content before the change
+		# 	new: The content after the change
+		# }
+		# @property changes
+		# @type Object[]
+		# @default[]
 		###
-		@changedOn = null
+		@changes = []
+
+	lastChange: -> _.last @changes
 
 @ChatMessage = ChatMessage

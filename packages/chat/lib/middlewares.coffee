@@ -152,7 +152,10 @@ ChatMiddlewares.attach 'add hidden fields', 'client', (cm) ->
 		__own: if own then 'own' else ''
 		__new: if own or Meteor.userId() in cm.readBy then '' else 'new'
 		__time: Helpers.formatDate cm.time
-		__changedOn: Helpers.formatDate cm.changedOn, yes
+		__changedOn: (
+			date = cm.lastChange()?.date
+			Helpers.formatDate date, yes
+		)
 		__pending: if cm.pending then 'pending' else ''
 		__readBy: ->
 			Meteor.users.find {

@@ -74,8 +74,12 @@ Meteor.methods
 		ChatMessages.update chatMessageId,
 			$set:
 				content: content
-				changedOn: new Date
 				pending: pending
+			$push:
+				changes:
+					date: new Date()
+					old: old.content
+					new: content
 		undefined
 
 	###*
