@@ -160,12 +160,12 @@ export updateCalendarItems = (userId, from, to) ->
 				old.externalInfos[service.name] = item.externalInfo
 				# HACK
 				for [ key, val ] in _.pairs(item) when key not in OVERWRITE_IGNORE
-					old[key] = val if (
+					old[key] = val if not _.isEmpty(val) and (
 						switch key
 							when 'scrapped' then val is true
 							when 'description' then service.name isnt 'zermelo'
 							when 'location' then val.toLowerCase() isnt old[key].toLowerCase()
-							else not _.isEmpty val
+							else true
 					)
 
 				absence = _.find result.absences, calendarItemId: item._id
