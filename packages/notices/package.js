@@ -8,7 +8,6 @@ Package.describe({
 
 Npm.depends({
 	'moment-timezone': '0.5.4',
-	'emptygif': '0.1.1',
 });
 
 Package.onUse(function(api) {
@@ -38,8 +37,6 @@ Package.onUse(function(api) {
 		'percolate:synced-cron',
 		'chat',
 		'onesignal',
-		'simply:external-services-connector',
-		'meteorhacks:picker',
 		// 'reywood:publish-composite',
 	], 'server');
 
@@ -108,7 +105,6 @@ Package.onUse(function(api) {
 	api.addFiles([
 		'server/push.js',
 		'server/emails.js',
-		'server/routes.js',
 	], 'server');
 
 	api.export([

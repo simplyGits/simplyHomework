@@ -170,10 +170,7 @@ SyncedCron.add({
 					}
 					lines.push('\n' + message.body)
 
-					let body = lines.join('\n')
-					body += `<img src="${Meteor.absoluteUrl(`/_track/${userId}/messageread/${message._id}`)}" width="1" height="1"/>`
-
-					emails.sendHtmlMail(user, `Bericht van ${message.sender.fullName}`, body)
+					emails.sendHtmlMail(user, `Bericht van ${message.sender.fullName}`, lines.join('\n'))
 
 					notifiedCount++
 					Analytics.insert({
