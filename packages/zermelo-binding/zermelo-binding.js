@@ -9,7 +9,7 @@ import LRU from 'lru-cache'
 const log = ZermeloBinding.log
 
 const cache = LRU({
-	max: 50,
+	max: 100,
 	maxAge: null,
 })
 
