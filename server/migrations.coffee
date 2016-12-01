@@ -176,5 +176,22 @@ Migrations.add
 					changes: yes
 			}, validate: no
 
+Migrations.add
+	version: 13
+	name: "Add 'into', 'cookies' and 'first-use' to setupProgress of everybody who ran setup"
+	up: ->
+		Meteor.users.update {
+			setupProgress: $ne: []
+		}, {
+			$addToSet:
+				setupProgress: $each: [
+					'intro'
+					'cookies'
+					'first-use'
+				]
+		}, {
+			multi: yes
+		}
+
 Meteor.startup ->
 	Migrations.migrateTo 'latest'

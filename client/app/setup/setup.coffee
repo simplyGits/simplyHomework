@@ -53,16 +53,25 @@ names = ->
 		return val if val?
 	undefined
 
+addProgress = (item, cb) ->
+	Meteor.users.update Meteor.userId(), {
+		$addToSet: setupProgress: item
+	}, cb
+
+# TODO: automatically track progress
 ran = no
 setupItems = [
 	{
-		name: 'welcome'
+		name: 'intro'
 		async: no
+		success: yes # HACK
+		onDone: (cb) -> addProgress 'intro', cb
 	}
 
 	{
 		name: 'cookies'
 		async: no
+		onDone: (cb) -> addProgress 'cookies', cb
 	}
 
 	{
@@ -75,11 +84,9 @@ setupItems = [
 
 			done = (success) ->
 				if success?
-					Meteor.users.update(
-						Meteor.userId()
-						$addToSet: setupProgress: 'externalServices'
-					)
-				cb success
+					addProgress 'externalServices', -> cb yes
+				else
+					cb no
 
 			loginServices = _.filter externalServices.get(), 'loginNeeded'
 			data = _.filter loginServices, (s) -> s.profileData()?
@@ -169,9 +176,7 @@ setupItems = [
 		visible: no
 		func: (callback) ->
 			Meteor.call 'fetchExternalPersonClasses', (e, r) ->
-				Meteor.users.update Meteor.userId(), {
-					$addToSet: setupProgress: 'getExternalClasses'
-				}, ->
+				addProgress 'getExternalClasses', ->
 					if e?
 						callback false
 					else
@@ -183,9 +188,7 @@ setupItems = [
 		name: 'privacy'
 		async: no
 		onDone: (callback) ->
-			Meteor.users.update Meteor.userId(), {
-				$addToSet: setupProgress: 'privacy'
-			}, -> callback()
+			addProgress 'privacy', -> callback()
 	}
 
 	{
@@ -208,10 +211,11 @@ setupItems = [
 	}
 
 	{
-		name: 'final'
+		name: 'first-use'
 		func: ->
-			name = Meteor.user().profile.firstName
-			document.location.href = "https://www.simplyhomework.nl/first-use##{name}"
+			addProgress 'first-use', ->
+				name = getUserField Meteor.userId(), 'profile.firstName'
+				document.location.href = "https://www.simplyhomework.nl/first-use##{name}"
 	}
 ]
 running = undefined
@@ -227,23 +231,12 @@ running = undefined
 	return undefined unless setupProgress?
 
 	setupProgress = setupProgress.concat [
-		'welcome'
-		'cookies'
-		'final'
 		'newSchoolYear' # TODO: Dunno how're going to do this shit
 	]
 
 	running = _.filter setupItems, (item) -> item.name not in setupProgress
 
 	if running.length > 0
-		# We need to insert the 'welcome' and 'cookies' _before_ all the items in
-		# the `running` array, and the 'final' _after_ them!
-		running = _(setupItems)
-			.take 2
-			.concat(running)
-			.push _.last(setupItems)
-			.value()
-
 		Session.set 'runningSetup', yes
 		ran = yes
 
@@ -300,7 +293,7 @@ step = ->
 progressInfo = ->
 	current = currentItemIndex.get()
 	length = _(running)
-		.reject (item) -> item.visible is no
+		.reject visible: no
 		.value()
 		.length
 
