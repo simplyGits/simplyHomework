@@ -323,7 +323,7 @@ Meteor.startup ->
 	Template.registerHelper 'has', has
 	Template.registerHelper 'toUpperCase', (str) -> str.toUpperCase()
 	Template.registerHelper 'cap', (str) -> Helpers.cap str
-	Template.registerHelper 'plural', (count, a, b) -> if count is 1 then a else b
+	Template.registerHelper 'plural', (count, a, b) -> if Math.abs(count) is 1 then a else b
 
 	Template.registerHelper 'isPhone', -> Helpers.isPhone()
 	Template.registerHelper 'isTablet', -> Helpers.isTablet()
