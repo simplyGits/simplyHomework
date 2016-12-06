@@ -197,7 +197,14 @@ Template.calendar.onRendered ->
 			), document.body
 
 	time = +FlowRouter.getParam 'time'
-	$calendar.fullCalendar 'gotoDate', time if isFinite time
+	if isFinite time
+		$calendar.fullCalendar 'gotoDate', time
+	else if getUserField(
+		Meteor.userId()
+		'settings.devSettings.desktopCalendarWeekendSkip'
+		no
+	) and new Date().getDay() in [ 6, 0 ]
+		$calendar.fullCalendar 'gotoDate', new Date().addDays 3
 	openCalendarItemsModal FlowRouter.getQueryParam 'openCalendarItemId'
 
 	@$('.addAppointmentForm').detach().prependTo "body"

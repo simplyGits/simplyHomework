@@ -10,6 +10,9 @@ items = [{
 	afterChange: (val) ->
 		return unless val
 		showModal '2fa_key_modal'
+}, {
+	name: 'desktopCalendarWeekendSkip'
+	description: 'Ga bij de agenda op de computer naar de aankomende week op als het weekend is.'
 }]
 
 Meteor.startup ->
