@@ -1,4 +1,5 @@
 import { Services, ExternalServicesConnector } from '../connector.coffee'
+import { trackPerformance } from './util.coffee'
 
 export getServiceProfileData = (serviceName, userId) ->
 	check serviceName, String
@@ -12,10 +13,14 @@ export getServiceProfileData = (serviceName, userId) ->
 		return undefined
 
 	try
+		done = trackPerformance serviceName, 'getProfileData', [ userId ]
 		data = service.getProfileData userId
+		done()
+
 		if data.courseInfo?.schoolVariant?
 			data.courseInfo.schoolVariant =
 				normalizeSchoolVariant data.courseInfo.schoolVariant
+
 		data
 	catch e
 		ExternalServicesConnector.handleServiceError service.name, userId, e

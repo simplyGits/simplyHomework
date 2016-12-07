@@ -154,7 +154,7 @@ export diffAndInsertFiles = (userId, files) ->
 
 	res
 
-trackPerformance = (sname, fname, params) ->
+export trackPerformance = (sname, fname, params) ->
 	a = process.hrtime()
 	->
 		diff = process.hrtime a

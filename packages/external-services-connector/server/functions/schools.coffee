@@ -1,4 +1,5 @@
 import { Services, ExternalServicesConnector } from '../connector.coffee'
+import { trackPerformance } from './util.coffee'
 
 export getServiceSchools = (serviceName, query, userId) ->
 	check serviceName, String
@@ -13,7 +14,9 @@ export getServiceSchools = (serviceName, query, userId) ->
 		return []
 
 	try
+		done = trackPerformance serviceName, 'getSchools', query
 		result = service.getSchools query
+		done()
 	catch e
 		ExternalServicesConnector.handleServiceError service.name, userId, e
 		throw e
