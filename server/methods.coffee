@@ -346,3 +346,36 @@ Meteor.methods
 
 			gradeMeanCache.set gradeId, res
 		res
+
+	getInbetweenHours: ->
+		@unblock()
+		unless @userId?
+			return []
+
+		userId = @userId
+		ours = ScheduleFunctions.getInbetweenHours userId, yes
+		users = Meteor.users.find({
+			_id: $ne: userId
+			'profile.schoolId': getUserField userId, 'profile.schoolId'
+		}, {
+			fields:
+				_id: 1
+				'profile.schoolId': true
+		}).map (user) ->
+			_id: user._id
+			hours: ScheduleFunctions.getInbetweenHours user._id, yes
+
+		_(ours)
+			.map (x) ->
+				m = moment x.start
+				userIds = _(users)
+					.filter (u) -> _.some u.hours, (y) -> m.isSame y.start
+					.pluck '_id'
+					.push userId
+					.value()
+
+				userIds: userIds
+				start: x.start
+				end: x.end
+				schoolHour: x.schoolHour
+			.value()

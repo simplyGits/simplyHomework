@@ -1,0 +1,22 @@
+<template name="inbetweenHour">
+	<div id="inbetweenHour">
+		Je hebt nu een tussenuur, je hebt nog voor <b>{{taskCount}}</b> {{plural taskCount 'vak' 'vakken'}} huiswerk te doen voor komende lessen.
+
+		{{#if persons}}
+			<br><br>
+			Deze mensen hebben nu ook een tussenuur:
+			{{#each persons}}
+				{{> inbetweenHour_person}}
+			{{/each}}
+		{{/if}}
+	</div>
+</template>
+
+<template name="inbetweenHour_person">
+	<a href="{{pathFor 'personView' id=_id}}">
+		<div class="inbetweenHour_person">
+			<img src="{{picture this 100}}" width="50" height="50" />
+			{{profile.firstName}} {{profile.lastName}}
+		</div>
+	</a>
+</template>

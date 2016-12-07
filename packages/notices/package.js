@@ -29,6 +29,7 @@ Package.onUse(function(api) {
 		'schedule-functions',
 		'meteorhacks:subs-manager',
 		'ms',
+		'mnmtanish:call',
 	], 'client');
 	api.use([
 		'email',
@@ -101,6 +102,10 @@ Package.onUse(function(api) {
 		'client/serviceUpdates/serviceUpdates.coffee',
 
 		'client/noServices/noServices.coffee',
+
+		'client/inbetweenHour/inbetweenHour.html',
+		'client/inbetweenHour/inbetweenHour.styl',
+		'client/inbetweenHour/inbetweenHour.coffee',
 	], 'client');
 	api.addFiles([
 		'server/push.js',
