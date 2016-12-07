@@ -134,12 +134,12 @@ function getMagisterObject (userId, forceNew = false, mutex) {
 	check(forceNew, Boolean);
 	check(mutex, Match.Any);
 
-	// if we already got a mutex object...
+	// if we aren't given a mutex object...
 	if (mutex == null) {
-		// we dont have to fetch one...
+		// we have to fetch one...
 		mutex = getMutex(userId);
-		// and we don't have to lock it (we assume it's already locked and we
-		// retrieved the lock).
+		// and we have to lock it (if a mutex is given we assume it's already
+		// locked and we retrieved the lock).
 		mutex.lock();
 	}
 

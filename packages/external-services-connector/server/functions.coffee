@@ -6,7 +6,7 @@
 # @param userId {String} The ID of the user to get the assignments for.
 # @return {Assignment[]}
 ###
-getExternalAssignments = (userId) ->
+export getExternalAssignments = (userId) ->
 	check userId, String
 
 	user = Meteor.users.findOne userId
@@ -28,7 +28,7 @@ getExternalAssignments = (userId) ->
 # @param userId {String} The ID of the user to use for the service info.
 # @return {Object[]} An array containing objects that hold the info about all the services.
 ###
-getModuleInfo = (userId) ->
+export getModuleInfo = (userId) ->
 	check userId, String
 
 	_.map Services, (s) ->
@@ -37,9 +37,6 @@ getModuleInfo = (userId) ->
 		active: s.active userId
 		hasData: s.hasData userId
 		loginNeeded: s.loginNeeded
-
-exports.getExternalAssignments = getExternalAssignments
-exports.getModuleInfo = getModuleInfo
 
 # wat.
 export * from './functions/calendarItems.coffee'
