@@ -1,5 +1,5 @@
 import { ExternalServicesConnector, getServices } from '../connector.coffee'
-import { handleCollErr, hasChanged, diffAndInsertFiles, markUserEvent } from './util.coffee'
+import { handleCollErr, hasChanged, diffAndInsertFiles, markUserEvent, fetchConcurrently } from './util.coffee'
 import { studyutilsInvalidationTime } from '../constants.coffee'
 
 ###*
@@ -34,14 +34,13 @@ export updateStudyUtils = (userId, forceUpdate = no) ->
 
 	services = getServices userId, 'getStudyUtils'
 	markUserEvent userId, 'studyUtilsUpdate' if services.length > 0
+	results = fetchConcurrently services, 'getStudyUtils', userId
 
 	for externalService in services
-		result = null
-		try
-			result = externalService.getStudyUtils userId
-		catch e
-			ExternalServicesConnector.handleServiceError externalService.name, userId, e
-			errors.push e
+		{ result, error } = results[externalService.name]
+		if error?
+			ExternalServicesConnector.handleServiceError externalService.name, userId, error
+			errors.push error
 			continue
 
 		studyUtils = StudyUtils.find({

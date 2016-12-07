@@ -1,5 +1,5 @@
 import { ExternalServicesConnector, getServices } from '../connector.coffee'
-import { handleCollErr, hasChanged, markUserEvent } from './util.coffee'
+import { handleCollErr, hasChanged, markUserEvent, fetchConcurrently } from './util.coffee'
 import { gradesInvalidationTime } from '../constants.coffee'
 
 ###*
@@ -27,19 +27,17 @@ export updateGrades = (userId, forceUpdate = no) ->
 
 	services = getServices userId, 'getGrades'
 	markUserEvent userId, 'gradeUpdate' if services.length > 0
+	results = fetchConcurrently services, 'getGrades', userId,
+		from: null
+		to: null
+		onlyRecent: no
+		onlyEnds: no
 
 	for externalService in services
-		result = null
-		try
-			result = externalService.getGrades userId,
-				from: null
-				to: null
-				onlyRecent: no
-				onlyEnds: no
-
-		catch e
-			ExternalServicesConnector.handleServiceError externalService.name, userId, e
-			errors.push e
+		{ result, error } = results[externalService.name]
+		if error?
+			ExternalServicesConnector.handleServiceError externalService.name, userId, error
+			errors.push error
 			continue
 
 		grades = Grades.find(
