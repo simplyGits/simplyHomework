@@ -247,6 +247,9 @@ export updateCalendarItems = (userId, from, to) ->
 			mergeUserIdsField 'userIds'
 			mergeUserIdsField 'usersDone'
 
+			for key of old.externalInfos
+				calendarItem.externalInfos[key] ?= old.externalInfos[key]
+
 			if hasChanged old, calendarItem, [ 'updateInfo' ]
 				if not old.updateInfo?
 					diff = diffObjects old, calendarItem, UPDATE_CHECK_OMITTED
