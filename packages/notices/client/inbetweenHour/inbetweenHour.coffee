@@ -1,3 +1,4 @@
+SHOWN_PERSON_COUNT = 7
 date = undefined
 
 NoticeManager.provide 'inbetweenHour', ->
@@ -40,10 +41,17 @@ Template.inbetweenHour.helpers
 		}).fetch()
 		courseInfo = getUserField Meteor.userId(), 'profile.courseInfo'
 
-		_.sortByOrder users, [
-			(u) -> u.profile.courseInfo.year is courseInfo.year
-			(u) -> u.profile.courseInfo.schoolVariant is courseInfo.schoolVariant
-		], [
-			'dec'
-			'dec'
-		]
+		_(users)
+			.sortByOrder [
+				(u) -> u.profile.courseInfo.year is courseInfo.year
+				(u) -> u.profile.courseInfo.schoolVariant is courseInfo.schoolVariant
+			], [
+				'dec'
+				'dec'
+			]
+			.take SHOWN_PERSON_COUNT
+			.value()
+
+	restPersonCount: ->
+		count = Meteor.users.find(_id: $in: @userIds).count() - SHOWN_PERSON_COUNT
+		Math.max 0, count
