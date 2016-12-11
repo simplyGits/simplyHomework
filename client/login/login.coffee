@@ -20,7 +20,7 @@ Template.login.events
 		$emailInput = $ '#emailInput'
 		$passwordInput = $ '#passwordInput'
 
-		mail = $emailInput.val().toLowerCase()
+		mail = $emailInput.val().toLowerCase().trim()
 		password = $passwordInput.val()
 
 		loading.set yes
@@ -104,7 +104,7 @@ Template.signup.events
 			ga 'send', 'event', 'signup'
 			Accounts.createUser {
 				password: $passwordInput.val()
-				email: $emailInput.val().toLowerCase()
+				email: $emailInput.val().toLowerCase().trim()
 			}, (e, r) ->
 				loading.set no
 				if e?
