@@ -497,9 +497,9 @@ class @Helpers
 # @return {mixed}
 ###
 @getUserField = (userId, field, def) ->
-	check userId, Match.Optional String
+	check userId, Match.Maybe String
 	check field, String
-	check def, Match.Optional Match.Any
+	check def, Match.Maybe Match.Any
 
 	return def unless userId?
 	user = Meteor.users.findOne userId, fields: "#{field.split('[')[0]}": 1
