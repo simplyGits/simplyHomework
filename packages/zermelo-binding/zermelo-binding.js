@@ -112,10 +112,10 @@ ZermeloBinding.getCalendarItems = function (userId, from, to) {
 		calendarItem.location = appointment.locations[0]
 		calendarItem.type = 'lesson'
 
-		if (!_.isEmpty(calendarItem.remark)) {
+		if (!_.isEmpty(appointment.remark)) {
 			calendarItem.content = {
 				type: appointment.type === 'exam' ? 'exam' : 'information',
-				description: calendarItem.remark,
+				description: appointment.remark,
 			}
 		}
 
