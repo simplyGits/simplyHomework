@@ -121,12 +121,12 @@ export updateCalendarItems = (userId, from, to) ->
 	done = getLockSync userId, from, to
 
 	range = shouldFetch userId, from, to
-	unless range?
+	services = getServices userId, 'getCalendarItems'
+	if not range? or services.length is 0
 		done()
 		return
 
 	[ from, to ] = range
-	services = getServices userId, 'getCalendarItems'
 	results = fetchConcurrently services, 'getCalendarItems', userId, from, to
 
 	absences = []
