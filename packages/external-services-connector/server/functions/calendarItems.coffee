@@ -79,6 +79,8 @@ Meteor.setInterval (->
 ), ms.minutes 2.5
 
 # REVIEW: Should we have different functions for absenceInfo and calendarItems?
+# TODO: Some global ExternalServices way to merge items (between services and db
+# vs new).
 ###*
 # Updates the CalendarItems in the database for the given `userId` or the user
 # in of current connection, unless the utils were updated shortly before.
@@ -142,7 +144,7 @@ export updateCalendarItems = (userId, from, to) ->
 		files = files.concat result.files
 
 		for item in result.calendarItems
-			old = Helpers.find calendarItems,
+			other = Helpers.find calendarItems,
 				userIds: userId
 				classId: item.classId
 				startDate: item.startDate
@@ -150,33 +152,33 @@ export updateCalendarItems = (userId, from, to) ->
 				description: item.description
 
 			unless item.fullDay
-				old ?= Helpers.find calendarItems,
+				other ?= Helpers.find calendarItems,
 					userIds: userId
 					classId: item.classId
 					startDate: item.startDate
 					endDate: item.endDate
 
 				if item.type is 'lesson'
-					old ?= Helpers.find calendarItems,
+					other ?= Helpers.find calendarItems,
 						userIds: userId
 						startDate: item.startDate
 						endDate: item.endDate
 						type: item.type
 
-			if old?
-				old.externalInfos[service.name] = item.externalInfo
+			if other?
+				other.externalInfos[service.name] = item.externalInfo
 				# HACK
 				for [ key, val ] in _.pairs(item) when key not in OVERWRITE_IGNORE
-					old[key] = val if not _.isEmpty(val) and (
+					other[key] = val if not _.isEmpty(val) and (
 						switch key
 							when 'scrapped' then val is true
 							when 'description' then service.name isnt 'zermelo'
-							when 'location' then val.toLowerCase() isnt old[key].toLowerCase()
+							when 'location' then val.toLowerCase() isnt other[key].toLowerCase()
 							else true
 					)
 
 				absence = _.find result.absences, calendarItemId: item._id
-				absence?.calendarItemId = old._id
+				absence?.calendarItemId = other._id
 			else
 				item.externalInfos[service.name] = item.externalInfo
 				calendarItems.push item
@@ -199,23 +201,28 @@ export updateCalendarItems = (userId, from, to) ->
 				startDate: calendarItem.startDate
 				endDate: calendarItem.endDate
 
-		content = calendarItem.content
-		if content?
-			if not content.type? or content.type is 'homework'
-				content.type = 'quiz' if /^(so|schriftelijke overhoring|(\w+\W?)?(toets|test))\b/i.test content.description
-				content.type = 'test' if /^(proefwerk|pw|examen|tentamen)\b/i.test content.description
+		calendarItem.content = (
+			content = calendarItem.content
 
-			if content.type in [ 'test', 'exam' ]
-				content.description = content.description.replace /^(proefwerk|pw|toets|test)\s?/i, ''
-			else if content.type is 'quiz'
-				content.description = content.description.replace /^(so|schriftelijke overhoring|toets|test)\s?/i, ''
-			else if content.type is 'oral'
-				content.description = content.description.replace /^(oral\W?(exam|test)|mondeling)\s?/i, ''
-		calendarItem.content = content
+			if content?
+				if not content.type? or content.type is 'homework'
+					content.type = 'quiz' if /^(so|schriftelijke overhoring|(\w+\W?)?(toets|test))\b/i.test content.description
+					content.type = 'test' if /^(proefwerk|pw|examen|tentamen)\b/i.test content.description
+
+				if content.type in [ 'test', 'exam' ]
+					content.description = content.description.replace /^(proefwerk|pw|toets|test)\s?/i, ''
+				else if content.type is 'quiz'
+					content.description = content.description.replace /^(so|schriftelijke overhoring|toets|test)\s?/i, ''
+				else if content.type is 'oral'
+					content.description = content.description.replace /^(oral\W?(exam|test)|mondeling)\s?/i, ''
+
+			content
+		)
 
 		calendarItem.fileIds = calendarItem.fileIds.map (id) ->
 			fileKeyChanges[id] ? id
 
+		delete calendarItem.externalInfo
 		if old?
 			# set the old calendarItem id for every absenceinfo fetched for this new
 			# calendarItem.
@@ -226,7 +233,6 @@ export updateCalendarItems = (userId, from, to) ->
 			# of the schema.
 			delete calendarItem._id
 			delete calendarItem.updateInfo
-			delete calendarItem.externalInfo
 			for [ key, val ] in _.pairs calendarItem
 				switch val
 					when '' then calendarItem[key] = null
@@ -249,7 +255,6 @@ export updateCalendarItems = (userId, from, to) ->
 
 				CalendarItems.update old._id, { $set: calendarItem }, handleCollErr
 		else
-			delete calendarItem.externalInfo
 			CalendarItems.insert calendarItem, handleCollErr
 
 	for absence in absences

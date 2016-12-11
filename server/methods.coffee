@@ -347,6 +347,10 @@ Meteor.methods
 			gradeMeanCache.set gradeId, res
 		res
 
+	###*
+	# @method getInbetweenHours
+	# @return {Object[]}
+	###
 	getInbetweenHours: ->
 		@unblock()
 		unless @userId?
