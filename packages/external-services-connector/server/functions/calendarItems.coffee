@@ -216,6 +216,8 @@ export updateCalendarItems = (userId, from, to) ->
 				else if content.type is 'oral'
 					content.description = content.description.replace /^(oral\W?(exam|test)|mondeling)\s?/i, ''
 
+				content.description = content.description.replace /^\W+|\W+$/g, ''
+
 			content
 		)
 
