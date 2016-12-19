@@ -23,8 +23,10 @@ NoticeManager.provide 'inbetweenHour', ->
 
 Template.inbetweenHour.helpers
 	taskCount: ->
+		userId = Meteor.userId()
 		CalendarItems.find({
-			'userIds': Meteor.userId()
+			'userIds': userId
+			'usersDone': $ne: userId
 			'content': $exists: yes
 			'content.type': $ne: 'information'
 			'content.description': $exists: yes
