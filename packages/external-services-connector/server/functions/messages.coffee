@@ -1,5 +1,5 @@
 import { Services, ExternalServicesConnector, getServices } from '../connector.coffee'
-import { handleCollErr, hasChanged, diffAndInsertFiles } from './util.coffee'
+import { handleCollErr, hasChanged, diffAndInsertFiles, fetchConcurrently } from './util.coffee'
 
 AD_STRING = '\n\n---\nVerzonden vanuit <a href="http://www.simplyHomework.nl">simplyHomework</a>.'
 ###*
@@ -19,47 +19,64 @@ export updateMessages = (userId, offset, folders, forceUpdate = no) ->
 	services = getServices userId, 'getMessages'
 	errors = []
 	LIMIT = 20
-	MIN_NEW_MESSAGES_LIMIT = 5
+	MAX_NEW_MESSAGES_LIMIT = 5
 
-	for folder in folders
+	folders.forEach (folder) ->
+		results = fetchConcurrently(
+			services
+			'getMessages'
+			userId
+			folder
+			offset
+			LIMIT
+		)
+		if offset > 0
+			topResults = fetchConcurrently(
+				services
+				'getMessages'
+				userId
+				folder
+				0
+				Math.min MAX_NEW_MESSAGES_LIMIT, offset
+			)
+
+		handleErr = (e) ->
+			ExternalServicesConnector.handleServiceError service.name, userId, e
+			errors.push e
+
 		for service in services
-			handleErr = (e) ->
-				ExternalServicesConnector.handleServiceError service.name, userId, e
-				errors.push e
+			combined = []
 
-			results = []
-			try # fetch the messages asked for
-				results.push(
-					service.getMessages folder, offset, LIMIT, userId
-				)
-			catch e
-				handleErr e
+			{ result, error } = results[service.name]
+			unless error?
+				combined.push result
+			else
+				handleErr error
 				continue
 
-			if offset > 0 # fetch new messages at top, unless we are asked for them.
-				try
-					results.push(
-						service.getMessages folder, 0, Math.min(MIN_NEW_MESSAGES_LIMIT, offset), userId
-					)
-				catch e
-					handleErr e
-					continue
+			if offset > 0
+				{ result, error } = topResults[service.name]
+				unless error?
+					combined.push result
+				else
+					handleErr error
 
-			messages = _(results)
+			messages = _(combined)
 				.pluck 'messages'
 				.flatten()
+				.compact()
 				.value()
-			files = _(results)
+
+			files = _(combined)
 				.pluck 'files'
 				.flatten()
 				.value()
-
 			fileKeyChanges = diffAndInsertFiles userId, files
 
 			for message in messages
-				continue unless message?
 				if message.body?
 					message.body = message.body.replace AD_STRING, ''
+
 				message.attachmentIds = message.attachmentIds.map (id) ->
 					fileKeyChanges[id] ? id
 
