@@ -358,6 +358,7 @@ Meteor.methods
 
 		userId = @userId
 		ours = ScheduleFunctions.getInbetweenHours userId, yes
+
 		users = Meteor.users.find({
 			_id: $ne: userId
 			'profile.schoolId': getUserField userId, 'profile.schoolId'
@@ -368,6 +369,8 @@ Meteor.methods
 		}).map (user) ->
 			_id: user._id
 			hours: ScheduleFunctions.getInbetweenHours user._id, yes
+		users = _.filter users, (u) ->
+			Privacy.getOptions(u._id).publishCalendarItems
 
 		_(ours)
 			.map (x) ->
