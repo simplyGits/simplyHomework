@@ -84,22 +84,17 @@ Template.mobileCalendar.onCreated ->
 	@subscribe 'classes', hidden: yes
 	@autorun =>
 		date = currentDate()
-		handle = undefined
-		ids = getUserIds()
+		start = date.addDays -1
+		end = date.addDays 2
 
-		if _.isEmpty ids
-			handle = calendarSubs.subscribe(
-				'externalCalendarItems'
-				date.addDays -1
-				date.addDays 2
-			)
-		else
-			handle = calendarSubs.subscribe(
-				'foreignCalendarItems'
-				ids
-				date.addDays -1
-				date.addDays 2
-			)
+		handle = (
+			ids = getUserIds()
+
+			if _.isEmpty ids
+				calendarSubs.subscribe 'externalCalendarItems', start, end
+			else
+				calendarSubs.subscribe 'foreignCalendarItems', ids, start, end
+		)
 
 		@loading = _.negate handle.ready
 
