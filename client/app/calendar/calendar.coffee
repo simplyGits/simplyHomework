@@ -248,11 +248,10 @@ Template.calendar.onRendered ->
 				userIds: $in: ids
 				startDate: $gte: start
 				endDate: $lte: end
+				type: $ne: 'schoolwide'
 			}, {
 				sort: startDate: 1
 			}).map (item) -> calendarItemToEvent item, 'other'
-
-			currentItems = _.reject currentItems, (item) -> item.calendarItem.type is 'schoolwide'
 
 		$calendar.fullCalendar 'refetchEvents'
 
