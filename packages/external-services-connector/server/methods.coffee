@@ -84,7 +84,7 @@ Meteor.methods
 		if Helpers.isEmptyString body
 			throw new Meteor.Error 'no-content'
 
-		functions.sendMessage subject, body, recipients, service, @userId
+		functions.sendMessage @userId, subject, body, recipients, service
 
 		if draftId?
 			Drafts.remove
@@ -105,7 +105,7 @@ Meteor.methods
 		if not service?
 			throw new Meteor.Error 'magister-only'
 
-		functions.replyMessage id, all, body, 'magister', userId
+		functions.replyMessage userId, id, all, body, 'magister'
 
 		if draftId?
 			Drafts.remove

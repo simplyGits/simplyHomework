@@ -812,11 +812,11 @@ MagisterBinding.getAssignments = function (userId) {
 	return fut.wait();
 };
 
-MagisterBinding.getMessages = function (folderName, skip, limit, userId) {
+MagisterBinding.getMessages = function (userId, folderName, skip, limit) {
+	check(userId, String);
 	check(folderName, String);
 	check(skip, Number);
 	check(limit, Number);
-	check(userId, String);
 
 	const fut = new Future();
 	const user = Meteor.users.findOne(userId);
@@ -953,11 +953,11 @@ function compileMessageBody (body) {
 	return body;
 }
 
-MagisterBinding.sendMessage = function (subject, body, recipients, userId) {
+MagisterBinding.sendMessage = function (userId, subject, body, recipients) {
+	check(userId, String);
 	check(subject, String);
 	check(body, String);
 	check(recipients, [String]);
-	check(userId, String);
 
 	body = compileMessageBody(body);
 
@@ -980,11 +980,11 @@ MagisterBinding.sendMessage = function (subject, body, recipients, userId) {
  * @param {String} body
  * @param {String} userId
  */
-MagisterBinding.replyMessage = function (id, all, body, userId) {
+MagisterBinding.replyMessage = function (userId, id, all, body) {
+	check(userId, String);
 	check(id, String);
 	check(all, Boolean);
 	check(body, String);
-	check(userId, String);
 
 	body = compileMessageBody(body);
 

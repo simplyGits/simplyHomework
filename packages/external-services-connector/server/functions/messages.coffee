@@ -84,12 +84,12 @@ export updateMessages = (userId, offset, folders, forceUpdate = no) ->
 
 	errors
 
-export sendMessage = (subject, body, recipients, service, userId) ->
+export sendMessage = (userId, subject, body, recipients, service) ->
+	check userId, String
 	check subject, String
 	check body, String
 	check recipients, [String]
 	check service, String
-	check userId, String
 
 	body += AD_STRING
 
@@ -97,14 +97,14 @@ export sendMessage = (subject, body, recipients, service, userId) ->
 	if not service?
 		throw new Meteor.Error 'not-supported'
 
-	service.sendMessage subject, body, recipients, userId
+	service.sendMessage userId, subject, body, recipients
 
-export replyMessage = (id, all, body, service, userId) ->
+export replyMessage = (userId, id, all, body, service) ->
+	check userId, String
 	check id, String
 	check all, Boolean
 	check body, String
 	check service, String
-	check userId, String
 
 	message = Messages.findOne
 		_id: id
@@ -115,4 +115,4 @@ export replyMessage = (id, all, body, service, userId) ->
 	id = _(message.externalId).split('_').last()
 
 	service = _.find Services, (s) -> s.name is service and s.can userId, 'getMessages'
-	service.replyMessage id, all, body, userId
+	service.replyMessage userId, id, all, body
