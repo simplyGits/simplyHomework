@@ -99,7 +99,7 @@ SyncedCron.add
 SyncedCron.add
 	# OPTIMIZE
 	name: 'Update woordjesleren data'
-	schedule: (parser) -> parser.recur().on(5).hour()
+	schedule: (parser) -> parser.recur().on(4).hour()
 	job: ->
 		# This job tries to get the WoordjesLeren data every 5 minutes until we got
 		# the data or we hit the try limit (12, which takes 1 hour).
