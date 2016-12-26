@@ -335,3 +335,15 @@ Template.chatSidebar.onRendered ->
 			stayOpen = no
 			$body.removeClass 'chatSidebarOpen'
 			$chats.animate scrollTop: 0
+
+	else
+		Meteor.defer ->
+			prev = undefined
+			snapper.on 'animated', ->
+				state = snapper.state()
+
+				if prev?.state is 'right' and
+				state.state is 'closed'
+					$chats.animate scrollTop: 0
+
+				prev = state
