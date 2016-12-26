@@ -65,3 +65,7 @@ div#adbar {
 .twitter-typeahead {
 	display: block !important;
 }
+
+.visuallyhidden {
+	visibility: hidden;
+}

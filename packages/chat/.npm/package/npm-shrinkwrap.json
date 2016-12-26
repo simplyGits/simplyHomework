@@ -215,8 +215,8 @@
       "from": "json-stringify-safe@>=5.0.1 <5.1.0"
     },
     "jsonpointer": {
-      "version": "4.0.0",
-      "resolved": "https://registry.npmjs.org/jsonpointer/-/jsonpointer-4.0.0.tgz",
+      "version": "4.0.1",
+      "resolved": "https://registry.npmjs.org/jsonpointer/-/jsonpointer-4.0.1.tgz",
       "from": "jsonpointer@>=4.0.0 <5.0.0"
     },
     "jsprim": {
