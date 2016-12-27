@@ -10,7 +10,13 @@
 	<div class="test" style="opacity: {{opacity}}">
 		<div class="back" style="background-color: {{class.__color}}"></div>
 		<div class="date">{{friendlyDate}}</div>
-		<div class="className">{{class.name}}</div>
+		<div class="className">
+			{{#if class}}
+				{{class.name}}
+			{{else}}
+				{{description}}
+			{{/if}}
+		</div>
 		<div class="type">{{contentTypeLong}}</div>
 		<div class="description">{{{newlines content.description}}}</div>
 	</div>
