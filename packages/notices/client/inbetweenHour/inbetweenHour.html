@@ -1,6 +1,10 @@
 <template name="inbetweenHour">
 	<div id="inbetweenHour">
-		Je hebt nu een tussenuur, je hebt nog voor <b>{{taskCount}}</b> {{plural taskCount 'vak' 'vakken'}} huiswerk te doen voor komende lessen.
+		{{#if taskCount}}
+			Je hebt nu een tussenuur, je hebt nog voor <b>{{taskCount}}</b> {{plural taskCount 'vak' 'vakken'}} huiswerk te doen voor komende lessen.
+		{{else}}
+			Je hebt nu een tussenuur.
+		{{/if}}
 
 		{{#if persons}}
 			<br><br>
