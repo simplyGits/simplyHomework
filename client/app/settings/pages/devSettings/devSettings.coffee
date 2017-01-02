@@ -12,7 +12,7 @@ items = [{
 		showModal '2fa_key_modal'
 }, {
 	name: 'desktopCalendarWeekendSkip'
-	description: 'Ga bij de agenda op de computer naar de aankomende week op als het weekend is.'
+	description: 'Ga bij de agenda op de computer naar de aankomende week als het weekend is.'
 }]
 
 Meteor.startup ->
