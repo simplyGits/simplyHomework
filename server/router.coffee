@@ -34,29 +34,29 @@ WebApp.connectHandlers.use (err, req, res, next) ->
 	<!DOCTYPE html>
 	<html lang="en">
 	<head>
-			<meta charset="UTF-8">
-			<title>simplyHomework | Serverfout</title>
-			<style>
-				body {
-						height: 100%;
-						background-color: #32A8CE;
+		<meta charset="UTF-8">
+		<title>simplyHomework | Serverfout</title>
+		<style>
+			body {
+				height: 100%;
+				background-color: #32A8CE;
 
-						-webkit-font-smoothing: antialiased;
-						color: white;
-						font-size: 35px;
-						text-align: center;
-						line-height: 90vh;
-						font-family: sans-serif;
-						font-weight: 100;
-				}
+				-webkit-font-smoothing: antialiased;
+				color: white;
+				font-size: 35px;
+				text-align: center;
+				line-height: 90vh;
+				font-family: sans-serif;
+				font-weight: 100;
+			}
 
-				span#status {
-						font-size: 50%;
-				}
-			</style>
+			span#status {
+				font-size: 50%;
+			}
+		</style>
 	</head>
 	<body>
-			<span id="status">500.</span> internal server error.
+		<span id="status">500.</span> internal server error.
 	</body>
 	</html>
 	'''
