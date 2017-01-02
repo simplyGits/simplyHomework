@@ -22,7 +22,7 @@ Package.onUse(function(api) {
 	]);
 	api.use([
 		'stevezhu:lodash@3.10.1',
-		'simply:magisterjs@1.22.2',
+		'simply:magisterjs@1.23.1',
 		'ejson',
 		'ms',
 		'mutex',
