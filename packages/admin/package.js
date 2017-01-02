@@ -13,6 +13,7 @@ Package.onUse(function(api) {
 		'tmeasday:publish-counts',
 		'check',
 		'mongo',
+		'simply:waitgroup',
 	], 'server')
 	api.addFiles([
 		'server/publish.js',

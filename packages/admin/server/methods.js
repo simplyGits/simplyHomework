@@ -1,5 +1,6 @@
 /* global userIsInRole, Analytics */
 import { sendHtmlMail } from 'meteor/emails'
+import WaitGroup from 'meteor/simply:waitgroup'
 
 Meteor.methods({
 	/**
@@ -21,9 +22,13 @@ Meteor.methods({
 
 		const users = Meteor.users.find(userQuery).fetch()
 
-		for (const u of users) {
-			sendHtmlMail(u, title, body)
-		}
+		const group = new WaitGroup()
+		users.forEach(u => {
+			group.defer(() => {
+				sendHtmlMail(u, title, body)
+			})
+		})
+		group.wait()
 
 		const userIds = users.map(u => u._id)
 		Analytics.insert({
