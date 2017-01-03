@@ -14,6 +14,7 @@ Package.onUse(function(api) {
 	api.versionsFrom('1.2.1');
 	api.use([
 		'coffeescript',
+		'ecmascript',
 		'check',
 		'stevezhu:lodash@3.10.1',
 		'mongo',
@@ -34,7 +35,6 @@ Package.onUse(function(api) {
 	api.use([
 		'email',
 		'emails',
-		'ecmascript',
 		'percolate:synced-cron',
 		'chat',
 		'onesignal',
@@ -106,6 +106,10 @@ Package.onUse(function(api) {
 		'client/inbetweenHour/inbetweenHour.html',
 		'client/inbetweenHour/inbetweenHour.styl',
 		'client/inbetweenHour/inbetweenHour.coffee',
+
+		'client/ad/ad.html',
+		'client/ad/ad.css',
+		'client/ad/ad.js',
 	], 'client');
 	api.addFiles([
 		'server/push.js',

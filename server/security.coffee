@@ -15,6 +15,7 @@ Meteor.startup -> # my eyes feel dizzy, i think. cant remember. please. help.
 	BrowserPolicy.content.allowImageOrigin 'ssl.gstatic.com'
 	BrowserPolicy.content.allowImageOrigin 'apis.google.com'
 	BrowserPolicy.content.allowImageOrigin 'latex.codecogs.com'
+	BrowserPolicy.content.allowImageOrigin 'www.facebook.com'
 
 	BrowserPolicy.content.allowScriptOrigin 'html5shiv.googlecode.com'
 	BrowserPolicy.content.allowScriptOrigin 'apis.google.com'
@@ -24,11 +25,14 @@ Meteor.startup -> # my eyes feel dizzy, i think. cant remember. please. help.
 	BrowserPolicy.content.allowScriptOrigin 'cdn.mathjax.org'
 	BrowserPolicy.content.allowScriptOrigin 'https://ajax.cloudflare.com/'
 	BrowserPolicy.content.allowScriptOrigin 'https://cdn.onesignal.com/'
+	BrowserPolicy.content.allowScriptOrigin 'connect.facebook.net'
 
 	BrowserPolicy.content.allowFrameOrigin 'accounts.google.com'
 	BrowserPolicy.content.allowFrameOrigin 'docs.google.com'
 	BrowserPolicy.content.allowFrameOrigin 'content.googleapis.com'
 	BrowserPolicy.content.allowFrameOrigin 'www.google.com'
+	BrowserPolicy.content.allowFrameOrigin 'www.facebook.com'
+	BrowserPolicy.content.allowFrameOrigin 'staticxx.facebook.com'
 
 	BrowserPolicy.content.allowEval()
 
