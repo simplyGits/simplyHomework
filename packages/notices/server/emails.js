@@ -1,5 +1,5 @@
 /* global Kadira, Grades, Projects, Messages, SyncedCron, Classes,
-   GradeFunctions, Analytics */
+   GradeFunctions, Analytics, getUserField */
 
 import * as emails from 'meteor/emails'
 import { functions } from 'meteor/simply:external-services-connector'
@@ -71,7 +71,7 @@ SyncedCron.add({
 						classUrl: Meteor.absoluteUrl(`class/${c._id}`),
 						grade: toString(grade),
 						passed: grade.passed,
-						description: grade.description.trim() || undefined,
+						description: grade.description || undefined,
 						average: end != null && toString(end),
 					})
 
