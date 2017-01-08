@@ -292,6 +292,12 @@ Meteor.methods
 			if Number.isFinite mean
 				res.push "Het gemiddelde van je eindcijfers is #{mean.toPrecision(2).replace '.', ','}"
 
+			chatMessageCount = ChatMessages.find({
+				creatorId: userId
+			}).count()
+			if chatMessageCount > 0
+				res.push "Je hebt in totaal #{chatMessageCount} chatberichten verzonden"
+
 			statsCache.set userId, res
 
 		res
