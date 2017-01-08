@@ -1,9 +1,11 @@
-var canReload = false;
-var notice;
-var onReconnected;
+/* global Reload, setBigNotice */
+
+let canReload = false;
+let notice;
+let onReconnected;
 
 Tracker.autorun(function () {
-	var connected = Meteor.status().connected;
+	const connected = Meteor.status().connected;
 	if (connected) {
 		onReconnected && onReconnected();
 	} else if (notice !== undefined) {
@@ -13,9 +15,9 @@ Tracker.autorun(function () {
 });
 
 Reload._onMigrate('lazy-code-push', function (retry) {
-	var onIgnoredRoute = false;
+	let onIgnoredRoute = false;
 	if (Package['kadira:flow-router']) {
-		var FlowRouter = Package['kadira:flow-router'].FlowRouter;
+		const FlowRouter = Package['kadira:flow-router'].FlowRouter;
 		onIgnoredRoute = [
 			'login',
 			'signup',
