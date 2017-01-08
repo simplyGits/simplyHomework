@@ -58,6 +58,7 @@ SyncedCron.add({
 					gradeStr: 1,
 					passed: 1,
 					ownerId: 1,
+					description: 1,
 				},
 			})
 
