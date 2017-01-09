@@ -5,6 +5,7 @@ NoticeManager.provide 'inbetweenHour', ->
 	minuteTracker.depend()
 
 	call = Call 'inbetweenhours', 'getInbetweenHours'
+	date = new Date
 	if _.now() - date > ms.minutes 25
 		call.update()
 		date = new Date
