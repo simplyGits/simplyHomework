@@ -38,9 +38,9 @@
       "resolved": "https://registry.npmjs.org/fibers/-/fibers-1.0.15.tgz"
     },
     "linkify-it": {
-      "version": "2.0.2",
-      "from": "linkify-it@>=2.0.1 <3.0.0",
-      "resolved": "https://registry.npmjs.org/linkify-it/-/linkify-it-2.0.2.tgz"
+      "version": "2.0.3",
+      "from": "linkify-it@2.0.3",
+      "resolved": "https://registry.npmjs.org/linkify-it/-/linkify-it-2.0.3.tgz"
     },
     "lru-cache": {
       "version": "4.0.2",
