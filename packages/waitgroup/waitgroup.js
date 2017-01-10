@@ -28,4 +28,22 @@ export default class WaitGroup {
 			fut.wait()
 		}
 	}
+
+	static forEach(arr, fn) {
+		const wg = new WaitGroup()
+		arr.forEach(function (x, i) {
+			wg.defer(function () {
+				fn(x, i, arr)
+			})
+		})
+		wg.wait()
+	}
+
+	static map(arr, fn) {
+		const res = new Array(arr.length)
+		WaitGroup.forEach(arr, function (x, i) {
+			res[i] = fn()
+		})
+		return res
+	}
 }
