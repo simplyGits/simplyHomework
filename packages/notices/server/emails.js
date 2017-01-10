@@ -1,8 +1,9 @@
 /* global Kadira, Grades, Projects, Messages, SyncedCron, Classes,
-   GradeFunctions, Analytics, getUserField */
+   GradeFunctions, Analytics, getUserField, NoticeMails */
 
 import * as emails from 'meteor/emails'
 import { functions } from 'meteor/simply:external-services-connector'
+import WaitGroup from 'meteor/simply:waitgroup'
 import moment from 'moment-timezone'
 moment.locale('nl')
 
@@ -38,7 +39,7 @@ SyncedCron.add({
 		})
 		let notifiedCount = 0
 
-		users.forEach((user) => {
+		WaitGroup.forEach(users, (user) => {
 			const userId = user._id
 
 			functions.updateGrades(userId, false)
@@ -62,7 +63,7 @@ SyncedCron.add({
 				},
 			})
 
-			grades.forEach((grade) => {
+			WaitGroup.forEach(grades, (grade) => {
 				const c = Classes.findOne(grade.classId)
 
 				try {
@@ -119,7 +120,7 @@ SyncedCron.add({
 		})
 		let notifiedCount = 0
 
-		users.forEach((user) => {
+		WaitGroup.forEach(users, (user) => {
 			const userId = user._id
 
 			functions.updateMessages(userId, 0, [ 'inbox' ])
@@ -149,7 +150,7 @@ SyncedCron.add({
 				},
 			})
 
-			messages.forEach((message) => {
+			WaitGroup.forEach(messages, (message) => {
 				try {
 					// TODO: when we have better support for hotlinking inside
 					// of the router for file paths,
