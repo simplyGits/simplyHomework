@@ -38,6 +38,7 @@ Package.onUse(function(api) {
 		'percolate:synced-cron',
 		'chat',
 		'onesignal',
+		'simply:waitgroup',
 		// 'reywood:publish-composite',
 	], 'server');
 
