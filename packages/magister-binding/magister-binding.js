@@ -1,4 +1,4 @@
-/* global AbsenceInfo, Schools, Grades, Grade, StudyUtil, GradePeriod,
+/* global AbsenceInfo, Schools, Grade, StudyUtil, GradePeriod,
           ExternalPerson, CalendarItem, Assignment, ExternalFile, getClassInfos,
           Message, ms, MagisterBinding, ServiceUpdate */
 

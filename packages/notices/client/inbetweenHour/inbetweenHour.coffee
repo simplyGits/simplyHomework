@@ -1,4 +1,6 @@
+UPDATE_TIME = ms.minutes 20
 SHOWN_PERSON_COUNT = 7
+
 date = undefined
 
 NoticeManager.provide 'inbetweenHour', ->
@@ -6,7 +8,7 @@ NoticeManager.provide 'inbetweenHour', ->
 
 	call = Call 'inbetweenhours', 'getInbetweenHours'
 	date = new Date
-	if _.now() - date > ms.minutes 25
+	if _.now() - date > UPDATE_TIME
 		call.update()
 		date = new Date
 
