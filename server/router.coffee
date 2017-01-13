@@ -1,3 +1,8 @@
+WebApp.connectHandlers.use (req, res, next) ->
+	req.connection.ip =
+		req.headers['x-forwarded-for'] ? req.connection.remoteAddress
+	next()
+
 WebApp.connectHandlers.use '/privacy', (req, res) ->
 	res.writeHead 301, 'Location': 'https://www.simplyhomework.nl/privacy.html'
 	res.end()
@@ -13,7 +18,7 @@ WebApp.connectHandlers.use (req, res, next) ->
 			date: new Date
 			browser: browser
 			userAgent: req.headers['user-agent']
-			ip: req.headers['x-forwarded-for'] ? req.connection.remoteAddress
+			ip: req.connection.ip
 
 		Assets.getText 'oldBrowser.html', (e, r) ->
 			res.writeHead 200
