@@ -1,5 +1,3 @@
-'use strict'
-
 Meteor.startup(function () {
 	if (
 		'performance' in window &&

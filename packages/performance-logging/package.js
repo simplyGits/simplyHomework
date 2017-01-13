@@ -13,11 +13,6 @@ Package.onUse(function(api) {
 		'mongo',
 		'check',
 	], 'server');
-	api.addFiles([
-		'client.js',
-	], 'client');
-	api.addFiles([
-		'server.js',
-	], 'server');
-	api.export('PerformanceData', 'server');
+	api.mainModule('client.js', 'client');
+	api.mainModule('server.js', 'server');
 });

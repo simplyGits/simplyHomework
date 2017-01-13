@@ -1,4 +1,4 @@
-PerformanceData = new Mongo.Collection('performanceData');
+export const PerformanceData = new Mongo.Collection('performanceData');
 
 Meteor.methods({
 	performance_report(data) {
