@@ -10,7 +10,6 @@ parseCookies = (str = '') ->
 			res[splitted[0]] = splitted[1]
 	res
 
-# REVIEW: I removed _all_ auth. Do we want to require auth for this?
 Picker.route '/f/:fid/:uid?', (params, req, res) ->
 	err = (code, str) ->
 		res.writeHead code, 'Content-Type': 'text/plain'

@@ -2,6 +2,7 @@ import { Services, ExternalServicesConnector, getServices } from '../connector.c
 import { handleCollErr, hasChanged, diffAndInsertFiles, fetchConcurrently } from './util.coffee'
 
 AD_STRING = '\n\n---\nVerzonden vanuit <a href="http://www.simplyHomework.nl">simplyHomework</a>.'
+
 ###*
 # @method updateMessages
 # @param {String} userId

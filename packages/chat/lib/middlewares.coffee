@@ -45,7 +45,7 @@ ChatMiddlewares =
 
 # Always keep this middleware on top, please.
 ChatMiddlewares.attach 'preserve original content', 'client', (message) ->
-	message._originalContent = message.content
+	message._originalContent = message.content.replace /<[^>]+>/g, ''
 	message
 
 ###
@@ -168,7 +168,6 @@ ChatMiddlewares.attach 'add hidden fields', 'client', (cm) ->
 				sort:
 					'profile.firstName': 1
 			}
-		__rawString: cm._originalContent.replace /<[^>]+>/g, ''
 
 escapeMap = [
 	[ /</g, '&lt;' ]
