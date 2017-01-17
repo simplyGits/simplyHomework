@@ -64,6 +64,7 @@ chatReplacements = [
 	[[ ':kaas:'             ], ':cheese:'        ]
 	[[ ':fu:'               ], ':middle_finger:' ]
 	[[ '/shrug/', ':shrug:' ], '¯\\_(ツ)_/¯'     ]
+	[[ '\\o/'               ], ':dancer:'        ]
 ].map ([ keys, value ]) ->
 	regexp = new RegExp(
 		"#{keys.map(_.escapeRegExp).join '|'}"
