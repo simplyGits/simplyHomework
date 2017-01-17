@@ -84,7 +84,7 @@ Meteor.publish 'chatMessages', (chatRoomId, limit) ->
 	@onStop ->
 		handle.stop()
 
-Meteor.publish 'messageCount', (chatRoomId) ->
+Meteor.publish 'chatMessageCount', (chatRoomId) ->
 	check chatRoomId, String
 	@unblock()
 

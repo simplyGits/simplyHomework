@@ -51,7 +51,7 @@ Template.chatMessages.events
 
 Template.chatMessages.onCreated ->
 	@sticky = yes
-	@subscribe 'messageCount', @data._id
+	@subscribe 'chatMessageCount', @data._id
 	sub = Meteor.subscribeWithPagination(
 		'chatMessages'
 		@data._id

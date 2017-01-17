@@ -288,9 +288,9 @@ Meteor.publish 'drafts', (offset) ->
 		limit: offset + 20
 	}
 
-Meteor.publish 'messagesCount', (folder) ->
+Meteor.publish 'messageCount', (folder) ->
 	check folder, String
-	Counts.publish this, 'messagesCount', Messages.find
+	Counts.publish this, 'messageCount', Messages.find
 		fetchedFor: @userId
 		folder: folder
 	undefined

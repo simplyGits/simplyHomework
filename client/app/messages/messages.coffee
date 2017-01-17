@@ -31,7 +31,7 @@ hasService = new ReactiveVar yes
 offset = new ReactiveVar 0
 isLoadingNext = new ReactiveVar no
 
-hasMore = -> offset.get() + 20 < Counts.get 'messagesCount'
+hasMore = -> offset.get() + 20 < Counts.get 'messageCount'
 
 folders = [{
 	name: 'inbox'
@@ -64,7 +64,7 @@ Template.messages.onCreated ->
 				isLoadingNext.set no
 
 		else if folder?
-			Meteor.subscribe 'messagesCount', folder
+			Meteor.subscribe 'messageCount', folder
 			Meteor.subscribe 'messages', offset.get(), [ folder ], onStop: (e) ->
 				isLoadingNext.set no
 				if e?.error is 'not-supported'
