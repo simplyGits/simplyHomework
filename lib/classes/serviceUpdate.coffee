@@ -34,6 +34,7 @@ class @ServiceUpdate
 			type: String
 		body:
 			type: String
+			defaultValue: ''
 		userId:
 			type: String
 		fetchedBy:

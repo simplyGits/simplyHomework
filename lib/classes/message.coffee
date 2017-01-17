@@ -95,6 +95,7 @@ class @Message
 			type: String
 		body:
 			type: String
+			defaultValue: ''
 		folder:
 			type: String
 			allowedValues: [ 'inbox', 'outbox' ]
@@ -183,6 +184,7 @@ class @Draft
 			type: String
 		body:
 			type: String
+			defaultValue: ''
 		senderId:
 			type: String
 			index: 1
