@@ -27,6 +27,7 @@ Meteor.methods
 	# @return {String} The ID of the added chatMessage.
 	###
 	addChatMessage: (content, chatRoomId) ->
+		@unblock()
 		check content, String
 		check chatRoomId, String
 
@@ -46,12 +47,14 @@ Meteor.methods
 		ChatRooms.update chatRoomId, $set: lastMessageTime: new Date
 		ChatMessages.insert message
 
+	# TODO: rerun serverside ChatMiddlewares
 	###*
 	# @method updateChatMessage
 	# @param {String} content
 	# @param {String} chatMessageId
 	###
 	updateChatMessage: (content, chatMessageId) ->
+		@unblock()
 		check content, String
 		check chatMessageId, String
 

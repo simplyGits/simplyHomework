@@ -89,7 +89,7 @@ Meteor.publish 'messageCount', (chatRoomId) ->
 	@unblock()
 
 	room = (
-		if @userId
+		if @userId?
 			ChatRooms.findOne
 				_id: chatRoomId
 				users: @userId
