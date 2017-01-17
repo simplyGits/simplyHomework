@@ -72,7 +72,6 @@ Package.onUse(function(api) {
 		'server/_startup.coffee',
 		'server/security.coffee',
 		'server/publish.coffee',
-		'server/rateLimits.coffee',
 		'server/indices.coffee',
 		'server/router.js',
 	], 'server');
