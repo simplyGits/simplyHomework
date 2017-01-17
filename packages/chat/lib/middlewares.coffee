@@ -190,8 +190,11 @@ ChatMiddlewares.attach 'clickable names', 'insert', (message) ->
 	# have more control over the matching and can we maybe support surnames
 	# containing non-word characters.
 
-	choosen = []
 	schoolId = Meteor.user().profile.schoolId
+	unless schoolId?
+		return message
+
+	choosen = []
 	users = _(message.content)
 		.split /\W/
 		.map (word) -> Helpers.nameCap word
