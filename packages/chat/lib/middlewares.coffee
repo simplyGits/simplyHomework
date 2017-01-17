@@ -190,7 +190,7 @@ ChatMiddlewares.attach 'clickable names', 'insert', (message) ->
 	# have more control over the matching and can we maybe support surnames
 	# containing non-word characters.
 
-	schoolId = Meteor.user().profile.schoolId
+	schoolId = getUserField message.creatorId, 'profile.schoolId'
 	unless schoolId?
 		return message
 
@@ -250,7 +250,7 @@ ChatMiddlewares.attach 'clickable names', 'insert', (message) ->
 	message
 
 ChatMiddlewares.attach 'clickable classes', 'insert', (message) ->
-	{ year, schoolVariant } = getCourseInfo Meteor.userId()
+	{ year, schoolVariant } = getCourseInfo message.creatorId
 
 	classes = _(message.content)
 		.split ' '
