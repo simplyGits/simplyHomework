@@ -30,7 +30,7 @@ export clone = (obj) -> EJSON.parse EJSON.stringify obj
 export omit = (obj, keys) ->
 	if _.isArray obj
 		_.map obj, (x) -> omit x, keys
-	else if _.isPlainObject obj
+	else if _.isPlainObject obj # REVIEW: shouldn't this use `_.isObject`?
 		for key in keys
 			obj = _.omit obj, key
 
