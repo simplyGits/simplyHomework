@@ -1,8 +1,8 @@
 {
   "dependencies": {
     "ansi-regex": {
-      "version": "2.0.0",
-      "resolved": "https://registry.npmjs.org/ansi-regex/-/ansi-regex-2.0.0.tgz",
+      "version": "2.1.1",
+      "resolved": "https://registry.npmjs.org/ansi-regex/-/ansi-regex-2.1.1.tgz",
       "from": "ansi-regex@>=2.0.0 <3.0.0"
     },
     "ansi-styles": {
@@ -225,13 +225,13 @@
       "from": "jsprim@>=1.2.2 <2.0.0"
     },
     "mime-db": {
-      "version": "1.25.0",
-      "resolved": "https://registry.npmjs.org/mime-db/-/mime-db-1.25.0.tgz",
-      "from": "mime-db@>=1.25.0 <1.26.0"
+      "version": "1.26.0",
+      "resolved": "https://registry.npmjs.org/mime-db/-/mime-db-1.26.0.tgz",
+      "from": "mime-db@>=1.26.0 <1.27.0"
     },
     "mime-types": {
-      "version": "2.1.13",
-      "resolved": "https://registry.npmjs.org/mime-types/-/mime-types-2.1.13.tgz",
+      "version": "2.1.14",
+      "resolved": "https://registry.npmjs.org/mime-types/-/mime-types-2.1.14.tgz",
       "from": "mime-types@>=2.1.7 <2.2.0"
     },
     "node-uuid": {
@@ -275,8 +275,8 @@
       "from": "sntp@>=1.0.0 <2.0.0"
     },
     "sshpk": {
-      "version": "1.10.1",
-      "resolved": "https://registry.npmjs.org/sshpk/-/sshpk-1.10.1.tgz",
+      "version": "1.10.2",
+      "resolved": "https://registry.npmjs.org/sshpk/-/sshpk-1.10.2.tgz",
       "from": "sshpk@>=1.7.0 <2.0.0",
       "dependencies": {
         "assert-plus": {
