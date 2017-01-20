@@ -54,6 +54,7 @@ names = ->
 	undefined
 
 addProgress = (item, cb) ->
+	ga 'send', 'event', 'setup', 'progress', item
 	Meteor.users.update Meteor.userId(), {
 		$addToSet: setupProgress: item
 	}, cb
