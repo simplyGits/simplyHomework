@@ -2,3 +2,5 @@ tags
 .*.swp
 node_modules
 imports/version.js
+docker-compose.yml
+settings.json
