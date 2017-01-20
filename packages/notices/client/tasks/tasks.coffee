@@ -39,7 +39,6 @@ getTasks = ->
 	# TODO: Also mix homework for tommorow and homework for days where the day
 	# before has no time. Unless today has no time.
 
-	dateTracker.depend()
 	startDate = Date.today().addDays switch new Date().getDay()
 		when 5 then 3
 		when 6 then 2
@@ -53,6 +52,7 @@ getTasks = ->
 	[ undefined, [] ]
 
 NoticeManager.provide 'tasks', ->
+	dateTracker.depend()
 	@subscribe 'externalCalendarItems', Date.today(), Date.today().addDays 4
 
 	[ date, tasks ] = getTasks()
@@ -64,6 +64,7 @@ NoticeManager.provide 'tasks', ->
 		priority: 2
 
 NoticeManager.provide 'tasks today', ->
+	minuteTracker.depend()
 	@subscribe 'externalCalendarItems', Date.today(), Date.today().addDays 1
 
 	tasks = _.filter getTasksForDate(Date.today()), (t) -> new Date < t.date
