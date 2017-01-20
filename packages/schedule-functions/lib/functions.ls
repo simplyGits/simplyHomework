@@ -57,7 +57,7 @@
 	check user-id, String
 	check count-scrapped-as-lesson, Boolean
 
-	minuteTracker?depend!
+	minute-tracker?depend!
 	CalendarItems.find(
 		user-ids: user-id
 		end-date:
@@ -75,7 +75,7 @@
 	check date, Date
 
 	unless date?
-		dateTracker?depend!
+		date-tracker?depend!
 		date = new Date!
 
 	date .= date!
@@ -90,7 +90,7 @@
 @ScheduleFunctions.current-lesson = (user-id = Meteor.user-id!) ->
 	check user-id, String
 
-	minuteTracker?.depend!
+	minute-tracker?.depend!
 	CalendarItems.find-one do
 		user-ids: user-id
 		start-date: $lte: new Date
@@ -101,7 +101,7 @@
 @ScheduleFunctions.next-lesson = (user-id = Meteor.user-id!) ->
 	check user-id, String
 
-	minuteTracker?.depend!
+	minute-tracker?.depend!
 	CalendarItems.find-one(
 		user-ids: user-id
 		start-date: $gt: new Date
