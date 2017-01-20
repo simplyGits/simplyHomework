@@ -105,7 +105,7 @@ Template['messages_sidebar'].helpers
 
 Template['messages_sidebar'].events
 	'click #compose': ->
-		ga 'send', 'event', 'messages', 'compose'
+		ga 'send', 'event', 'messages', 'compose', 'new'
 		FlowRouter.go 'composeMessage'
 
 Template['messages_sidebar_folder'].helpers
@@ -165,6 +165,7 @@ Template['message_current_message'].helpers
 Template['message_current_message'].events
 	'click #closeButton': -> history.back()
 	'click [data-action="reply"]': ->
+		ga 'send', 'event', 'messages', 'compose', 'reply'
 		FlowRouter.go 'composeMessage', undefined,
 			replyId: @_id
 			recipients: @sender.fullName
