@@ -1,5 +1,5 @@
 /* global Scholieren:true, getClassInfos:true, Books:true,
-   normalizeClassName:true, Search:true */
+   normalizeClassName:true */
 'use strict';
 
 const settings = Meteor.settings && Meteor.settings.scholieren;
@@ -13,7 +13,7 @@ Scholieren = {
 	friendlyName: 'Scholieren.com',
 	loginNeeded: false,
 
-	getClasses: function (options) {
+	getClasses(options) {
 		options = options || {};
 
 		let optionsKey = undefined;
@@ -37,7 +37,7 @@ Scholieren = {
 		return JSON.parse(result.content).subjects;
 	},
 
-	getBooks: function (options) {
+	getBooks(options) {
 		options = options || {};
 
 		let optionsKey = undefined;
@@ -67,7 +67,7 @@ Scholieren = {
 		});
 	},
 
-	getReports: function (query) {
+	getReports(query) {
 		const result = HTTP.post('http://api.scholieren.com/', {
 			params: {
 				'client_id': settings['client_id'],
@@ -83,15 +83,11 @@ Scholieren = {
 
 		const reports = JSON.parse(result.content).reports || [];
 		return reports.map(function (report) {
-			const res = {}
-			report.forEach(function (obj) {
-				const pair = _.pairs(obj)[0];
-				res[pair[0]] = pair[1];
-			});
+			const r = _.merge(...report);
 			return {
-				title: res.titel,
-				url: res.url,
-				rating: res.rating,
+				title: r.titel,
+				url: r.url,
+				rating: r.rating,
 			};
 		});
 	},
@@ -101,36 +97,36 @@ if (Package.search != null) {
 	Package.search.Search.provide('scholieren', function ({ query, user, classes, keywords }) {
 		if (!_.contains(keywords, 'report')) {
 			return [];
-		} else {
-			let res = [];
-			const classInfos = getClassInfos(user._id);
-
-			classes.forEach(function (c) {
-				const classInfo = _.find(classInfos, { id: c._id });
-
-				const book = Books.findOne(classInfo.bookId);
-				const bookName = (book && book.title) || '';
-				const q = `${normalizeClassName(c.name)} ${bookName} ${query}`;
-
-				const reports = _(Scholieren.getReports(q))
-					.filter(function (item) {
-						const reg = /^.+\(([^\)]+)\)$/;
-						const match = reg.exec(item.title);
-						return !match || match[1].toLowerCase() === bookName.toLowerCase();
-					})
-					.map(function (item) {
-						item.title = item.title.replace(/\([^\)]+\)$/, '');
-						return _.extend(item, {
-							type: 'report',
-							filtered: true,
-						});
-					})
-					.value();
-
-				res = res.concat(reports);
-			});
-
-			return res;
 		}
+
+		let res = [];
+		const classInfos = getClassInfos(user._id);
+
+		for (const c of classes) {
+			const classInfo = _.find(classInfos, { id: c._id });
+
+			const book = Books.findOne(classInfo.bookId);
+			const bookName = (book && book.title) || '';
+			const q = `${normalizeClassName(c.name)} ${bookName} ${query}`;
+
+			const reports = _.chain(Scholieren.getReports(q))
+				.filter(function (item) {
+					const reg = /^.+\(([^\)]+)\)$/;
+					const match = reg.exec(item.title);
+					return !match || match[1].toLowerCase() === bookName.toLowerCase();
+				})
+				.map(function (item) {
+					item.title = item.title.replace(/\([^\)]+\)$/, '');
+					return _.extend(item, {
+						type: 'report',
+						filtered: true,
+					});
+				})
+				.value();
+
+			res = res.concat(reports);
+		}
+
+		return res;
 	});
 }
