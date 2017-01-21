@@ -56,13 +56,15 @@ export updateGrades = (userId, forceUpdate = no) ->
 			if val?
 				if hasChanged val, grade, [ 'dateTestMade', 'previousValues' ]
 					items = [ 'dateFilledIn', 'grade', 'gradeStr', 'weight' ]
+
 					if not grade.isEnd and
 					hasChanged _.pick(val, items), _.pick(grade, items)
-						grade.previousValues =
-							dateFilledIn: val.dateFilledIn
-							grade: val.grade
-							gradeStr: val.gradeStr
-							weight: val.weight
+						grade.previousValues.push (
+							_.chain(items)
+								.map (key) -> [ key, val[key] ]
+								.zipObject()
+								.value()
+						)
 
 					Grades.update val._id, { $set: grade }, { removeEmptyStrings: no }, handleCollErr
 			else

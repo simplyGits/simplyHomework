@@ -27,21 +27,17 @@ Template.recentGrades.helpers
 						.filter (x) -> x.classId is g.classId
 						.sortBy 'dateFilledIn'
 						.map (g) ->
-							newGrade = Blaze.toHTMLWithData Template.recentGrade, g
+							compile = (g) -> Blaze.toHTMLWithData Template.recentGrade, g
 
-							if g.previousValues?
-								g = g.previousValues
-								g = _.extend new Grade(g.gradeStr), g
-								g.__grade = g.toString().replace '.', ','
+							_.chain(g.previousValues)
+								.map (old) ->
+									old = _.extend new Grade(old.gradeStr), old
+									old.__grade = old.toString().replace '.', ','
 
-								oldGrade = Blaze.toHTMLWithData(
-									Template.recentGrade
-									_.extend new Grade(g.gradeStr), g
-								)
-
-								"<span class='prev'>#{oldGrade}</span> &rarr; #{newGrade}"
-							else
-								newGrade
+									"<span class='prev'>#{compile old}</span>"
+								.push compile(g)
+								.join ' &rarr; '
+								.value()
 						.join ' &amp; '
 				)
 			.value()

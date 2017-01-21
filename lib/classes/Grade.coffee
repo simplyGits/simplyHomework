@@ -215,9 +215,8 @@ class @Grade
 			type: null
 			blackbox: yes
 		previousValues:
-			type: Object
+			type: [Object]
 			blackbox: yes
-			optional: yes
 		###
 		# TODO: This had problems because in magister-binding we're returning a stored
 		# grade when it hasn't changed, this grade from the database doesn't have a

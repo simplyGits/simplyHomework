@@ -193,5 +193,40 @@ Migrations.add
 			multi: yes
 		}
 
+Migrations.add
+	version: 14
+	name: 'Make previousValues field on Grade an array'
+	up: ->
+		Grades.find({
+			previousValues: $exists: yes
+		}).forEach (g) ->
+			Grades.update g._id,
+				$set: previousValues: [
+					g.previousValues
+				]
+
+		Grades.update {
+			previousValues: $exists: no
+		}, {
+			$set: previousValues: []
+		}, {
+			multi: yes
+		}
+
+	down: ->
+		Grades.find({
+			previousValues: $ne: []
+		}).forEach (g) ->
+			Grades.update g._id,
+				$set: previousValues: _.last g.previousValues
+
+		Grades.update {
+			previousValues: []
+		}, {
+			$unset: previousValues: yes
+		}, {
+			multi: yes
+		}
+
 Meteor.startup ->
 	Migrations.migrateTo 'latest'
