@@ -39,7 +39,7 @@ Meteor.methods
 			throw new Meteor.Error 'not-in-room'
 
 		message = new ChatMessage content, @userId, chatRoomId
-		message = ChatMiddlewares.run message, 'insert'
+		message = ChatMiddlewares.run message, 'server'
 		if @isSimulation
 			ga 'send', 'event', 'chat', 'send'
 			message.pending = yes
@@ -47,7 +47,6 @@ Meteor.methods
 		ChatRooms.update chatRoomId, $set: lastMessageTime: new Date
 		ChatMessages.insert message
 
-	# TODO: rerun serverside ChatMiddlewares
 	###*
 	# @method updateChatMessage
 	# @param {String} content
@@ -74,9 +73,13 @@ Meteor.methods
 			ga 'send', 'event', 'chat', 'update'
 			pending = yes
 
+		old.content = content
+		old = ChatMiddlewares.run old, 'server'
+
 		ChatMessages.update chatMessageId,
 			$set:
 				content: content
+				compiledContent: old.compiledContent
 				pending: pending
 			$push:
 				changes:

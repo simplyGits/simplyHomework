@@ -5,6 +5,8 @@ if Package['aldeed:collection2']?
 		content:
 			type: String
 			max: CHATMESSAGE_MAX_LENGTH
+		compiledContent:
+			type: String
 		creatorId:
 			type: String
 			autoValue: -> if not @isFromTrustedCode and @isInsert then @userId

@@ -45,7 +45,8 @@ ChatMiddlewares =
 
 # Always keep this middleware on top, please.
 ChatMiddlewares.attach 'preserve original content', 'client', (message) ->
-	message._originalContent = message.content.replace /<[^>]+>/g, ''
+	message._originalContent = message.content
+	message.content = message.compiledContent
 	message
 
 ###
@@ -169,23 +170,27 @@ ChatMiddlewares.attach 'add hidden fields', 'client', (cm) ->
 					'profile.firstName': 1
 			}
 
+ChatMiddlewares.attach 'create compiledContent field', 'server', (message) ->
+	message.compiledContent = message.content
+	message
+
 escapeMap = [
 	[ /</g, '&lt;' ]
 	[ />/g, '&gt;' ]
 ]
 
-ChatMiddlewares.attach 'escape', 'insert', (message) ->
-	s = message.content
+ChatMiddlewares.attach 'escape', 'server', (message) ->
+	s = message.compiledContent
 
 	for [ reg, val ] in escapeMap
 		s = s.replace reg, val
 
-	message.content = s
+	message.compiledContent = s
 	message
 
 # TODO: improve 'clickable {names,classes}' middlewares
 
-ChatMiddlewares.attach 'clickable names', 'insert', (message) ->
+ChatMiddlewares.attach 'clickable names', 'server', (message) ->
 	# REVIEW: maybe add a custom parser, which walks over every word. This way we
 	# have more control over the matching and can we maybe support surnames
 	# containing non-word characters.
@@ -243,13 +248,13 @@ ChatMiddlewares.attach 'clickable names', 'insert', (message) ->
 	for user in users
 		{ firstName, lastName } = user.profile
 		regex = new RegExp "@?(#{firstName} #{lastName}|#{firstName}|#{lastName})", 'ig'
-		message.content = message.content.replace regex, (str) ->
+		message.compiledContent = message.compiledContent.replace regex, (str) ->
 			path = FlowRouter.path 'personView', id: user._id
 			"<a href='#{path}' class='name'>#{str}</a>"
 
 	message
 
-ChatMiddlewares.attach 'clickable classes', 'insert', (message) ->
+ChatMiddlewares.attach 'clickable classes', 'server', (message) ->
 	{ year, schoolVariant } = getCourseInfo message.creatorId
 
 	classes = _(message.content)
@@ -273,7 +278,7 @@ ChatMiddlewares.attach 'clickable classes', 'insert', (message) ->
 
 	for c in classes
 		regex = new RegExp "\\b((#{c.name})|#{c.abbreviations.join '|'})\\b", 'ig'
-		message.content = message.content.replace regex, (str) ->
+		message.compiledContent = message.compiledContent.replace regex, (str) ->
 			path = FlowRouter.path 'classView', id: c._id
 			"<a href='#{path}' class='class'>#{str}</a>"
 

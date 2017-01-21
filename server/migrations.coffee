@@ -228,5 +228,15 @@ Migrations.add
 			multi: yes
 		}
 
+Migrations.add
+	version: 15
+	name: 'add compiledContent field to chatMessages'
+	up: ->
+		ChatMessages.find({}).forEach (m) ->
+			ChatMessages.update m._id,
+				$set:
+					compiledContent: m.content
+					content: m.content.replace /<[^>]+>/g, ''
+
 Meteor.startup ->
 	Migrations.migrateTo 'latest'
