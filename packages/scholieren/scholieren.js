@@ -1,6 +1,6 @@
 /* global Scholieren:true, getClassInfos:true, Books:true,
    normalizeClassName:true */
-'use strict';
+import url from 'url';
 
 const settings = Meteor.settings && Meteor.settings.scholieren;
 
@@ -84,9 +84,13 @@ Scholieren = {
 		const reports = JSON.parse(result.content).reports || [];
 		return reports.map(function (report) {
 			const r = _.merge(...report);
+
+			const parsed = url.parse(r.url)
+			parsed.host = parsed.hostname = 'www.scholieren.nl'
+
 			return {
 				title: r.titel,
-				url: r.url,
+				url: url.format(parsed),
 				rating: r.rating,
 			};
 		});
