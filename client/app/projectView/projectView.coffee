@@ -50,6 +50,10 @@ fileTypes =
 		fileTypeIconClass: 'file-image-o'
 		fileTypeColor: '#85144B'
 
+defaultMime =
+	fileTypeIconClass: "question-circle"
+	fileTypeColor: "#001f3f"
+
 Template.projectView.onCreated ->
 	@autorun =>
 		id = FlowRouter.getParam 'id'
@@ -68,23 +72,32 @@ Template.projectView.onCreated ->
 				notFound()
 
 	loading = []
-	@autorun =>
-		return unless driveLoaded.get()
+	@autorun ->
+		return unless GoogleApi.loaded()
 
-		x = cachedProjectFiles.get()
-		fileIds = _.reject currentProject().driveFileIds, (s) -> s in x or _.contains loading, s
+		cached = Tracker.nonreactive -> cachedProjectFiles.get()
+		fileIds = _.reject currentProject().driveFileIds, (s) -> cached[s]? or s in loading
+
 		needed = fileIds.length
-
-		push = (r) ->
-			x[r.id] = r
-			if --needed is 0 then cachedProjectFiles.set x
+		pushFile = (r) ->
+			cached[r.id] = r
+			console.log r
+			cachedProjectFiles.set cached if --needed is 0
 
 		for driveFileId in fileIds
 			loading.push driveFileId
-			gapi.client.drive.files.get(fileId: driveFileId).execute (r) ->
-				push _.extend r, fileTypes[_(fileTypes).keys().find((s) -> r.mimeType.indexOf(s) is 0)] ? { fileTypeIconClass: "question-circle", fileTypeColor: "#001f3f" }
 
-				_.remove loading, r.id
+			gapi.client.drive.files.get(
+				fileId: driveFileId
+			).execute (r) ->
+				mimeInfo = _(fileTypes)
+					.pairs()
+					.find ([ mime, val ]) -> r.mimeType.indexOf(mime) is 0
+
+				doc = _.extend r, mimeInfo[1] ? defaultMime
+				doc.link = r.webViewLink
+				pushFile doc
+				_.pull loading, r.id
 
 	Mousetrap.bind 'a p', ->
 		showModal 'addParticipantModal'
@@ -114,50 +127,69 @@ Template.projectView.helpers
 
 Template.projectView.events
 	"click #addFileIcon": ->
-		# TODO: clean this mess up.
-		onPickerResult (r) =>
-			return unless r.action is "picked"
-			cb = =>
-				Projects.update @_id, $addToSet: driveFileIds: r.docs[0].id, (e) ->
-					if e?
-						notify "Bestand kan niet worden toegevoegd", "error"
-						Kadira.trackError "Remove-add-file", e.message, stacks: e.stack
-					else notify "#{r.docs[0].title} toegevoegd", "notice"
+		project = this
 
-			setPermissions = ->
-				if _.any(r.docs[0].permissions, (p) -> p.type is "anyone" and p.role is "writer") then cb()
-				else
-					gapi.client.drive.permissions.insert(
-						fileId: r.docs[0].id
-						resource:
-							type: "anyone"
-							role: "writer"
-							withLink: yes
-					).execute (r) ->
-						if r.error?
-							notify "Bestand kan niet worden toegevoegd", "error"
-							Kadira.trackError "Drive-client", r.error.message, stacks: EJSON.stringify r
-						else cb()
+		GoogleApi.auth (e, info) ->
+			if e?
+				notify 'Fout tijdens inloggen bij Google', 'error'
+				return
 
-			if (r.docs[0].type isnt "document" and r.docs[0].mimeType.indexOf("openxmlformats") is -1) or _(fileTypes).keys().contains(r.docs[0].mimeType) then setPermissions()
-			else
-				gapi.client.drive.files.copy(
-					fileId: r.docs[0].id
-					convert: yes
-					resource:
-						title: (
-							if (val = r.docs[0].name.replace(/[-_]/g, " ").split(".")).length is 1
-								val[0]
-							else
-								_.initial(val).join '.'
-						)
-				).execute (res) ->
-					if res.error?
-						notify "Bestand kan niet worden toegevoegd", "error"
-						Kadira.trackError "Drive-client", res.error.message, stacks: EJSON.stringify res
+			GoogleApi.picker info.access_token, (r) ->
+				return unless r.action is 'picked'
+				doc = r.docs[0]
+				store = ->
+					Projects.update project._id, {
+						$addToSet: driveFileIds: doc.id
+					}, (e) ->
+						if e?
+							notify 'Bestand kan niet worden toegevoegd', 'error'
+							Kadira.trackError 'Client-add-file', e.message, stacks: e.stack
+						else
+							notify "#{doc.title} toegevoegd.", 'notice'
+
+				setPermissions = ->
+					if _.any(doc.permissions, (p) -> p.type is 'anyone' and p.role is 'writer')
+						# Permissions are already good.
+						store()
 					else
-						r.docs[0] = res
-						setPermissions()
+						# Set correct permissions.
+						gapi.client.drive.permissions.insert(
+							fileId: doc.id
+							resource:
+								type: 'anyone'
+								role: 'writer'
+								withLink: yes
+						).execute (r) ->
+							if r.error?
+								notify 'Bestand kan niet worden toegevoegd', 'error'
+								Kadira.trackError 'Drive-client', r.error.message, stacks: EJSON.stringify r
+							else
+								store()
+
+				if (doc.type isnt 'document' and 'openxmlformats' not in doc.mimeType) or
+				_(fileTypes).keys().contains(doc.mimeType)
+					# File is a Google document, no need to convert.
+					setPermissions()
+				else
+					# File isn't a Google document, convert it to one.
+					gapi.client.drive.files.copy(
+						fileId: doc.id
+						convert: yes
+						resource:
+							title: (
+								val = doc.name.replace(/[-_]/g, ' ').split '.'
+								if val.length is 1
+									val[0]
+								else
+									_.initial(val).join '.'
+							)
+					).execute (res) ->
+						if res.error?
+							notify 'Bestand kan niet worden toegevoegd', 'error'
+							Kadira.trackError 'Drive-client', res.error.message, stacks: EJSON.stringify res
+						else
+							doc = res
+							setPermissions()
 
 	"click #addPersonIcon": ->
 		showModal 'addParticipantModal'

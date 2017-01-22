@@ -48,6 +48,7 @@ fastclick@1.0.13
 force-ssl@1.0.13
 fortawesome:fontawesome@4.7.0
 geojson-utils@1.0.10
+google-api@0.0.1
 grade-functions@0.0.1
 gravatar-binding@0.0.1
 handlebars@1.0.7

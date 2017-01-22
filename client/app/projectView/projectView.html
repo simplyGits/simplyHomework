@@ -73,12 +73,12 @@
 </template>
 
 <template name="fileRow">
-	<a href="{{alternateLink}}" target="_blank">
+	<a href="{{webViewLink}}" target="_blank">
 		<div class="fileRow">
 			<div class="ripple" style="background-color: {{fileTypeColor}}"></div>
 			<div style="position: relative; pointer-events: none"> {{! otherwise the ripple will go over the content}}
 				<i class="fa fa-{{fileTypeIconClass}}"></i>
-				<span class="projectTitle">{{title}}</span>
+				<span class="projectTitle">{{name}}</span>
 				{{#if currentWorker}}
 					<span class="fileCurrentPeople"><b>{{currentWorker.profile.firstName}}</b> is nu hiermee bezig</span>
 				{{/if}}
