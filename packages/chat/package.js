@@ -67,6 +67,7 @@ Package.onUse(function(api) {
 		'client/mobileChatWindow.coffee',
 		'client/chatMessages.html',
 		'client/chatMessages.coffee',
+		'client/middlewares.coffee',
 	], 'client');
 	api.addFiles([
 		'server/_startup.coffee',
@@ -74,6 +75,7 @@ Package.onUse(function(api) {
 		'server/publish.coffee',
 		'server/indices.coffee',
 		'server/router.js',
+		'server/middlewares.coffee',
 	], 'server');
 
 	api.export([
