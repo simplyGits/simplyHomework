@@ -117,3 +117,7 @@ appRoutes.route '/grades',
 appRoutes.route '/settings/:page?',
 	name: 'settings'
 	action: -> renderAppTemplate 'settings'
+
+appRoutes.route '/sharedHours',
+	name: 'sharedHoursOverview'
+	action: -> renderAppTemplate 'sharedHoursOverview'

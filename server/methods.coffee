@@ -415,3 +415,34 @@ Meteor.methods
 				end: x.end
 				schoolHour: x.schoolHour
 			.value()
+
+	sharedHours: ->
+		@unblock()
+		unless @userId?
+			return []
+
+		hours = CalendarItems.find(
+			userIds: @userId
+			startDate: $gte: Date.today()
+			endDate: $lte: Date.today().addDays 7
+			scrapped: no
+			schoolHour:
+				$exists: yes
+				$ne: null
+		).map (item) ->
+			userIds: item.userIds
+			date: item.startDate
+			schoolHour: item.schoolHour
+			classId: item.classId
+			description: item.description
+
+		inbetweenHours = Meteor.call 'getInbetweenHours'
+
+		_(inbetweenHours)
+			.map (x) ->
+				userIds: x.userIds
+				date: x.start
+				schoolHour: x.schoolHour
+				description: 'Tussenuur'
+			.concat hours
+			.value()

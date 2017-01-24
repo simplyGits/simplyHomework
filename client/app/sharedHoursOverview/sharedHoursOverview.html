@@ -1,0 +1,42 @@
+<template name="sharedHoursOverview">
+	<div id="sharedHoursOverview">
+		{{#if days}}
+			{{#each days}}
+				<div class="dayCard">
+					<header>{{name}}</header>
+					{{#each hours}}
+						<div class="hour">
+							<div class="name">
+								{{#if class}}
+									<a href="{{pathFor 'classView' id=class._id}}">
+										<b>{{schoolHour}}</b>: {{class.name}}
+									</a>
+								{{else}}
+									<b>{{schoolHour}}</b>: {{description}}
+								{{/if}}
+							</div>
+							<div class="persons">
+								{{#each users}}
+									<a href="{{pathFor 'personView' id=_id}}">
+										<div>
+											<img src="{{picture this 100}}" width="50" height="50"/>
+											<span>{{profile.firstName}} {{profile.lastName}}</span>
+										</div>
+									</a>
+								{{/each}}
+							</div>
+						</div>
+					{{/each}}
+				</div>
+			{{/each}}
+		{{else}}
+			{{#if loaded}}
+				<div class="notice">
+					Geen lessen gevonden.
+				</div>
+			{{else}}
+				{{> loading}}
+			{{/if}}
+		{{/if}}
+	</div>
+</template>

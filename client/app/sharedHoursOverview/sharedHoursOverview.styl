@@ -1,0 +1,27 @@
+#sharedHoursOverview
+	.dayCard
+		border: 1px lightgray solid
+		padding: 10px
+		margin-bottom: 15px
+
+		.hour
+			padding = 10px
+			padding-top: padding
+			padding-bottom: padding
+
+			.peopleCarousel
+				white-space: nowrap
+				overflow-x: auto
+
+				a
+					text-decoration: none !important
+
+				img
+					size = 30px
+					height: size
+					width: size
+					border-radius: 50%
+					pointer-events: all
+
+		.hour:not(:last-child)
+			border-bottom: 1px lightgray solid
