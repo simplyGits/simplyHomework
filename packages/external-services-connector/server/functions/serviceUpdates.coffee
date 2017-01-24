@@ -28,7 +28,7 @@ export fetchServiceUpdates = (userId, forceUpdate = no) ->
 		{ result, error } = results[service.name]
 		if error?
 			ExternalServicesConnector.handleServiceError service.name, userId, error
-			errors.push e
+			errors.push error
 			continue
 
 		ServiceUpdates.remove {
