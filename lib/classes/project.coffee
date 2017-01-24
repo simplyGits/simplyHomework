@@ -36,6 +36,13 @@ projectTransform = (p) ->
 class @Project
 	constructor: (@name, @description, @deadline, @creatorId, @classId) ->
 		###*
+		# @property creationDate
+		# @type Date
+		# @default new Date()
+		###
+		@creationDate = new Date()
+
+		###*
 		# The IDs of the participants of this project.
 		# @property participants
 		# @type String[]
@@ -92,16 +99,16 @@ class @Project
 			optional: yes
 		deadline:
 			type: Date
-		magisterId:
-			type: Number
-			optional: yes
-		classId:
-			type: String
-			optional: yes
 		creatorId:
 			type: String
 			denyUpdate: yes
 			autoValue: -> if not @isFromTrustedCode and @isInsert then @userId else @value
+		classId:
+			type: String
+			optional: yes
+		creationDate:
+			type: Date
+			denyUpdate: yes
 		participants:
 			type: [String]
 			autoValue: ->
