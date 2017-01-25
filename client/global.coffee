@@ -4,7 +4,6 @@
 # @return {Cursor} A cursor pointing to the classes.
 ###
 @classes = ->
-	console?.trace? 'classes()'
 	Classes.find {
 		_id: $in: (
 			_(getClassInfos())
