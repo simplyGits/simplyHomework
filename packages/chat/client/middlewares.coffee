@@ -13,17 +13,21 @@ ChatMiddlewares.attach 'shitdown', 'client', (message) ->
 	message
 ###
 
+genImage = (path) ->
+	"<img class='emojione' style='height: 4ex' src='#{path}'></img>"
+
 chatReplacements = [
-	[[ '(y)'                ], ':thumbsup:'      ]
-	[[ '(n)'                ], ':thumbsdown:'    ]
-	[[ '(a)'                ], ':innocent:'      ]
-	[[ '(h)'                ], ':sunglasses:'    ]
-	[[ '^^\''               ], ':sweat_smile:'   ]
-	[[ ':fissa:', ':hype:'  ], ':tada:'          ]
-	[[ ':kaas:'             ], ':cheese:'        ]
-	[[ ':fu:'               ], ':middle_finger:' ]
-	[[ '/shrug/', ':shrug:' ], '¯\\_(ツ)_/¯'     ]
-	[[ '\\o/'               ], ':dancer:'        ]
+	[[ '(y)'                ], ':thumbsup:'                               ]
+	[[ '(n)'                ], ':thumbsdown:'                             ]
+	[[ '(a)'                ], ':innocent:'                               ]
+	[[ '(h)'                ], ':sunglasses:'                             ]
+	[[ '^^\''               ], ':sweat_smile:'                            ]
+	[[ ':fissa:', ':hype:'  ], ':tada:'                                   ]
+	[[ ':kaas:'             ], ':cheese:'                                 ]
+	[[ ':fu:'               ], ':middle_finger:'                          ]
+	[[ '/shrug/', ':shrug:' ], '¯\\_(ツ)_/¯'                              ]
+	[[ ':kappa:'            ], genImage '/packages/chat/images/kappa.png' ]
+	[[ '\\o/'               ], ':dancer:'                                 ]
 ].map ([ keys, value ]) ->
 	regexp = new RegExp(
 		"#{keys.map(_.escapeRegExp).join '|'}"
@@ -85,14 +89,6 @@ ChatMiddlewares.attach 'links', 'client', (message) ->
 ChatMiddlewares.attach 'emojione', 'client', (message) ->
 	unless getUserField Meteor.userId(), 'settings.devSettings.noChatEmojis'
 		message.content = emojione.toImage message.content
-	message
-
-ChatMiddlewares.attach 'kappa', 'client', (message) ->
-	unless getUserField Meteor.userId(), 'settings.devSettings.noChatEmojis'
-		message.content = message.content.replace(
-			/:kappa:/ig
-			'<img class="emojione" style="height: 4ex" src="/packages/chat/images/kappa.png"></img>'
-		)
 	message
 
 ChatMiddlewares.attach 'katex', 'client', (message) ->
