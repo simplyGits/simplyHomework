@@ -18,7 +18,7 @@ chatReplacements = [
 	[[ '(n)'                ], ':thumbsdown:'    ]
 	[[ '(a)'                ], ':innocent:'      ]
 	[[ '(h)'                ], ':sunglasses:'    ]
-	[[ '^^'                 ], ':sweat_smile:'   ]
+	[[ '^^\''               ], ':sweat_smile:'   ]
 	[[ ':fissa:', ':hype:'  ], ':tada:'          ]
 	[[ ':kaas:'             ], ':cheese:'        ]
 	[[ ':fu:'               ], ':middle_finger:' ]
