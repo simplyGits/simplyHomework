@@ -216,3 +216,5 @@ Meteor.publish 'servicesInfo', ->
 
 	@onStop ->
 		observer.stop()
+
+	@ready()
