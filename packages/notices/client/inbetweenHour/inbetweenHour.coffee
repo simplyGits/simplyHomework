@@ -5,15 +5,16 @@ lastUpdate = undefined
 lastCount = undefined
 
 NoticeManager.provide 'inbetweenHour', ->
+	sub = @subscribe 'externalCalendarItems', Date.today(), Date.today().addDays 1
 	minuteTracker.depend()
 
 	count = ScheduleFunctions.getInbetweenHours(@userId, yes).length
-	lastCount ?= count
+	lastCount ?= count if sub.ready()
 	lastUpdate = _.now()
 
 	call = Call 'inbetweenhours', 'getInbetweenHours'
 
-	if lastCount isnt count or _.now() - lastUpdate > UPDATE_TIME
+	if (lastCount? and lastCount isnt count) or _.now() - lastUpdate > UPDATE_TIME
 		call.update()
 		lastUpdate = _.now()
 		lastCount = count
