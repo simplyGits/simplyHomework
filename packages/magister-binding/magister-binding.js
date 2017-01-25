@@ -362,18 +362,13 @@ const convertMagisterFile = function (userId, prefix, file, usePersonPath = fals
 	return res;
 };
 
-MagisterBinding.getFile = function (userId, info) {
-	check(userId, String);
+MagisterBinding.getFile = function (info) {
 	check(info, Object);
 
-	// const magister = getMagisterObject(userId);
 	const magister = getMagisterObject(info.userId);
-	let url;
-	if (info.pupilPath) {
-		url = `${magister._pupilUrl}/${info.pupilPath}`;
-	} else if (info.personPath) {
-		url = `${magister._personUrl}/${info.personPath}`;
-	}
+	const url = info.pupilPath ?
+		`${magister._pupilUrl}/${info.pupilPath}` :
+		`${magister._personUrl}/${info.personPath}`;
 
 	return request({
 		method: 'get',
