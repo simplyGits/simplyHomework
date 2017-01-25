@@ -2,15 +2,22 @@ UPDATE_TIME = ms.minutes 20
 SHOWN_PERSON_COUNT = 7
 
 lastUpdate = undefined
+lastCount = undefined
 
 NoticeManager.provide 'inbetweenHour', ->
+	sub = @subscribe 'externalCalendarItems', Date.today(), Date.today().addDays 1
 	minuteTracker.depend()
 
+	count = ScheduleFunctions.getInbetweenHours(@userId, yes).length
+	lastCount ?= count if sub.ready()
+	lastUpdate = _.now()
+
 	call = Call 'inbetweenhours', 'getInbetweenHours'
-	lastUpdate = new Date
-	if _.now() - lastUpdate > UPDATE_TIME
+
+	if (lastCount? and lastCount isnt count) or _.now() - lastUpdate > UPDATE_TIME
 		call.update()
-		lastUpdate = new Date
+		lastUpdate = _.now()
+		lastCount = count
 
 	hours = call.result() ? []
 	current = _.find hours, (h) -> h.start <= new Date() <= h.end
