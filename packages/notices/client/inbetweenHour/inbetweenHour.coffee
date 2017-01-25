@@ -9,13 +9,13 @@ NoticeManager.provide 'inbetweenHour', ->
 
 	count = ScheduleFunctions.getInbetweenHours(@userId, yes).length
 	lastCount ?= count
-	lastUpdate = new Date
+	lastUpdate = _.now()
 
 	call = Call 'inbetweenhours', 'getInbetweenHours'
 
 	if lastCount isnt count or _.now() - lastUpdate > UPDATE_TIME
 		call.update()
-		lastUpdate = new Date
+		lastUpdate = _.now()
 		lastCount = count
 
 	hours = call.result() ? []
