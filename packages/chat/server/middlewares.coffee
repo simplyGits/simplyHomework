@@ -1,7 +1,3 @@
-ChatMiddlewares.attach 'create compiledContent field', 'server', (message) ->
-	message.compiledContent = message.content
-	message
-
 escapeMap = [
 	[ /</g, '&lt;' ]
 	[ />/g, '&gt;' ]

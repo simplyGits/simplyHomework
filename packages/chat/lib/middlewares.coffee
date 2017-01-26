@@ -39,3 +39,7 @@
 				Kadira.trackError 'middleware-failure', e.toString(), stacks: JSON.stringify e
 
 		message
+
+ChatMiddlewares.attach 'create compiledContent field', 'server', (message) ->
+	message.compiledContent = message.content
+	message
