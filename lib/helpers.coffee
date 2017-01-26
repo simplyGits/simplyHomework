@@ -212,13 +212,18 @@ class @Helpers
 	###
 	@convertLinksToAnchor: (str) ->
 		matches = linkify.match str
+		res = []
+		last = 0
 
 		for match in matches ? []
-			str = str.slice(0, match.index) +
-				"<a target='_blank' href='#{match.url}'>#{match.text}</a>" +
-				str.slice(match.lastIndex)
+			res.push str.slice(last, match.index) if last < match.index
+			res.push "<a target='_blank' href='#{match.url}'>#{match.text}</a>"
+			last = match.lastIndex
 
-		str
+		if last < str.length
+			res.push str.slice last
+
+		res.join ''
 
 	###*
 	# Sets an interval for the given `func`. While immediately executing it.
