@@ -27,26 +27,33 @@ ChatMiddlewares.attach 'clickable names', 'server', (message) ->
 	unless schoolId?
 		return message
 
-	choosen = []
-	users = _(message.content)
+	words = _.chain(message.content)
 		.split /\W/
 		.map (word) -> Helpers.nameCap word
-		.map (word) ->
-			users = Meteor.users.find({
-				$or: [
-					{ 'profile.firstName': $ne: '', $eq: word }
-					{ 'profile.lastName': $ne: '', $eq: word }
-				]
-				'profile.schoolId': schoolId
-			}, {
-				fields:
-					_id: 1
-					'profile.firstName': 1
-					'profile.lastName': 1
-					'profile.schoolId': 1
-			}).fetch()
+		.value()
 
+	allUsers = Meteor.users.find({
+		$or: [
+			{ 'profile.firstName': $ne: '', $in: words }
+			{ 'profile.lastName': $ne: '', $in: words }
+		]
+		'profile.schoolId': schoolId
+	}, {
+		fields:
+			_id: 1
+			'profile.firstName': 1
+			'profile.lastName': 1
+			'profile.schoolId': 1
+	}).fetch()
+
+	choosen = []
+	users = _(words)
+		.map (word) ->
 			user = (
+				users = _.filter allUsers, (u) ->
+					{ firstName, lastName } = u.profile
+					word in [ firstName, lastName ]
+
 				# Try to find a user we already found earlier, prioritizing last. This
 				# is used so that people with the same surname doesn't get wierdly
 				# mangled or something. for example:
@@ -83,24 +90,27 @@ ChatMiddlewares.attach 'clickable names', 'server', (message) ->
 	message
 
 ChatMiddlewares.attach 'clickable classes', 'server', (message) ->
+	classInfos = getClassInfos message.creatorId
 	{ year, schoolVariant } = getCourseInfo message.creatorId
 
-	classes = _(message.content)
-		.split ' '
+	words = message.content.split /\W/
+
+	allClasses = Classes.find(
+		schoolVariant: schoolVariant
+		year: year
+	).fetch()
+
+	classes = _(words)
 		.map (word) ->
-			Classes.findOne
+			Helpers.find allClasses,
 				$or: (
 					x = [ name: $regex: "\\b#{_.escapeRegExp word}\\b", $options: 'i' ]
 					if word is word.toUpperCase()
 						x.push abbreviations: word.toLowerCase()
 					x
 				)
-				schoolVariant: schoolVariant
-				year: year
 		.compact()
-		.filter (c) ->
-			classInfos = getClassInfos message.creatorId
-			_.any classInfos, id: c._id
+		.filter (c) -> _.any classInfos, id: c._id
 		.uniq '_id'
 		.value()
 
