@@ -3,7 +3,10 @@ ChatRooms = new Mongo.Collection 'chatRooms', transform: (room) ->
 	chatRoomTransform?(room) ? room
 ChatMessages = new Mongo.Collection 'chatMessages', transform: (m) ->
 	m = _.extend new ChatMessage, m
-	ChatMiddlewares.run m
+	if Meteor.isClient
+		ChatMiddlewares.run m
+	else
+		m
 
 @ChatMessages = ChatMessages
 @ChatRooms = ChatRooms
