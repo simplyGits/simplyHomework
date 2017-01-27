@@ -1,4 +1,5 @@
-{ Services } = require 'meteor/simply:external-services-connector'
+import Privacy from 'meteor/privacy'
+import { Services } from 'meteor/simply:external-services-connector'
 
 currentPerson = -> Meteor.users.findOne FlowRouter.getParam 'id'
 sameUser = -> Meteor.userId() is FlowRouter.getParam 'id'

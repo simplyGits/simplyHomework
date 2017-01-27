@@ -1,25 +1,16 @@
 ###*
-# @class Privacy
-# @static
-###
-Privacy = {}
-
-###*
 # @property options
 # @type Object[]
 ###
-Privacy.options = [
-	{
+export options = [{
 		description: 'Anderen toestaan je rooster te bekijken.'
 		short: 'publishCalendarItems'
-		default: yes
-	}
-	{
+		defaultValue: yes
+	}, {
 		description: 'Anderen toestaan je status te zien.'
 		short: 'publishStatus'
-		default: yes
-	}
-]
+		defaultValue: yes
+}]
 
 ###*
 # Gets the privacy options for the given `user`, with default values if an
@@ -29,17 +20,15 @@ Privacy.options = [
 # @param {String} userId
 # @return {Object}
 ###
-Privacy.getOptions = (userId) ->
-	options = Meteor.users.findOne(
+export getOptions = (userId) ->
+	userOptions = Meteor.users.findOne(
 		{ _id: userId }
 		{ fields: 'settings.privacy': 1 }
 	)?.settings?.privacy ? {}
 
-	defaults = _.chain(Privacy.options)
-		.map (obj) -> [ obj.short, obj.default ]
+	defaults = _.chain(options)
+		.map (obj) -> [ obj.short, obj.defaultValue ]
 		.object()
 		.value()
 
-	_.defaults options, defaults
-
-@Privacy = Privacy
+	_.defaults userOptions, defaults

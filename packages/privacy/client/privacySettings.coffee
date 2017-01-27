@@ -1,3 +1,5 @@
+import Privacy from '../lib/privacy.coffee'
+
 Template.privacyOption.events
 	'change': ->
 		Meteor.users.update Meteor.userId(),

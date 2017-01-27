@@ -1,7 +1,8 @@
-Future = require 'fibers/future'
-LRU = require 'lru-cache'
-WaitGroup = require('meteor/simply:waitgroup').default
-{ functions } = require 'meteor/simply:external-services-connector'
+import Future from 'fibers/future'
+import LRU from 'lru-cache'
+import WaitGroup from 'meteor/simply:waitgroup'
+import Privacy from 'meteor/privacy'
+import { functions } from 'meteor/simply:external-services-connector'
 
 statsCache = LRU
 	max: 75

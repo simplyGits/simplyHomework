@@ -30,6 +30,7 @@ Package.onUse(function(api) {
 		'ms',
 		'mutex',
 		'simply:waitgroup',
+		'privacy',
 	], 'server');
 
 	api.mainModule('client/connector.coffee', 'client');

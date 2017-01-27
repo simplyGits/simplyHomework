@@ -15,19 +15,14 @@ Package.onUse(function(api) {
 	api.use([
 		'coffeescript',
 		'underscore',
+		'modules',
 	]);
 	api.use([
 		'templating',
 	], 'client');
 
-	api.addFiles([
-		'lib/privacy.coffee',
-	]);
-	api.addFiles([
-		'client/privacySettings.html',
-		'client/privacySettings.coffee',
-	], 'client');
-	api.export('Privacy');
+	api.mainModule('client/main.coffee', 'client');
+	api.mainModule('server/main.coffee', 'server');
 });
 
 Package.onTest(function(api) {

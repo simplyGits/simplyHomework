@@ -1,3 +1,4 @@
+import Privacy from 'meteor/privacy'
 import { Services, getServices } from './connector.coffee'
 import { updateCalendarItems, updateGrades, updateStudyUtils, updateMessages,
          fetchServiceUpdates, getModuleInfo } from './functions.coffee'

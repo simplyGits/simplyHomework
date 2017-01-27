@@ -1,4 +1,5 @@
-SReactiveVar = require('meteor/simply:strict-reactive-var').default
+import Privacy from 'meteor/privacy'
+import SReactiveVar from 'meteor/simply:strict-reactive-var'
 
 schoolSub = null
 externalClasses = new ReactiveVar()
