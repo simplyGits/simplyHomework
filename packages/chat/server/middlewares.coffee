@@ -86,8 +86,15 @@ ChatMiddlewares.attach 'clickable names', 'server', (message) ->
 	message
 
 ChatMiddlewares.attach 'clickable classes', 'server', (message) ->
-	classInfos = getClassInfos message.creatorId
-	{ year, schoolVariant } = getCourseInfo message.creatorId
+	creator = Meteor.users.findOne {
+		_id: message.creatorId
+	}, {
+		fields:
+			'profile.courseInfo': 1
+			'classInfos': 1
+	}
+	classInfos = creator.classInfos
+	{ year, schoolVariant } = creator.profile.courseInfo
 
 	words = message.content.split /\W/
 
