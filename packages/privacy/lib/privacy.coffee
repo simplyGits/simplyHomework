@@ -17,13 +17,19 @@ export options = [{
 # option hasn't been set yet.
 #
 # @method getOptions
-# @param {String} userId
+# @param {String|object} userId The ID of the user to get the privacy options
+# of, or the user object itself.
 # @return {Object}
 ###
 export getOptions = (userId) ->
-	userOptions = Meteor.users.findOne(
-		{ _id: userId }
-		{ fields: 'settings.privacy': 1 }
+	userOptions = (
+		if _.isPlainObject userId
+			userId
+		else
+			Meteor.users.findOne(
+				{ _id: userId }
+				{ fields: 'settings.privacy': 1 }
+			)
 	)?.settings?.privacy ? {}
 
 	defaults = _.chain(options)
