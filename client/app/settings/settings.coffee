@@ -1,3 +1,5 @@
+{ isDesktop } = require 'meteor/device-type'
+
 currentPage = -> FlowRouter.getParam 'page'
 
 items = new ReactiveVar [
@@ -50,7 +52,7 @@ Template.settings.onRendered ->
 					$set: "#{field}": yes
 
 	Meteor.defer ->
-		if not currentPage()? and Session.equals 'deviceType', 'desktop'
+		if not currentPage()? and isDesktop()
 			FlowRouter.withReplaceState ->
 				FlowRouter.setParams page: items.get()[0].name
 

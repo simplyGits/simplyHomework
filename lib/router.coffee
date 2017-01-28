@@ -1,3 +1,5 @@
+{ isPhone } = require 'meteor/device-type'
+
 renderAppTemplate = (name) ->
 	BlazeLayout.render 'app', main: name
 
@@ -88,7 +90,7 @@ appRoutes.route '/calendar/:time?',
 	name: 'calendar'
 	action: ->
 		renderAppTemplate (
-			if Session.equals 'deviceType', 'phone' then 'mobileCalendar'
+			if isPhone() then 'mobileCalendar'
 			else 'calendar'
 		)
 

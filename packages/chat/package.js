@@ -33,6 +33,7 @@ Package.onUse(function(api) {
 		'reactive-var',
 		'notifications-manager',
 		'ms',
+		'device-type',
 	], 'client');
 	api.use([
 		'reywood:publish-composite',

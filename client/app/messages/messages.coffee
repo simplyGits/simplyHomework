@@ -1,3 +1,5 @@
+{ isDesktop } = require 'meteor/device-type'
+
 Meteor.startup ->
 	Tracker.autorun ->
 		return unless Meteor.userId()?
@@ -71,7 +73,7 @@ Template.messages.onCreated ->
 					hasService.set no
 
 	Meteor.defer -> # autoselect first folder on desktop
-		if not getCurrentFolder()? and Session.equals 'deviceType', 'desktop'
+		if not getCurrentFolder()? and isDesktop()
 			FlowRouter.withReplaceState ->
 				FlowRouter.setParams folder: folders[0].name
 

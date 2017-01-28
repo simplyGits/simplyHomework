@@ -1,3 +1,5 @@
+{ isDesktop } = require 'meteor/device-type'
+
 DamerauLevenshtein = require 'damerau-levenshtein'
 
 NOTIFICATION_SOUND_SOURCES = [
@@ -314,7 +316,7 @@ Template.chatSidebar.onRendered ->
 		currentSearchTerm.set ''
 		event.target.value = ''
 
-	if Session.equals 'deviceType', 'desktop'
+	if isDesktop()
 		stayOpen = no
 
 		$('.chatSidebar').hover (->

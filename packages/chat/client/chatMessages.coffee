@@ -1,3 +1,5 @@
+{ isPhone } = require 'meteor/device-type'
+
 INACTIVE_THRESHOLD = ms.minutes 1
 
 sub = undefined
@@ -99,7 +101,7 @@ Template.chatMessages.onRendered ->
 		# minute or we are on a phone, and the chat messages has been scrolled to
 		# the bottom.
 		isActive = new Date() - lastActive < INACTIVE_THRESHOLD
-		if (isActive or Session.equals 'deviceType', 'phone') and @sticky
+		if (isActive or isPhone()) and @sticky
 			@data.markRead()
 
 		# go to the bottom of the screen
