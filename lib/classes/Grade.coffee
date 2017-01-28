@@ -156,6 +156,13 @@ class @Grade
 		###
 		@period = null
 
+		###*
+		# @property previousValues
+		# @type Object[]
+		# @default []
+		###
+		@previousValues = []
+
 	###*
 	# Returns whether or not the current grade is the highest possible on the
 	# grade scale it uses.
