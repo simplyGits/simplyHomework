@@ -372,12 +372,16 @@ Meteor.methods
 		}, {
 			fields:
 				_id: 1
-				'profile.schoolId': true
-		}).map (user) ->
-			_id: user._id
-			hours: ScheduleFunctions.getInbetweenHours user._id, yes
-		users = _.filter users, (u) ->
-			Privacy.getOptions(u._id).publishCalendarItems
+				'profile.schoolId': 1
+				'settings.privacy': 1
+		}).fetch()
+
+		users = _.chain(users)
+			.filter (u) -> Privacy.getOptions(u).publishCalendarItems
+			.map (user) ->
+				_id: user._id
+				hours: ScheduleFunctions.getInbetweenHours user._id, yes
+			.value()
 
 		_(ours)
 			.map (x) ->
