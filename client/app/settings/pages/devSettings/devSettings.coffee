@@ -1,3 +1,5 @@
+import { isDesktop } from 'meteor/device-type'
+
 items = [{
 	name: 'noChatEmojis'
 	description: 'Zet smiley-naar-emoji conversie uit in chat.'
@@ -16,7 +18,7 @@ items = [{
 }]
 
 Meteor.startup ->
-	unless Helpers.isDesktop()
+	unless isDesktop()
 		_.remove items, name: 'tfaEnabled'
 
 Template['settings_page_devSettings'].helpers

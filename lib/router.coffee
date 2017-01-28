@@ -107,7 +107,7 @@ appRoutes.route '/chat/:id',
 				FlowRouter.go 'chat', context.params
 	]
 	action: ->
-		if Helpers.isPhone()
+		if isPhone()
 			renderAppTemplate 'mobileChatWindow'
 
 appRoutes.route '/settings/:page?',

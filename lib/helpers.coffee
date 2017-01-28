@@ -1,7 +1,5 @@
 @_ = lodash # Shortcut for lo-dash. Replaces underscore.
 
-{ isDesktop, isPhone, isTablet } = require('meteor/device-type')
-
 linkify = require('linkify-it')()
 linkify.tlds require 'tlds'
 
@@ -491,10 +489,6 @@ class @Helpers
 	@filter: (coll, query) ->
 		matcher = createMatcher query
 		_.filter coll, (x) -> matcher x
-
-	@isPhone: -> isPhone()
-	@isTablet: -> isTablet()
-	@isDesktop: -> isDesktop()
 
 ###*
 # @method getUserField

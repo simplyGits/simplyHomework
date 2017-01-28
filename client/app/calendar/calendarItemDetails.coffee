@@ -1,4 +1,5 @@
 { Services } = require 'meteor/simply:external-services-connector'
+{ isDesktop } = require 'meteor/device-type'
 
 Template.calendarItemDetails.helpers
 	people: ->
@@ -51,7 +52,7 @@ Template.calendarItemDetails.onCreated ->
 		@subscribe 'usersData', userIds
 
 Template.calendarItemDetailsPerson.onRendered ->
-	if Helpers.isDesktop()
+	if isDesktop()
 		@$('[data-toggle="tooltip"]').tooltip
 			container: 'body'
 			placement: 'bottom'
