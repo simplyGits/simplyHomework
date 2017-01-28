@@ -1,4 +1,4 @@
-{ isPhone } = require 'meteor/device-type'
+{ isDesktop, isPhone } = require 'meteor/device-type'
 
 INACTIVE_THRESHOLD = ms.minutes 1
 
@@ -122,7 +122,7 @@ Template.messageRow.events
 Template.messageRow.rendered = ->
 	$node = $ @firstNode
 
-	if Helpers.isDesktop()
+	if isDesktop()
 		# TODO: fix this when opening multiple times.
 		$node.find('[data-toggle="tooltip"]').tooltip
 			container: 'body'

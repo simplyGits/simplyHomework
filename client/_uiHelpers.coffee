@@ -1,6 +1,7 @@
 onesignal = require 'meteor/onesignal'
 swal = require 'sweetalert'
 chroma = require 'chroma-js'
+{ isDesktop, isPhone, isTablet } = require 'meteor/device-type'
 
 ###
       \|\/
@@ -325,9 +326,9 @@ Meteor.startup ->
 	Template.registerHelper 'cap', (str) -> Helpers.cap str
 	Template.registerHelper 'plural', (count, a, b) -> if Math.abs(count) is 1 then a else b
 
-	Template.registerHelper 'isPhone', -> Helpers.isPhone()
-	Template.registerHelper 'isTablet', -> Helpers.isTablet()
-	Template.registerHelper 'isDesktop', -> Helpers.isDesktop()
+	Template.registerHelper 'isPhone', -> isPhone()
+	Template.registerHelper 'isTablet', -> isTablet()
+	Template.registerHelper 'isDesktop', -> isDesktop()
 
 	Template.registerHelper 'dateFormat', (format, date) -> moment(date).format format
 	Template.registerHelper 'time', (date) -> moment(date).format 'HH:mm'

@@ -1,5 +1,6 @@
 import Privacy from 'meteor/privacy'
 import SReactiveVar from 'meteor/simply:strict-reactive-var'
+import { isDesktop, isPhone } from 'meteor/device-type'
 
 schoolSub = null
 externalClasses = new ReactiveVar()
@@ -160,7 +161,7 @@ Template.app.helpers
 		not has('noAds') and FlowRouter.getRouteName() not in excluded
 	runningSetup: -> Session.get 'runningSetup'
 	chat: ->
-		if not Helpers.isPhone() and
+		if not isPhone() and
 		FlowRouter.getRouteName() is 'chat'
 			ChatRooms.findOne {
 				_id: FlowRouter.getParam 'id'
@@ -253,13 +254,13 @@ Template.app.onRendered ->
 
 	@autorun ->
 		try
-			if Helpers.isDesktop()
+			if isDesktop()
 				window.snapper.close()
 				window.snapper.disable()
 			else
 				window.snapper.enable()
 
-	if Helpers.isDesktop()
+	if isDesktop()
 		# `startMonitor` will throw an error when the time isn't synced yet, when
 		# the time is done syncing the current computation will invalidate, so to
 		# effectively enable the monitor ASAP we put it inside of an `autorun` and a

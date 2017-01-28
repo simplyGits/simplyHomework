@@ -1,5 +1,6 @@
 import Privacy from 'meteor/privacy'
 import { Services } from 'meteor/simply:external-services-connector'
+import { isDesktop } from 'meteor/device-type'
 
 currentPerson = -> Meteor.users.findOne FlowRouter.getParam 'id'
 sameUser = -> Meteor.userId() is FlowRouter.getParam 'id'
@@ -61,7 +62,7 @@ Template.personView.onRendered ->
 	@autorun ->
 		FlowRouter.watchPathChange()
 		slide()
-		if Helpers.isDesktop()
+		if isDesktop()
 			Meteor.defer ->
 				$('[data-toggle="tooltip"]')
 					.tooltip "destroy"
