@@ -1,3 +1,5 @@
+{ isDesktop } = require 'meteor/device-type'
+
 ###*
 # Get the classes for the current user, converted and sorted.
 # @method classes
@@ -79,16 +81,12 @@ Meteor.startup ->
 		expireDate = new Date localStorage.getItem 'Meteor.loginTokenExpires'
 		document.cookie = "loggedIn=#{if Meteor.userId()? then '1' else '0'};path=/;domain=.simplyHomework.nl;expires=#{expireDate.toGMTString()}"
 
-	console.log 'global() deviceType', Session.get 'deviceType'
-
 	document.addEventListener 'visibilitychange', ->
 		if document.hidden
-			unless Session.equals 'deviceType', 'desktop'
-				Meteor.disconnect()
+			Meteor.disconnect() unless isDesktop()
 		else
 			minuteTracker.changed()
-			unless Session.equals 'deviceType', 'desktop'
-				Meteor.reconnect()
+			Meteor.reconnect() unless isDesktop()
 
 	window.onbeforeunload = ->
 		NotificationsManager.hideAll()
