@@ -1,5 +1,9 @@
 @require "jeet"
 
+online_color = #2ECC40
+inactive_color = #FF851B
+offline_color = #FF4136
+
 div#fullscreenChatWindow
 	absolute: top left right bottom
 	z-index: 299
@@ -20,11 +24,11 @@ div#fullscreenChatWindow
 			opacity: .7
 
 		div.userStatus.online
-			color: #2ECC40
+			color: online_color
 		div.userStatus.inactive
-			color: #FF851B
+			color: inactive_color
 		div.userStatus.offline
-			color: #FF4136
+			color: offline_color
 
 		div.closeChat
 			absolute: top 30px right 70px
@@ -52,8 +56,22 @@ div#fullscreenChatWindow
 			border: 1px lightgray solid
 
 			img
+				size = 25px
+				width: size
+				height: size
+
 				float: left
 				margin: -.5px
+
+				box-sizing: border-box
+				border: 1px solid black
+
+			img.online
+				border-color: online_color
+			img.inactive
+				border-color: inactive_color
+			img.offline
+				border-color: offline_color
 
 		div.name
 			absolute: top 15px left 90px
