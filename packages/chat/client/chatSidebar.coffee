@@ -13,12 +13,13 @@ currentSearchTerm = new ReactiveVar ''
 # @return {ChatRoom}
 ###
 @chatRoomTransform = (room) ->
-	userId = ->
+	userId = (
 		if room.type is 'private'
 			_.find room.users, (u) -> u isnt Meteor.userId()
+	)
 	user = ->
 		if room.type is 'private'
-			Meteor.users.findOne _id: userId()
+			Meteor.users.findOne _id: userId
 
 	project = ->
 		if room.type is 'project'
@@ -33,9 +34,9 @@ currentSearchTerm = new ReactiveVar ''
 		project: project
 		class: _class
 
-		status: -> getUserStatus userId()
+		status: -> getUserStatus userId
 		friendlyStatus: ->
-			switch getUserStatus userId()
+			switch getUserStatus userId
 				when 'online' then 'online'
 				when 'inactive' then 'inactief'
 				when 'offline' then 'offline'
