@@ -85,13 +85,19 @@ Scholieren = {
 		return reports.map(function (report) {
 			const r = _.merge(...report);
 
-			const parsed = url.parse(r.url)
-			parsed.host = parsed.hostname = 'www.scholieren.nl'
+			const parsed = url.parse(r.url);
+			parsed.host = parsed.hostname = 'www.scholieren.nl';
+
+			const verified = r.url.includes('zekerwetengoed');
+			const rating = verified ?
+				Infinity : // ¯\_(ツ)_/¯
+				Number.parseFloat(r.rating, 10);
 
 			return {
 				title: r.titel,
 				url: url.format(parsed),
-				rating: r.rating,
+				verified,
+				rating,
 			};
 		});
 	},
