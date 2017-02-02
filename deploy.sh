@@ -5,6 +5,11 @@ if [[ "$branch" != "master" ]]; then
 	exit 1
 fi
 
+if [[ -z "$DOCKER_HOST" ]]; then
+	>&2 echo "DOCKER_HOST env var not set"
+	exit 1
+fi
+
 if [ "npm-shrinkwrap.json" -ot "package.json" ]; then
 	read -p "npm-shrinkwrap.json is older than package.json,
 it's recommended to test if everything works and run \`meteor npm shrinkwrap\`.
