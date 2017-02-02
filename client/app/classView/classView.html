@@ -181,7 +181,15 @@
 	<a href="{{url}}" target="_blank" style="text-decoration: none !important">
 		<div class="searchResult {{__insufficient}}">
 			<div class="title">{{title}}</div>
-			<div class="rating">{{rating}}</div>
+			{{#if rating}}
+				<div class="rating">
+					{{#if verified}}
+						Zeker weten goed!
+					{{else}}
+						{{rating}}
+					{{/if}}
+				</div>
+			{{/if}}
 		</div>
 	</a>
 </template>

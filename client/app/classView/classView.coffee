@@ -267,10 +267,7 @@ Template.searchResultsModal.onDestroyed ->
 	Mousetrap.unbind 'esc'
 
 Template['searchResultsModal_result'].helpers
-	__insufficient: ->
-		rating = parseFloat @rating
-		if _.isNaN(rating) or rating > 5.5 then ''
-		else 'insufficient'
+	__insufficient: -> if @rating > 5.5 then '' else 'insufficient'
 
 Template.projectsModal.helpers
 	projects: ->
