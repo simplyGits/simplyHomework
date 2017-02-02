@@ -8,7 +8,7 @@
 <template name="fullscreenChatWindow">
 	<div id="fullscreenChatWindow">
 		<div id="headerAsides"> {{! wrapping div is just here to keep everything clean. }}
-			<div class="userStatus {{status}}">
+			<div class="userStatus {{status user._id}}">
 				{{friendlyStatus}}
 			</div>
 			<div class="closeChat">

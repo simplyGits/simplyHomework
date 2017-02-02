@@ -45,11 +45,7 @@ Template.fullscreenChatWindow.helpers
 			when 'rate-limited'
 				'je hebt te veel berichten in een korte tijd gestuurd'
 
-	status: (userId) ->
-		status = getUserField userId, 'status', {}
-		if status.idle then 'inactive'
-		else if status.online then 'online'
-		else 'offline'
+	status: (userId) -> getUserStatus userId
 
 Template.fullscreenChatWindow.events
 	"click #header": (e) ->

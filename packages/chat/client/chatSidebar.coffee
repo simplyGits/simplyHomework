@@ -13,15 +13,17 @@ currentSearchTerm = new ReactiveVar ''
 # @return {ChatRoom}
 ###
 @chatRoomTransform = (room) ->
+	userId = ->
+		if room.type is 'private'
+			_.find room.users, (u) -> u isnt Meteor.userId()
 	user = ->
 		if room.type is 'private'
-			Meteor.users.findOne
-				_id:
-					$in: room.users
-					$ne: Meteor.userId()
+			Meteor.users.findOne _id: userId()
+
 	project = ->
 		if room.type is 'project'
 			Projects.findOne room.projectId
+
 	_class = ->
 		if room.type is 'class' and room.classInfo.ids.length is 1
 			Classes.findOne _id: $in: room.classInfo.ids
@@ -31,18 +33,12 @@ currentSearchTerm = new ReactiveVar ''
 		project: project
 		class: _class
 
-		status: ->
-			u = user()
-			if u?
-				if u.status.idle then 'inactive'
-				else if u.status.online then 'online'
-				else 'offline'
+		status: -> getUserStatus userId()
 		friendlyStatus: ->
-			u = user()
-			if u?
-				if u.status.idle then 'inactief'
-				else if u.status.online then 'online'
-				else 'offline'
+			switch getUserStatus userId()
+				when 'online' then 'online'
+				when 'inactive' then 'inactief'
+				when 'offline' then 'offline'
 
 		sidebarIcon: -> room.getPicture Meteor.userId(), 100
 		friendlyName: -> room.getSubject Meteor.userId()
