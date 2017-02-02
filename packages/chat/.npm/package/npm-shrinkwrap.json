@@ -36,8 +36,8 @@
       "from": "aws4@>=1.2.1 <2.0.0"
     },
     "bcrypt-pbkdf": {
-      "version": "1.0.0",
-      "resolved": "https://registry.npmjs.org/bcrypt-pbkdf/-/bcrypt-pbkdf-1.0.0.tgz",
+      "version": "1.0.1",
+      "resolved": "https://registry.npmjs.org/bcrypt-pbkdf/-/bcrypt-pbkdf-1.0.1.tgz",
       "from": "bcrypt-pbkdf@>=1.0.0 <2.0.0"
     },
     "boom": {
