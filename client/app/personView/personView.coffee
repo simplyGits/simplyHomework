@@ -17,9 +17,8 @@ Template.personView.helpers
 	person: currentPerson
 
 	backColor: ->
-		p = currentPerson()
-
 		res = (
+			p = currentPerson()
 			if not p.status? then '#000000'
 			else if p.status.idle then '#FF9800'
 			else if p.status.online then '#4CAF50'

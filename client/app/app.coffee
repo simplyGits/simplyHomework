@@ -138,11 +138,9 @@ Template.app.helpers
 	pageColor: -> Session.get("pageColor") ? "lightgray"
 	pageTitle: -> Session.get("headerPageTitle") ? ""
 	unreadChatCount: ->
-		roomIds = ChatRooms.find({}, { fields: _id: 1 }).map (r) -> r._id
 		messages = ChatMessages.find({
 			creatorId: $ne: Meteor.userId()
 			readBy: $ne: Meteor.userId()
-			chatRoomId: $in: roomIds
 		}, {
 			transform: null
 			fields:

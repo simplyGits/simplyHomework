@@ -315,6 +315,11 @@ Meteor.methods
 
 		Tickets.insert new Ticket body, @userId
 
+	###*
+	# @method sharedInbetweenHours
+	# @param {String} userId
+	# @return CalendarItem[]
+	###
 	sharedInbetweenHours: (userId) ->
 		@unblock()
 		check userId, String
