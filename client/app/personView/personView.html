@@ -56,9 +56,11 @@
 <template name="personSharedHours">
 	<div class="itemContainer" id="personSharedHours">
 		<header>
-			<div class="trim">Lessen met {{profile.firstName}} aankomende week</div>
 			{{#if canCompare}}
+				<div class="trim">Lessen met {{profile.firstName}} aankomende week</div>
 				<i class="fa fa-calendar" id="compareButton" data-action="compare"></i>
+			{{else}}
+				<div>Lessen met {{profile.firstName}} aankomende week</div>
 			{{/if}}
 		</header>
 		<div>
