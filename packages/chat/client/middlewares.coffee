@@ -25,7 +25,7 @@ chatReplacements = [
 	[[ ':fissa:', ':hype:'  ], ':tada:'                                   ]
 	[[ ':kaas:'             ], ':cheese:'                                 ]
 	[[ ':fu:'               ], ':middle_finger:'                          ]
-	[[ ':sneeuwpop'         ], _.sample [ ':snowman:', ':snowman2:' ]     ]
+	[[ ':sneeuwpop:'        ], _.sample [ ':snowman:', ':snowman2:' ]     ]
 	[[ '/shrug/', ':shrug:' ], '¯\\_(ツ)_/¯'                              ]
 	[[ ':kappa:'            ], genImage '/packages/chat/images/kappa.png' ]
 	[[ '\\o/'               ], ':dancer:'                                 ]
