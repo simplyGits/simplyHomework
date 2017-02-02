@@ -548,10 +548,11 @@ class @Helpers
 @getClassInfos = (userId = Meteor.userId()) -> getUserField userId, 'classInfos', []
 
 @getUserStatus = (userId) ->
-	status = getUserField userId, 'status', {}
-	if status.idle then 'inactive'
-	else if status.online then 'online'
-	else 'offline'
+	status = getUserField userId, 'status'
+	if status?
+		if status.idle then 'inactive'
+		else if status.online then 'online'
+		else 'offline'
 
 ###*
 # @method getClassGroup
