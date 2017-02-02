@@ -14,6 +14,13 @@ are you sure you want to continue? [y/N] " response
 	fi
 fi
 
+headcommit=$(git rev-parse HEAD)
+remotecommit=$(curl -Ls "https://app.simplyhomework.nl/_commitversion")
+if [[ "$headcommit" = "$remotecommit" ]]; then
+	>&2 echo "remote up-to-date"
+	exit 1
+fi
+
 commit=$(git rev-parse HEAD)
 buildDate="$(date +%s)000"
 echo "export default { commit: '$commit', buildDate: new Date($buildDate) }" > ./imports/version.js
