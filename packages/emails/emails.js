@@ -50,3 +50,5 @@ export function sendHtmlMail (user, title, body) {
 		html: getHtmlMail(title, body),
 	})
 }
+
+import './mailSettings.js'
