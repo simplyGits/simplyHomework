@@ -8,6 +8,7 @@ Package.describe({
 
 Npm.depends({
 	'simplyemail': '1.0.8',
+	'dedent-js': '1.0.1',
 });
 
 Package.onUse(function(api) {
@@ -17,11 +18,9 @@ Package.onUse(function(api) {
 		'modules',
 		'promise',
 		'check',
-		'coffeescript',
 		'email',
 	], 'server');
 	api.mainModule('emails.js', 'server');
-	api.addFiles('mailSettings.coffee', 'server');
 });
 
 Package.onTest(function(api) {
