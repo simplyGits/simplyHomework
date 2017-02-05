@@ -39,7 +39,7 @@ SyncedCron.add({
 		})
 		let notifiedCount = 0
 
-		WaitGroup.forEach(users, (user) => {
+		users.forEach((user) => {
 			const userId = user._id
 
 			functions.updateGrades(userId, false)
