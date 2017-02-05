@@ -72,7 +72,7 @@ Meteor.startup ->
 	]
 	Tracker.autorun ->
 		if Meteor.userId()? # login
-			runSetup()
+			Setup.run()
 		else if FlowRouter.getRouteName() not in nonLoginRoutes
 			Meteor.defer -> document.location.href = 'https://simplyhomework.nl/'
 
