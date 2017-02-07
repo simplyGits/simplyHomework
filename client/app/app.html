@@ -1,46 +1,56 @@
 <template name="app">
 {{#if runningSetup}}
-	{{> setup}}
-{{else}}
-	{{#with currentBigNotice}}
-		{{> bigNotice}}
-	{{/with}}
-
-	<div id="app">
-		{{> sidebar}}
-
-		<div id="wrapper">
-			{{#unless isDesktop}}
-				<div id="mobileHeader" style="border-color: {{pageColor}}">
-					<i class="fa fa-bars headerIcon" data-snap-side="left"></i>
-					<div id="title">{{pageTitle}}</div>
-					<i class="fa fa-users headerIcon" data-snap-side="right">
-						{{#if unreadChatCount}}
-							<span class="badge">{{unreadChatCount}}</span>
-						{{/if}}
-					</i>
-				</div>
-			{{/unless}}
-			{{#if showAdbar}}
-				{{! TODO: Cleaner way to do this? }}
-				<div class="content unselectable smoothScroll" style="bottom: 90px">
-					{{> Template.dynamic template=main}}
-				</div>
-				<div id="adbar"></div>
-			{{else}}
-				<div class="content unselectable smoothScroll">
-					{{> Template.dynamic template=main}}
-				</div>
-			{{/if}}
-		</div>
-		{{> chatSidebar}}
-
-		{{#with chat}}
-			{{> fullscreenChatWindow}}
-		{{/with}}
+	<div id="app-cover-wrap">
+		{{> setup}}
 	</div>
-	<div class="backdrop"></div>
+{{else if bootstrapping}}
+	<div id="app-cover-wrap">
+		<div id="bootstrapping">
+			<div>
+				Account aan het voorbereiden...
+			</div>
+		</div>
+	</div>
 {{/if}}
+
+{{#with currentBigNotice}}
+	{{> bigNotice}}
+{{/with}}
+
+<div id="app">
+	{{> sidebar}}
+
+	<div id="wrapper">
+		{{#unless isDesktop}}
+			<div id="mobileHeader" style="border-color: {{pageColor}}">
+				<i class="fa fa-bars headerIcon" data-snap-side="left"></i>
+				<div id="title">{{pageTitle}}</div>
+				<i class="fa fa-users headerIcon" data-snap-side="right">
+					{{#if unreadChatCount}}
+						<span class="badge">{{unreadChatCount}}</span>
+					{{/if}}
+				</i>
+			</div>
+		{{/unless}}
+		{{#if showAdbar}}
+			{{! TODO: Cleaner way to do this? }}
+			<div class="content unselectable smoothScroll" style="bottom: 90px">
+				{{> Template.dynamic template=main}}
+			</div>
+			<div id="adbar"></div>
+		{{else}}
+			<div class="content unselectable smoothScroll">
+				{{> Template.dynamic template=main}}
+			</div>
+		{{/if}}
+	</div>
+	{{> chatSidebar}}
+
+	{{#with chat}}
+		{{> fullscreenChatWindow}}
+	{{/with}}
+</div>
+<div class="backdrop"></div>
 </template>
 
 <template name="bigNotice">
