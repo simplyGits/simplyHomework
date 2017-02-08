@@ -155,9 +155,11 @@ Meteor.methods
 				calendarItem = CalendarItems.findOne
 					classId: info.id
 					userIds: userId
+					startDate: $gte: Date.today()
 
 				if calendarItem?
 					room = ChatRooms.findOne
+						users: $ne: userId
 						classInfo: $exists: yes
 						'classInfo.schoolId': user.profile.schoolId
 						'classInfo.group': calendarItem.group()
