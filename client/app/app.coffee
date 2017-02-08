@@ -157,6 +157,7 @@ Template.app.helpers
 		]
 		not has('noAds') and FlowRouter.getRouteName() not in excluded
 	runningSetup: -> Session.get 'runningSetup'
+	bootstrapping: -> getEvent('bootstrapping')?
 	chat: ->
 		if not Helpers.isPhone() and
 		FlowRouter.getRouteName() is 'chat'

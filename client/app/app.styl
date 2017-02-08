@@ -5,8 +5,56 @@
 
 noticeHeight = 50px
 
+#app-cover-wrap
+	fixed: top left right bottom
+	z-index: 1000
+	background-color: #fff
+
 #app
 	absolute: top left right bottom
+
+#bootstrapping
+	background-color: simplyBlue
+	animation: 25s ease-in-out infinite alternate forwards bootstrap-background-anim
+	color: white
+	height: 100%
+	width: 100%
+
+	div
+		align()
+		width: 100%
+		text-align: center
+		font-size: 8vw
+
+		+desktop()
+			font-size: 30pt
+
+@keyframes bootstrap-background-anim {
+	0% {
+		background-color: simplyBlue
+	}
+	16% {
+		background-color: #323ece
+	}
+	32% {
+		background-color: #a032ce
+	}
+	48% {
+		background-color: #ce32bb
+	}
+	64% {
+		background-color: #ce3232
+	}
+	80% {
+		background-color: #ceb432
+	}
+	96% {
+		background-color: #75ce32
+	}
+	100% {
+		background-color: #32ce69
+	}
+}
 
 body.bigNoticeOpen #app
 	top: noticeHeight

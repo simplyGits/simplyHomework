@@ -135,9 +135,15 @@ Meteor.methods
 	# @method bootstrapUser
 	###
 	bootstrapUser: ->
+		@unblock()
+
 		userId = @userId
 		unless userId?
 			throw new Meteor.Error 'not-logged-in', 'User not logged in.'
+
+		event = getEvent 'bootstrapping', userId
+		return if event?
+		Meteor.users.update userId, $set: 'events.bootstrapping': new Date
 
 		group = new WaitGroup()
 
@@ -189,6 +195,9 @@ Meteor.methods
 					Meteor.users.update userId, $push: classInfos: info
 
 		group.wait()
+		Meteor.users.update userId,
+			$unset: 'events.bootstrapping': yes
+			$set: 'events.boostrap': new Date
 
 	'fetchExternalPersonClasses': ->
 		userId = @userId
