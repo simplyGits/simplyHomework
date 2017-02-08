@@ -134,7 +134,7 @@ Meteor.methods
 	###*
 	# @method bootstrapUser
 	###
-	'bootstrapUser': ->
+	bootstrapUser: ->
 		userId = @userId
 		unless userId?
 			throw new Meteor.Error 'not-logged-in', 'User not logged in.'

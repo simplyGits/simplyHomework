@@ -122,20 +122,23 @@ Template.calendar.onRendered ->
 		dayClick: (date, event, view) ->
 			clearTimeout dblDateResetHandle
 			date = date.toDate()
-			sameYear = date.getUTCFullYear() is new Date().getUTCFullYear()
 
 			if EJSON.equals date, dblDate
 				open()
-				$('textarea#appointmentInput')
-					.val(
-						if date.getHours() is 1 and date.getMinutes() is 0
-							"#{DateToDutch date, not sameYear} hele dag "
-						else
-							"#{DateToDutch date, not sameYear} #{Helpers.addZero date.getHours()}:#{Helpers.addZero date.getMinutes()} "
-					)
+				$('textarea#appointmentInput').val (
+					sameYear = date.getFullYear() is new Date().getFullYear()
+					dateStr = DateToDutch date, not sameYear
+
+					if date.getHours() is 1 and date.getMinutes() is 0
+						"#{dateStr} hele dag "
+					else
+						"#{dateStr} #{Helpers.addZero date.getHours()}:#{Helpers.addZero date.getMinutes()} "
+				)
 
 			dblDate = date
-			dblDateResetHandle = _.delay ( -> dblDate = dblDateResetHandle = null ), 500
+			dblDateResetHandle = _.delay (->
+				dblDate = dblDateResetHandle = null
+			), 500
 
 		eventMouseover: (calendarEvent, event) ->
 			Meteor.clearTimeout popoverTimeout
