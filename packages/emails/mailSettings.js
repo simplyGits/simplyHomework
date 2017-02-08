@@ -1,5 +1,3 @@
-/* global Account */
-
 import dedent from 'dedent-js';
 import { getHtmlMail } from 'meteor/emails'
 
@@ -10,14 +8,18 @@ Meteor.startup(function () {
 	Accounts.emailTemplates.siteName = 'simplyHomework.nl'
 	Accounts.emailTemplates.from = 'simplyHomework <hello@simplyApps.nl>'
 
-	Accounts.emailTemplates.resetPassword.subject = () => 'simplyHomework | Wachtwoord'
-	Accounts.emailTemplates.resetPassword.html = (user, url) => {
-		return getHtmlMail('Wachtwoord Vergeten', dedent`
+	const resetPassword = (user, url, html) => {
+		return dedent`
 			Hey ${user.profile.firstName}!
 
 			Je was je wachtwoord vergeten, hier krijg je een nieuwe:
-			<a href='${url}'>${url}</a>
-		`, {
+			${html ? `<a href='${url}'>${url}</a>` : url}
+		`
+	}
+	Accounts.emailTemplates.resetPassword.subject = () => 'simplyHomework | Wachtwoord'
+	Accounts.emailTemplates.resetPassword.text = (user, url) => resetPassword(user, url, false)
+	Accounts.emailTemplates.resetPassword.html = (user, url) => {
+		return getHtmlMail('Wachtwoord Vergeten', resetPassword(user, url, true), {
 			'@context': 'http://schema.org',
 			'@type': 'EmailMessage',
 			description: 'Wachtwoord opnieuw instellen',
@@ -29,14 +31,18 @@ Meteor.startup(function () {
 		})
 	}
 
-	Accounts.emailTemplates.verifyEmail.subject = () => 'simplyHomework | Nieuw Account'
-	Accounts.emailTemplates.verifyEmail.html = (user, url) => {
-		return getHtmlMail('Nieuw Account', dedent`
+	const verifyEmail = (user, url, html) => {
+		return dedent`
 			Hey!
 
 			Welkom bij simplyHomework! Klik, om je account te verifiëren, op deze link:
-			<a href='${url}'>${url}</a>
-		`, {
+			${html ? `<a href='${url}'>${url}</a>` : url}
+		`
+	}
+	Accounts.emailTemplates.verifyEmail.subject = () => 'simplyHomework | Nieuw Account'
+	Accounts.emailTemplates.verifyEmail.text = (user, url) => verifyEmail(user, url, false)
+	Accounts.emailTemplates.verifyEmail.html = (user, url) => {
+		return getHtmlMail('Nieuw Account', verifyEmail(user, url, true), {
 			'@context': 'http://schema.org',
 			'@type': 'EmailMessage',
 			description: 'Account verifiëren',
