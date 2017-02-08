@@ -145,7 +145,7 @@ Meteor.methods
 		group.defer -> functions.updateStudyUtils userId
 
 		group.defer ->
-			functions.updateCalendarItems userId, Date.today(), Date.today().addDays 14
+			functions.updateCalendarItems userId, Date.today(), Date.today().addDays 28 # four weeks
 			user = Meteor.users.findOne userId,
 				fields:
 					classInfos: 1
