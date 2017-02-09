@@ -31,8 +31,8 @@
       "from": "aws-sign2@>=0.6.0 <0.7.0"
     },
     "aws4": {
-      "version": "1.5.0",
-      "resolved": "https://registry.npmjs.org/aws4/-/aws4-1.5.0.tgz",
+      "version": "1.6.0",
+      "resolved": "https://registry.npmjs.org/aws4/-/aws4-1.6.0.tgz",
       "from": "aws4@>=1.2.1 <2.0.0"
     },
     "bcrypt-pbkdf": {
