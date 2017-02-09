@@ -603,8 +603,9 @@ MagisterBinding.getCalendarItems = function (userId, from, to) {
 			const teacher = a.teachers()[0];
 			if (teacher != null) {
 				calendarItem.teacher = {
-					name: teacher.fullName(),
 					id: teacher.id(),
+					name: teacher.fullName(),
+					code: teacher.teacherCode(),
 				};
 			}
 
