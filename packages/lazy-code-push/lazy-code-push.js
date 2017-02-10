@@ -18,11 +18,8 @@ Reload._onMigrate('lazy-code-push', function (retry) {
 	let onIgnoredRoute = false;
 	if (Package['kadira:flow-router']) {
 		const FlowRouter = Package['kadira:flow-router'].FlowRouter;
-		onIgnoredRoute = [
-			'login',
-			'signup',
-			undefined, // 404 route
-		].indexOf(FlowRouter.getRouteName()) > -1;
+		const group = FlowRouter.current().route.group;
+		onIgnoredRoute = group == null || group.name !== 'app';
 	}
 
 	// Just reload if...
