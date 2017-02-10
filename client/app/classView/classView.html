@@ -101,7 +101,7 @@
 <template name="studyUtil">
 	<div class="studyUtil">
 		<div class="title">{{name}}</div>
-		<div class="description">{{description}}</div>
+		<div class="description">{{{newlines description}}}</div>
 		{{#each files}}
 			<a href="{{url}}" download="{{name}}" target="_blank">
 				<div class="fileName">

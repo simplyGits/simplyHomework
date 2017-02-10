@@ -362,6 +362,7 @@ Template.infoContainer.helpers
 		}
 
 Template.studyUtil.helpers
+	description: -> Helpers.convertLinksToAnchor _.escape @description
 	files: ->
 		Files.find {
 			_id: $in: @fileIds ? []
