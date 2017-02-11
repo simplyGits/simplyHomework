@@ -11,6 +11,7 @@ Package.onUse(function(api) {
 	api.use([
 		'ecmascript',
 		'templating',
+		'session',
 	], 'client');
 	api.mainModule('device-type.js', 'client');
 });
