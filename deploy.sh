@@ -26,7 +26,7 @@ fi
 # check if remote is already up to date.
 headcommit=$(git rev-parse HEAD)
 remotecommit=$(curl -Ls "https://app.simplyhomework.nl/_commitversion")
-if [[ "$headcommit" = "$remotecommit" ]]; then
+if [[ "$headcommit" = "$remotecommit" && "$1" != "force" ]]; then
 	>&2 echo "remote up-to-date"
 	exit 1
 fi
