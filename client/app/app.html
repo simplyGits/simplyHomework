@@ -34,12 +34,12 @@
 		{{/unless}}
 		{{#if showAdbar}}
 			{{! TODO: Cleaner way to do this? }}
-			<div class="content unselectable smoothScroll" style="bottom: 90px">
+			<div class="content unselectable smoothScroll template-{{main}}" style="bottom: 90px">
 				{{> Template.dynamic template=main}}
 			</div>
 			<div id="adbar"></div>
 		{{else}}
-			<div class="content unselectable smoothScroll">
+			<div class="content unselectable smoothScroll template-{{main}}">
 				{{> Template.dynamic template=main}}
 			</div>
 		{{/if}}
