@@ -1,11 +1,13 @@
 /* global Kadira, Grades, Projects, Messages, SyncedCron, Classes,
-   GradeFunctions, Analytics, getUserField, NoticeMails */
+   GradeFunctions, Analytics, getUserField, NoticeMails:true */
 
 import * as emails from 'meteor/emails'
 import { functions } from 'meteor/simply:external-services-connector'
 import WaitGroup from 'meteor/simply:waitgroup'
 import moment from 'moment-timezone'
 moment.locale('nl')
+
+const FOREACH_GROUPSIZE = 5
 
 // TODO: have a central place for the default options of notifications, just
 // like the 'privacy' package has. Currently if we want to change the default of
@@ -31,69 +33,72 @@ SyncedCron.add({
 	name: 'Notify new grades',
 	schedule: (parser) => parser.recur().every(15).minute(),
 	job: function () {
-		const toString = (g) => g.toString().replace('.', ',')
-
-		const users = Meteor.users.find({
-			'profile.firstName': { $ne: '' },
+		const userIds = Meteor.users.find({
 			'settings.notifications.email.newGrade': { $ne: false },
-		})
+		}, {
+			fields: {
+				_id: 1,
+				settings: 1,
+			},
+		}).map(u => u._id)
+
+		WaitGroup.forEach(userIds, userId => {
+			functions.updateGrades(userId, false)
+		}, FOREACH_GROUPSIZE)
+
+		const grades = Grades.find({
+			ownerId: { $in: userIds },
+			isEnd: false,
+			classId: { $exists: true },
+			// REVIEW: add an field like `notifiedOn` to `Grade` instead
+			// of doing something like this.
+			dateFilledIn: { $gte: moment().add(-15, 'minutes').toDate() },
+		}, {
+			fields: {
+				_id: 1,
+				classId: 1,
+				dateFilledIn: 1,
+				gradeStr: 1,
+				passed: 1,
+				ownerId: 1,
+				description: 1,
+			},
+		}).fetch()
+
+		const toString = (g) => g.toString().replace('.', ',')
 		let notifiedCount = 0
 
-		users.forEach(user => {
-			const userId = user._id
+		WaitGroup.forEach(grades, grade => {
+			const userId = grade.ownerId
+			const c = Classes.findOne(grade.classId)
 
-			functions.updateGrades(userId, false)
+			try {
+				const end = GradeFunctions.getEndGrade(c._id, userId)
+				const html = emails.cijfer({
+					className: c.name,
+					classUrl: Meteor.absoluteUrl(`class/${c._id}`),
+					grade: toString(grade),
+					passed: grade.passed,
+					description: grade.description || undefined,
+					average: end != null && toString(end),
+				})
 
-			const grades = Grades.find({
-				ownerId: userId,
-				isEnd: false,
-				classId: { $exists: true },
-				// REVIEW: add an field like `notifiedOn` to `Grade` instead
-				// of doing something like this.
-				dateFilledIn: { $gte: moment().add(-15, 'minutes').toDate() },
-			}, {
-				fields: {
-					_id: 1,
-					classId: 1,
-					dateFilledIn: 1,
-					gradeStr: 1,
-					passed: 1,
-					ownerId: 1,
-					description: 1,
-				},
-			})
+				sendEmail(userId, `Nieuw cijfer voor ${c.name}`, html)
 
-			WaitGroup.forEach(grades, (grade) => {
-				const c = Classes.findOne(grade.classId)
-
-				try {
-					const end = GradeFunctions.getEndGrade(c._id, userId)
-					const html = emails.cijfer({
-						className: c.name,
-						classUrl: Meteor.absoluteUrl(`class/${c._id}`),
-						grade: toString(grade),
-						passed: grade.passed,
-						description: grade.description || undefined,
-						average: end != null && toString(end),
-					})
-
-					sendEmail(userId, `Nieuw cijfer voor ${c.name}`, html)
-
-					notifiedCount++
-					Analytics.insert({
-						type: 'send-mail',
-						date: new Date,
-						emailType: 'grade',
-					})
-				} catch (err) {
-					Kadira.trackError(
-						'notices-emails',
-						err.message,
-						{ stacks: err.stack }
-					)
-				}
-			})
-		})
+				notifiedCount++
+				Analytics.insert({
+					type: 'send-mail',
+					date: new Date,
+					emailType: 'grade',
+				})
+			} catch (err) {
+				Kadira.trackError(
+					'notices-emails',
+					err.message,
+					{ stacks: err.stack }
+				)
+			}
+		}, FOREACH_GROUPSIZE)
 
 		const str = `notified ${notifiedCount} new grade(s) per mail.`
 		console.log(str)
@@ -107,8 +112,7 @@ SyncedCron.add({
 	job: function () {
 		// TODO: handle replies
 
-		const users = Meteor.users.find({
-			'profile.firstName': { $ne: '' },
+		const userIds = Meteor.users.find({
 			'settings.notifications.email.newMessage': { $ne: false },
 
 			// REVIEW: I have commented this out since I'm not really sure why
@@ -117,84 +121,96 @@ SyncedCron.add({
 			// (We could also just check if the person is idle or offline, maybe
 			// that's better.)
 			// 'status.online': false,
+		}, {
+			fields: {
+				_id: 1,
+				settings: 1,
+			},
+		}).map(u => u._id)
+
+		WaitGroup.forEach(userIds, userId => {
+			functions.updateMessages(userId, 0, [ 'inbox' ])
+		}, FOREACH_GROUPSIZE)
+
+		const messages = Messages.find({
+			fetchedFor: { $in: userIds },
+			isRead: false,
+			notifiedOn: null,
+			folder: 'inbox',
+		}, {
+			fields: {
+				_id: 1,
+				fetchedFor: 1,
+				isRead: 1,
+				sendDate: 1,
+				notifiedOn: 1,
+
+				attachmentIds: 1,
+				body: 1,
+				sender: 1,
+				recipients: 1,
+				subject: 1,
+			},
+			sort: {
+				sendDate: 1,
+			},
 		})
+
 		let notifiedCount = 0
 
-		users.forEach(user => {
-			const userId = user._id
-
-			functions.updateMessages(userId, 0, [ 'inbox' ])
-
-			const messages = Messages.find({
-				fetchedFor: userId,
-				isRead: false,
-				sendDate: { $gt: user.status.lastLogin.date },
-				notifiedOn: null,
-				folder: 'inbox',
-			}, {
-				fields: {
-					_id: 1,
-					fetchedFor: 1,
-					isRead: 1,
-					sendDate: 1,
-					notifiedOn: 1,
-
-					attachmentIds: 1,
-					body: 1,
-					sender: 1,
-					recipients: 1,
-					subject: 1,
-				},
-				sort: {
-					sendDate: 1,
-				},
+		WaitGroup.forEach(messages, message => {
+			const userId = message.fetchedFor
+			const user = Meteor.users.findOne({
+				_id: userId,
 			})
 
-			WaitGroup.forEach(messages, (message) => {
-				try {
-					// TODO: when we have better support for hotlinking inside
-					// of the router for file paths,
-					// (see ../../external-services-connector/server/router.coffee)
-					// we should add hotlinks to the attachments inside of the
-					// message body.
+			if (message.sendDate < user.status.lastLogin.date) {
+				return
+			}
 
-					const lines = []
-					const pushKeyVal = (key, val) => lines.push(`<b>${key}</b>: ${val}`)
+			try {
+				// TODO: when we have better support for hotlinking inside
+				// of the router for file paths,
+				// (see ../../external-services-connector/server/router.coffee)
+				// we should add hotlinks to the attachments inside of the
+				// message body.
 
-					pushKeyVal('Van', message.sender.fullName)
-					pushKeyVal('Verzonden', moment(message.sendDate).tz('Europe/Amsterdam').format('dddd D MMMM YYYY HH:mm'))
-					pushKeyVal('Aan', message.recipientsString(Infinity, false))
-					pushKeyVal('Onderwerp', message.subject)
-					if (message.attachmentIds.length > 0) {
-						const plural = (count, singular, plural) => count === 1 ? singular : plural
-						const key = plural(message.attachmentIds.length, 'Bijlage', 'Bijlages')
-						const val = message.attachments().map((f) => `<a href="${f.url()}/${userId}">${f.name}</a>`).join(', ')
-						pushKeyVal(key, val)
-					}
-					lines.push('\n' + message.body)
+				const lines = []
+				const pushKeyVal = (key, val) => lines.push(`<b>${key}</b>: ${val}`)
 
-					emails.sendHtmlMail(user, `Bericht van ${message.sender.fullName}`, lines.join('\n'))
-
-					notifiedCount++
-					Analytics.insert({
-						type: 'send-mail',
-						date: new Date,
-						emailType: 'message',
-					})
-					Messages.update(message._id, {
-						$set: {
-							notifiedOn: new Date(),
-						},
-					})
-				} catch (err) {
-					Kadira.trackError(
-						'notices-emails',
-						err.message,
-						{ stacks: err.stack }
-					)
+				pushKeyVal('Van', message.sender.fullName)
+				pushKeyVal('Verzonden', moment(message.sendDate).tz('Europe/Amsterdam').format('dddd D MMMM YYYY HH:mm'))
+				pushKeyVal('Aan', message.recipientsString(Infinity, false))
+				pushKeyVal('Onderwerp', message.subject)
+				if (message.attachmentIds.length > 0) {
+					const plural = (count, singular, plural) => count === 1 ? singular : plural
+					const key = plural(message.attachmentIds.length, 'Bijlage', 'Bijlages')
+					const val = message.attachments().map((f) => `<a href="${f.url()}/${userId}">${f.name}</a>`).join(', ')
+					pushKeyVal(key, val)
 				}
-			})
-		})
+				lines.push('\n' + message.body)
+
+				emails.sendHtmlMail(user, `Bericht van ${message.sender.fullName}`, lines.join('\n'))
+
+				notifiedCount++
+				Analytics.insert({
+					type: 'send-mail',
+					date: new Date,
+					emailType: 'message',
+				})
+				Messages.update(message._id, {
+					$set: {
+						notifiedOn: new Date(),
+					},
+				})
+			} catch (err) {
+				Kadira.trackError(
+					'notices-emails',
+					err.message,
+					{ stacks: err.stack }
+				)
+			}
+		}, FOREACH_GROUPSIZE)
 
 		const str = `notified ${notifiedCount} new message(s) per mail.`
 		console.log(str)
@@ -234,5 +250,5 @@ NoticeMails = {
 				{ stacks: err.stack }
 			)
 		}
-	}
+	},
 }
