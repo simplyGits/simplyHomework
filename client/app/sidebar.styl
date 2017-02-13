@@ -1,5 +1,13 @@
 @require "../utils"
 
+profileBackLowOpacity()
+	filter: none !important
+	-webkit-filter: none !important
+	-moz-filter: none !important
+	-o-filter: none !important
+	-ms-filter: none !important
+	opacity: .1 !important
+
 .sidebar
 	background-color: #2d2d2d
 	width: 200px
@@ -33,12 +41,7 @@
 			opacity: .8
 
 			+mobile()
-				filter: none
-				-webkit-filter: none
-				-moz-filter: none
-				-o-filter: none
-				-ms-filter: none
-				opacity: .1
+				profileBackLowOpacity()
 
 		img.picture
 			border-radius: 50%
@@ -140,6 +143,4 @@
 				height: 30px
 
 body.ie .sidebar .profile .back
-	filter: none !important
-	-o-filter: none !important
-	opacity: .1 !important
+	profileBackLowOpacity()
