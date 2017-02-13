@@ -80,10 +80,9 @@ ZermeloBinding.getCalendarItems = function (userId, from, to) {
 
 	const zermelo = getZermeloObject(userId)
 	const appointments = Promise.await(zermelo.appointments(from, to))
-	const calendarItems = []
 	const classInfos = getClassInfos(userId)
 
-	for (const appointment of appointments) {
+	const calendarItems = appointments.map(appointment => {
 		const subject = appointment.subjects[0]
 
 		const classInfo = classInfos.find(i => {
@@ -121,8 +120,8 @@ ZermeloBinding.getCalendarItems = function (userId, from, to) {
 
 		calendarItem.teacher = undefined // TODO
 
-		calendarItems.push(calendarItem)
-	}
+		return calendarItem
+	})
 
 	return {
 		calendarItems,
