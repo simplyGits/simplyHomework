@@ -230,6 +230,7 @@ running = undefined
 ###
 @runSetup = ->
 	return undefined if ran
+	Session.set 'runningSetup', no # HACK: this hacks around the auto migration starting the setup when it shouldn't.
 	setupProgress = getUserField Meteor.userId(), 'setupProgress'
 	return undefined unless setupProgress?
 
