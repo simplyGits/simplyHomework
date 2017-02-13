@@ -2,6 +2,7 @@
 @require "jeet"
 
 .selector
+	clearfix()
 	width: 100%
 
 .selector > *
@@ -12,10 +13,12 @@
 	overflow: hidden
 
 .selector > div
-	col(1/4)
 	height: 100%
 	padding: 5px
 
+	float: left
+	width: auto
+
 .selector > .selected
 	border-color: simplyBlue
-	cursor: initial
+	cursor: default
