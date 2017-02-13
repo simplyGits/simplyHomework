@@ -117,14 +117,14 @@ Meteor.publish 'externalGrades', (options) ->
 	@onStop ->
 		Meteor.clearInterval handle
 
-	date = Date.today().addDays -4
 
+	recentDate = Date.today().addDays -4
 	Grades.find (
 		query = ownerId: @userId
 		query.classId = classId if classId?
 
 		if onlyRecent
-			query.dateFilledIn = $gte: date
+			query.dateFilledIn = $gte: recentDate
 
 		query
 	), sort: dateFilledIn: -1
