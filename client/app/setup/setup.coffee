@@ -7,6 +7,7 @@ SReactiveVar = require('meteor/simply:strict-reactive-var').default
 
 currentSelectedImage      = new SReactiveVar Number, 0
 currentSelectedCourseInfo = new SReactiveVar Number, 0
+currentSelectedName       = new SReactiveVar Number, 0
 
 weekdays = new SReactiveVar [Object]
 
@@ -54,10 +55,21 @@ courseInfos = ->
 		.value()
 
 names = ->
-	for service in externalServices.get()
-		val = service.profileData()?.nameInfo
-		return val if val?
-	undefined
+	current = currentSelectedName.get()
+
+	_(externalServices.get())
+		.map (s) -> s.profileData()?.nameInfo
+		.reject _.isEmpty
+		.uniq (info) -> "#{info.firstName} #{info.lastName}"
+		.map (c, i) ->
+			isSelected: ->
+				if current is i
+					'selected'
+				else
+					''
+			value: c
+			index: i
+		.value()
 
 addProgress = (item, cb) ->
 	ga 'send', 'event', 'setup', 'progress', item
@@ -97,11 +109,9 @@ class @Setup
 			onDone: (cb) ->
 				schoolQuery = $('#setup #schoolInput').val()
 
-				$firstNameInput = $ '#setup #firstNameInput'
-				$lastNameInput = $ '#setup #lastNameInput'
 				any = no
-				any = yes if empty($firstNameInput, '#firstNameGroup', 'Voornaam is leeg')
-				any = yes if empty($lastNameInput, '#lastNameGroup', 'Achternaam is leeg')
+
+				name = names()[currentSelectedName.get()]?.value
 
 				courseInfo = courseInfos()[currentSelectedCourseInfo.get()]?.value
 				unless courseInfo?
@@ -138,8 +148,8 @@ class @Setup
 								fetchedBy: val.fetchedBy
 						)
 						'profile.courseInfo': courseInfo
-						'profile.firstName': Helpers.nameCap $firstNameInput.val()
-						'profile.lastName': Helpers.nameCap $lastNameInput.val()
+						'profile.firstName': name.firstName
+						'profile.lastName': name.lastName
 						'profile.birthDate':
 							# Picks the date from the first externalService that has one.
 							# REVIEW: Maybe we should ask the user too?
@@ -326,12 +336,13 @@ Template.setupFooter.helpers
 Template.setupFooter.events
 	'click button': -> setup.finishStep()
 
+# === step template stuff
+
 Template['setup-extractInfo'].helpers
 	pictures: pictures
 	hasSchool: -> schoolId?
 	courseInfos: courseInfos
-	firstName: -> names()?.firstName
-	lastName: -> names()?.lastName
+	names: names
 
 Template['setup-extractInfo'].events
 	'click #pictureSelector > img': (event) ->
@@ -339,6 +350,9 @@ Template['setup-extractInfo'].events
 
 	'click #courseInfoSelector > div': (event) ->
 		currentSelectedCourseInfo.set @index
+
+	'click #nameSelector > div': (event) ->
+		currentSelectedName.set @index
 
 Template['setup-extractInfo'].onRendered ->
 	unless schoolId?

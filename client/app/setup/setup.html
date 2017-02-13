@@ -122,17 +122,15 @@
 		<hr>
 
 		<h2>Naam</h2>
-		<form class="vertical full-width">
-			<div id="firstNameGroup" class="group">
-				<label for="firstNameInput">Voornaam</label>
-				<input type="text" id="firstNameInput" value="{{firstName}}"/>
+		{{#with names}}
+			<div id="nameSelector" class="selector">
+				{{#each this}}
+					<div class="{{isSelected}}">
+						{{value.firstName}} {{value.lastName}}
+					</div>
+				{{/each}}
 			</div>
-			<div id="lastNameGroup" class="group">
-				<label for="lastNameInput">Achternaam</label>
-				<input type="text" id="lastNameInput" value="{{lastName}}"/>
-			</div>
-		</form>
-
+		{{/with}}
 	</div>
 </template>
 
