@@ -750,7 +750,7 @@ MagisterBinding.getProfileData = function (userId) {
 	return {
 		nameInfo: {
 			firstName: pf.firstName(),
-			lastName: (pf.namePrefix() || '') + ' ' + pf.lastName(),
+			lastName: _([ pf.namePrefix(), pf.lastName() ]).compact().join(' '),
 		},
 		birthDate: pf.birthDate(),
 		picture: pictureFut.wait(),
