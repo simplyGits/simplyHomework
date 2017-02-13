@@ -13,30 +13,32 @@
 		{{else}}
 			<div class="profile"></div>
 		{{/with}}
-		<a href="{{pathFor 'overview'}}">
-			<div class="sidebarButton" id="overview">
-				<span>Overzicht</span>
-			</div>
-		</a>
-		<a href="{{pathFor 'calendar'}}">
-			<div class="sidebarButton" id="calendar">
-				<span>Agenda</span>
-			</div>
-		</a>
-		<a href="{{pathFor 'messages'}}">
-			<div class="sidebarButton" id="messages">
-				<span>Berichten</span>
-			</div>
-		</a>
+		<div class="scroll smoothScroll">
+			<a href="{{pathFor 'overview'}}">
+				<div class="sidebarButton" id="overview">
+					<span>Overzicht</span>
+				</div>
+			</a>
+			<a href="{{pathFor 'calendar'}}">
+				<div class="sidebarButton" id="calendar">
+					<span>Agenda</span>
+				</div>
+			</a>
+			<a href="{{pathFor 'messages'}}">
+				<div class="sidebarButton" id="messages">
+					<span>Berichten</span>
+				</div>
+			</a>
 
-		<div class="subheader" id="classes">
-			Vakken
-		</div>
+			<div class="subheader" id="classes">
+				Vakken
+			</div>
 
-		<div class="classList smoothScroll">
-			{{#each classes}}
-				{{> sidebarClass}}
-			{{/each}}
+			<div class="classList">
+				{{#each classes}}
+					{{> sidebarClass}}
+				{{/each}}
+			</div>
 		</div>
 		<div class="footer">
 			<a href="{{pathFor 'settings'}}">
