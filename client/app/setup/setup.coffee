@@ -15,6 +15,10 @@ schoolEngineSub = null
 
 setup = undefined
 
+anyServiceLoggedIn = ->
+	services = externalServices.get()
+	_.some services, (s) -> s.loginNeeded and s.profileData()?
+
 # TODO: These methods are not really DRY, even overall ugly.
 pictures = ->
 	current = currentSelectedImage.get()
@@ -84,32 +88,7 @@ class @Setup
 					.map (s) -> s.profileData()?.schoolId
 					.find _.negate _.isUndefined
 
-				done = (success) ->
-					if success?
-						addProgress 'externalServices', -> cb yes
-					else
-						cb no
-
-				loginServices = _.filter externalServices.get(), 'loginNeeded'
-				data = _.filter loginServices, (s) -> s.profileData()?
-				if loginServices.length > 0 and data.length is 0
-					alertModal(
-						'Hé!'
-						'''
-							Je hebt je op geen enkele site ingelogd!
-							Hierdoor zal simplyHomework niet automagisch data van sites voor je kunnen ophalen.
-							Als je later toch een site wilt toevoegen kan dat altijd in je instellingen.
-
-							Weet je zeker dat je door wilt gaan?
-						'''
-						DialogButtons.OkCancel
-						{ main: 'doorgaan', second: 'woops' }
-						{ main: 'btn-danger' }
-						main: -> done yes
-						second: -> done no
-					)
-				else
-					done yes
+				addProgress 'externalServices', -> cb yes
 		}
 
 		{
@@ -340,6 +319,9 @@ Template.setup.onRendered ->
 
 Template.setupFooter.helpers
 	isLast: -> _.every setup?.running, 'done'
+	showButton: ->
+		current = setup?.current()
+		current?.name isnt 'externalServices' or anyServiceLoggedIn()
 
 Template.setupFooter.events
 	'click button': -> setup.finishStep()

@@ -14,13 +14,17 @@
 
 <template name="setupFooter">
 	<div class="footer">
-		<button class="btn btn-primary">
-			{{#if isLast}}
-				afronden
-			{{else}}
-				verder
-			{{/if}}
-		</button>
+		{{! TODO: back button}}
+
+		{{#if showButton}}
+			<button class="btn btn-primary">
+				{{#if isLast}}
+					afronden
+				{{else}}
+					verder
+				{{/if}}
+			</button>
+		{{/if}}
 	</div>
 </template>
 
