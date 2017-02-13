@@ -1,21 +1,23 @@
 <template name="settings_page_classes">
-	{{#if Template.subscriptionsReady}}
-		<div id="classList">
-			<div id="description">
-				Hier kan je vakken verbergen of weer zichtbaar maken, simpeler kan niet.
-			</div>
-
-			{{#each classes}}
-				{{> settings_page_classes_row}}
-			{{else}}
-				<div id="notice">
-					Geen vakken gevonden.
+	<div id="settings_page_classes">
+		{{#if Template.subscriptionsReady}}
+			<div id="classList">
+				<div id="description">
+					Hier kan je vakken verbergen of weer zichtbaar maken, simpeler kan niet.
 				</div>
-			{{/each}}
-		</div>
-	{{else}}
-		{{> loading}}
-	{{/if}}
+
+				{{#each classes}}
+					{{> settings_page_classes_row}}
+				{{else}}
+					<div id="notice">
+						Geen vakken gevonden.
+					</div>
+				{{/each}}
+			</div>
+		{{else}}
+			{{> loading}}
+		{{/if}}
+	</div>
 </template>
 
 <template name="settings_page_classes_row">
