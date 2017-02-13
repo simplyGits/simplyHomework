@@ -7,29 +7,33 @@
 					<h4 class="modal-title">Magister login gegevens</h4>
 				</div>
 
-				<div class="modal-body">
-					<form class="vertical full-width">
-						<div id="schoolNameGroup" class="group">
-							<label for="schoolNameInput">Schoolnaam</label>
-							<input type="text" id="schoolNameInput" autocomplete="off"/>
-						</div>
-						<div id="usernameGroup" class="group">
-							<label for="magisterUsernameInput">Magister inlognaam</label>
-							<input type="text" id="magisterUsernameInput" autocomplete="off"/>
-						</div>
-						<div id="passwordGroup" class="group">
-							<label for="magisterPasswordInput">Magister wachtwoord</label>
-							<input type="password" id="magisterPasswordInput" autocomplete="off"/>
-						</div>
-						<div id="allowGroup" class="group checkbox">
-							<label>
-								<input type="checkbox">
-								<span style="font-size: 13px">
-									Ik geef simply, simplyApps en simplyHomework toestemming mijn Magister gebruikersnaam, wachtwoord en data van Magister op te slaan en te gebruiken.
-								</span>
-							</label>
-						</div>
-					</form>
+				<div class="modal-body" style="min-height: 170px">
+					{{#if isLoading}}
+						{{> loading}}
+					{{else}}
+						<form class="vertical full-width">
+							<div id="schoolNameGroup" class="group">
+								<label for="schoolNameInput">Schoolnaam</label>
+								<input type="text" id="schoolNameInput" autocomplete="off"/>
+							</div>
+							<div id="usernameGroup" class="group">
+								<label for="magisterUsernameInput">Magister inlognaam</label>
+								<input type="text" id="magisterUsernameInput" autocomplete="off"/>
+							</div>
+							<div id="passwordGroup" class="group">
+								<label for="magisterPasswordInput">Magister wachtwoord</label>
+								<input type="password" id="magisterPasswordInput" autocomplete="off"/>
+							</div>
+							<div id="allowGroup" class="group checkbox">
+								<label>
+									<input type="checkbox">
+									<span style="font-size: 13px">
+										Ik geef simply, simplyApps en simplyHomework toestemming mijn Magister gebruikersnaam, wachtwoord en data van Magister op te slaan en te gebruiken.
+									</span>
+								</label>
+							</div>
+						</form>
+					{{/if}}
 				</div>
 
 				<div class="modal-footer">

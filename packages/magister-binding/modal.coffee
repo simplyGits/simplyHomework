@@ -1,3 +1,4 @@
+loading = new ReactiveVar no
 currentSelectedSchool = null
 
 doneQueries = []
@@ -18,6 +19,9 @@ getSchools = (query, syncCallback, asyncCallback) ->
 					.uniq 'name'
 					.value()
 				asyncCallback r
+
+Template.magisterInfoModal.helpers
+	isLoading: -> loading.get()
 
 Template.magisterInfoModal.events
 	'click #goButton': ->
@@ -50,6 +54,7 @@ Template.magisterInfoModal.events
 				setFieldError '#allowGroup', 'Je moet met de voorwaarden akkoord gaan om Magister te koppelen.'
 				return undefined
 
+			loading.set yes
 			Meteor.call(
 				'createServiceData',
 				'magister',
@@ -58,6 +63,7 @@ Template.magisterInfoModal.events
 				password,
 
 				(e, r) =>
+					loading.set no
 					if e?
 						shake $magisterInfoModal
 						notify (

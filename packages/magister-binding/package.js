@@ -31,6 +31,7 @@ Package.onUse(function(api) {
 		'coffeescript',
 		'templating',
 		'handlebars',
+		'reactive-var',
 	], 'client');
 
 	api.addFiles('info.js');
