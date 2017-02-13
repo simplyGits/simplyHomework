@@ -131,6 +131,8 @@ Meteor.methods
 
 		Meteor.users.remove @userId
 
+	# TODO: Also run this after adding a new externalService later, this should
+	# have an option then to select which services to 'bootstrap'.
 	###*
 	# @method bootstrapUser
 	###

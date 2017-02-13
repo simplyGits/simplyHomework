@@ -23,6 +23,8 @@ ChatMiddlewares.attach 'clickable names', 'server', (message) ->
 	unless schoolId?
 		return message
 
+	# TODO: make name matching case insensitive instead of using `Helpers.nameCap`
+
 	words = _.chain(message.content)
 		.split /\W/
 		.map (word) -> Helpers.nameCap word

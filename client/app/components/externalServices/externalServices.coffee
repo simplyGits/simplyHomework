@@ -1,3 +1,5 @@
+# TODO: stop with this shitty global shared state stuff
+
 SReactiveVar = require('meteor/simply:strict-reactive-var').default
 
 @externalServices = new SReactiveVar [Object]

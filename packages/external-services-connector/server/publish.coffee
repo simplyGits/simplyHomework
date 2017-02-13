@@ -28,7 +28,7 @@ Meteor.publish 'externalCalendarItems', (from, to) ->
 		}
 
 	transform = (doc) ->
-		if doc.usersDone?
+		if doc.usersDone? # REVIEW
 			doc.usersDone = (
 				if userId in doc.usersDone then [ userId ]
 				else []

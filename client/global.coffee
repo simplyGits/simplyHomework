@@ -65,6 +65,7 @@ Meteor.startup ->
 		if 'ActiveXObject' of window
 			$body.addClass 'ie'
 
+	# TODO: use FlowRouter route groups for this
 	nonLoginRoutes = [
 		'login'
 		'signup'
