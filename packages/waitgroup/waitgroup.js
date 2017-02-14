@@ -29,6 +29,13 @@ export default class WaitGroup {
 		}
 	}
 
+	/**
+	 * Loops over the given `arr` calling `fn` concurrently, waiting on every running call after looping over `groupSize` items.
+	 * `forEach` expects `arr` not to be changed during the loop.
+	 * @param {Array} arr
+	 * @param {Function} fn Will be called with the current element, the current index, and a reference to the array being looped over.
+	 * @param {Number} [groupSize=Infinity]
+	 */
 	static forEach(arr, fn, groupSize = Infinity) {
 		for (let g = 0; g < arr.length; g += groupSize) {
 			const wg = new WaitGroup()
@@ -42,6 +49,13 @@ export default class WaitGroup {
 		}
 	}
 
+	/**
+	 * Creates a new array with the return values of `fn` concurrently, waiting on every running call after looping over `groupSize` items.
+	 * `map` expects `arr` not to be changed during the loop.
+	 * @param {Array} arr
+	 * @param {Function} fn Will be called with the current element, the current index, and a reference to the array being looped over. The return value will be used to represent the current item in the newly created array
+	 * @param {Number} [groupSize=Infinity]
+	 */
 	static map(arr, fn, groupSize = Infinity) {
 		const res = new Array(arr.length)
 		WaitGroup.forEach(arr, function (x, i, arr) {
