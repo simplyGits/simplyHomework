@@ -7,7 +7,6 @@ Package.describe({
 });
 
 Npm.depends({
-	'request': '2.74.0',
 	'md5': '2.1.0',
 });
 

@@ -160,8 +160,8 @@
       "from": "cssom@>=0.3.0 <0.4.0"
     },
     "debug": {
-      "version": "2.6.0",
-      "resolved": "https://registry.npmjs.org/debug/-/debug-2.6.0.tgz",
+      "version": "2.6.1",
+      "resolved": "https://registry.npmjs.org/debug/-/debug-2.6.1.tgz",
       "from": "debug@>=2.0.0 <3.0.0"
     },
     "decamelize": {

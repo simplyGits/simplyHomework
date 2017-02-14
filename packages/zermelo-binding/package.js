@@ -8,7 +8,7 @@ Package.describe({
 
 Npm.depends({
 	'zermelo.js': '1.0.0',
-	'lru-cache': '4.0.1',
+	'lru-cache': '4.0.2',
 });
 
 Package.onUse(function(api) {

@@ -7,9 +7,8 @@ Package.describe({
 });
 
 Npm.depends({
-	'request': '2.74.0',
-	'marked': '0.3.5',
-	'lru-cache': '4.0.1',
+	'marked': '0.3.6',
+	'lru-cache': '4.0.2',
 });
 
 Package.onUse(function(api) {

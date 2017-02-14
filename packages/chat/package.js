@@ -6,11 +6,6 @@ Package.describe({
 	documentation: 'README.md',
 });
 
-Npm.depends({
-	'damerau-levenshtein': 'git://github.com/cbaatz/damerau-levenshtein.git',
-	'request': '2.78.0',
-});
-
 Package.onUse(function(api) {
 	api.versionsFrom('1.2.1');
 
