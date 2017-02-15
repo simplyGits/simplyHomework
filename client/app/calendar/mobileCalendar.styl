@@ -1,6 +1,12 @@
 @require "../../utils"
 @require "jeet"
 
+normalColor = #6AA4C1
+scrappedColor = #9F9F9F
+homeworkColor = #05cdf8
+quizColor = #FF851B
+testColor = #FF4136
+
 #mobileCalendarItemDetails
 	absolute: top left right bottom
 	overflow-y: scroll
@@ -125,7 +131,7 @@ div.mobileCalendar
 			position: relative
 			height: 50px
 			width: 50px
-			background-color: #6AA4C1
+			background-color: normalColor
 
 			color: white
 			font-size: 35px
@@ -148,24 +154,38 @@ div.mobileCalendar
 
 	.hour.scrapped
 		.hourIndicator
-			background-color: #9F9F9F
+			background-color: scrappedColor
 		.hourInfo
 			text-decoration: line-through
 
 	.hour.homework .hourIndicator
-		background-color: #05cdf8
+		background-color: homeworkColor
 
 	.hour.quiz .hourIndicator
-		background-color: #FF851B
+		background-color: quizColor
 
 	.hour.test .hourIndicator
-		background-color: #FF4136
+		background-color: testColor
 
 	.hour.current
 		color: darkred
 
-	.hour.absent
-		opacity: .7
+	absentStyling(color)
+		box-shadow: 0 0 0 3px color inset
+		color: darken(color, 40%)
+
+	.hour.absent .hourIndicator
+		background-color: #fff
+		color: black // #333
+		absentStyling(normalColor)
+	.hour.scrapped.absent .hourIndicator
+		absentStyling(scrappedColor)
+	.hour.homework.absent .hourIndicator
+		absentStyling(homeworkColor)
+	.hour.quiz.absent .hourIndicator
+		absentStyling(quizColor)
+	.hour.test.absent .hourIndicator
+		absentStyling(testColor)
 
 .mobileCalendar.comparing
 	.hour
