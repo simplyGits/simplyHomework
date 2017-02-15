@@ -54,6 +54,12 @@ Meteor.startup ->
 				type: 'private'
 				users: doc._id
 
-			ChatRooms.update { users: doc._id }, $pull: users: doc._id
+			ChatRooms.update {
+				users: doc._id
+			}, {
+				$pull: users: doc._id
+			}, {
+				multi: yes
+			}
 
 	loadingObserve = no

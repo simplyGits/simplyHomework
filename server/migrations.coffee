@@ -238,5 +238,30 @@ Migrations.add
 					compiledContent: m.content
 					content: m.content.replace /<[^>]+>/g, ''
 
+Migrations.add
+	version: 16
+	name: 'remove gone users from chat rooms'
+	up: ->
+		userIds = Meteor.users.find({}).map (u) -> u._id
+
+		rooms = ChatRooms.find(
+			type: $ne: 'private'
+		).fetch()
+		roomsUserIds = _.chain(rooms)
+			.pluck 'users'
+			.flatten()
+			.uniq()
+			.value()
+
+		leftoverUserIds = _.difference roomsUserIds, userIds
+		for userId in leftoverUserIds
+			ChatRooms.update {
+				users: userId
+			}, {
+				$pull: users: userId
+			}, {
+				multi: yes
+			}
+
 Meteor.startup ->
 	Migrations.migrateTo 'latest'
