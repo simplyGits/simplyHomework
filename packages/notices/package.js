@@ -62,6 +62,7 @@ Package.onUse(function(api) {
 		'client/tasks/tasks.coffee',
 
 		'client/lessons/currentLesson.html',
+		'client/lessons/currentLesson.styl',
 		'client/lessons/currentLesson.coffee',
 		'client/lessons/nextlesson.html',
 		'client/lessons/nextlesson.coffee',

@@ -1,6 +1,10 @@
 <template name="infoCurrentAppointment">
-	Nog {{timeLeft}} (tot {{time endDate}})<br>
-	{{#if location}}
-		Locatie: {{location}}
-	{{/if}}
+	<div class="infoCurrentLesson">
+		Nog {{timeLeft}} (tot {{time endDate}})<br>
+		{{#if location}}
+			Locatie: {{location}}
+		{{/if}}
+
+		<div class="back" style="width: {{percentage}}%"></div>
+	</div>
 </template>

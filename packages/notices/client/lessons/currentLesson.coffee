@@ -26,3 +26,10 @@ Template.infoCurrentAppointment.helpers
 	timeLeft: ->
 		minuteTracker.depend()
 		Helpers.timeDiff new Date(), @endDate
+
+	percentage: ->
+		minuteTracker.depend()
+
+		duration = @endDate - @startDate
+		timeIn = new Date() - @startDate
+		100 * (timeIn / duration)
