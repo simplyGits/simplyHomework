@@ -20,16 +20,6 @@ class @App
 		NotificationsManager.hideAll()
 
 # == Modals ==
-Template.newSchoolYearModal.helpers classes: -> classes()
-
-Template.newSchoolYearModal.events
-	"change": (event) ->
-		target = $(event.target)
-		checked = target.is ":checked"
-		classId = target.attr "classid"
-
-		target.find("span").css color: if checked then "lightred" else "white"
-
 Template.addTicketModal.helpers
 	body: -> Session.get('addTicketModalContent') ? ''
 

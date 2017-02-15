@@ -81,9 +81,13 @@ setupItems = [
 		name: 'externalServices'
 		async: no
 		onDone: (cb) ->
+			# well, this externalServices global shit stuff is a fucking mess.
+
 			schoolId = _(externalServices.get())
 				.map (s) -> s.profileData()?.schoolId
 				.find _.negate _.isUndefined
+
+			schoolId ?= getUserField Meteor.userId(), 'profile.schoolId'
 
 			done = (success) ->
 				if success?
@@ -195,26 +199,7 @@ setupItems = [
 	}
 
 	{
-		# TODO: implement this, it should open a modal that asks
-		# if the current schoolyear is over, if so we can ask the user to follow the setup
-		# with stuff as `externalServices` and `externalClasses` again.
-		name: 'newSchoolYear'
-		func: ->
-			return undefined
-
-			alertModal(
-				"Hey!",
-				Locals["nl-NL"].NewSchoolYear(),
-				DialogButtons.Ok,
-				{ main: "verder" },
-				{ main: "btn-primary" },
-				{ main: (->) },
-				no
-			)
-	}
-
-	{
-		name: 'first-use'
+		name: 'final'
 		func: ->
 			addProgress 'first-use', ->
 				name = getUserField Meteor.userId(), 'profile.firstName'
@@ -233,10 +218,6 @@ running = undefined
 	Session.set 'runningSetup', no # HACK: this hacks around the auto migration starting the setup when it shouldn't.
 	setupProgress = getUserField Meteor.userId(), 'setupProgress'
 	return undefined unless setupProgress?
-
-	setupProgress = setupProgress.concat [
-		'newSchoolYear' # TODO: Dunno how're going to do this shit
-	]
 
 	running = _.filter setupItems, (item) -> item.name not in setupProgress
 

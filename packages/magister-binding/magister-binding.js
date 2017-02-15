@@ -1,6 +1,6 @@
 /* global AbsenceInfo, Schools, Grade, StudyUtil, GradePeriod,
           ExternalPerson, CalendarItem, Assignment, ExternalFile, getClassInfos,
-          Message, ms, MagisterBinding, ServiceUpdate */
+          Message, ms, MagisterBinding, ServiceUpdate, Course */
 
 // One heck of a binding this is.
 
@@ -248,6 +248,30 @@ function getCurrentCourse (magister) {
 	magister.currentCourse(fut.resolver());
 	return fut.wait();
 }
+
+/**
+ * @method getCourses
+ * @param {String} userId
+ * @return {Course}
+ */
+MagisterBinding.getCourses = function (userId) {
+	check(userId, String);
+	const magister = getMagisterObject(userId);
+	const courses = Meteor.wrapAsync(magister.courses, magister)();
+
+	return courses.map(function (c) {
+		const course = new Course(c.begin(), c.end(), c.profile(), userId);
+
+		course.profile = c.profile();
+		course.typeId = c.type().id;
+		course.externalId = prefixId(magister, c.id());
+		course.fetchedBy = MagisterBinding.name;
+
+		course.lastUpdated = new Date();
+
+		return course;
+	});
+};
 
 /**
  * Get the grades for the given userId from Magister.
