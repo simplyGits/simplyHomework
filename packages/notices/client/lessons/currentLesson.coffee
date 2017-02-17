@@ -1,3 +1,8 @@
+dep = new Tracker.Dependency()
+setInterval (->
+	dep.changed()
+), ms.seconds 5
+
 NoticeManager.provide 'currentLesson', ->
 	minuteTracker.depend()
 	@subscribe 'externalCalendarItems', Date.today(), Date.today().addDays 1
@@ -28,7 +33,7 @@ Template.infoCurrentAppointment.helpers
 		Helpers.timeDiff new Date(), @endDate
 
 	percentage: ->
-		minuteTracker.depend()
+		dep.depend()
 
 		duration = @endDate - @startDate
 		timeIn = new Date() - @startDate
