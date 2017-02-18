@@ -11,12 +11,10 @@ Package.describe({
 Package.onUse(function(api) {
 	api.versionsFrom('1.4');
 	api.use('ecmascript');
-
-	api.mainModule('client.js', 'client');
-
 	api.use([
 		'check',
 		'http',
 	], 'server');
-	api.mainModule('server.js', 'server');
+
+	api.mainModule('main.js');
 });

@@ -73,7 +73,7 @@ Migrations.add
 		}, {
 			$unset:
 				previousValues: yes
-		}
+		}, validate: no
 
 Migrations.add
 	version: 7
