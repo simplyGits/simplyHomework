@@ -4,10 +4,6 @@ import url from 'url';
 
 const settings = Meteor.settings && Meteor.settings.scholieren;
 
-if (settings == null) {
-	throw new Error('`settings.scholieren` is required but is null or undefined.');
-}
-
 Scholieren = {
 	name: 'scholieren',
 	friendlyName: 'Scholieren.com',
@@ -103,7 +99,7 @@ Scholieren = {
 	},
 };
 
-if (Package.search != null) {
+if (settings != null && Package.search != null) {
 	Package.search.Search.provide('scholieren', function ({ query, user, classes, keywords }) {
 		if (!_.contains(keywords, 'report')) {
 			return [];
@@ -139,4 +135,9 @@ if (Package.search != null) {
 
 		return res;
 	});
+}
+
+if (settings == null) {
+	console.warn('`settings.scholieren` is null or undefined, scholieren package will be disabled.');
+	Scholieren = {};
 }
