@@ -1,0 +1,131 @@
+@require "jeet"
+@require "../../utils"
+
+paddingSides = 10px
+padSides()
+	padding-left: paddingSides
+	padding-right: paddingSides
+
+.content.template-gradesView
+	padding: 0 !important
+
+#gradesView
+	.classRow
+		position: relative
+		z-index: 0
+		width: 100%
+
+		margin: 0
+		padding = 5px
+		padding-top: padding
+		padding-bottom: padding
+		padSides()
+
+		font-size: 17px
+		// roboto(500)
+		font-weight: 400
+
+		border-bottom: 1px lightgray solid
+
+		cursor: pointer
+
+		.label
+			margin-right: 5px
+			margin-top: 3.5px
+
+		input[type="checkbox"]
+			cursor: pointer
+
+		.back
+			absolute: top left right bottom
+			z-index: -1
+			opacity: .05
+
+	.classRow > span:first-child
+		display: inline-block
+		width: calc(100% - 60px)
+		overflow: hidden
+		white-space: nowrap
+		text-overflow: ellipsis
+
+	.gradeGroup
+		.header
+			background-color: hoverColor
+			border-bottom: 1px lightgray solid
+
+			font-size: 17px
+
+			padding = 5px
+			padding-top: padding
+			padding-bottom: padding
+			padSides()
+
+			cursor: pointer
+
+			.title
+				font-size: 20px // REVIEW
+
+			.label
+				margin-top: 4px
+				margin-right: 5px
+
+		.grades
+			.gradeRow
+				clearfix()
+
+				padding-top: 5px
+				padding-bottom: 5px
+				padSides()
+
+				font-size: 1.2em
+
+				cursor: pointer
+
+				border-right: 5px black solid
+
+				.description
+					col(3/4, cycle: 2)
+					white-space: nowrap
+					overflow: hidden
+					text-overflow: ellipsis
+					span.none
+						font-style: italic
+						color: darkgray
+				.grade
+					col(1/4, cycle: 2)
+					text-align: right
+
+				.class
+					col(7/10, cycle: 2)
+					opacity: .7
+				.weight
+					col(3/10, cycle: 2)
+					opacity: .7
+					text-align: right
+
+				.dateFilledIn
+					col(1/2, cycle: 2)
+				.means
+					col(1/2, cycle: 2)
+					text-align: right
+					font-size: 85%
+					color: gray !important
+
+			.gradeRow.insufficient
+				color: #5a0000;
+				background-color: rgba(255, 0, 0, .1)
+
+	.gradeGroup:not(:first-child)
+		border-top: 1px lightgray solid;
+
+	+above(rupture.mobile-cutoff)
+		#classList
+			absolute: top left bottom
+			width: 30%
+			border-right: 1px lightgray solid
+			overflow-y: scroll
+
+		#groupList
+			absolute: top right bottom
+			left: 30%
+			overflow-y: scroll

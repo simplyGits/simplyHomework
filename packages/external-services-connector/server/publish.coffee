@@ -101,12 +101,12 @@ Meteor.publish 'foreignCalendarItems', (userIds, from, to) ->
 			content: 0
 	}
 
-Meteor.publish 'externalGrades', (options) ->
+Meteor.publish 'externalGrades', (options = {}) ->
 	check options, Object
 	{ classId, onlyRecent } = options
 
 	@unblock()
-	unless @userId? and (classId? or onlyRecent?)
+	unless @userId?
 		@ready()
 		return undefined
 

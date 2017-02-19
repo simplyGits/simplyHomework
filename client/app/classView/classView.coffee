@@ -131,9 +131,7 @@ Template.classView.events
 			event.target.value = ''
 			event.target.blur()
 
-	'click #gradesButton': ->
-		ga 'send', 'event', 'gradesModal', 'open'
-		showModal 'gradesModal', undefined, currentClass
+	'click #gradesButton': -> FlowRouter.go 'grades', {}, classIds: [ classId() ]
 	'click #hoursButton': ->
 		ga 'send', 'event', 'click', 'nextHourButton'
 		nextHourDate = CalendarItems.findOne({

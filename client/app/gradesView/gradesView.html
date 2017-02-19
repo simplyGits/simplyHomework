@@ -1,0 +1,103 @@
+<template name="gradesView">
+	{{#if Template.subscriptionsReady}}
+		<div id="gradesView">
+			{{! TODO: graph}}
+			<div id="classList"> {{! REVIEW: is this div needed? }}
+				{{#each classes}}
+					{{> gradesView_class}}
+				{{/each}}
+			</div>
+
+			<div id="groupList">
+				{{#each groups}}
+					{{> gradesView_group}}
+				{{/each}}
+			</div>
+		</div>
+	{{else}}
+		{{> loading}}
+	{{/if}}
+</template>
+
+<template name="gradesView_class">
+	<label class="classRow">
+		<span>{{name}}</span>
+		<div class="pull-right">
+			{{#with endGrade}}
+				<span class="label endGrade label-{{__type}}">{{__grade}}</span>
+			{{/with}}
+			<input type="checkbox" checked={{selected}} />
+		</div>
+		<div class="back" style="background-color: {{__color}}"></div>
+	</label>
+</template>
+
+<template name="gradesView_group">
+	<div class="gradeGroup">
+		<div class="header">
+			<span class="title">{{name}}</span>
+			<div class="pull-right">
+				{{#with mean}}
+					<span class="label endGrade label-{{type}}">{{grade}}</span>
+				{{/with}}
+				<span class="toggleIcon">
+					{{#if visible}}
+						▲
+					{{else}}
+						▼
+					{{/if}}
+				</span>
+			</div>
+		</div>
+		{{! TODO: graph}}
+		{{#if visible}}
+			<div class="grades">
+				{{#each grades}}
+					{{> gradesView_grade}}
+				{{/each}}
+			</div>
+		{{/if}}
+	</div>
+</template>
+
+<template name="gradesView_grade">
+	{{! REVIEW: add more details? }}
+	<div class="gradeRow {{__insufficient}}" style="border-color: {{class.__color}}">
+		<div class="description">
+			{{#with description}}
+				{{this}}
+			{{else}}
+				<span class="none">
+					geen beschrijving.
+				</span>
+			{{/with}}
+		</div>
+		<div class="grade">
+			{{__grade}}
+		</div>
+
+		<div class="class">{{class.name}}</div>
+		<div class="weight">weging: {{__weight}}</div>
+
+		{{#if expanded}}
+			{{#if isLoading}}
+				{{! TODO }}
+				<div style="text-align: center">
+					Laden...
+				</div>
+			{{else}}
+				<div class="dateFilledIn"><time datetime="{{dateFormat 'YYYY-MM-DDTHH:mm' dateFilledIn}}">{{dateFormat 'D MMMM YYYY' dateFilledIn}}</time></div>
+				<div class="means">
+					{{#with means}}
+						{{#if class}}
+							Klas: {{class}}<br>
+						{{/if}}
+						{{#if school}}
+							School: {{school}}
+						{{/if}}
+					{{/with}}
+				</div>
+			{{/if}}
+		{{/if}}
+	</div>
+</template>

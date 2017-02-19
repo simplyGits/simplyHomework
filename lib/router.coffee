@@ -110,6 +110,10 @@ appRoutes.route '/chat/:id',
 		if isPhone()
 			renderAppTemplate 'mobileChatWindow'
 
+appRoutes.route '/grades',
+	name: 'grades'
+	action: -> renderAppTemplate 'gradesView'
+
 appRoutes.route '/settings/:page?',
 	name: 'settings'
 	action: -> renderAppTemplate 'settings'
