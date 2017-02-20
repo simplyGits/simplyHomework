@@ -6,7 +6,7 @@
 getGradeType = (g) ->
 	if g < 5.5
 		'danger'
-	else if 5.5 < g < 6 # REVIEW: what should the upper limit be?
+	else if 5.5 <= g < 6 # REVIEW: what should the upper limit be?
 		'warning'
 	else
 		'success'
