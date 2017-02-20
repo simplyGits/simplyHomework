@@ -22,16 +22,17 @@ getClasses = ->
 	selectedIds = selectedClassIds()
 	shownIds = shownClassIds()
 
-	res = classes().map (c) ->
-		c.selected = c._id in selectedIds
-		c.shown = c._id in shownClassIds
-		c.endGrade = ->
-			res = GradeFunctions.getEndGrade c._id, Meteor.userId()
-			res.__type = getGradeType res.grade
-			res
-		c
-
-	_.filter res, (c) -> Grades.find(classId: c._id).count() > 0
+	_.chain(classes())
+		.map (c) ->
+			c.selected = c._id in selectedIds
+			c.shown = c._id in shownClassIds
+			c.endGrade = ->
+				res = GradeFunctions.getEndGrade c._id, Meteor.userId()
+				res.__type = getGradeType res.grade
+				res
+			c
+		.filter (c) -> Grades.find(classId: c._id).count() > 0
+		.value()
 
 Template.gradesView.onCreated ->
 	@subscribe 'externalGrades'
@@ -81,7 +82,6 @@ Template.gradesView.helpers
 						grade: g.toPrecision(2).replace '.', ','
 						type: getGradeType g
 				)
-			.reject (group) -> group.grades.length is 0
 			.sortBy (group) -> group.grades[0].dateFilledIn
 			.value()
 
