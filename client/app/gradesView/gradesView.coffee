@@ -107,25 +107,25 @@ Template.gradesView_group.events
 		@visible.set not current
 
 Template.gradesView_grade.helpers
-	expanded: -> @_expanded.get()
-	isLoading: -> @_isLoading.get()
-	means: -> @_means.get()
+	expanded: -> Template.instance()._expanded.get()
+	isLoading: -> Template.instance()._isLoading.get()
+	means: -> Template.instance()._means.get()
 
 Template.gradesView_grade.events
-	'click': ->
-		current = @_expanded.get()
+	'click': (event, instance) ->
+		current = instance._expanded.get()
 		next = not current
 
-		@_expanded.set next
+		instance._expanded.set next
 
 		if next is no or
-		@_isLoading.get() or
-		@_means.get()?
+		instance._isLoading.get() or
+		instance._means.get()?
 			return
 
-		@_isLoading.set yes
+		instance._isLoading.set yes
 		Meteor.call 'gradeMeans', @_id, (e, r) =>
-			@_isLoading.set no
+			instance._isLoading.set no
 
 			return if e?
 			obj = {}
@@ -135,9 +135,9 @@ Template.gradesView_grade.events
 				unless _.isNaN val
 					obj[key] = val.toPrecision 2
 
-			@_means.set obj
+			instance._means.set obj
 
 Template.gradesView_grade.onCreated ->
-	@data._expanded = new ReactiveVar no
-	@data._isLoading = new ReactiveVar no
-	@data._means = new ReactiveVar undefined
+	@_expanded = new ReactiveVar no
+	@_isLoading = new ReactiveVar no
+	@_means = new ReactiveVar undefined
