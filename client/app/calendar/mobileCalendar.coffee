@@ -113,6 +113,7 @@ Template.mobileCalendar.onRendered ->
 		.datetimepicker
 			format: 'YYYY-MM-DD'
 			inline: true
+			calendarWeeks: true
 		.on 'dp.change', (e) ->
 			setDate e.date.toDate()
 			@parentNode.className = ''
