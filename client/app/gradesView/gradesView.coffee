@@ -11,18 +11,24 @@ getGradeType = (g) ->
 	else
 		'success'
 
+getAllClasses = ->
+	Classes.find({}, {
+		sort:
+			name: 1
+	}).fetch()
+
 selectedClassIds = -> FlowRouter.getQueryParam('classIds') ? []
 shownClassIds = ->
 	ids = selectedClassIds()
 	if ids.length > 0
 		ids
 	else
-		classes().map (c) -> c._id
+		getAllClasses().map (c) -> c._id
 getClasses = ->
 	selectedIds = selectedClassIds()
 	shownIds = shownClassIds()
 
-	_.chain(classes())
+	_.chain(getAllClasses())
 		.map (c) ->
 			c.selected = c._id in selectedIds
 			c.shown = c._id in shownClassIds
