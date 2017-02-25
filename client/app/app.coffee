@@ -115,6 +115,7 @@ setKeyboardShortcuts = ->
 			when 'overview' then FlowRouter.go 'overview'
 			when 'calendar' then FlowRouter.go 'calendar'
 			when 'messages' then FlowRouter.go 'messages'
+			when 'grades' then FlowRouter.go 'grades'
 			else FlowRouter.go 'classView', { id }
 
 	Mousetrap.bind ['shift+up', 'shift+k'], ->
