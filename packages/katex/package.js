@@ -9,7 +9,7 @@ Package.describe({
 
 Package.onUse(function(api) {
 	api.versionsFrom('1.1.0.3');
-	api.use('ecmascript', 'client');
+	api.use('ecmascript');
 	api.use('templating', 'client', { weak: true });
 
 	api.addFiles('dist/katex.min.css');
@@ -97,7 +97,8 @@ Package.onUse(function(api) {
 		'dist/fonts/KaTeX_Typewriter-Regular.woff2',
 	], 'client');
 
-	api.mainModule('katex.js', 'client');
+	// api.mainModule('client.js', 'client');
+	api.mainModule('server.js', 'server');
 });
 
 Package.onTest(function(api) {
