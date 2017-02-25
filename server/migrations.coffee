@@ -263,5 +263,19 @@ Migrations.add
 				multi: yes
 			}
 
+Migrations.add
+	version: 17
+	name: 'compile chat messages containing katex equations'
+	up: ->
+		middleware = _.find ChatMiddlewares._middlewares, name: 'katex'
+
+		messages = ChatMessages.find(
+			content: $regex: /\$\$(.+?)\$\$/g
+		).fetch()
+		for message in messages
+			ChatMessages.update message._id,
+				$set:
+					compiledContent: middleware.fn(message).compiledContent
+
 Meteor.startup ->
 	Migrations.migrateTo 'latest'

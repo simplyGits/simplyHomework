@@ -1,5 +1,4 @@
 import shitdown from 'meteor/shitdown'
-import katex from 'meteor/simply:katex'
 
 # Always keep this middleware on top, please.
 ChatMiddlewares.attach 'preserve original content', 'client', (message) ->
@@ -90,16 +89,6 @@ ChatMiddlewares.attach 'links', 'client', (message) ->
 ChatMiddlewares.attach 'emojione', 'client', (message) ->
 	unless getUserField Meteor.userId(), 'settings.devSettings.noChatEmojis'
 		message.content = emojione.toImage message.content
-	message
-
-ChatMiddlewares.attach 'katex', 'client', (message) ->
-	message.content = message.content.replace /\$\$(.+?)\$\$/g, (match, formula) ->
-		try
-			rendered = katex.renderToString formula
-			rendered.replace /^<span/, '$& data-snap-ignore="true" '
-		catch
-			match
-
 	message
 
 ChatMiddlewares.attach 'add hidden fields', 'client', (cm) ->

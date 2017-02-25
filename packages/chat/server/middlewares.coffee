@@ -1,3 +1,5 @@
+import katex from 'meteor/simply:katex'
+
 escapeMap = [
 	[ /</g, '&lt;' ]
 	[ />/g, '&gt;' ]
@@ -10,6 +12,16 @@ ChatMiddlewares.attach 'escape', 'server', (message) ->
 		s = s.replace reg, val
 
 	message.compiledContent = s
+	message
+
+ChatMiddlewares.attach 'katex', 'server', (message) ->
+	message.compiledContent = message.content.replace /\$\$(.+?)\$\$/g, (match, formula) ->
+		try
+			rendered = katex.renderToString formula
+			rendered.replace /^<span/, '$& data-snap-ignore="true" '
+		catch
+			match
+
 	message
 
 # TODO: improve 'clickable {names,classes}' middlewares
