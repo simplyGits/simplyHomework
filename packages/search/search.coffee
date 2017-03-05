@@ -58,8 +58,9 @@ types = [{
 		'samenvatting'
 		'sv'
 	]
-}].map (t) -> _.extend t,
-	regex: new RegExp "\\b(#{t.keywords.join '|'})(en|s)?\\b"
+}].map (t) ->
+	t.regex = new RegExp "\\b(#{t.keywords.join '|'})(en|s)?\\b"
+	t
 
 ###*
 # @method filterKeywords

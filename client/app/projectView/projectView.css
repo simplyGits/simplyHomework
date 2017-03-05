@@ -1,17 +1,3 @@
 span.projectInfoDescription {
 	display: inline-flex; /* autoprefixer just fucks it up otherwise */
 }
-
-div.projectInfoChatQuoteContainer {
-	display: flex; /* same here */
-}
-
-span.removePersonButton:hover, span.removeFileButton:hover {
-	opacity: .8 !important;
-}
-
-@media only screen and (max-width: 800px) {
-	div.projectInfoChatQuoteContainer {
-		display: flex !important;
-	}
-}

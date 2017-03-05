@@ -68,7 +68,7 @@ function getZermeloObject (userId) {
 }
 
 function prefixId (zermelo, ...args) {
-	let res = zermelo.school.id
+	let res = zermelo.school.id // REVIEW: this seems to always be '1'?
 	for (const arg of args) {
 		res += '_' + arg
 	}

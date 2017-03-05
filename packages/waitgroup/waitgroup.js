@@ -55,6 +55,7 @@ export default class WaitGroup {
 	 * @param {Array} arr
 	 * @param {Function} fn Will be called with the current element, the current index, and a reference to the array being looped over. The return value will be used to represent the current item in the newly created array
 	 * @param {Number} [groupSize=Infinity]
+	 * @return {Array}
 	 */
 	static map(arr, fn, groupSize = Infinity) {
 		const res = new Array(arr.length)

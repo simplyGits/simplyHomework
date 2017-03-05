@@ -40,6 +40,8 @@ profileBackLowOpacity()
 
 			opacity: .8
 
+			// Blurring costs a fair amount of processing power, on phones it's
+			// better to just disable it. It isn't worth the cost.
 			+mobile()
 				profileBackLowOpacity()
 
@@ -142,5 +144,6 @@ profileBackLowOpacity()
 				width: 30px
 				height: 30px
 
+// IE doesn't support blurring
 body.ie .sidebar .profile .back
 	profileBackLowOpacity()

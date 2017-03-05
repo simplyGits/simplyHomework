@@ -54,7 +54,7 @@ div#chatButton
 
 	div#middle
 		overflow: hidden
-		width: 140px
+		width: calc(100% - 140px)
 		float: left
 		margin-right: 10px
 		line-height: 1.5
@@ -76,12 +76,6 @@ div#chatButton
 
 	+mobile()
 		width: 100%
-
-		span#header
-			absolute: right 40px
-
-		div#middle
-			width: calc(100% - 140px)
 
 div#chatButton:hover
 	background-color: lightgray
@@ -161,20 +155,25 @@ div.personRow
 span.removePersonButton, span.removeFileButton
 	float: right
 	margin-right: 15px
-	opacity: 0
+	visibility: hidden
+	opacity: .4
 	pointer-events: initial
 	font-weight: 300
 
 	transition: opacity .1s ease-in-out
 
 	+mobile()
-		opacity: .4
+		visibility: visible
 
 div.fileRow:hover, div.personRow:hover
 	background-color: hoverColor
 
 	span.removePersonButton, span.removeFileButton
-		opacity: .4
+		visibility: visible
+
+span.removePersonButton:hover,
+span.removeFileButton:hover
+	opacity: .8 !important
 
 .personSuggestion
 	.picture
