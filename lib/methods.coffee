@@ -118,26 +118,6 @@ Meteor.methods
 		}
 
 	###*
-	# @method changeName
-	# @param {String} firstName non empty string.
-	# @param {String} lastName non empty string.
-	###
-	changeName: (firstName, lastName) ->
-		check firstName, String
-		check lastName, String
-
-		firstName = Helpers.nameCap firstName.trim()
-		lastName = Helpers.nameCap lastName.trim()
-
-		if firstName.length is 0 or lastName.length is 0
-			throw new Meteor.Error 'name-empty'
-
-		Meteor.users.update @userId,
-			$set:
-				'profile.firstName': firstName
-				'profile.lastName': lastName
-
-	###*
 	# @method saveMessageDraft
 	# @param {Draft} draft
 	###

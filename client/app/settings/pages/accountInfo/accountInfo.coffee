@@ -8,20 +8,12 @@ Template['settings_page_accountInfo'].events
 	'submit form': (event) ->
 		event.preventDefault()
 
-		firstName = Helpers.nameCap $('#firstNameInput').val()
-		lastName = Helpers.nameCap $('#lastNameInput').val()
-
 		oldPass = $('#currentPassInput').val()
 
 		mail = $('#mailInput').val().toLowerCase()
 
 		newPass = $('#newPassInput').val()
 		newPassRepeat = $('#newPassRepeatInput').val()
-
-		nameChanged = (
-			profile = getUserField Meteor.userId(), 'profile'
-			profile.firstName isnt firstName or profile.lastName isnt lastName
-		)
 
 		mailChanged = mail isnt getUserField Meteor.userId(), 'emails[0].address'
 		passChanged = newPass isnt '' or newPassRepeat isnt ''
@@ -60,9 +52,6 @@ Template['settings_page_accountInfo'].events
 					setFieldError '#currentPassGroup', 'Wachtwoord is fout'
 				else
 					callback not e?
-
-		if nameChanged
-			Meteor.call 'changeName', firstName, lastName, (e) -> callback not e?
 
 		if passChanged
 			unless newPass is newPassRepeat
