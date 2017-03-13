@@ -64,6 +64,8 @@ class @ReportItem
 			type: String
 		'resolvedInfo.at'
 			type: Date
+		'resolvedInfo.information'
+			type: String
 
 @ReportItems = new Mongo.Collection 'reportItems'
 @ReportItems.attachSchema ReportItem.schema
