@@ -39,7 +39,8 @@ ChatMiddlewares.attach 'clickable names', 'server', (message) ->
 
 	words = _.chain(message.content)
 		.split /\W/
-		.map (word) -> Helpers.nameCap word
+		# FIXME: We just have isSurname=true for now ¯\_(ツ)_/¯
+		.map (word) -> Helpers.nameCap word, yes
 		.value()
 
 	allUsers = Meteor.users.find({

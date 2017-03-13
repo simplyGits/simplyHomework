@@ -8,8 +8,8 @@ Template['settings_page_accountInfo'].events
 	'submit form': (event) ->
 		event.preventDefault()
 
-		firstName = Helpers.nameCap $('#firstNameInput').val()
-		lastName = Helpers.nameCap $('#lastNameInput').val()
+		firstName = Helpers.nameCap $('#firstNameInput').val(), no
+		lastName = Helpers.nameCap $('#lastNameInput').val(), yes
 
 		oldPass = $('#currentPassInput').val()
 

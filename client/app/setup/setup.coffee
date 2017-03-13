@@ -159,8 +159,8 @@ class @Setup
 								fetchedBy: val.fetchedBy
 						)
 						'profile.courseInfo': courseInfo
-						'profile.firstName': Helpers.nameCap $firstNameInput.val()
-						'profile.lastName': Helpers.nameCap $lastNameInput.val()
+						'profile.firstName': Helpers.nameCap $firstNameInput.val(), no
+						'profile.lastName': Helpers.nameCap $lastNameInput.val(), yes
 						'profile.birthDate':
 							# Picks the date from the first externalService that has one.
 							# REVIEW: Maybe we should ask the user too?

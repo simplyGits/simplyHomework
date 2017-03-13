@@ -163,9 +163,10 @@ class @Helpers
 	# Caps the given string, respecting name conventions.
 	# @method nameCap
 	# @param name {String} The name to cap.
+	# @param isSurname {Boolean}
 	# @return {String} The capped `name`.
 	###
-	@nameCap: (name) ->
+	@nameCap: (name, isSurname) ->
 		nonCapped = [
 			'aan'
 			'bij'
@@ -200,7 +201,10 @@ class @Helpers
 			.trim()
 			.toLowerCase()
 			.replace /\w+/g, (match) =>
-				if match in nonCapped then match else @cap match
+				if isSurname and match in nonCapped
+					match
+				else
+					@cap match
 
 	###*
 	# Find links in the given `string` and converts
