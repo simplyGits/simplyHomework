@@ -88,10 +88,7 @@ Template.personSharedHours.helpers
 	canCompare: -> canCompare @_id
 	days: ->
 		sharedCalendarItems = CalendarItems.find(
-			$and: [
-				{ userIds: Meteor.userId() }
-				{ userIds: Template.currentData()._id }
-			]
+			userIds: $all: [ Meteor.userId(), Template.currentData()._id ]
 			startDate: $gte: Date.today()
 			endDate: $lte: Date.today().addDays 7
 			scrapped: no
@@ -131,10 +128,7 @@ Template.sharedChats.onCreated ->
 Template.sharedChats.helpers
 	chats: ->
 		ChatRooms.find({
-			$and: [
-				{ users: Meteor.userId() }
-				{ users: Template.currentData()._id }
-			]
+			users: $all: [ Meteor.userId(), Template.currentData()._id ]
 			type: $nin: ['private', 'class']
 		}, {
 			sort: lastMessageTime: -1
