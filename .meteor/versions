@@ -119,7 +119,7 @@ reactive-dict@1.1.8
 reactive-var@1.0.11
 reload@1.1.11
 retry@1.0.9
-reywood:publish-composite@1.4.2
+reywood:publish-composite@1.5.0
 rosh93:dataset-filter@0.0.6
 routepolicy@1.0.12
 rzymek:moment-locale-nl@2.14.1
@@ -130,7 +130,7 @@ service-configuration@1.0.11
 service-messages@0.0.1
 session@1.1.7
 sha@1.0.9
-shell-server@0.2.2
+shell-server@0.2.3
 shitdown@0.0.1
 simply:external-services-connector@0.0.1
 simply:fullcalendar@2.9.1
