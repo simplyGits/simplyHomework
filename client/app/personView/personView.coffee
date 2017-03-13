@@ -129,7 +129,7 @@ Template.sharedChats.helpers
 	chats: ->
 		ChatRooms.find({
 			users: $all: [ Meteor.userId(), Template.currentData()._id ]
-			type: $nin: ['private', 'class']
+			type: $ne: 'private'
 		}, {
 			sort: lastMessageTime: -1
 		}).fetch()
