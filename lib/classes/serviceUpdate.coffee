@@ -27,6 +27,13 @@ class @ServiceUpdate
 		###
 		@priority = 0
 
+		###*
+		# @property hidden
+		# @type Boolean
+		# @default no
+		###
+		@hidden = no
+
 	@schema: new SimpleSchema
 		_id:
 			type: String
@@ -46,6 +53,8 @@ class @ServiceUpdate
 			optional: yes
 		priority:
 			type: Number
+		hidden:
+			type: Boolean
 
 @ServiceUpdates = new Mongo.Collection 'serviceUpdates'
 @ServiceUpdates.attachSchema ServiceUpdate.schema

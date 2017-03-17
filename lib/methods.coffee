@@ -164,6 +164,21 @@ Meteor.methods
 
 		undefined
 
+	###*
+	# @method serviceUpdateSetHidden
+	# @param {String} id
+	# @param {Boolean} hidden
+	###
+	serviceUpdateSetHidden: (id, hidden) ->
+		check id, String
+		check hidden, Boolean
+		ServiceUpdates.update {
+			_id: id
+			userId: @userId
+		}, {
+			$set: { hidden }
+		}
+
 ###*
 # @method genClassInfoChangeFunc
 # @param {String} field
