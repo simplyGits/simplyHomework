@@ -5,13 +5,13 @@
 
 meteor-base@1.0.4             # Packages every Meteor app needs to have
 mobile-experience@1.0.4       # Packages for a great mobile UX
-mongo@1.1.15                   # The database Meteor supports right now
+mongo@1.1.16                   # The database Meteor supports right now
 session@1.1.7                 # Client-side reactive dictionary for your app
 jquery@1.11.10                  # Helpful client-side library
 tracker@1.1.2                 # Meteor's client-side reactive programming library
 
 accounts-password@1.3.4
-http@1.2.11
+http@1.2.12
 browser-policy@1.1.0
 coffeescript@1.11.1_4
 rosh93:dataset-filter
@@ -46,12 +46,12 @@ audit-argument-checks@1.0.7
 magister-binding
 kadira:flow-router
 kadira:blaze-layout
-check@1.2.4
+check@1.2.5
 ejson@1.0.13
 crosswalk@1.7.1
 blaze-html-templates@1.0.4
 simply:external-services-connector
-ddp-rate-limiter@1.0.6
+ddp-rate-limiter@1.0.7
 mquandalle:stylus
 simply:typeahead
 privacy
@@ -72,8 +72,8 @@ grade-functions
 stevezhu:lodash@3.10.1
 simply:logins
 ms
-standard-minifier-css@1.3.3
-standard-minifier-js@1.2.2
+standard-minifier-css@1.3.4
+standard-minifier-js@1.2.3
 emails
 modules@0.7.9
 service-messages
@@ -82,7 +82,7 @@ admin
 percolate:migrations
 simply:waitgroup
 ecmascript@0.6.3
-shell-server@0.2.2
+shell-server@0.2.3
 tap:i18n
 onesignal
 zermelo-binding
