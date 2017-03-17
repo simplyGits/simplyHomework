@@ -277,5 +277,15 @@ Migrations.add
 				$set:
 					compiledContent: middleware.fn(message).compiledContent
 
+Migrations.add
+	version: 18
+	name: 'set hidden field on serviceUpdates'
+	up: ->
+		ServiceUpdates.update {}, {
+			$set: hidden: no
+		}, {
+			multi: yes
+		}
+
 Meteor.startup ->
 	Migrations.migrateTo 'latest'

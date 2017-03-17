@@ -101,6 +101,7 @@ Package.onUse(function(api) {
 		'client/projects/projects.coffee',
 
 		'client/serviceUpdates/serviceUpdates.html',
+		'client/serviceUpdates/serviceUpdates.styl',
 		'client/serviceUpdates/serviceUpdates.coffee',
 
 		'client/noServices/noServices.coffee',

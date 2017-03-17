@@ -31,11 +31,26 @@ export fetchServiceUpdates = (userId, forceUpdate = no) ->
 			errors.push error
 			continue
 
+		hidden = ServiceUpdates.find({
+			userId: userId
+			hidden: yes
+		}, {
+			fields:
+				userId: 1
+				hidden: 1
+
+				fetchedBy: 1
+				externalId: 1
+		}).fetch()
+
 		ServiceUpdates.remove {
 			userId: userId
 			fetchedBy: service.name
 		}, handleCollErr
 		for update in result
+			update.hidden = _.any hidden,
+				fetchedBy: update.fetchedBy
+				externalId: update.externalId
 			ServiceUpdates.insert update, handleCollErr
 
 	errors
