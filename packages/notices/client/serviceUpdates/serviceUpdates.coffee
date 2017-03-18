@@ -23,7 +23,7 @@ Template.serviceUpdateNotice.events
 		setHidden = (val) => Meteor.call 'serviceUpdateSetHidden', @_id, val
 		setHidden yes
 		NotificationsManager.notify
-			body: "<b>Notitie verborgen</b>"
+			body: '<b>Mededeling verborgen</b>'
 			html: yes
 
 			buttons: [{
