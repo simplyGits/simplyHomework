@@ -21,6 +21,7 @@ NoticeManager.provide 'serviceUpdates', ->
 Template.serviceUpdateNotice.events
 	'click button': ->
 		setHidden = (val) => Meteor.call 'serviceUpdateSetHidden', @_id, val
+		ga 'send', 'event', 'serviceUpdates notice', 'hide update'
 		setHidden yes
 		NotificationsManager.notify
 			body: '<b>Mededeling verborgen</b>'
@@ -28,5 +29,7 @@ Template.serviceUpdateNotice.events
 
 			buttons: [{
 				label: 'ongedaan maken'
-				callback: -> setHidden no
+				callback: ->
+					ga 'send', 'event', 'serviceUpdates notice', 'undo hide update'
+					setHidden no
 			}]
