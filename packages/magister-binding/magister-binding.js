@@ -386,6 +386,7 @@ MagisterBinding.getFile = function (info) {
 		url: url,
 		headers: {
 			cookie: magister.http._cookie,
+			'X-API-Client-ID': '12D8',
 		},
 	});
 };
@@ -713,6 +714,7 @@ MagisterBinding.getProfileData = function (userId) {
 		encoding: null,
 		headers: {
 			cookie: magister.http._cookie,
+			'X-API-Client-ID': '12D8',
 		},
 	}, function (error, response, body) {
 		pictureFut.return(
@@ -959,6 +961,7 @@ MagisterBinding.replyMessage = function (userId, id, all, body) {
 		url: `${magister._personUrl}/berichten/${id}`,
 		headers: {
 			cookie: magister.http._cookie,
+			'X-API-Client-ID': '12D8',
 		},
 	}, function (error, response, content) {
 		if (response && response.statusCode >= 400) {
