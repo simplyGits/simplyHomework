@@ -61,7 +61,15 @@ class @Message
 		###
 		@notifiedOn = null
 
-	attachments: -> Files.find(_id: $in: @attachmentIds).fetch()
+	###*
+	# @method attachments
+	# @param {Object} [sort={ name: 1 }]
+	# @return {File[]}
+	###
+	attachments: (sort = { name: 1 }) ->
+		Files.find({
+			_id: $in: @attachmentIds
+		}, { sort }).fetch()
 
 	# TODO: make this based on length of the res string instead of amount of
 	# items since they can vary in length.
