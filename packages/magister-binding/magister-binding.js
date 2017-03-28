@@ -5,7 +5,7 @@
 // One heck of a binding this is.
 
 'use strict';
-import { Magister } from 'meteor/simply:magisterjs';
+import Magister from 'magister.js';
 import LRU from 'lru-cache';
 import request from 'request';
 import marked from 'marked';
@@ -394,74 +394,68 @@ MagisterBinding.getStudyUtils = function (userId, options) {
 	const magister = getMagisterObject(userId);
 	const classInfos = getClassInfos(userId);
 
-	magister.studyGuides(false, function (e, r) {
-		if (e) {
-			fut.throw(e);
-			return;
-		}
+	const studyGuides = Meteor.wrapAsync(magister.studyGuides, magister)(false);
 
-		const studyUtils = [];
-		const files = [];
-		const futs = [];
+	const studyUtils = [];
+	const files = [];
+	const futs = [];
 
-		r.forEach(function (sg) {
-			const studyGuideFut = new Future();
-			futs.push(studyGuideFut);
+	studyGuides.forEach(function (sg) {
+		const studyGuideFut = new Future();
+		futs.push(studyGuideFut);
 
-			sg.parts(function (e, r) {
-				if (e) {
-					studyGuideFut.throw(e);
-					return;
-				}
-
-				r.forEach(function (sgp) {
-					const path = `/studiewijzers/${sg.id()}/onderdelen/${sgp.id()}/bijlagen/`;
-					const classInfo = _.find(classInfos, (i) => {
-						return _.contains(sg.classCodes(), i.externalInfo.abbreviation);
-					});
-					const classId = classInfo && classInfo.id;
-
-					const studyUtil = new StudyUtil(
-						sgp.name(),
-						sgp.description(),
-						classId,
-						userId
-					);
-
-					studyUtil.visibleFrom = sgp.from();
-					studyUtil.visibleTo = sgp.to();
-					studyUtil.fetchedBy = MagisterBinding.name;
-					studyUtil.externalInfo = {
-						partId: sgp.id(),
-						parentId: sg.id(),
-					};
-					sgp.files().forEach((file) => {
-						const externalFile = convertMagisterFile(userId, path, file);
-						studyUtil.fileIds.push(externalFile._id);
-						files.push(externalFile);
-					});
-
-					studyUtils.push(studyUtil);
-				});
-				studyGuideFut.return();
-			});
-		});
-
-		for (let i = 0; i < futs.length; i++) {
-			try {
-				futs[i].wait();
-			} catch (e) {
-				fut.throw(e);
+		sg.parts(function (e, r) {
+			if (e) {
+				studyGuideFut.throw(e);
 				return;
 			}
-		}
-		fut.return({
-			studyUtils,
-			files,
+
+			r.forEach(function (sgp) {
+				const path = `/studiewijzers/${sg.id()}/onderdelen/${sgp.id()}/bijlagen/`;
+				const classInfo = _.find(classInfos, (i) => {
+					return _.contains(sg.classCodes(), i.externalInfo.abbreviation);
+				});
+				const classId = classInfo && classInfo.id;
+
+				const studyUtil = new StudyUtil(
+					sgp.name(),
+					sgp.description(),
+					classId,
+					userId
+				);
+
+				studyUtil.visibleFrom = sgp.from();
+				studyUtil.visibleTo = sgp.to();
+				studyUtil.fetchedBy = MagisterBinding.name;
+				studyUtil.externalInfo = {
+					partId: sgp.id(),
+					parentId: sg.id(),
+				};
+				sgp.files().forEach((file) => {
+					const externalFile = convertMagisterFile(userId, path, file);
+					studyUtil.fileIds.push(externalFile._id);
+					files.push(externalFile);
+				});
+
+				studyUtils.push(studyUtil);
+			});
+			studyGuideFut.return();
 		});
 	});
 
-	return fut.wait();
+	for (let i = 0; i < futs.length; i++) {
+		try {
+			futs[i].wait();
+		} catch (e) {
+			fut.throw(e);
+			return;
+		}
+	}
+
+	return {
+		studyUtils,
+		files,
+	};
 };
 
 /**
@@ -537,125 +531,115 @@ MagisterBinding.getCalendarItems = function (userId, from, to) {
 	check(from, Date);
 	check(to, Date);
 
-	const fut = new Future();
-
 	const user = Meteor.users.findOne(userId);
 
 	const magister = getMagisterObject(userId);
 	const path = '/afspraken/bijlagen/';
 
-	magister.appointments(from, to, false, function (e, r) {
-		if (e) {
-			fut.throw(e);
-			return;
-		}
+	const getAppointments = Meteor.wrapAsync(magister.appointments, magister);
+	const appointments = getAppointments(from, to, false);
 
-		const futs = [];
+	const futs = [];
 
-		const calendarItems = [];
-		const absences = [];
-		const files = [];
+	const calendarItems = [];
+	const absences = [];
+	const files = [];
 
-		for (let i = 0; i < r.length; i++) { // REVIEW: `r` was `null` at least one time here.
-			const a = r[i];
+	for (const a of appointments) {
+		const fut = new Future();
+		futs.push(fut);
 
-			const fut = new Future();
-			futs.push(fut);
-
-			const classInfo = _.find(user.classInfos, function (i) {
-				const name = i.externalInfo.name;
-				return name != null && name === a.classes()[0];
-			});
-			const classId = classInfo && classInfo.id;
-
-			const calendarItem = new CalendarItem(
-				userId,
-				a.description(),
-				a.begin(),
-				a.end(),
-				classId || undefined
-			);
-
-			calendarItem.usersDone = a.isDone() ? [ userId ] : [];
-			calendarItem.externalInfo = {
-				id: prefixId(magister, a.id()),
-				editable: false,
-			};
-			if (!_.isEmpty(a.content())) {
-				calendarItem.content = {
-					type: a.infoTypeString(),
-					description: a.content(),
-				};
-			}
-			calendarItem.scrapped = a.scrapped();
-			calendarItem.fullDay = a.fullDay();
-			calendarItem.schoolHour = a.beginBySchoolHour();
-			calendarItem.location = a.location();
-			calendarItem.type = (function (a) {
-				switch (a.type()) {
-				case 1: return 'personal';
-				case 3: return 'schoolwide';
-				case 7: return 'kwt';
-				case 13: return 'lesson';
-				}
-			})(a);
-
-			const teacher = a.teachers()[0];
-			if (teacher != null) {
-				calendarItem.teacher = {
-					id: teacher.id(),
-					name: teacher.fullName(),
-					code: teacher.teacherCode(),
-				};
-			}
-
-			const info = a.absenceInfo();
-			if (info != null) {
-				const absenceInfo = new AbsenceInfo(
-					userId,
-					calendarItem._id,
-					info.typeString(),
-					info.permitted()
-				);
-				absenceInfo.description = info.description();
-
-				absenceInfo.fetchedBy = MagisterBinding.name;
-				absenceInfo.externalInfo = {
-					id: prefixId(magister, info.id()),
-				};
-
-				absences.push(absenceInfo);
-			}
-
-			a.attachments(function (e, r) {
-				if (e == null) {
-					r.forEach((file) => {
-						const externalFile = convertMagisterFile(userId, path, file, true);
-						calendarItem.fileIds.push(externalFile._id);
-						files.push(externalFile);
-					});
-				}
-				fut.return();
-			});
-
-			calendarItems.push(calendarItem);
-		}
-
-		for(let i = 0; i < futs.length; i++) futs[i].wait();
-		fut.return({
-			calendarItems,
-			absences,
-			files,
+		const classInfo = _.find(user.classInfos, function (i) {
+			const name = i.externalInfo.name;
+			return name != null && name === a.classes()[0];
 		});
-	});
+		const classId = classInfo && classInfo.id;
 
-	return fut.wait();
+		const calendarItem = new CalendarItem(
+			userId,
+			a.description(),
+			a.begin(),
+			a.end(),
+			classId || undefined
+		);
+
+		calendarItem.usersDone = a.isDone() ? [ userId ] : [];
+		calendarItem.externalInfo = {
+			id: prefixId(magister, a.id()),
+			editable: false,
+		};
+		if (!_.isEmpty(a.content())) {
+			calendarItem.content = {
+				type: a.infoTypeString(),
+				description: a.content(),
+			};
+		}
+		calendarItem.scrapped = a.scrapped();
+		calendarItem.fullDay = a.fullDay();
+		calendarItem.schoolHour = a.beginBySchoolHour();
+		calendarItem.location = a.location();
+		calendarItem.type = (function (a) {
+			switch (a.type()) {
+			case 1: return 'personal';
+			case 3: return 'schoolwide';
+			case 7: return 'kwt';
+			case 13: return 'lesson';
+			}
+		})(a);
+
+		const teacher = a.teachers()[0];
+		if (teacher != null) {
+			calendarItem.teacher = {
+				id: teacher.id(),
+				name: teacher.fullName(),
+				code: teacher.teacherCode(),
+			};
+		}
+
+		const info = a.absenceInfo();
+		if (info != null) {
+			const absenceInfo = new AbsenceInfo(
+				userId,
+				calendarItem._id,
+				info.typeString(),
+				info.permitted()
+			);
+			absenceInfo.description = info.description();
+
+			absenceInfo.fetchedBy = MagisterBinding.name;
+			absenceInfo.externalInfo = {
+				id: prefixId(magister, info.id()),
+			};
+
+			absences.push(absenceInfo);
+		}
+
+		a.attachments(function (e, r) {
+			if (e == null) {
+				r.forEach((file) => {
+					const externalFile = convertMagisterFile(userId, path, file, true);
+					calendarItem.fileIds.push(externalFile._id);
+					files.push(externalFile);
+				});
+			}
+			fut.return();
+		});
+
+		calendarItems.push(calendarItem);
+	}
+
+	for (let i = 0; i < futs.length; i++) futs[i].wait();
+
+	return {
+		calendarItems,
+		absences,
+		files,
+	};
 };
 
 MagisterBinding.getPersonClasses = function (userId) {
 	check(userId, String);
 
-	const fut = new Future();
 	const magister = getMagisterObject(userId);
 
 	const course = getCurrentCourse(magister);
@@ -663,31 +647,23 @@ MagisterBinding.getPersonClasses = function (userId) {
 		throw new Meteor.Error('no-course');
 	}
 
-	course.classes(function (e, r) {
-		if (e) {
-			fut.throw(e);
-			return;
-		}
-
-		fut.return(r.map(function (c) {
-			return {
-				abbreviation: c.abbreviation(),
-				begin: c.beginDate(),
-				end: c.endDate(),
-				exemption: c.classExemption(),
-				name: c.description(),
-				id: c.id(),
-				teacher: (function (t) {
-					const person = new ExternalPerson();
-					person.teacherCode = t.teacherCode();
-					person.fetchedBy = MagisterBinding.name;
-					return person;
-				})(c.teacher()),
-			};
-		}));
+	const classes = Meteor.wrapAsync(course.classes, course)();
+	return classes.map(function (c) {
+		return {
+			abbreviation: c.abbreviation(),
+			begin: c.beginDate(),
+			end: c.endDate(),
+			exemption: c.classExemption(),
+			name: c.description(),
+			id: c.id(),
+			teacher: (function (t) {
+				const person = new ExternalPerson();
+				person.teacherCode = t.teacherCode();
+				person.fetchedBy = MagisterBinding.name;
+				return person;
+			})(c.teacher()),
+		};
 	});
-
-	return fut.wait();
 };
 
 /**
@@ -814,7 +790,6 @@ MagisterBinding.getMessages = function (userId, folderName, skip, limit) {
 	check(skip, Number);
 	check(limit, Number);
 
-	const fut = new Future();
 	const user = Meteor.users.findOne(userId);
 	const magister = getMagisterObject(userId);
 
@@ -829,53 +804,46 @@ MagisterBinding.getMessages = function (userId, folderName, skip, limit) {
 		};
 	}
 
-	folder.messages({
-		limit: limit,
-		skip: skip,
-	}, function (e, r) {
-		if (e) {
-			fut.throw(e);
-			return;
-		}
+	let res = Meteor.wrapAsync(folder.messages, folder)({
+		limit,
+		skip,
+	});
+	res = res || []; // HACK
 
-		const messages = [];
-		const files = [];
+	const messages = [];
+	const files = [];
 
-		r = r || []; // HACK
-		r.forEach(function (m) {
-			const path = '/berichten/bijlagen/';
+	res.forEach(function (m) {
+		const path = '/berichten/bijlagen/';
 
-			const message = new Message(
-				m.subject(),
-				m._body,
-				folderName,
-				m.sendDate(),
-				convertMagisterPerson(m.sender(), user),
-				userId
-			);
-			message.recipients = m.recipients().map((p) => convertMagisterPerson(p, user));
-			message.fetchedBy = MagisterBinding.name;
-			message.externalId = prefixId(magister, m.id());
-			messages.isRead = m.isRead();
-			message.hasPriority = m.isFlagged();
+		const message = new Message(
+			m.subject(),
+			m._body,
+			folderName,
+			m.sendDate(),
+			convertMagisterPerson(m.sender(), user),
+			userId
+		);
+		message.recipients = m.recipients().map((p) => convertMagisterPerson(p, user));
+		message.fetchedBy = MagisterBinding.name;
+		message.externalId = prefixId(magister, m.id());
+		messages.isRead = m.isRead();
+		message.hasPriority = m.isFlagged();
 
-			const attachments = m.attachments() || []; // HACK
-			attachments.forEach((file) => {
-				const externalFile = convertMagisterFile(userId, path, file, true);
-				message.attachmentIds.push(externalFile._id);
-				files.push(externalFile);
-			});
-
-			messages.push(message);
+		const attachments = m.attachments() || []; // HACK
+		attachments.forEach((file) => {
+			const externalFile = convertMagisterFile(userId, path, file, true);
+			message.attachmentIds.push(externalFile._id);
+			files.push(externalFile);
 		});
 
-		fut.return({
-			messages,
-			files,
-		});
+		messages.push(message);
 	});
 
-	return fut.wait();
+	return {
+		messages,
+		files,
+	};
 };
 
 MagisterBinding.getUpdates = function (userId) {
@@ -888,36 +856,25 @@ MagisterBinding.getUpdates = function (userId) {
 		return [];
 	}
 
-	const fut = new Future();
-
-	folder.messages({
+	let res = Meteor.wrapAsync(folder.messages, folder)({
 		skip: 0,
 		limit: 100, // we want get all the alerts
-	}, function (e, r) {
-		if (e) {
-			fut.throw(e);
-		} else {
-			const res = [];
-
-			r.forEach(function (m) {
-				const update = new ServiceUpdate(
-					m.subject(),
-					m.body(),
-					userId,
-					MagisterBinding.name,
-					prefixId(magister, m.id())
-				);
-
-				update.date = m.sendDate();
-
-				res.push(update);
-			});
-
-			fut.return(res);
-		}
 	});
+	res = res || []; // HACK
 
-	return fut.wait();
+	return res.map(function (m) {
+		const update = new ServiceUpdate(
+			m.subject(),
+			m.body(),
+			userId,
+			MagisterBinding.name,
+			prefixId(magister, m.id())
+		);
+
+		update.date = m.sendDate();
+
+		return update;
+	})
 }
 
 /**

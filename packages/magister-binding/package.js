@@ -9,6 +9,7 @@ Package.describe({
 Npm.depends({
 	'marked': '0.3.6',
 	'lru-cache': '4.0.2',
+	'magister.js': '1.24.1',
 });
 
 Package.onUse(function(api) {
@@ -21,7 +22,6 @@ Package.onUse(function(api) {
 	]);
 	api.use([
 		'stevezhu:lodash@3.10.1',
-		'simply:magisterjs@1.23.3',
 		'ejson',
 		'ms',
 		'mutex',
