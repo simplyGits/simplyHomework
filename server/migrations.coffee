@@ -287,5 +287,19 @@ Migrations.add
 			multi: yes
 		}
 
+Migrations.add
+	version: 19
+	name: 'fix typo in bootstrap event name'
+	up: ->
+		users = Meteor.users.find({
+			'events.boostrap': $exists: yes
+		}).fetch()
+
+		for user in users
+			date = user.events.boostrap
+			Meteor.users.update user._id,
+				$unset: 'events.boostrap': yes
+				$set: 'events.bootstrap': date
+
 Meteor.startup ->
 	Migrations.migrateTo 'latest'

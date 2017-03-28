@@ -199,7 +199,7 @@ Meteor.methods
 		group.wait()
 		Meteor.users.update userId,
 			$unset: 'events.bootstrapping': yes
-			$set: 'events.boostrap': new Date
+			$set: 'events.bootstrap': new Date
 
 	'fetchExternalPersonClasses': ->
 		userId = @userId
