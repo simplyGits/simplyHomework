@@ -260,8 +260,6 @@ MagisterBinding.getGrades = function (userId, options) {
 	check(userId, String);
 	check(options, Match.Optional(Object));
 
-	// REVIEW: check if isEnd correctly works
-
 	const magister = getMagisterObject(userId);
 	const user = Meteor.users.findOne(userId);
 	// TODO: fix this onlyRecent stuff.
@@ -279,8 +277,21 @@ MagisterBinding.getGrades = function (userId, options) {
 		fillGrade: true,
 	});
 
-	return _(grades)
+	return _.chain(grades)
 	.filter(g => ![14, 4].includes(g.type().type()))
+	.groupBy(g => g.class().abbreviation)
+	.pairs()
+	.map(pair => {
+		const grades = pair[1];
+		const maxGrade = _.max(grades, g => g.period().number());
+		return _.map(grades, g => {
+			if (g !== maxGrade && g.type().isEnd()) {
+				g.type()._type = 1;
+			}
+			return g;
+		})
+	})
+	.flatten()
 	.map(g => {
 		const classInfo = _.find(user.classInfos, function (i) {
 			const abbr = i.externalInfo.abbreviation == g.class().abbreviation;
