@@ -909,7 +909,7 @@ function compileMessageBody (body) {
 	});
 
 	// multiline
-	body = body.replace(/^\$\$$\n((\n|.)+?)\n^\$\$$/gm, function (match, expr) {
+	body = body.replace(/^[ \t]*\$\$[ \t]*$\n((\n|.)+?)\n^[ \t]*\$\$[ \t]*$/gm, function (match, expr) {
 		const url = base + encodeURIComponent(`\\dpi{130} \\large ${expr}`);
 		return `\n\n${genimg(url)}\n\n`;
 	});
