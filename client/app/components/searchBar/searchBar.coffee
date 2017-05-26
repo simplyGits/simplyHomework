@@ -1,62 +1,5 @@
 CACHE_TIMEOUT = ms.minutes 10
 
-# improve placeholders
-
-placeholders = [
-	'Samenvattingen voor %class%'
-	'Woordenlijsten voor %class%'
-	'%class% Projecten'
-	'%class% Powerpoint H%num%'
-	'samenvatting %class% H%num%'
-	'%class% project H%num%'
-	'%name%'
-]
-fallbackClasses = [
-	'Nederlands'
-	'Engels'
-	'Wiskunde'
-	'Lichamelijke opvoeding'
-]
-fallbackNames = [
-	'Piet'
-	'Piet Jansen'
-	'Maria'
-	'Isaac'
-	'Josephine'
-]
-
-getClassName = ->
-	currentLesson = Helpers.embox ScheduleFunctions.currentLesson
-	c = (
-		if currentLesson?
-			currentLesson.class()
-		else
-			_.sample classes().fetch()
-	)
-	if c?
-		if _.random(1) then c.name else c.abbreviations[0]
-	else
-		_.sample fallbackClasses
-
-getName = ->
-	user = _.sample Meteor.users.find({
-		_id: $ne: Meteor.userId()
-		'profile.firstName': $ne: ''
-	}, {
-		fields:
-			_id: 1
-			'profile.firstName': 1
-			'profile.lastName': 1
-		transform: null
-	}).fetch()
-
-	if user?
-		s = user.profile.firstName
-		s += " #{user.profile.lastName}" if _.random 1
-		s
-	else
-		_.sample fallbackNames
-
 cache = {}
 _fetch = _.throttle ((query, callback) ->
 	Meteor.apply 'search', [ query ],
@@ -103,13 +46,6 @@ route = (query, d) ->
 			), id: d._id
 
 		Meteor.call 'search.analytics.store', query, d._id
-
-Template.searchBar.helpers
-	placeholder: ->
-		_.sample(placeholders)
-			.replace '%class%', getClassName
-			.replace '%num%', _.random 1, 15
-			.replace '%name%', getName
 
 Template.searchBar.events
 	'keyup input': (event) ->
