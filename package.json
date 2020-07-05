@@ -5,7 +5,7 @@
   "description": "Education with a little more swag.",
   "dependencies": {
     "babel-runtime": "^6.18.0",
-    "bcrypt": "^0.8.7",
+    "bcrypt": "^5.0.0",
     "chroma-js": "^1.1.1",
     "damerau-levenshtein": "git://github.com/cbaatz/damerau-levenshtein.git",
     "fibers": "^1.0.13",
